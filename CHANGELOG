@@ -1,0 +1,5 @@
+2014-06-30
+  * adapted to Oracle lifecycle management as new deployment method
+  * moved into different repository
+  * versions now start form 0.1 again
+

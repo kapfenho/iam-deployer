@@ -1,0 +1,129 @@
+#!/bin/sh
+#
+# startup script for oracle access mgmt weblogic domain
+#                     horst.kapfenberger@agoracon.at
+#
+### BEGIN INIT INFO
+# Provides:           oracle access mgmt weblogic domain
+# Required-Start:     $local_fs $remote_fs $named $network $time iam-nodemanager oracle iam-dir
+# Required-Stop:      $local_fs $remote_fs $named $network iam-nodemanager oracle iam-dir
+# Should-Start:       
+# Should-Stop:        
+# Default-Start:      2 3 4 5
+# Default-Stop:       0 1 6
+# Short-Description:  access management
+# Description:        access management services
+### END INIT INFO
+#
+# Source function library.
+. /etc/rc.d/init.d/functions
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+[ ${NETWORKING} = "no" ] && exit 0
+
+    prog='iam-access'
+    user='iam'
+
+ wl_home=/appl/iam/fmw/products/access/wlserver_10.3
+    exec=$wl_home/common/bin/wlst.sh
+     dom=IAMAccessDomain
+  domdir=/appl/iam/fmw/config/domains/$dom
+adm_port=7001
+ nm_port=5556
+    keys=/appl/iam/fmw/config/cred
+     nmu=$keys/nm/user
+     nmk=$keys/nm/key
+      du=$keys/$dom/user
+      dk=$keys/$dom/key
+ logfile=$domdir/servers/AdminServer/logs/wlst.out
+
+start() {
+  echo -n $"Starting $prog: "
+  
+  su - $user -c "$exec &>>$logfile <<- EOS
+  nmConnect( userConfigFile='$nmu',
+                userKeyFile='$nmk',
+                       host='$HOSTNAME',
+                       port='$nm_port',
+                 domainName='$dom',
+                  domainDir='$domdir')
+  nmStart('AdminServer')
+  connect( userConfigFile='$du',
+              userKeyFile='$dk',
+                      url='t3://$HOSTNAME:$adm_port')
+  start(name='wls_oam1',block='false')
+  exit()
+EOS
+  "
+  retval=$?
+  echo
+
+}
+
+stop() {
+  echo -n $"Stopping $prog: "
+  su - $user -c "$exec &>>$logfile <<- EOS
+  nmConnect( userConfigFile='$nmu',
+                userKeyFile='$nmk',
+                       host='$HOSTNAME',
+                       port='$nm_port',
+                 domainName='$dom',
+                  domainDir='$domdir')
+  connect( userConfigFile='$du',
+              userKeyFile='$dk',
+                      url='t3://$HOSTNAME:$adm_port')
+  shutdown( name='wls_oam1',force='true')
+  nmKill('AdminServer')
+  exit()
+EOS
+  "
+  retval=$?
+  echo
+  return $retval
+}
+
+restart() {
+  stop
+  start
+}
+
+reload() {
+  restart
+}
+
+force_reload() {
+  restart
+}
+
+
+case "$1" in
+  start)
+    $1
+    ;;
+  stop)
+    $1
+    ;;
+  restart)
+    $1
+    ;;
+  reload)
+    $1
+    ;;
+  force-reload)
+    force_reload
+    ;;
+  *)
+    echo -n "Usage: $0 {"
+    echo -n "start|"
+    echo -n "stop|"
+    echo -n "restart|"
+    echo -n "reload|"
+    echo -n "force-reload"
+    echo "}"
+
+    exit 2
+esac
+exit $?
+

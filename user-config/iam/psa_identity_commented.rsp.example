@@ -1,0 +1,244 @@
+# This is a response file for the Fusion Middleware Patch Set Assistant.
+# Individual component upgrades are performed in the order they are described here.
+# Each upgrade is introduced by a section header containing the name of the
+# component and name of the upgrade plugin. The form of the section header is
+# [ComponentName.PluginName]
+# These names can be found in the Upgrade Descriptor files for the components.
+
+# Individual input lines consist of a name, an equal sign, and a value.
+# The name is in two parts separated by a period.  The first part is the 'name'
+# attribute from the Descriptor File XML tag by which the plugin refers to the value.
+# The second part of the name identifies a field within that value.  Some input
+# types have only one field, while other types can have half a dozen.   Do not
+# intermix input lines that apply to different XML tags.
+
+[GENERAL]
+# This is the file format version number.  Do not change the next line.
+fileFormatVersion = 3
+
+# The next section contains the information for performing a schema
+# upgrade on User Messaging Service (User Messaging Service Schema Update), as described in the Upgrade
+# Descriptor file located at
+#   /appl/iam/fmw/Oracle_SOA1/upgrade/components/ums.xml
+# Do not change the next line.
+[ORASDPM.ORASDPM_SCHEMA_PLUGIN]
+# The following number uniquely identifies this instance of an
+# upgrade plugin.  Do not change it.
+pluginInstance = 2
+
+# The next few lines describe a database connection.
+#  "Specify the database containing the ORASDPM schema."
+# Specifies the type of database.  Supported types for this product are
+#   Oracle Database, Oracle Database enabled for edition-based redefinition, Microsoft SQL Server, IBM DB2
+ORASDPM.databaseType = Oracle Database
+# Specifies the database connection string for the DBA user.
+# The format depends upon the database type.
+ORASDPM.databaseConnectionString = iam2:1521/lunes
+# Specifies the database connection string for the user schema.
+# The format depends upon the database type.
+ORASDPM.schemaConnectionString = iam2:1521/lunes
+# Specifies the name of the schema or database user
+ORASDPM.schemaUserName = DEVI_ORASDPM
+# Specifies the password for the schema, in encrypted form.  To specify a
+# different password in cleartext, use the "cleartextSchemaPassword" keyword instead:
+# ORASDPM.cleartextSchemaPassword = yourpassword
+ORASDPM.cleartextSchemaPassword = 
+#ORASDPM.encryptedSchemaPassword = 054F3BE7E45395627EA8947D74D7420FB718855745B720E962
+# Specifies the name of the database administrator account.
+ORASDPM.dbaUserName = sys as sysdba
+# Specifies the password for the database administrator account, in encrypted form.
+# To specify a different password in cleartext, use the "cleartextDbaPassword" keyword
+# instead:
+# ORASDPM.cleartextDbaPassword = yourpassword
+ORASDPM.cleartextDbaPassword = 
+#ORASDPM.encryptedDbaPassword = 05876255173BECD0A9160D526178D07D786A504066F2C3FB5B
+
+# The next section contains the information for performing a schema
+# upgrade on Oracle Platform Security Services, as described in the Upgrade
+# Descriptor file located at
+#   /appl/iam/fmw/oracle_common/upgrade/components/opss.xml
+# Do not change the next line.
+[OPSS.OPSS1]
+# The following number uniquely identifies this instance of an
+# upgrade plugin.  Do not change it.
+pluginInstance = 10
+
+# The next few lines describe a database connection.
+#  "Specify the database containing the OPSS schema."
+# Specifies the type of database.  Supported types for this product are
+#   Oracle Database, Oracle Database enabled for edition-based redefinition
+OPSS.databaseType = Oracle Database
+# Specifies the database connection string for the DBA user.
+# The format depends upon the database type.
+OPSS.databaseConnectionString = iam2:1521/lunes
+# Specifies the database connection string for the user schema.
+# The format depends upon the database type.
+OPSS.schemaConnectionString = iam2:1521/lunes
+# Specifies the name of the schema or database user
+OPSS.schemaUserName = DEVI_OPSS
+# Specifies the password for the schema, in encrypted form.  To specify a
+# different password in cleartext, use the "cleartextSchemaPassword" keyword instead:
+# OPSS.cleartextSchemaPassword = yourpassword
+OPSS.cleartextSchemaPassword = 
+#OPSS.encryptedSchemaPassword = 05A6A2E4CFDC8A14AE81162A10154D97E31765B9D652FEFB3D
+# Specifies the name of the database administrator account.
+OPSS.dbaUserName = sys as sysdba
+# Specifies the password for the database administrator account, in encrypted form.
+# To specify a different password in cleartext, use the "cleartextDbaPassword" keyword
+# instead:
+# OPSS.cleartextDbaPassword = yourpassword
+#OPSS.encryptedDbaPassword = 05AB461018F57B8A1E64270D0B709935D8940979D5ED032A03
+OPSS.cleartextDbaPassword = 
+
+# The next section contains the information for performing a schema
+# upgrade on Oracle Metadata Services, as described in the Upgrade
+# Descriptor file located at
+#   /appl/iam/fmw/oracle_common/upgrade/components/mds.xml
+# Do not change the next line.
+[MDS.MDS1]
+# The following number uniquely identifies this instance of an
+# upgrade plugin.  Do not change it.
+pluginInstance = 12
+
+# The next few lines describe a database connection.
+#  "Specify the database containing the MDS schema."
+# Specifies the type of database.  Supported types for this product are
+#   Oracle Database, Oracle Database enabled for edition-based redefinition, Microsoft SQL Server, IBM DB2, MySQL
+MDS.databaseType = Oracle Database
+# Specifies the database connection string for the DBA user.
+# The format depends upon the database type.
+MDS.databaseConnectionString = iam2:1521/lunes
+# Specifies the database connection string for the user schema.
+# The format depends upon the database type.
+MDS.schemaConnectionString = iam2:1521/lunes
+# Specifies the name of the schema or database user
+MDS.schemaUserName = DEVI_MDS
+# Specifies the password for the schema, in encrypted form.  To specify a
+# different password in cleartext, use the "cleartextSchemaPassword" keyword instead:
+# MDS.cleartextSchemaPassword = yourpassword
+MDS.cleartextSchemaPassword = 
+#MDS.encryptedSchemaPassword = 052FE288B1DBB1C4B37F2007237DF5E0DA7A4A58E38338CE11
+# Specifies the name of the database administrator account.
+MDS.dbaUserName = sys as sysdba
+# Specifies the password for the database administrator account, in encrypted form.
+# To specify a different password in cleartext, use the "cleartextDbaPassword" keyword
+# instead:
+# MDS.cleartextDbaPassword = yourpassword
+MDS.cleartextDbaPassword = 
+#MDS.encryptedDbaPassword = 05A2A9690003E506515BB05983981CD5D7AD1C5A7C8D1F7AA2
+
+# The next section contains the information for performing a schema
+# upgrade on Oracle Metadata Services, as described in the Upgrade
+# Descriptor file located at
+#   /appl/iam/fmw/oracle_common/upgrade/components/mds.xml
+# Do not change the next line.
+[MDS.MDS1]
+# The following number uniquely identifies this instance of an
+# upgrade plugin.  Do not change it.
+pluginInstance = 14
+
+# The next few lines describe a database connection.
+#  "Specify the database containing the MDS schema."
+# Specifies the type of database.  Supported types for this product are
+#   Oracle Database, Oracle Database enabled for edition-based redefinition, Microsoft SQL Server, IBM DB2, MySQL
+MDS.databaseType = Oracle Database
+# Specifies the database connection string for the DBA user.
+# The format depends upon the database type.
+MDS.databaseConnectionString = iam2:1521/lunes
+# Specifies the database connection string for the user schema.
+# The format depends upon the database type.
+MDS.schemaConnectionString = iam2:1521/lunes
+# Specifies the name of the schema or database user
+MDS.schemaUserName = DEVI_MDS
+# Specifies the password for the schema, in encrypted form.  To specify a
+# different password in cleartext, use the "cleartextSchemaPassword" keyword instead:
+# MDS.cleartextSchemaPassword = yourpassword
+#MDS.encryptedSchemaPassword = 058E4EAE82B02A4AD8FE33E604C35BDF6D9B3358BC586584F8
+MDS.cleartextSchemaPassword = 
+# Specifies the name of the database administrator account.
+MDS.dbaUserName = sys as sysdba
+# Specifies the password for the database administrator account, in encrypted form.
+# To specify a different password in cleartext, use the "cleartextDbaPassword" keyword
+# instead:
+MDS.cleartextDbaPassword = 
+#MDS.encryptedDbaPassword = 05FF1C40E7C75C7E34AF9ECBB18316C8E396D6CDEE9EF5E4BE
+
+# The next section contains the information for performing a schema
+# upgrade on Oracle SOA, as described in the Upgrade
+# Descriptor file located at
+#   /appl/iam/fmw/Oracle_SOA1/upgrade/components/soainfra.xml
+# Do not change the next line.
+[SOA.SOA1]
+# The following number uniquely identifies this instance of an
+# upgrade plugin.  Do not change it.
+pluginInstance = 3
+# This plugin can only execute if certain preceding plugin(s)
+# were successful.  The number(s) on the next line must match numbers on other
+# pluginInstance declarations.  Do not change them.
+dependsOnPluginInstance = 14, 2
+
+# The next few lines describe a database connection.
+#  "Specify the database containing the SOAINFRA schema."
+# Specifies the type of database.  Supported types for this product are
+#   Oracle Database, Oracle Database enabled for edition-based redefinition, Microsoft SQL Server, IBM DB2
+SOAINFRA.databaseType = Oracle Database
+# Specifies the database connection string for the DBA user.
+# The format depends upon the database type.
+SOAINFRA.databaseConnectionString = iam2:1521/lunes
+# Specifies the database connection string for the user schema.
+# The format depends upon the database type.
+SOAINFRA.schemaConnectionString = iam2:1521/lunes
+# Specifies the name of the schema or database user
+SOAINFRA.schemaUserName = DEVI_SOAINFRA
+# Specifies the password for the schema, in encrypted form.  To specify a
+# different password in cleartext, use the "cleartextSchemaPassword" keyword instead:
+# SOAINFRA.cleartextSchemaPassword = yourpassword
+#SOAINFRA.encryptedSchemaPassword = 050C17BEE367B0221499F764FCFD59051DC4173A24BD171BB3
+SOAINFRA.cleartextSchemaPassword = 
+# Specifies the name of the database administrator account.
+SOAINFRA.dbaUserName = sys as sysdba
+# Specifies the password for the database administrator account, in encrypted form.
+# To specify a different password in cleartext, use the "cleartextDbaPassword" keyword
+# instead:
+SOAINFRA.cleartextDbaPassword = 
+# SOAINFRA.encryptedDbaPassword = 0556D8358F5D417051FD0D4131D62986BF7BF0E310A35BFE39
+
+# The next section contains the information for performing a schema
+# upgrade on Oracle Identity Manager, as described in the Upgrade
+# Descriptor file located at
+#   /appl/iam/fmw/Oracle_IDM1/upgrade/components/oim.xml
+# Do not change the next line.
+[OIM.OIM1]
+# The following number uniquely identifies this instance of an
+# upgrade plugin.  Do not change it.
+pluginInstance = 4
+# This plugin can only execute if certain preceding plugin(s)
+# were successful.  The number(s) on the next line must match numbers on other
+# pluginInstance declarations.  Do not change them.
+dependsOnPluginInstance = 12, 3, 10
+
+# The next few lines describe a database connection.
+#  "Specify the database containing the OIM schema."
+# Specifies the type of database.  Supported types for this product are
+#   Oracle Database
+OIM.databaseType = Oracle Database
+# Specifies the database connection string for the DBA user.
+# The format depends upon the database type.
+OIM.databaseConnectionString = iam2:1521/lunes
+# Specifies the database connection string for the user schema.
+# The format depends upon the database type.
+OIM.schemaConnectionString = iam2:1521/lunes
+# Specifies the name of the schema or database user
+OIM.schemaUserName = DEVI_OIM
+# Specifies the password for the schema, in encrypted form.  To specify a
+# different password in cleartext, use the "cleartextSchemaPassword" keyword instead:
+# OIM.cleartextSchemaPassword = yourpassword
+OIM.cleartextSchemaPassword = 
+#OIM.encryptedSchemaPassword = 05BBED2EEA94E15C5A28FBF8E65C94959B94728FB4BAAA1C84
+# Specifies the name of the database administrator account.
+OIM.dbaUserName = sys as sysdba
+# Specifies the password for the database administrator account, in encrypted form.
+# To specify a different password in cleartext, use the "cleartextDbaPassword" keyword
+# instead:
+OIM.cleartextDbaPassword = 
+#OIM.encryptedDbaPassword = 05A8CC34EAF4957D1528C7EED454CBCDE5C7AD44AEDEA3264A

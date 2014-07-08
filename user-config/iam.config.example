@@ -1,0 +1,69 @@
+#  oracle identity and access management
+#+ configuration of deployment destination
+
+#  this file describes the iam application configuration. it will be sourced 
+#+ in a bourne shell, so be take care of the syntax, eg. no spaces before 
+#+ and after the equal sign.
+dbs_hostname=iam2
+
+#+ location of the so called ora inventory pointer.  config file with 
+#+ two entries:
+#+ * location of the system wide ora invertory
+#+ * posix user group with write permissions on the inventory
+#+ sample content (two lines):
+#+   inventory_loc=/appl/oraInventory
+#+   inst_group=oinstall
+iam_orainv_ptr=/etc/oraInst.loc
+iam_orainv=/appl/oraInventory
+iam_orainv_grp=oinstall
+
+#  user and group of files and services. define the resources in the 
+#+ system config script (s1-owt-sysconf.sh). user and group is 
+#+ mandatory, umask default to the os setting. the two areas define 
+#+ the base directories for installation and logging. they will be 
+#+ created when missing.
+iam_user=iam
+iam_group=iam
+iam_user_umask=0002
+iam_app=/appl/iam
+iam_log=/appl/logs/iam
+
+iam_mw_home=/appl/iam/fmw
+# passphrase for all oam schemas, need to state sysdba one too
+iam_oim_schema_pass=Setup_123
+iam_oam_schema_pass=Setup_123
+iam_dba_pass=Setup.123
+
+#  ------------------------------------------------------------------
+
+#  java settings
+iam_java_home=/appl/dbs/jdk
+
+#  shall we use the urandom device (unblocking instead of blocking)? 
+#+ will result in quicker startup and connection rampup times.
+iam_java_urandom=true
+
+#  shall we replace the jdk cacerts?
+#+ no....... keep jdk default cacerts
+#+ add...... add custom cacerts (not supported yet)
+#+ replace.. replace with custom certs (recommended and default)
+iam_java_cacerts=no
+
+#  shall we create a soft link named current?  this path can be 
+#+ used in e.g. environment variables to keep consistent over 
+#+ JDK uprades. leave this empty will create no link.
+iam_java_current=/appl/dbs/jdk/current
+#  ------------------------------------------------------------------
+
+#  database settings: the database instance will be created in an 
+#+ independent step. you can either specify the configuration here 
+#+ (simple version) or define the settings in an additional response 
+#+ file: db_create.rsp (advanced settings). in the later step you need 
+#+ specifiy some settings twice, so be careful.
+iam_db_advanced=true
+
+#  those settigs need to be defined here for simple and advanced config.
+#+ you need to set the same values in the response files!
+iam_servicename=lunes
+iam_sid=lunes
+

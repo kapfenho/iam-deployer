@@ -1,0 +1,12 @@
+/user-config/iam/*.rsp
+/user-config/iam/provisioning_data
+/user-config/dbs/*.rsp
+/user-config/lcm/*.rsp
+/user-config/*.config
+/.vagrant
+/_attic
+/attic
+/STATUS
+/tmp
+/doc
+/results

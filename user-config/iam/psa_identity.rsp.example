@@ -1,0 +1,58 @@
+[GENERAL]
+fileFormatVersion = 3
+[ORASDPM.ORASDPM_SCHEMA_PLUGIN]
+pluginInstance = 2
+ORASDPM.databaseType = Oracle Database
+ORASDPM.databaseConnectionString = iam2:1521/lunes
+ORASDPM.schemaConnectionString = iam2:1521/lunes
+ORASDPM.schemaUserName = DEVI_ORASDPM
+ORASDPM.cleartextSchemaPassword = 
+ORASDPM.dbaUserName = sys as sysdba
+ORASDPM.cleartextDbaPassword = 
+[OPSS.OPSS1]
+pluginInstance = 10
+OPSS.databaseType = Oracle Database
+OPSS.databaseConnectionString = iam2:1521/lunes
+OPSS.schemaConnectionString = iam2:1521/lunes
+OPSS.schemaUserName = DEVI_OPSS
+OPSS.cleartextSchemaPassword = 
+OPSS.dbaUserName = sys as sysdba
+OPSS.cleartextDbaPassword = 
+[MDS.MDS1]
+pluginInstance = 12
+MDS.databaseType = Oracle Database
+MDS.databaseConnectionString = iam2:1521/lunes
+MDS.schemaConnectionString = iam2:1521/lunes
+MDS.schemaUserName = DEVI_MDS
+MDS.cleartextSchemaPassword = 
+MDS.dbaUserName = sys as sysdba
+MDS.cleartextDbaPassword = 
+[MDS.MDS1]
+pluginInstance = 14
+MDS.databaseType = Oracle Database
+MDS.databaseConnectionString = iam2:1521/lunes
+MDS.schemaConnectionString = iam2:1521/lunes
+MDS.schemaUserName = DEVI_MDS
+MDS.cleartextSchemaPassword = 
+MDS.dbaUserName = sys as sysdba
+MDS.cleartextDbaPassword = 
+[SOA.SOA1]
+pluginInstance = 3
+dependsOnPluginInstance = 14, 2
+SOAINFRA.databaseType = Oracle Database
+SOAINFRA.databaseConnectionString = iam2:1521/lunes
+SOAINFRA.schemaConnectionString = iam2:1521/lunes
+SOAINFRA.schemaUserName = DEVI_SOAINFRA
+SOAINFRA.cleartextSchemaPassword = 
+SOAINFRA.dbaUserName = sys as sysdba
+SOAINFRA.cleartextDbaPassword = 
+[OIM.OIM1]
+pluginInstance = 4
+dependsOnPluginInstance = 12, 3, 10
+OIM.databaseType = Oracle Database
+OIM.databaseConnectionString = iam2:1521/lunes
+OIM.schemaConnectionString = iam2:1521/lunes
+OIM.schemaUserName = DEVI_OIM
+OIM.cleartextSchemaPassword = 
+OIM.dbaUserName = sys as sysdba
+OIM.cleartextDbaPassword = 
