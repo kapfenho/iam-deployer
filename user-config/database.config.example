@@ -1,6 +1,10 @@
 #  this is how the new webtier server will look like.
 #+ file will be sourced.
 
+  s_img_db=/mnt/orainst/oinstall/oracle-db-ee-11.2.0.3/p10404530_112030_Linux-x86-64
+ s_patches=/mnt/orainst/oinstall/patches
+s_rcu_home=/mnt/orainst/oinstall/iam-11.1.2.2/repo/installers/fmw_rcu/linux/rcuHome
+
 #  location of the so called ora inventory pointer.  config file with 
 #+ two entries:
 #+ * location of the system wide ora invertory
@@ -9,8 +13,6 @@
 #+   inventory_loc=/appl/oraInventory
 #+   inst_group=oinstall
 dbs_orainv_ptr=/etc/oraInst.loc
-dbs_orainv=/appl/oraInventory  # INV_INVENTORY_DIRECTORY
-dbs_orainv_grp=oinstall
 
 #  user and group of files and services. define the resources in the 
 #+ system config script (s1-owt-sysconf.sh). user and group is 
@@ -18,10 +20,8 @@ dbs_orainv_grp=oinstall
 #+ the base directories for installation and logging. they will be 
 #+ created when missing.
 dbs_user=oracle
-dbs_group=dba
+dbs_group=oinstall
 dbs_user_umask=0027
-dbs_app=/appl/dbs
-dbs_log=/appl/logs/dbs
 #  ------------------------------------------------------------------
 
 #  java settings
@@ -41,17 +41,3 @@ dbs_java_cacerts=no
 #+ used in e.g. environment variables to keep consistent over 
 #+ JDK uprades. leave this empty will create no link.
 dbs_java_current=/appl/dbs/jdk/current
-#  ------------------------------------------------------------------
-
-#  database settings: the database instance will be created in an 
-#+ independent step. you can either specify the configuration here 
-#+ (simple version) or define the settings in an additional response 
-#+ file: db_create.rsp (advanced settings). in the later step you need 
-#+ specifiy some settings twice, so be careful.
-dbs_db_advanced=true
-
-#  those settigs need to be defined here for simple and advanced config.
-#+ you need to set the same values in the response files!
-dbs_servicename=lunes    # OAM_DB_SERVICENAME  OIM_DB_SERVICENAME
-dbs_sid=lunes            
-
