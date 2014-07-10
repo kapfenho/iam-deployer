@@ -17,7 +17,15 @@ umask ${iam_user_umask}
 
 log "main" "start"
 
-# TODO: adapt function, templates already there
+# set variables from provisioning config file
+local uc=${_DIR}/user-config/iam/provisioning.rsp
+
+     s_repo=$(grep "INSTALL_INSTALLERS_DIR=" ${uc} | cut -d= -f2)
+      s_lcm=$(grep "INSTALL_LCMHOME_DIR="    ${uc} | cut -d= -f2)
+iam_mw_home=$(grep "COMMON_FMW_DIR="         ${uc} | cut -d= -f2)
+   s_runjre=${s_repo}/jdk/jdk6/jre
+
+get_variables
 create_user_profile
 add_vim_user_config
 

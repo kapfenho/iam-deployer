@@ -54,21 +54,6 @@ set_db_autostart() {
   sudo -n sed -i -e "s/${dbs_sid}:\/appl\/dbs\/product\/11.2\/db:N/${dbs_sid}:\/appl\/dbs\/product\/11.2\/db:Y/g" /etc/oratab
 }
 
-#  set ORACLE_HOME from user config
-#
-set_oracle_home() {
-  local c=$(grep ORACLE_HOME ${_DIR}/user-config/dbs/db_install.rsp)
-  if [ -n ${c} ] ; then
-    export ${c}
-    export PATH=${PATH}:${ORACLE_HOME}/bin
-    export LD_LIBRARY_PATH=${ORACLE_HOME}/lib
-    log "set_oracle_home" "ORACLE_HOME, LD_LIBRARY_PATH set"
-  else
-    log "set_oracle_home" "ERROR: could not set ORACLE_HOME"
-  fi
-}
-
-
 # Oracle Database installation
 #
 install_db() {
@@ -139,20 +124,8 @@ create_database() {
   # check if db already exists
   if ! grep -q ${dbs_sid} /etc/oratab ; then
     
-    # new resp file, simple config does globbing in response file
-    local tmp_db_rsp=/tmp/db_create.rsp
-    if [ "${dbs_db_advanced}" == "true" ] ; then
-      # advance config: resp file is used as is
-      cp ${_DIR}/user-config/dbs/db_create_advanced.rsp ${tmp_db_rsp}
-    else
-      # simple config: globbing - only a few attributes are filled
-      while read line ; do
-        eval echo "$line" > ${tmp_db_rsp}
-      done < ${_DIR}/user-config/dbs/db_create_simple.tpl
-    fi
-
     # create db with resp file
-    ${ORACLE_HOME}/bin/dbca -silent -responseFile ${tmp_db_rsp}
+    ${ORACLE_HOME}/bin/dbca -silent -responseFile ${_DIR}/user-config/dbs/db_create.rsp
     log "create_database" "db created"
     log "create_database" "done"
   else
