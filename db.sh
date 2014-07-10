@@ -24,20 +24,33 @@ _DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 log "main" "start"
 
-local ic=${_DIR}/user-config/dbs/db_install.rsp
-local cc=${_DIR}/user-config/dbs/db_create.rsp
+ic=${_DIR}/user-config/dbs/db_install.rsp
+cc=${_DIR}/user-config/dbs/db_create.rsp
 
-    ORACLE_HOME=$(grep "ORACLE_HOME="        ${ic} | cut -d= -f2)
-        dbs_app=$(grep "ORACLE_BASE="        ${ic} | cut -d= -f2)
-     dbs_orainv=$(grep "INVENTORY_LOCATION=" ${ic} | cut -d= -f2)
- dbs_orainv_grp=$(grep "UNIX_GROUP_NAME="    ${ic} | cut -d= -f2)
-dbs_servicename=$(grep "GDBNAME ="           ${cc} | cut -d= -f2)
-        dbs_sid=$(grep "SID ="               ${cc} | cut -d= -f2)
+    ORACLE_HOME=$(grep "^ORACLE_HOME="        ${ic} | cut -d= -f2)
+        dbs_app=$(grep "^ORACLE_BASE="        ${ic} | cut -d= -f2)
+     dbs_orainv=$(grep "^INVENTORY_LOCATION=" ${ic} | cut -d= -f2)
+ dbs_orainv_grp=$(grep "^UNIX_GROUP_NAME="    ${ic} | cut -d= -f2)
+dbs_servicename=$(grep "^GDBNAME ="           ${cc} | cut -d\" -f2)
+        dbs_sid=$(grep "^SID ="               ${cc} | cut -d\" -f2)
+   dbs_sys_pass=$(grep "^SYSPASSWORD ="       ${cc} | cut -d\" -f2)
      ORACLE_SID=${dbs_sid}
  DB_SERVICENAME=${dbs_servicename}
 
- # set ORACLE_HOME env variable
-set_oracle_home
+echo "You configured this settings:"
+echo "dbs_app:         ${dbs_app}"
+echo "dbs_orainv:      ${dbs_orainv}"
+echo "dbs_orainv_grp:  ${dbs_orainv_grp}"
+echo "dbs_servicename: ${dbs_servicename}"
+echo "dbs_sid:         ${dbs_sid}"
+echo "ORACLE_SID:      ${ORACLE_SID}"
+echo "DB_SERVICENAME:  ${DB_SERVICENAME}"
+echo "---------------------------------------"
+
+if [ "$#" -gt 0 ] ; then
+  echo "Press Ctrl-C to cancel or ENTER to continue: "
+  read cont_now
+fi
 
 # create bashrc, bash_profile and source them
 create_and_source_user_profile ORACLE_HOME ${HOME}/.bashrc \
@@ -78,8 +91,11 @@ create_database
 config_database_for_iam
 
 set_db_autostart
-rcd_add oradb ${_DIR}/sys/redhat/rc.d/oradb.sh
-rcd_service_start oradb
+rcd_add oracle ${_DIR}/sys/redhat/rc.d/oracle
+set +o errexit
+rcd_service oracle stop
+rcd_service oracle start
+set -o errexit
 
 # create database schema for identity mgmt
 rcu_identity

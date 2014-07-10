@@ -19,15 +19,18 @@ rcd_add() {
   fi
 }
 
-#  rcd_service_start
-#+ 1: service name
+#  rcd_service call, for starting, stopping, etc.
+#+ para 1: service name
+#+      2: command
 #
-rcd_service_start() {
+rcd_service() {
+  local rc=0
   log "rcd_service-start" "starting ${1}..."
-  sudo -n service ${1} start
+  sudo -n service ${1} ${2}
+  rc=$?
   log "rcd_service-start" "started"
+  return ${rc}
 }
-
 
 #  deploy vim settings 
 #+ 

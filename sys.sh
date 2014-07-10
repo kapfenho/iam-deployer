@@ -22,10 +22,10 @@ ofile=${HOME}/root-script.sh
 . ${_DIR}/lib/libcommon.sh
 . ${_DIR}/lib/libsysprint.sh
 
-for c in ${_DIR}/user-config/*.sh ; do
+for c in ${_DIR}/user-config/*.config ; do
   . ${c}
 done
-dbs_group=${dbs_group:-dbs}
+dbs_group=${dbs_group:-oinstall}
 iam_group=${iam_group:-iam}
 
 dbs_user=${dbs_user:-dbs}
@@ -41,13 +41,13 @@ echo "set -x"
 
 # groups     name             id
 create_group "oinstall"       6001
-create_group ${dbs_group}     6002
+create_group "dba"            6002
 create_group ${iam_group}     6004
 echo
 
 # users      name           id    group   add-groups
 create_user  ${dbs_user}    5001  "6001"  "6002" "500"      # database
-create_user  ${iam_user}    5003  "6004"  "6001"       # oam, oim
+create_user  ${iam_user}    5003  "6004"  "6001"            # oam, oim
 echo
 
 sudo_for     ${dbs_user}

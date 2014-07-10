@@ -4,7 +4,7 @@
 #+ 1: oracle_home of database installation
 #+ 2: database name, used as SID
 #
-function dbs_source_env() {
+dbs_source_env() {
   if ! [ -a ${1} ] ; then
     log "dbs_source_env" "ERROR: given directory doesn't exist"
   else
@@ -17,7 +17,9 @@ function dbs_source_env() {
   fi
 }
   
-#  alter database settings
+#  Alter database settings: processes to 500, open cursors to 1500
+#+ storing in spfile. Stateless, can be re-executed.
+#+ Vars used: ORACLE_SID, dbs_sid
 #
 config_database_for_iam() {
   log "config_database_for_iam" "start"
@@ -34,7 +36,8 @@ EOF
   log "config_database_for_iam" "done"
 }
 
-#  restart database
+#  Restart database with shutdown immediate, followed by start to online.
+#+ Vars used: ORACLE_HOME and ORACLE_SID
 #
 restart_db() {
   if [ -z ${ORACLE_SID} ] ; then
@@ -48,13 +51,17 @@ restart_db() {
 EOF
 }
 
-#  set datbase to autostart
+#  set datbase instance to autostart (option in file /etc/oratab)
+#+ Vars needed: dbs_sid
 #
 set_db_autostart() {
   sudo -n sed -i -e "s/${dbs_sid}:\/appl\/dbs\/product\/11.2\/db:N/${dbs_sid}:\/appl\/dbs\/product\/11.2\/db:Y/g" /etc/oratab
 }
 
-# Oracle Database installation
+#  Oracle Database software installation. Configuration from response file used.
+#+ Skip if already installed.
+#+ Vars needed: s_img_db
+#+ No parameters used.
 #
 install_db() {
   log "install_db" "start"
@@ -77,7 +84,10 @@ install_db() {
   fi
 }
 
-# Patch Opatch utility, this is patch p6880880
+#  Patch Opatch utility, this is patch p6880880 - upgrade to OPatch 
+#+ version 11.2.0.3.5, skipping if already applied. Execute right after 
+#+ install. 
+#+ Variables needed: ORACLE_HOME and s_patch, no parameters
 #
 patch_opatch() {
   local _o=${ORACLE_HOME}/OPatch
@@ -85,7 +95,7 @@ patch_opatch() {
   local _skip='OPatch.*11\.2\.0\.3\.5'
   log "patch_opatch" "start"
 
-  if ! ${ORACLE_HOME}/OPatch/opatch lsinventory | grep -q ${_skip} ; then
+  if ! ${ORACLE_HOME}/OPatch/opatch lsinventory | grep -q "${_skip}" ; then
     [ -a ${_b} ] && rm -Rf ${_b}
     mv ${_o} ${_b}
     cp -R ${s_patches}/p6880880/OPatch $(dirname ${_o})/
@@ -95,14 +105,16 @@ patch_opatch() {
   fi
 }
 
-#  Patch the Database, extracted patch files in patch folder
+#  Patch the Database system (orahome)
+#+ precondition: extracted patch files in patch folder needed: $s_patches
+#+ skip when lsinventory repsonds with patch number or /No need to/
 #+ in 1: oracle patch number
 #
 patch_orahome() {
   log "patch_orahome_$1" "start"
 
   # check if patch has already been applied
-  if ! ${ORACLE_HOME}/OPatch/opatch lsinventory | grep -q $1 ; then
+  if ! ${ORACLE_HOME}/OPatch/opatch lsinventory | egrep -q "$1|No need to" ; then
     (
       log "patch_orahome_$1" "applying now..."
       cd ${s_patches}/$1
@@ -116,7 +128,8 @@ patch_orahome() {
   fi
 }
 
-#  create database
+#  create database instance as defined in response file, skip if existing
+#+ no parameters
 #
 create_database() {
   log "create_database" "start"
@@ -133,7 +146,9 @@ create_database() {
   fi
 }
 
-# Configure database listener and networking configureation
+#  Configure database listener and networking configureation, as defined 
+#+ in response file
+#+ Vars used: ORACLE_HOME
 #
 run_netca() {
   log "run_netca" "start"
@@ -146,9 +161,7 @@ run_netca() {
   fi
 }
 
-# ------------------------------------------------------------
-#
-# Check for OID DB Schemas
+#  TODO: check if still useful - not called
 #
 check_oid_schemas() {
   local old_sid=$ORACLE_SID              # backup old SID name

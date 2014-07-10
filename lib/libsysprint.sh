@@ -10,7 +10,7 @@ _sysctl=/etc/sysctl.conf
 # create unix group, check if exists before
 # params: name, id
 create_group() {
-  if grep -q "$1" /etc/group ; then
+  if ! grep -q "$1" /etc/group ; then
     echo "groupadd -g $2 $1"
   fi
 }
@@ -18,7 +18,7 @@ create_group() {
 # create unix users, check if exists before
 # params: name, id
 create_user() {
-  if grep -q "$1" /etc/passwd ; then
+  if ! grep -q "$1" /etc/passwd ; then
     echo "useradd -u $2 -g $3 -G $4 $1"
   fi
 }

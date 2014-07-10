@@ -99,7 +99,7 @@ create_orainv() {
     rm -f ${_tf}
     if ! [ -d ${oin} ] ; then
       sudo -n mkdir -p ${oin}
-      sudo -n chmod $USER:$grp ${oin}
+      sudo -n chown $USER:$grp ${oin}
     fi
   fi
   log "create_orainv" "done"
