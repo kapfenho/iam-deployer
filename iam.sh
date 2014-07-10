@@ -8,7 +8,7 @@ _DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 . ${_DIR}/lib/libcommon.sh
 . ${_DIR}/lib/librcu.sh
 . ${_DIR}/lib/libiam.sh
-. ${_DIR}/user-config/iam.sh
+. ${_DIR}/user-config/iam.config
 
 export JAVA_HOME=${s_runjdk}
 export      PATH=${JAVA_HOME}/bin:${PATH}
@@ -17,6 +17,7 @@ umask ${iam_user_umask}
 
 log "main" "start"
 
+# TODO: adapt function, templates already there
 create_user_profile
 add_vim_user_config
 
@@ -32,11 +33,9 @@ for p in access dir identity web ; do
   jdk_patch_config /appl/iam/fmw/products/$p/jdk6
 done
 
-# TODO: psa identity
-./psa -response /vagrant/user-config/iam/psa_identity.rsp -logLevel WARNING -logDir /tmp/psa-identity
-
-# TODO: psa access
-./psa -response /vagrant/user-config/iam/psa_access.rsp -logLevel WARNING -logDir /tmp/psa-access
+patch_opss
+patch_oud
+patch_oud_config
 
 # post installs from enterprise guide:
 #
