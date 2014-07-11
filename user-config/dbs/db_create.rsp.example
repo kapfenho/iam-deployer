@@ -710,7 +710,7 @@ TEMPLATENAME = "New Database"
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-GDBNAME = "orcl11.us.oracle.com"
+#GDBNAME = "orcl11.us.oracle.com"
 
 #-----------------------------------------------------------------------------
 # Name          : SCRIPTDESTINATION 

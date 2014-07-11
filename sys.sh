@@ -56,7 +56,6 @@ echo
 
 dir_for      ${dbs_app}    "${dbs_user}:${dbs_group}"
 dir_for      ${iam_app}    "${iam_user}:${iam_group}"
-dir_for      ${dbs_log}    "${dbs_user}:${dbs_group}"
 dir_for      ${iam_log}    "${iam_user}:${iam_group}"
 echo
 
