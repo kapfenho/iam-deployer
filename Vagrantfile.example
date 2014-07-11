@@ -21,7 +21,7 @@ $script_dbs   = "su - oracle -c '/vagrant/db.sh | /usr/bin/tee /tmp/prov-dbs.log
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.define :db, primary: true do |db|
+  config.vm.define :app, primary: true do |app|
     app.vm.box      = app_box
     app.vm.hostname = app_name
     app.vm.box_url  = app_box_url

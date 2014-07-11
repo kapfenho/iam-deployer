@@ -3,35 +3,42 @@ Identity and Access Management Deployment
 
 ## Auto Deployment in one VM
 
-Create the infrastructure from scratch (check prereqs first):
+After checking the pre-requisites and editing you destination desription
+you can create the environment with:
 
     $ vagrant up
 
-Remove the environment with
+Remove the environment with:
 
     $ vagrant destroy
 
-Shell provisioning needs to be started manually (see Setup).
+Start using your env:
+
+* Identity Manager: http://machine:14000/identity
+* Access Manager:   http://machine:7001/oamconsole
 
 
 ## Prerequisites
 
 * [Vagrant](http://www.vagrantup.com) 
-* Virtualization Provider, e.g. [VirtualBox](https://www.virtualbox.org)
+* A Virtualization Provider, e.g.
+[VirtualBox](https://www.virtualbox.org), [VMWare](https://www.vmware.com)
+  [Docker](https://www.docker.io) support is in development and not supported yet
 * Oracle installation files
-* Minimum RAM: 8 GB
-* Disk space: 30 GB
+* Minimum RAM: 10 GB, better 12 GB
 
 ## What's in?
 
 Database VM:
-* Cent OS 6.5 64bit minimal
 * Oracle Database 11.2.0.3.x EE
+* a database instance with schemas for IAM
 
 Application and Web Server:
 * Cent OS 6.5 64bit minimal
 * JRockit 64bit (JDK 1.6.0\_51)
 * WebLogic 10.3.6 (incl Coherence, without samples)
+* Oracle Unified Directory 11.1.2.2
+* Oracle Identity and Access Mgmt Suite 11.1.2.2
 
 
 ## Detailed Description
@@ -39,6 +46,34 @@ Application and Web Server:
 You can customize and modify the procedure after reading this README.
 
 ### Procedure
+
+Put the installation images in a directory on your local machine (when
+deploying to VM on your local machine) or on a network server. This
+directory will be mounted on the new servers via NFS. There is no need
+to copy the files onto the new virtual machines.
+
+Adapt the configuration files according to your needs in:
+
+    Vagrantfile                         # <- machine configs
+    ├── user-config
+        ├── database.config             # <- database server
+        ├── dbs
+        │   ├── db_create.rsp           # <- database server
+        │   ├── db_install.rsp          # <- database server
+        │   └── db_netca.rsp            # <- database server
+        ├── iam
+        │   ├── provisioning.rsp        # <- other servers
+        │   ├── provisioning_data
+        │   │   └── cwallet.sso         # <- other servers
+        │   ├── psa_access.rsp          # <- other servers
+        │   └── psa_identity.rsp        # <- other servers
+        ├── iam.config                  # <- other servers
+        └── lcm
+            └── lcm_install.rsp         # <- other servers
+
+See below for using configuration management.
+
+
 
 The virtual machine is created with ´vagrant up´, configuration and
 trigger points for software installation is inside Vagrantfile.
@@ -67,58 +102,108 @@ Now modify them according your needs.
 * mysystem.config:  how your new system will look like
 
 
-### Run Installation
 
-Mount the install directory
-* `mkdir /mnt/install`
-* `mount -t nfs -o proto=tcp,port=2049 kapfenho-dev.at-work.local:/export/install /mnt/install/`
+## Configuration Management
 
-Run scripts in following order:
+It is crucial to save your configurations for deploying and staging in later
+phases.
 
-* `s1-config-sys.sh`
-* `s2-install-db.sh`
-* `s0-rcu.sh IDM`
-* `s3-install-idm.sh`
-* `s0-rcu.sh IAM`
-* `s4-install-iam.sh`
+The \*.rsp files are standard Oracle response files, used typically in server
+installations. Whatever you configure you should keep your configuration and
+add it to your configuration management. With Git you would now branch the
+project and add those files (beside the shipped example files that you've used
+as templates), eg. with:
 
+    $ git checkout -b mydevboxbranch
+    $ git add .
+    $ git commit -m "initial version of mydevbox config"
 
-Configure the host system
+You can add your own git server with
 
-* `configure-system.sh`
+    $ git remote add mygit ssh://git@git.srv.priv/myrepo.git
+    $ git push mygit mydevboxbranch
 
-Produces a script the system admin needs to run on the server (root).
-
-* `install-dbs.sh`
-
-The script will install the database system, create the database
-instance, and all necessary services like listeners, etc.
-
-* `install-idm.sh`
-
-Installation of software into a new Oracle home directory and creation
-of a new instance with Oracle Internet Directory, Oracle Virtual
-Directory, Directory Integration Platform, Directory Service
-Manager, and the Enterprise Manager of this software suite.
-
-* `install-iam.sh`
-
-Installation of software into a new Oracle home directory and creation
-of a new instance with Oracle Access Manager, Oracle Identity Manager,
-Oracle Identity Analytics and the Enterprise Manager of this software 
-suite.
-
-
-## Remarks
-
-Installation of software suites are separated to install them under
-seperate user accounts.
 
 ## Directories and Files
+.
+├── CHANGELOG
+├── LICENSE.txt
+├── README.markdown
+├── Vagrantfile
+├── db.sh
+├── iam.sh
+├── lib
+│   ├── dbs
+│   │   └── ocm.rsp
+│   ├── files.sh
+│   ├── libcommon.sh
+│   ├── libdb.sh
+│   ├── libiam.sh
+│   ├── libjdk.sh
+│   ├── librcu.sh
+│   ├── libsys.sh
+│   ├── libsysprint.sh
+│   ├── libwlst.sh
+│   └── templates
+│       ├── dbs
+│       │   ├── bash_profile
+│       │   └── bashrc
+│       └── iam
+│           ├── env
+│           │   ├── acc.sh
+│           │   ├── common.sh
+│           │   ├── dir.sh
+│           │   ├── idm.sh
+│           │   └── web.sh
+├── remove-iam.sh
+├── results
+│   └── certs
+│       ├── oud.crt
+│       └── oud.txt
+├── sys
+│   ├── redhat
+│   │   ├── centos6
+│   │   │   └── idm-common-preverify-build.xml.patch
+│   │   ├── epel-release-6-8.noarch.rpm
+│   │   └── rc.d
+│   │       ├── iam-access
+│   │       ├── iam-dir
+│   │       ├── iam-identity
+│   │       ├── iam-nodemanager
+│   │       └── oracle
+│   └── vim
+│       ├── bundle.tar.gz
+│       ├── pathogen.vim
+│       └── vimrc
+├── sys.sh
+└── user-config
+    ├── database.config
+    ├── database.config.example
+    ├── dbs
+    │   ├── db_create.rsp
+    │   ├── db_create.rsp.example
+    │   ├── db_install.rsp
+    │   ├── db_install.rsp.example
+    │   ├── db_netca.rsp
+    │   └── db_netca.rsp.example
+    ├── iam
+    │   ├── provisioning.rsp
+    │   ├── provisioning.rsp.example
+    │   ├── provisioning_data
+    │   │   └── cwallet.sso
+    │   ├── provisioning_templ.rsp
+    │   ├── provisioning_used.rsp
+    │   ├── psa_access.rsp
+    │   ├── psa_access.rsp.example
+    │   ├── psa_access_commented.rsp.example
+    │   ├── psa_identity.rsp
+    │   ├── psa_identity.rsp.example
+    │   └── psa_identity_commented.rsp.example
+    ├── iam.config
+    ├── iam.config.example
+    └── lcm
+        ├── lcm_install.rsp
+        └── lcm_install.rsp.example
 
-* app:      application specific stuff
-* config:   all configuration 
-* doc:      documentation
-* lib:      installation libs, templates, etc.
-* sys:      system depended stuff
+36 directories, 116 files
 
