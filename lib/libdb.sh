@@ -96,10 +96,14 @@ patch_opatch() {
   log "patch_opatch" "start"
 
   if ! ${ORACLE_HOME}/OPatch/opatch lsinventory | grep -q "${_skip}" ; then
-    [ -a ${_b} ] && rm -Rf ${_b}
-    mv ${_o} ${_b}
-    cp -R ${s_patches}/p6880880/OPatch $(dirname ${_o})/
-    log "patch_opatch" "done"
+    if [ -a ${_b} ] ; then
+      # write this to stdout
+      c="rm -Rf ${_b}" ; echo "${c}" ; ${c}
+    fi
+    c="mv ${_o} ${_b}" ; echo ${c} ; ${c}
+    unzip -d ${ORACLE_HOME}/ ${s_patches}/01_archives/p6880880_112000_Linux-x86-64.zip 'OPatch/*'
+    log "patch_opatch" "new version extracted to ${ORACLE_HOME}/OPatch/"
+    log "patch_opatch" "you can remove the former one: ${_b}"
   else
     log "patch_opatch" "skipped"
   fi

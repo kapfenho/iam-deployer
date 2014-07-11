@@ -5,12 +5,12 @@
 
 #  paths to install images. in this example the database files are
 #+ extracted to $s_img_db.
-  s_img_db=/mnt/orainst/oinstall/oracle-db-ee-11.2.0.3/p10404530_112030_Linux-x86-64
+  s_img_db=/mnt/orainst/oracle-db-ee-11.2.0.3/p10404530_112030_Linux-x86-64
 #  in s_patches are all patch files, already extracted
- s_patches=/mnt/orainst/oinstall/patches
+ s_patches=/mnt/orainst/patches
 #  since the idm/iam database schemas are created, this is where 
 #+ RCU is located.
-s_rcu_home=/mnt/orainst/oinstall/iam-11.1.2.2/repo/installers/fmw_rcu/linux/rcuHome
+s_rcu_home=/mnt/orainst/oracle-iam-11.1.2.2/repo/installers/fmw_rcu/linux/rcuHome
 
 #  location of the Oracle inventory pointer.  config file with 
 #+ two entries:

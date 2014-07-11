@@ -3,7 +3,7 @@ export       PAGER=less
 export      EDITOR=vi
 
 export    DEF_PATH=/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/iam/bin
-export  REPOS_HOME=/mnt/orainst/iam-11.1.2.2/repo/installers
+export  REPOS_HOME=/mnt/orainst/oracle-iam-11.1.2.2/repo/installers
 export IDMLCM_HOME=/appl/iam/fmw/lcm
 
 function acc() { export E=acc ; . ~/.env/acc.sh ; }
