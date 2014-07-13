@@ -97,9 +97,6 @@ rcd_service oracle stop
 set -o errexit
 rcd_service oracle start
 
-export JAVA_HOME=${s_runjdk}
-export      PATH=${JAVA_HOME}/bin:${PATH}
-
 # create database schemas for identity mgmt
 rcu_identity
 # create database schemas for access mgmt
