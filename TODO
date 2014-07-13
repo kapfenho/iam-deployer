@@ -1,0 +1,5 @@
+# iam-nodemanager  (rc.d)
+exec=/appl/iam/fmw/config/nodemanager/iam2.dev.vm/startNodeManager.sh
+
+# libwlst.sh
+change iam2....

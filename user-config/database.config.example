@@ -23,7 +23,7 @@ dbs_orainv_ptr=/etc/oraInst.loc
 #+ mandatory, umask default to the os setting. the two areas define 
 #+ the base directories for installation and logging. they will be 
 #+ created when missing.
-dbs_hostname=iam2.dev.vm
+dbs_dbhost=iam2.dev.vm
 dbs_user=oracle
 dbs_group=oinstall
 dbs_user_umask=0027

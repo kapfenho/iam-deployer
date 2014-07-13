@@ -29,9 +29,9 @@ iam_log=/appl/logs/iam
 iam_mw_home=/appl/iam/fmw
 
 #  database settings
-dbs_dbhost=oradb
-iam_servicename=domingo.dev.vm
-iam_sid=domingo
+dbs_dbhost=iam2.agoracon.at
+iam_servicename=lunes.agoracon.at
+iam_sid=lunes
 #  passphrase for all oam schemas, need to state sysdba one too
 iam_oim_schema_pass=Setup_123
 iam_oam_schema_pass=Setup_123

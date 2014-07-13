@@ -41,6 +41,8 @@ for p in access dir identity web ; do
   jdk_patch_config /appl/iam/fmw/products/$p/jdk6
 done
 
+# TODO: copy rc.d files and register as service
+
 patch_opss
 patch_oud
 patch_oud_config
