@@ -1,13 +1,12 @@
 #!/bin/sh
 
-#  Installation script for Oracle WebCenter Content installation
+#  database system installation, instance and application schema creation.
 #+ Run as OS user that owns the database binaries.
 # 
-# This procedure can be rerun after an error correction. In the next run 
-#+the script will skip already executed steps.
-#+All tasks are executed under the defined user account.
+#  This procedure can be rerun after a possible error correction. In the next
+#+ run the script will skip already executed steps.
+#+ All tasks are executed under the defined user account.
 #
-# Installation files
 
 set -o errexit
 set -o nounset
@@ -24,6 +23,7 @@ _DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 log "main" "start"
 
+# use settings from response files
 ic=${_DIR}/user-config/dbs/db_install.rsp
 cc=${_DIR}/user-config/dbs/db_create.rsp
 
@@ -56,7 +56,7 @@ fi
 create_and_source_user_profile ORACLE_HOME ${HOME}/.bashrc \
     ${_DIR}/lib/templates/dbs/
 
-# deploy jdk, we need a jdk for installation
+# deploy jdk -> not needed any more
 #jdk_deploy ${dbs_java_home} \
 #    ${s_jdkname} \
 #    ${s_jdk} \
@@ -94,12 +94,15 @@ set_db_autostart
 rcd_add oracle ${_DIR}/sys/redhat/rc.d/oracle
 set +o errexit
 rcd_service oracle stop
-rcd_service oracle start
 set -o errexit
+rcd_service oracle start
 
-# create database schema for identity mgmt
+export JAVA_HOME=${s_runjdk}
+export      PATH=${JAVA_HOME}/bin:${PATH}
+
+# create database schemas for identity mgmt
 rcu_identity
-# create database schema for access mgmt
+# create database schemas for access mgmt
 rcu_access
 
 log "main" "done"
