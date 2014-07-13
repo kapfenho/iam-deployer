@@ -11,7 +11,7 @@ echo
 echo "Here are the occurences of <${1}>:"
 echo
 
-grep -ri  --exclude "*.example" --exclude "*.orig" ${1} user-config
+grep -ri  --exclude "*example" --exclude "*orig" ${1} user-config
 
 if [ -n "${2}" ] ; then
 
@@ -21,7 +21,7 @@ if [ -n "${2}" ] ; then
   echo "Press Ctrl-C to quit or RETURN to continue."
   read nil
   
-  grep -ril --exclude "*.example" --exclude "*.orig" ${1} user-config | xargs sed -i.orig -e "s/${1}/${2}/g"
+  grep -ril --exclude "*example" --exclude "*orig" ${1} user-config | xargs sed -i.orig -e "s/${1}/${2}/g"
 fi
 
 exit 0
