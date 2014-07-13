@@ -9,8 +9,9 @@
 #  in s_patches are all patch files, already extracted
  s_patches=/mnt/orainst/patches
 #  since the idm/iam database schemas are created, this is where 
-#+ RCU is located.
+#+ RCU is located and a JDK to run it
 s_rcu_home=/mnt/orainst/oracle-iam-11.1.2.2/repo/installers/fmw_rcu/linux/rcuHome
+  s_runjdk=/mnt/orainst/oracle-iam-11.1.2.2/repo/installers/jdk/jdk6
 
 #  location of the Oracle inventory pointer.  config file with 
 #+ two entries:
