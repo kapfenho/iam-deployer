@@ -52,6 +52,10 @@ deploying to VM on your local machine) or on a network server. This
 directory will be mounted on the new servers via NFS. There is no need
 to copy the files onto the new virtual machines.
 
+Create your own copy of the config files with the shipped help-script:
+
+    ./createconf.sh
+
 Adapt the configuration files according to your needs in:
 
     Vagrantfile                         # <- machine configs
@@ -72,6 +76,12 @@ Adapt the configuration files according to your needs in:
             └── lcm_install.rsp         # <- other servers
 
 See below for using configuration management.
+
+There is an additional script you can use for changing values that are
+spread over severlal config files: ´changeconf.sh´. Calling this script 
+with only one paramter will search that value in all your config files. 
+Exchanging the hostname is easy using the sctipt. 
+
 
 
 

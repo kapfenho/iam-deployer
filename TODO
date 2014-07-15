@@ -1,5 +1,14 @@
-# iam-nodemanager  (rc.d)
-exec=/appl/iam/fmw/config/nodemanager/iam2.dev.vm/startNodeManager.sh
 
-# libwlst.sh
-change iam2....
+
+* Weblogic user permission problem after install:
+    You need to add permissions to the new weblogic admin user (in directory).
+    solution:
+      1. in OIM create new role 'Administrators Ext' (in Top organization)
+      2. add the existing admin role to the new role.
+           in other words:
+            (=> inherit from extistin admin role to new admin role)
+            (=> this means the new admin role has all priviledges of the existing role)
+      3. add the WebLogic admin (directory) to the new role
+
+* Provisioning 
+
