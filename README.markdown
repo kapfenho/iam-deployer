@@ -217,3 +217,5 @@ You can add your own git server with
 
 36 directories, 116 files
 
+https://edelivery.oracle.com/EPD/ViewDigest/get_form?epack_part_number=B77727&export_to_csv=1
+
