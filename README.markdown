@@ -53,41 +53,42 @@ directory will be mounted on the new servers via NFS. There is no need
 to copy the files onto the new virtual machines.
 
 Create your own copy of the config files with the shipped help-script:
-
+```
     ./createconf.sh
+```
 
 Adapt the configuration files according to your needs in:
 
 ```
     Vagrantfile                         # <- machine configs
     ├── user-config
-        ├── database.config             # <- database server
-        ├── dbs
-        │   ├── db_create.rsp           # <- database server
-        │   ├── db_install.rsp          # <- database server
-        │   └── db_netca.rsp            # <- database server
-        ├── iam
-        │   ├── provisioning.rsp        # <- other servers
-        │   ├── provisioning_data
-        │   │   └── cwallet.sso         # <- other servers
-        │   ├── psa_access.rsp          # <- other servers
-        │   └── psa_identity.rsp        # <- other servers
-        ├── iam.config                  # <- other servers
-        └── lcm
+    |   ├── database.config             # <- database server
+    |   ├── dbs
+    |   │   ├── db_create.rsp           # <- database server
+    |   │   ├── db_install.rsp          # <- database server
+    |   │   └── db_netca.rsp            # <- database server
+    |   ├── iam
+    |   │   ├── provisioning.rsp        # <- other servers
+    |   │   ├── provisioning_data
+    |   │   │   └── cwallet.sso         # <- other servers
+    |   │   ├── psa_access.rsp          # <- other servers
+    |   │   └── psa_identity.rsp        # <- other servers
+    |   ├── iam.config                  # <- other servers
+    |   └── lcm
             └── lcm_install.rsp         # <- other servers
 ```
 
 See below for using configuration management.
 
 There is an additional script you can use for changing values that are
-spread over severlal config files: ´changeconf.sh´. Calling this script 
+spread over severlal config files: `changeconf.sh`. Calling this script 
 with only one paramter will search that value in all your config files. 
 Exchanging the hostname is easy using the sctipt. 
 
 
 
 
-The virtual machine is created with ´vagrant up´, configuration and
+The virtual machine is created with `vagrant up`, configuration and
 trigger points for software installation is inside Vagrantfile.
 
 System configuration: the script "1. XXX" produces a script that needs
@@ -105,8 +106,10 @@ in Vagrantfile.
 You need to have two configuration files, samples for those are
 delivered with:
 
+```
     cp config/resources.config.sample config/resources.config
     cp config/mysystem.config.sample config/mysystem.config
+```
 
 Now modify them according your needs.
 
@@ -126,17 +129,21 @@ add it to your configuration management. With Git you would now branch the
 project and add those files (beside the shipped example files that you've used
 as templates), eg. with:
 
+```
     $ git checkout -b mydevboxbranch
     $ git add .
     $ git commit -m "initial version of mydevbox config"
-
+```
 You can add your own git server with
 
+```
     $ git remote add mygit ssh://git@git.srv.priv/myrepo.git
     $ git push mygit mydevboxbranch
-
+```
 
 ## Directories and Files
+
+```
 .
 ├── CHANGELOG
 ├── LICENSE.txt
@@ -218,6 +225,6 @@ You can add your own git server with
         └── lcm_install.rsp.example
 
 36 directories, 116 files
-
+```
 https://edelivery.oracle.com/EPD/ViewDigest/get_form?epack_part_number=B77727&export_to_csv=1
 
