@@ -58,6 +58,7 @@ Create your own copy of the config files with the shipped help-script:
 
 Adapt the configuration files according to your needs in:
 
+```
     Vagrantfile                         # <- machine configs
     ├── user-config
         ├── database.config             # <- database server
@@ -74,6 +75,7 @@ Adapt the configuration files according to your needs in:
         ├── iam.config                  # <- other servers
         └── lcm
             └── lcm_install.rsp         # <- other servers
+```
 
 See below for using configuration management.
 
