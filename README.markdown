@@ -347,7 +347,9 @@ Patch for OPatch
     MD5    091094C63AB640FDC8A171D2A631D95C
 
 Patch for Database to 11.2.0.3.7
-  16619892
+  p16619892_112030_Linux-x86-64.zip
+    SHA-1    F80E2D18DF8A5EA46AAF3C2CF9FDF4AA0D162959
+    MD5    6E306C6BC9C12185C9F0E12E34AAEC86
 
 Identity and Access Management
 ------------------------------
