@@ -118,10 +118,12 @@ The structure in this directory should look like
 ### Patch the installation images
 
 Yes, even the installation images need patching to be installed properly.
-Apply the following patch:
+Download from [Oracle Support](https://support.oracl.com) the following
+patch and apply it to the downloaded repository:
 
 ```
-patch 18231786    fix for wrong 32bit specs: i386 -> i686
+# fix for wrong 32bit specs: i386 -> i686
+patch 18231786
 ```
 
 ### Create your config files
