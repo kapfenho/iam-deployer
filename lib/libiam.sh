@@ -14,8 +14,9 @@ deploy_lcm() {
     -waitforcompletion
 
   log "iam_deploy_lcm" "software installed, now patching..."
-  patch -b ${iam_mw_home}/lcm/provisioning/idm-provisioning-build/idm-common-preverify-build.xml \
-    ${_DIR}/sys/redhat/centos6/idm-common-preverify-build.xml.patch
+
+  sed -i.orig 's/<antcall target=\"private-idm-preverify-os\"\/>/<!-- antcall target=\"private-idm-preverify-os\"\/ -->/' \
+    ${iam_mw_home}/lcm/provisioning/idm-provisioning-build/idm-common-preverify-build.xml
 
   log "iam_deploy_lcm" "done"
 }
