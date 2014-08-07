@@ -7,19 +7,23 @@ multiple servers in your data centre.
 
 ## Auto Deployment in one VM
 
-After checking the pre-requisites and editing you destination desription
+After checking the pre-requisites and editing you destination description
 you can create the environment with:
 
+```
     $ vagrant up
-
-Remove the environment with:
-
-    $ vagrant destroy
+```
 
 Start using your env:
 
-* Identity Manager: http://machine:14000/identity
-* Access Manager:   http://machine:7001/oamconsole
+* Identity Manager: `http://machine:7777/identity`
+* Access Manager:   `http://machine:7777/oamconsole`
+
+Remove the environment with:
+
+```
+    $ vagrant destroy
+```
 
 
 ## Prerequisites
@@ -55,10 +59,15 @@ Application and Web Server:
 
 You can customize and modify the procedure after reading this README.
 
+### Download Software
+
+Download the software packages from edelivery.oracle.com, see at the end
+of this file for a complete list with checksums.
+
+
 ### Create Installation Image Directory
 
 You will need the following software packages from Oracle:
-
 
 Put the installation images in a directory on your local machine (when
 deploying to VM on your local machine) or on a network server. This
@@ -97,6 +106,7 @@ The structure in this directory should look like
 │       ├── gateways
 │       └── grid
 ├── patches                     # common location for software patches
+│   ├── p6880881_112000_Linux-x86-64.zip
 │   ├── 13009311
 │   │   ├── etc
 │   │   └── files
@@ -182,21 +192,6 @@ application user.
 If you want to execute those scripts on your own, just remove the call
 in Vagrantfile.
 
-### Configure Installation
-
-You need to have two configuration files, samples for those are
-delivered with:
-
-```
-    cp config/resources.config.sample config/resources.config
-    cp config/mysystem.config.sample config/mysystem.config
-```
-
-Now modify them according your needs.
-
-* resources.config: location of installation resources
-* mysystem.config:  how your new system will look like
-
 
 
 ## Configuration Management
@@ -222,7 +217,7 @@ You can add your own git server with
     $ git push mygit mydevboxbranch
 ```
 
-## Directories and Files
+## Project Directories and Files
 
 ```
 .
@@ -235,7 +230,6 @@ You can add your own git server with
 ├── lib
 │   ├── dbs
 │   │   └── ocm.rsp
-│   ├── files.sh
 │   ├── libcommon.sh
 │   ├── libdb.sh
 │   ├── libiam.sh
@@ -304,8 +298,81 @@ You can add your own git server with
     └── lcm
         ├── lcm_install.rsp
         └── lcm_install.rsp.example
+```
 
-36 directories, 116 files
+
+## Software Packages to Download 
+
+You can verify the checksums online at:
+
 ```
 https://edelivery.oracle.com/EPD/ViewDigest/get_form?epack_part_number=B77727&export_to_csv=1
+```
+
+```
+Oracle Database 11gR2 Enterprise Edition
+----------------------------------------
+
+Download from Oracle eDelivery:
+  https://support.oracle.com
+
+p10404530_112030_Linux-x86-64_1of7.zip    1.3 GB    (1358454646 bytes)
+  SHA-1    80A78DF21976A6586FA746B1B05747230B588E34
+  MD5    BDBF8E263663214DC60B0FDEF5A30B0A
+p10404530_112030_Linux-x86-64_2of7.zip    1.1 GB    (1142195302 bytes)
+  SHA-1    A39BED06195681E31FBB0F6D7D393673BA938660
+  MD5    E56B3D9C6BC54B7717E14B6C549CEF9E
+p10404530_112030_Linux-x86-64_3of7.zip    933.8 MB    (979195792 bytes)
+  SHA-1    D33E19BB7EC804019F7A6B62C400F90FEDC0FDDD
+  MD5    695CBAD744752239C76487E324F7B1AB
+p10404530_112030_Linux-x86-64_4of7.zip    628.7 MB    (659229728 bytes)
+  SHA-1    ACBA25F9D1B4ADD7F2D78734C5ED67B5753AA678
+  MD5    281A124E45C9DE60314478074330E92B
+p10404530_112030_Linux-x86-64_5of7.zip    587.9 MB    (616473105 bytes)
+  SHA-1    8C914DA9EC06B7251A9E8F09B030F6AEDAD3953D
+  MD5    4C0C62B6B005FE784E5EDFAD4CAE6F87
+p10404530_112030_Linux-x86-64_6of7.zip    457.7 MB    (479890040 bytes)
+  SHA-1    809D9FC97A7AE455E9E04FCFF50647D30A353441
+  MD5    285EDC5DCCB14C26249D8274A02F9179
+p10404530_112030_Linux-x86-64_7of7.zip    108.6 MB    (113915106 bytes)
+  SHA-1    B71AC759C499BBA8D55504A1F8BE62F5DF469879
+  MD5    D78C75A453B57F23A01A6234A29BFD3B
+
+Patch for OPatch
+  Don't extract the downloaded zip file!
+  p6880881_R12.AP.A_R12_GENERIC.zip
+    SHA-1    019F0D311DAFC493E55F36FB79A0401B25AE8917
+    MD5    091094C63AB640FDC8A171D2A631D95C
+
+Patch for Database to 11.2.0.3.7
+  16619892
+
+Identity and Access Management
+------------------------------
+
+Download from Oracle eDelivery:
+  https://edelivery.oracle.com/EPD/Download/get_form?egroup_aru_number=15364661
+
+Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 1 of 2 (Part 1 of 4)
+  MD5         A4A9CDB1B0409EC04FCC5B5C0D46E9C7
+  SHA-1         4326D264BA21CC87AE724CF6B5D3B130A966579B
+Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 1 of 2 (Part 2 of 4)
+  MD5         875971FBE7E241BD52630E908A620C23
+  SHA-1         C1AC8EEA2ADD699EE6D8723445D5FCBE8603DAFF
+Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 1 of 2 (Part 3 of 4)
+  MD5         120C4C8D23C1CD77A99EAC38B7ABA761
+  SHA-1         7FB76DF9ACE7B0E54F4B8448307720DBA8635071
+Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 1 of 2 (Part 4 of 4)
+  MD5         9B9BBCB2F77F10EF096F0D8E50557ADF
+  SHA-1         B9739C4D0B3A9D704FB7356F946E049882616637
+Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 2 of 2 (Part 1 of 3)
+  MD5         7D1EE366658DA75AB22024096F2AC5BF
+  SHA-1         F96849F2781B581419A1852865C44C6E69881B21
+Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 2 of 2 (Part 2 of 3)
+  MD5         4514EE590EDE5C78D78292418133E82A
+  SHA-1         560C49239B05C4DC7DEF69B44865FF19894F0846
+Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 2 of 2 (Part 3 of 3)
+  MD5         09A352A3BFC14C20DCD4FF2EB3822CC0
+  SHA-1         71E1FE0A15FC54DBC7EAC279F7B6FB8E4B879CC3
+```
 

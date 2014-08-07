@@ -17,7 +17,7 @@ umask ${iam_user_umask}
 log "main" "start"
 
 # set variables from provisioning config file
-local uc=${_DIR}/user-config/iam/provisioning.rsp
+uc=${_DIR}/user-config/iam/provisioning.rsp
 
      s_repo=$(grep "INSTALL_INSTALLERS_DIR=" ${uc} | cut -d= -f2)
       s_lcm=$(grep "INSTALL_LCMHOME_DIR="    ${uc} | cut -d= -f2)
