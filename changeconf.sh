@@ -7,7 +7,7 @@
 if [ $# -eq 0 ] ; then
   echo $#
   echo "Usage: $(basename ${0}) oldname [newname]"
-  echo "  e.g. $(basename ${0}) lunes martes"
+  echo "  e.g. $(basename ${0}) lunes.dev.vm martes.dev.vm"
   exit 80
 fi
 
@@ -15,7 +15,7 @@ echo
 echo "Here are the occurences of <${1}>:"
 echo
 
-grep -ri  --exclude "*example" --exclude "*orig" ${1} \
+grep -ri  --exclude "*example" --exclude "*orig" "${1}" \
   user-config Vagrantfile
 
 if [ -n "${2}" ] ; then
@@ -26,7 +26,7 @@ if [ -n "${2}" ] ; then
   echo "Press Ctrl-C to quit or RETURN to continue."
   read nil
   
-  grep -ril --exclude "*example" --exclude "*orig" ${1} \
+  grep -ril --exclude "*example" --exclude "*orig" "${1}" \
     user-config Vagrantfile | xargs sed -i.orig -e "s/${1}/${2}/g"
 fi
 

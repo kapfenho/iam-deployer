@@ -1,6 +1,10 @@
 Identity and Access Management Deployment
 =========================================
 
+This project will install and configure Oracle Identity and Acess
+Management and all required components either on a local VM or on
+multiple servers in your data centre.
+
 ## Auto Deployment in one VM
 
 After checking the pre-requisites and editing you destination desription
@@ -20,12 +24,18 @@ Start using your env:
 
 ## Prerequisites
 
+If you go for the location VM setup you need those applications
+installed before you start. _Not needed for a production setup._
+
 * [Vagrant](http://www.vagrantup.com) 
 * A Virtualization Provider, e.g.
 [VirtualBox](https://www.virtualbox.org), [VMWare](https://www.vmware.com)
   [Docker](https://www.docker.io) support is in development and not supported yet
 * Oracle installation files
 * Minimum RAM: 10 GB, better 12 GB
+
+The producion setup can be started on bare metal servers or virtual
+servers. Necessary OS packages will be added during the installation.
 
 ## What's in?
 
@@ -45,16 +55,71 @@ Application and Web Server:
 
 You can customize and modify the procedure after reading this README.
 
-### Procedure
+### Create Installation Image Directory
+
+You will need the following software packages from Oracle:
+
 
 Put the installation images in a directory on your local machine (when
 deploying to VM on your local machine) or on a network server. This
 directory will be mounted on the new servers via NFS. There is no need
-to copy the files onto the new virtual machines.
+to copy the files onto the new virtual machines, the installer can read
+them from any mounted location.
 
-Create your own copy of the config files with the shipped help-script:
+The structure in this directory should look like
+
 ```
-    ./createconf.sh
+├── iam-11.1.2.2                # the application packages
+│   ├── repo
+│   │   └── installers
+│   │       ├── _patches
+│   │       ├── _scripts
+│   │       ├── appdev
+│   │       ├── fmw_rcu
+│   │       ├── iamsuite
+│   │       ├── idmlcm
+│   │       ├── jdk
+│   │       ├── oud
+│   │       ├── smart_update
+│   │       ├── soa
+│   │       ├── webgate
+│   │       ├── weblogic
+│   │       └── webtier
+│   ├── repozips
+│   └── zips
+│       └── certification
+├── oracle-db-ee-11.2.0.3       # the databaes packages
+│   └── p10404530_112030_Linux-x86-64
+│       ├── client
+│       ├── database
+│       ├── deinstall
+│       ├── examples
+│       ├── gateways
+│       └── grid
+├── patches                     # common location for software patches
+│   ├── 13009311
+│   │   ├── etc
+│   │   └── files
+│   ├── 13973356
+│   │   ├── etc
+│   │   └── files
+```
+
+### Patch the installation images
+
+Yes, even the installation images need patching to be installed properly.
+Apply the following patch:
+
+```
+patch 18231786    fix for wrong 32bit specs: i386 -> i686
+```
+
+### Create your config files
+
+Create your own copy of the config files with the included help-script:
+
+```
+    ./createconf.sh: top of file
 ```
 
 Adapt the configuration files according to your needs in:
@@ -81,11 +146,27 @@ Adapt the configuration files according to your needs in:
 See below for using configuration management.
 
 There is an additional script you can use for changing values that are
-spread over severlal config files: `changeconf.sh`. Calling this script 
-with only one paramter will search that value in all your config files. 
-Exchanging the hostname is easy using the sctipt. 
+spread over multiple config files: `changeconf.sh`. Calling this script 
+with one paramter will search that value in all your config files, a
+second parameter is used for changing those occurences. Exchanging the 
+hostname is easy using the sctipt. 
+
+The location of your image folder needs to be specified in those
+variables:
+
+```
+* user-config/database.config:
+    s_img_db
+    s_patches
+    s_rcu_home
+* user-config/iam/provisioning.rsp:
+    INSTALL_INSTALLERS_DIR
+    IL_INSTALLERDIR_LOCATION
+    COMMON_FUSION_REPO_INSTALL_DIR
+```
 
 
+### Start Installation
 
 
 The virtual machine is created with `vagrant up`, configuration and

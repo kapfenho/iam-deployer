@@ -3,7 +3,7 @@
 #  Helper script for creating initial user configs as copy from example
 #+ files.
 
-file=(
+files=(
   Vagrantfile
   user-config/database.config
   user-config/dbs/db_create.rsp

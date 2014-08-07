@@ -226,7 +226,7 @@ OAM_MW_HOME=/appl/iam/fmw/products/access
 #OAM DB Configuration
 OAM_DB_IS_RAC=false
 OAM_DB_IS_SINGLE=true
-OAM_DB_SERVICENAME=lunes
+OAM_DB_SERVICENAME=lunes.dev.vm
 OAM_RAC_ONS_ADDRESS=${provisioning.idmprov.oam-db.rac.scanaddress}
 OAM_RAC_ONS_PORT=6200
 OAM_RAC_SCAN_ADDRESS=
@@ -253,7 +253,7 @@ OIM_SINGLE_DB_HOST=iam2
 OIM_SINGLE_DB_PORT=1521
 OIM_DB_SCHEMAPREFIX=DEVI
 OIM_DB_SCHEMAUSER=${provisioning.idmprov.oim-db.schema_prefix}_OIM
-OIM_DB_SERVICENAME=lunes
+OIM_DB_SERVICENAME=lunes.dev.vm
 OIM_RAC_ONS_ADDRESS=${provisioning.idmprov.oim-db.rac.scanaddress}
 OIM_RAC_ONS_PORT=6200
 OIM_RAC_SCAN_ADDRESS=

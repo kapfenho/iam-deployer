@@ -32,8 +32,8 @@ cc=${_DIR}/user-config/dbs/db_create.rsp
      dbs_orainv=$(grep "^INVENTORY_LOCATION=" ${ic} | cut -d= -f2)
  dbs_orainv_grp=$(grep "^UNIX_GROUP_NAME="    ${ic} | cut -d= -f2)
 dbs_servicename=$(grep "^GDBNAME ="           ${cc} | cut -d\" -f2)
-        dbs_sid=$(grep "^SID ="               ${cc} | cut -d\" -f2)
    dbs_sys_pass=$(grep "^SYSPASSWORD ="       ${cc} | cut -d\" -f2)
+        dbs_sid=$(grep "^SID ="               ${cc} | cut -d\" -f2)
      ORACLE_SID=${dbs_sid}
  DB_SERVICENAME=${dbs_servicename}
 
@@ -43,8 +43,8 @@ echo "dbs_orainv:      ${dbs_orainv}"
 echo "dbs_orainv_grp:  ${dbs_orainv_grp}"
 echo "dbs_servicename: ${dbs_servicename}"
 echo "dbs_sid:         ${dbs_sid}"
-echo "ORACLE_SID:      ${ORACLE_SID}"
 echo "DB_SERVICENAME:  ${DB_SERVICENAME}"
+echo "ORACLE_SID:      ${ORACLE_SID}"
 echo "---------------------------------------"
 
 if [ "$#" -gt 0 ] ; then

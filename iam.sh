@@ -4,7 +4,6 @@ set -o errexit
 set -o nounset
 
 _DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-. ${_DIR}/lib/files.sh
 . ${_DIR}/lib/libcommon.sh
 . ${_DIR}/lib/librcu.sh
 . ${_DIR}/lib/libiam.sh
