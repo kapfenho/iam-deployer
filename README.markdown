@@ -1,11 +1,19 @@
 Identity and Access Management Deployment
 =========================================
 
-This project will install and configure Oracle Identity and Acess
-Management and all required components either on a local VM or on
+This project will install and configure Oracle Identity and Access
+Management 11gR2 and all required components either on a local VM or on
 multiple servers in your data centre.
 
 ## Auto Deployment in one VM
+
+If you go for the local VM setup you need those applications
+installed before you start. _Not needed for a production setup._
+
+* [Vagrant](http://www.vagrantup.com) 
+* A Virtualization Provider, e.g.
+[VirtualBox](https://www.virtualbox.org), [VMWare](https://www.vmware.com)
+  [Docker](https://www.docker.io) support is in development and not supported yet
 
 After checking the pre-requisites and editing you destination description
 you can create the environment with:
@@ -25,30 +33,22 @@ Remove the environment with:
     $ vagrant destroy
 ```
 
-
-## Prerequisites
-
-If you go for the location VM setup you need those applications
-installed before you start. _Not needed for a production setup._
-
-* [Vagrant](http://www.vagrantup.com) 
-* A Virtualization Provider, e.g.
-[VirtualBox](https://www.virtualbox.org), [VMWare](https://www.vmware.com)
-  [Docker](https://www.docker.io) support is in development and not supported yet
-* Oracle installation files
-* Minimum RAM: 10 GB, better 12 GB
+## Multi Server Deployment
 
 The producion setup can be started on bare metal servers or virtual
 servers. Necessary OS packages will be added during the installation.
 
+The definition of your topology will be specified in
+`user-config/iam/provisioning.rsp`. You can do this by hand or create a
+new one with the _Oracle Life Cycle Management Wizard_.
+
+
 ## What's in?
 
-Database VM:
-* Oracle Database 11.2.0.3.x EE
-* a database instance with schemas for IAM
+Database, Application and Web Server:
 
-Application and Web Server:
 * Cent OS 6.5 64bit minimal
+* Oracle Database 11.2.0.3.x Enterprise Edition
 * JRockit 64bit (JDK 1.6.0\_51)
 * WebLogic 10.3.6 (incl Coherence, without samples)
 * Oracle Unified Directory 11.1.2.2
@@ -56,8 +56,6 @@ Application and Web Server:
 
 
 ## Detailed Description
-
-You can customize and modify the procedure after reading this README.
 
 ### Download Software
 
@@ -184,8 +182,8 @@ variables:
 The virtual machine is created with `vagrant up`, configuration and
 trigger points for software installation is inside Vagrantfile.
 
-System configuration: the script "1. XXX" produces a script that needs
-to be executed as root. This root-ocript will also create the
+System configuration: the script "sys.sh" produces a script that needs
+to be executed as root. This root-script will also create the
 application users and groups.
 
 The application installation scripts can then be run as the appropriate
@@ -221,12 +219,17 @@ You can add your own git server with
 
 ## Project Directories and Files
 
+Local config files are included.
+
 ```
-.
 ├── CHANGELOG
-├── LICENSE.txt
+├── LICENSE
 ├── README.markdown
+├── TODO
 ├── Vagrantfile
+├── Vagrantfile.example
+├── changeconf.sh
+├── createconf.sh
 ├── db.sh
 ├── iam.sh
 ├── lib
@@ -245,17 +248,13 @@ You can add your own git server with
 │       │   ├── bash_profile
 │       │   └── bashrc
 │       └── iam
-│           ├── env
-│           │   ├── acc.sh
-│           │   ├── common.sh
-│           │   ├── dir.sh
-│           │   ├── idm.sh
-│           │   └── web.sh
+│           └── env
+│               ├── acc.sh
+│               ├── common.sh
+│               ├── dir.sh
+│               ├── idm.sh
+│               └── web.sh
 ├── remove-iam.sh
-├── results
-│   └── certs
-│       ├── oud.crt
-│       └── oud.txt
 ├── sys
 │   ├── redhat
 │   │   ├── centos6
@@ -266,6 +265,7 @@ You can add your own git server with
 │   │       ├── iam-dir
 │   │       ├── iam-identity
 │   │       ├── iam-nodemanager
+│   │       ├── iam-webtier
 │   │       └── oracle
 │   └── vim
 │       ├── bundle.tar.gz
@@ -290,16 +290,17 @@ You can add your own git server with
     │   ├── provisioning_templ.rsp
     │   ├── provisioning_used.rsp
     │   ├── psa_access.rsp
+    │   ├── psa_access.rsp.commented_example
     │   ├── psa_access.rsp.example
-    │   ├── psa_access_commented.rsp.example
     │   ├── psa_identity.rsp
-    │   ├── psa_identity.rsp.example
-    │   └── psa_identity_commented.rsp.example
+    │   ├── psa_identity.rsp.commented_example
+    │   └── psa_identity.rsp.example
     ├── iam.config
     ├── iam.config.example
     └── lcm
         ├── lcm_install.rsp
         └── lcm_install.rsp.example
+
 ```
 
 

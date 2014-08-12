@@ -1,3 +1,6 @@
+2014-08-12
+  * Documentation works
+
 2014-07-10
   * removed many redundant values from user-config/*.config files. those 
     values are now fetched from the response files the user needs to 

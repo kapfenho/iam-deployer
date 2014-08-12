@@ -1,5 +1,3 @@
-
-
 * Weblogic user permission problem after install:
     You need to add permissions to the new weblogic admin user (in directory).
     solution:
@@ -9,6 +7,8 @@
             (=> inherit from extistin admin role to new admin role)
             (=> this means the new admin role has all priviledges of the existing role)
       3. add the WebLogic admin (directory) to the new role
+
+* Check if rc.d files are in place
 
 * Provisioning 
 

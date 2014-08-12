@@ -42,36 +42,12 @@ done
 
 # TODO: copy rc.d files and register as service
 
+# post installs from enterprise guide:
 patch_opss
 patch_oud
 patch_oud_config
 
-# post installs from enterprise guide:
-#
-# http://docs.oracle.com/cd/E40329_01/doc.1112/e48618/postprov.htm#CHDGABDA
-
-# fixes:
-# a) weblogic user
-
-# install:
-# * oud:
-#     /mnt/orainst/iam-11.1.2.2/repo/installers/oud/Disk1/install/linux64/oraparam.ini
-#     PREREQ_CONFIG_LOCATION= 
-#     swap space down
-#   rolled back and used:
-#     + patch for os and lins
-#     + manually patches swap space req
-
 log "main" "done"
-
-# all steps:
-# * install
-# * preconfigure
-# * configure
-# * configure-secondary
-# * postconfigure
-# * startup
-# * validate
 
 exit 0
 
