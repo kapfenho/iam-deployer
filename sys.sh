@@ -1,13 +1,15 @@
 #!/bin/sh
 
-# Installation script for Oracle Identity and Access Management
+#  System preparation script for Oracle Identity and Access Management
 # 
-# This procedure will create the root script to execute before the
-#+software installation.  You need to modify etc/configs.sh to
-#+your needs.  Content of the root scripts:
-#+ * user and group
-#+ * base directory
-#+ * system packages for fedora/redhat.
+#  This script will create a root script to execute before you continue 
+#+ with the application installation. Read the README and change the 
+#+ user-configuration according your needs.
+#+
+#+ Content of root script:
+#+  * users and groups
+#+  * base directory
+#+  * system packages for fedora/redhat.
 #
 
 set -o errexit
@@ -18,7 +20,6 @@ _DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 fedora_epel="${_DIR}/sys/redhat/epel-release-6-8.noarch.rpm"
 ofile=${HOME}/root-script.sh
 
-. ${_DIR}/lib/files.sh
 . ${_DIR}/lib/libcommon.sh
 . ${_DIR}/lib/libsysprint.sh
 
