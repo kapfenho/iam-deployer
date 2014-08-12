@@ -129,28 +129,28 @@ patch 18231786
 Create your own copy of the config files with the included help-script:
 
 ```
-    ./createconf.sh: top of file
+./createconf.sh
 ```
 
 Adapt the configuration files according to your needs in:
 
 ```
-    Vagrantfile                         # <- machine configs
-    ├── user-config
-    |   ├── database.config             # <- database server
-    |   ├── dbs
-    |   │   ├── db_create.rsp           # <- database server
-    |   │   ├── db_install.rsp          # <- database server
-    |   │   └── db_netca.rsp            # <- database server
-    |   ├── iam
-    |   │   ├── provisioning.rsp        # <- other servers
-    |   │   ├── provisioning_data
-    |   │   │   └── cwallet.sso         # <- other servers
-    |   │   ├── psa_access.rsp          # <- other servers
-    |   │   └── psa_identity.rsp        # <- other servers
-    |   ├── iam.config                  # <- other servers
-    |   └── lcm
-            └── lcm_install.rsp         # <- other servers
+Vagrantfile                         # <- machine configs
+├── user-config
+|   ├── database.config             # <- database server
+|   ├── dbs
+|   │   ├── db_create.rsp           # <- database server
+|   │   ├── db_install.rsp          # <- database server
+|   │   └── db_netca.rsp            # <- database server
+|   ├── iam
+|   │   ├── provisioning.rsp        # <- other servers
+|   │   ├── provisioning_data
+|   │   │   └── cwallet.sso         # <- other servers
+|   │   ├── psa_access.rsp          # <- other servers
+|   │   └── psa_identity.rsp        # <- other servers
+|   ├── iam.config                  # <- other servers
+|   └── lcm
+        └── lcm_install.rsp         # <- other servers
 ```
 
 See below for using configuration management.
