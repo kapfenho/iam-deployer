@@ -23,10 +23,16 @@
 [ ${NETWORKING} = "no" ] && exit 0
 
 # Source instance settings
-svcuser=iam
-instance=/appl/iam/fmw/config/instances/ohs1
+# TODO: iam user needs this env:
+export     DOMAIN_HOME=/appl/iam/fmw/config/instances/ohs1
+export         MW_HOME=/appl/iam/fmw/products/web
+export     ORACLE_HOME=${MW_HOME}/ohs
+export         WG_HOME=${MW_HOME}/webgate
+export            PATH=${DOMAIN_HOME}/bin:${ORACLE_HOME}/bin:${PATH}
+export LD_LIBRARY_PATH=${ORACLE_HOME}/lib:${WG_HOME}/webgate/ohs/lib
 
-prg=${instance}/bin/opmnctl
+svcuser=iam
+prg=${DOMAIN_HOME}/bin/opmnctl
 
 [ -f $opmnctl ] || exit 0
 
