@@ -24,7 +24,6 @@ uc=${_DIR}/user-config/iam/provisioning.rsp
 iam_mw_home=$(grep "COMMON_FMW_DIR="         ${uc} | cut -d= -f2)
    s_runjre=${s_repo}/jdk/jdk6/jre
 
-get_variables
 create_user_profile
 add_vim_user_config
 
