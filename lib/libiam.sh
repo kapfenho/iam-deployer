@@ -59,7 +59,7 @@ patch_oud() {
   log "patch_oud" "starting"
   local _p=$(mktemp /tmp/del.XXXXXX)
   echo "Montag11" > ${_p}
-  local c="${INST_HOME}/bin/dsconfig set-access-control-handler-prop"
+  local c="${iam_app}/appl/iam/fmw/config/instances/oud1/OUD/bin/dsconfig set-access-control-handler-prop"
         c="${c} --hostname $(hostname --long) --port 4444 --trustAll"
         c="${c} --bindDN cn=oudadmin --bindPasswordFile ${_p} --no-prompt"
 
@@ -78,7 +78,7 @@ patch_oud() {
 
 patch_oud_config() {
   log "patch_oud_conf" "starting"
-  sed -iorig -e '/1\.2\.840\.113556\.1\.4\.319/s/ldap:\/\/\/all/ldap:\/\/\/anyone/g' ${INST_HOME}/config/config.ldif
+  sed -iorig -e '/1\.2\.840\.113556\.1\.4\.319/s/ldap:\/\/\/all/ldap:\/\/\/anyone/g' ${iam_app}/appl/iam/fmw/config/instances/oud1/OUD/config/config.ldif
   log "patch_oud_conf" "done"
 }
 
