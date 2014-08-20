@@ -79,8 +79,6 @@ The structure in this directory should look like
 ├── iam-11.1.2.2                # the application packages
 │   ├── repo
 │   │   └── installers
-│   │       ├── _patches
-│   │       ├── _scripts
 │   │       ├── appdev
 │   │       ├── fmw_rcu
 │   │       ├── iamsuite
@@ -92,9 +90,6 @@ The structure in this directory should look like
 │   │       ├── webgate
 │   │       ├── weblogic
 │   │       └── webtier
-│   ├── repozips
-│   └── zips
-│       └── certification
 ├── oracle-db-ee-11.2.0.3       # the databaes packages
 │   └── p10404530_112030_Linux-x86-64
 │       ├── client
@@ -104,13 +99,9 @@ The structure in this directory should look like
 │       ├── gateways
 │       └── grid
 ├── patches                     # common location for software patches
-│   ├── p6880881_112000_Linux-x86-64.zip
-│   ├── 13009311
-│   │   ├── etc
-│   │   └── files
-│   ├── 13973356
-│   │   ├── etc
-│   │   └── files
+│   ├── p6880880_112000_Linux-x86-64.zip
+│   ├── 16619892
+│   │   ├── ...
 ```
 
 ### Patch the installation images
@@ -343,9 +334,9 @@ p10404530_112030_Linux-x86-64_7of7.zip    108.6 MB    (113915106 bytes)
 
 Patch for OPatch
   Don't extract the downloaded zip file!
-  p6880881_R12.AP.A_R12_GENERIC.zip
-    SHA-1    019F0D311DAFC493E55F36FB79A0401B25AE8917
-    MD5    091094C63AB640FDC8A171D2A631D95C
+  p6880880_112000_Linux-x86-64.zip
+    SHA-1    8452c5e7bc27bfa528c49294c8b5a25e9c8f63b5
+    MD5    75c2adc4c5e0111153267bf55189d48c
 
 Patch for Database to 11.2.0.3.7
   p16619892_112030_Linux-x86-64.zip
@@ -379,5 +370,9 @@ Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x8
 Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 2 of 2 (Part 3 of 3)
   MD5         09A352A3BFC14C20DCD4FF2EB3822CC0
   SHA-1         71E1FE0A15FC54DBC7EAC279F7B6FB8E4B879CC3
+
+p18231786_111220_Generic.zip - Patch for installation images
+  MD5         14f26521bc7763baf2d03770419bf9b6
+  SHA-1         72d6dc6c1e970e44736ba25f50723645ebc9bd10
 ```
 
