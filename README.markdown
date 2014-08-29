@@ -1,5 +1,12 @@
-Identity and Access Management Deployment
-=========================================
+```
+ _                      __      _            _                       
+ (_) __ _ _ __ ___      / /   __| | ___ _ __ | | ___  _   _  ___ _ __ 
+ | |/ _` | '_ ` _ \    / /   / _` |/ _ \ '_ \| |/ _ \| | | |/ _ \ '__|
+ | | (_| | | | | | |  / /_  | (_| |  __/ |_) | | (_) | |_| |  __/ |   
+ |_|\__,_|_| |_| |_| /_/(_)  \__,_|\___| .__/|_|\___/ \__, |\___|_|   
+                                       |_|            |___/           
+```
+### Identity and Access Management Deployment
 
 This project will install and configure Oracle Identity and Access
 Management 11gR2 and all required components either on a local VM or on
