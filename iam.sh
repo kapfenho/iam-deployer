@@ -20,7 +20,7 @@ log "main" "start"
 uc=${_DIR}/user-config/iam/provisioning.rsp
 
      s_repo=$(grep "INSTALL_INSTALLERS_DIR=" ${uc} | cut -d= -f2)
-      s_lcm=$(grep "INSTALL_LCMHOME_DIR="    ${uc} | cut -d= -f2)
+#     s_lcm=$(grep "INSTALL_LCMHOME_DIR="    ${uc} | cut -d= -f2)
 iam_mw_home=$(grep "COMMON_FMW_DIR="         ${uc} | cut -d= -f2)
    s_runjre=${s_repo}/jdk/jdk6/jre
 
@@ -42,9 +42,9 @@ done
 # TODO: copy rc.d files and register as service
 
 # post installs from enterprise guide:
-patch_opss
-patch_oud
-patch_oud_config
+# patch_opss
+# patch_oud
+# patch_oud_config
 
 log "main" "done"
 

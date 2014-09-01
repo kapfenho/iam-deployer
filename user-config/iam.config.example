@@ -1,6 +1,7 @@
 #  oracle identity and access management
 #+ configuration of deployment destination
 
+s_runjdk=/mnt/orainst/oracle-iam-11.1.2.2/repo/installers/jdk/jdk6
 #  this file describes the iam application configuration. it will be sourced 
 #+ in a bourne shell, so be take care of the syntax, eg. no spaces before 
 #+ and after the equal sign.
@@ -26,9 +27,11 @@ iam_group=iam
 iam_user_umask=0002
 iam_app=/appl/iam
 iam_log=/appl/logs/iam
+
 iam_mw_home=/appl/iam/fmw
 
 #  database settings
+#
 dbs_dbhost=iam2.agoracon.at
 iam_servicename=lunes.agoracon.at
 iam_sid=lunes

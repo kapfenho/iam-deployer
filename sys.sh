@@ -60,14 +60,18 @@ dir_for      ${iam_app}    "${iam_user}:${iam_group}"
 dir_for      ${iam_log}    "${iam_user}:${iam_group}"
 echo
 
+# fusion
+#   http://docs.oracle.com/html/E38978_01/r2_im_requirements.html
+# database 
+#   http://docs.oracle.com/cd/E11882_01/install.112/e24326/toc.htm#BHCCADGD
+#
 set_sysctl_start
-set_sysctl   'kernel.msgmnb'                 '65536'
 set_sysctl   'kernel.msgmnb'                 '65536'
 set_sysctl   'kernel.msgmax'                 '65536'
 set_sysctl   'kernel.shmmax'                 '17179869184'
 set_sysctl   'kernel.shmall'                 '16777216'
 set_sysctl   'kernel.shmmni'                 '4096'
-set_sysctl   'kernel.sem'                    '250 32000 100 142'
+set_sysctl   'kernel.sem'                    '256 32000 100 142'
 
 set_sysctl   'fs.file-max'                   '6815744'
 set_sysctl   'fs.aio-max-nr'                 '1048576'

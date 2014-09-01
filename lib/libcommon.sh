@@ -28,7 +28,7 @@ backup() {
 create_user_profile() {
   log "create_user_profile" "start"
   [ -a ${HOME}/.env ] || mkdir -p ${HOME}/.env
-  cp ${_DIR}/lib/templates/iam/{iam|idm|dir|web|common}.sh* ${HOME}/.env/
+  cp ${_DIR}/lib/templates/iam/env/{acc,idm,dir,web,common}.sh* ${HOME}/.env/
   if ! grep -q common ${HOME}/.bash_profile ; then
     echo '[ -a ~/.env/common.sh ] && . ~/.env/common.sh' >>${HOME}/.bash_profile
   fi
