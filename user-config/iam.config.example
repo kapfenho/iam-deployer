@@ -2,6 +2,9 @@
 #+ configuration of deployment destination
 
 s_runjdk=/mnt/orainst/oracle-iam-11.1.2.2/repo/installers/jdk/jdk6
+s_runjre=/mnt/orainst/oracle-iam-11.1.2.2/repo/installers/jdk/jdk6/jre
+   s_lcm=/mnt/orainst/oracle-iam-11.1.2.2/repo/installers/idmlcm
+
 #  this file describes the iam application configuration. it will be sourced 
 #+ in a bourne shell, so be take care of the syntax, eg. no spaces before 
 #+ and after the equal sign.

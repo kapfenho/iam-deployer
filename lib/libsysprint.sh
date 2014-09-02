@@ -80,7 +80,7 @@ set_limit() {
 # params: setting, value
 # TODO: check to create file in /etc/security/limits.d/.
 set_proc_limit() {
-  _syslmt=/etc/security/limits.d/80-nproc.conf
+  _syslmt=/etc/security/limits.d/99-nproc.conf
   # TODO: delete * nproc limits
   echo "echo \"$1\" >> ${_syslmt}"
 }
@@ -114,13 +114,12 @@ add_vim_features_p() {
   local d_sys=/usr/share/vim/vim72
  
   echo
-  echo "cp ${_DIR}/sys/vim/vimrc ${d_rc}"
-  echo "sed -i.sav \"16 i execute pathogen#infect('bundle/{}', '/usr/share/vim/vimfiles/bundle/{}')\" ${d_rc}"
 
   echo "tar --no-same-owner --no-same-permissions -xzf ${_DIR}/sys/vim/bundle.tar.gz --directory=${d_cust}"
 
-  [ -a ${d_cust}/autoload ] || echo "mkdir -p ${d_cust}/autoload"
-  echo "cp -Rp ${_DIR}/sys/vim/pathogen.vim ${d_cust}/autoload/"
+  echo "cp -Rp ${_DIR}/sys/vim/pathogen.vim ${d_sys}/autoload/"
+  echo "cp ${_DIR}/sys/vim/vimrc /etc/skel/.vimrc"
+  echo "cp ${_DIR}/sys/vim/vimrc /root/.vimrc"
   echo "mkdir -p /etc/skel/.vim/backup"
   echo
 }

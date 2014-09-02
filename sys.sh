@@ -94,11 +94,11 @@ echo
 
 set_limit         '*          soft    nofile       2048' 
 set_limit         '*          hard    nofile       8192' 
-set_limit         '@oracle    soft    nofile      65536'
-set_limit         '@oracle    hard    nofile      65536'
-set_limit         '@oracle    soft    stack       10240'
-set_limit         '@iam       soft    nofile     150000'
-set_limit         '@iam       hard    nofile     150000'
+set_limit         'oracle     soft    nofile      65536'
+set_limit         'oracle     hard    nofile      65536'
+set_limit         'oracle     soft    stack       10240'
+set_limit         'iam        soft    nofile     150000'
+set_limit         'iam        hard    nofile     150000'
 set_proc_limit    '*          soft    nproc        2048' 
 set_proc_limit    '*          hard    nproc       16384' 
 echo
