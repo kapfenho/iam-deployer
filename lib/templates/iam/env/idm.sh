@@ -5,7 +5,7 @@ export   ORACLE_HOME=${MW_HOME}/iam
 export ORACLE_COMMON=${MW_HOME}/oracle_common
 export     JAVA_HOME=${MW_HOME}/jdk6
 
-export        DOMAIN=IAMGovernanceDomain
+export        DOMAIN=idmdev
 export   DOMAIN_HOME=/appl/iam/fmw/config/domains/${DOMAIN}
 export    DOMAIN_LOG=${DOMAIN_HOME}                                            
 unset       INSTANCE

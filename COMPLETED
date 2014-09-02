@@ -1,0 +1,14 @@
+==> app: common-validate-idm-opmn-proc-status:
+==> app: 2014-09-02 15:19:37.073 NOTIFICATION [echoNested] Completed the validate process for Oracle HTTP Server .... 
+==> app: 2014-09-02 15:19:37.096 NOTIFICATION [echoNested] Completed the validation of Identity Management Suite
+==> app: 2014-09-02 15:19:37.128 NOTIFICATION [logTimeSpan] Total time: 1 minute(s) 4 second(s) 
+==> app: 2014-09-02 15:19:37.135 TRACE 
+==> app: BUILD SUCCESSFUL
+==> app: Total time: 1 minute 11 seconds
+==> app: Successfully finished validate.
+==> app: deploy: finished step validate...
+==> app: /tmp/vagrant/iam.sh: line 39: jdk_patch_config: command not found
+==> app: *** finished successfully ***
+vagrant up  165.17s user 29.91s system 0% cpu 5:43:29.15 total
+horst@vilma iam-deployer $ l
+
