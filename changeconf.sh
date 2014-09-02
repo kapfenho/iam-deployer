@@ -7,7 +7,7 @@
 if [ $# -eq 0 ] ; then
   echo $#
   echo "Usage: $(basename ${0}) oldname [newname]"
-  echo "  e.g. $(basename ${0}) lunes.dev.vm martes.dev.vm"
+  echo "  e.g. $(basename ${0}) lunes.agoracon.at martes.ibm.com"
   exit 80
 fi
 
