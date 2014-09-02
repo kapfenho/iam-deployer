@@ -23,6 +23,7 @@
 # Check that networking is up.
 [ ${NETWORKING} = "no" ] && exit 0
 
+prog=oracle
 LOCKFILE=/var/lock/subsys/oracle
 ORACLE_USER=oracle
 

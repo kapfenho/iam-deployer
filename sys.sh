@@ -40,26 +40,6 @@ echo "#  execute as root user"
 echo "if [ \$UID -ne 0 ] ; then echo \"ERROR: not root\" ; exit 77 ; fi"
 echo "set -x"
 
-# groups     name             id
-create_group "oinstall"       6001
-create_group "dba"            6002
-create_group ${iam_group}     6004
-echo
-
-# users      name           id    group   add-groups
-create_user  ${dbs_user}    5001  "6001"  "6002" "500"      # database
-create_user  ${iam_user}    5003  "6004"  "6001"            # oam, oim
-echo
-
-sudo_for     ${dbs_user}
-sudo_for     ${iam_user}
-echo
-
-dir_for      ${dbs_app}    "${dbs_user}:${dbs_group}"
-dir_for      ${iam_app}    "${iam_user}:${iam_group}"
-dir_for      ${iam_log}    "${iam_user}:${iam_group}"
-echo
-
 # fusion
 #   http://docs.oracle.com/html/E38978_01/r2_im_requirements.html
 # database 
@@ -150,7 +130,26 @@ disable_service   'ip6tables'
 
 add_vim_features_p
 
-#echo "mount -t nfs -o nolock,proto=tcp,port=2049 nyx:/instora /mnt/orainst"
+# groups     name             id
+create_group "oinstall"       6001
+create_group "dba"            6002
+create_group ${iam_group}     6004
+echo
+
+# users      name           id    group   add-groups
+create_user  ${dbs_user}    5001  "6001"  "6002" "500"      # database
+create_user  ${iam_user}    5003  "6004"  "6001"            # oam, oim
+echo
+
+sudo_for     ${dbs_user}
+sudo_for     ${iam_user}
+echo
+
+dir_for      ${dbs_app}    "${dbs_user}:${dbs_group}"
+dir_for      ${iam_app}    "${iam_user}:${iam_group}"
+dir_for      ${iam_log}    "${iam_user}:${iam_group}"
+echo
+
 echo
 echo "set +x"
 

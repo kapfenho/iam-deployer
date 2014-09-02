@@ -65,7 +65,7 @@ check_dir_status () {
 start() {
   [ -x $exec ] || exit 5
   echo -n $"Starting $prog: "
-  su - $user -c "$exec &>>$logfile"
+  su - $user -c "$exec &>$logfile"
   retval=$?
   echo
   return $retval
@@ -73,7 +73,7 @@ start() {
 
 stop() {
   echo -n $"Stopping $prog: "
-  su - $user -c "$stop &>>$logfile"
+  su - $user -c "$stop &>$logfile"
   retval=$?
   echo
   return $retval
