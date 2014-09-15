@@ -1,3 +1,11 @@
+# TODO
+
+* deploy rc.d files
+
+* correct patch bunlde deployment after iam setup
+
+* don't name the profile .env files, use * for deploying all of them
+
 * Weblogic user permission problem after install:
     You need to add permissions to the new weblogic admin user (in directory).
     solution:
@@ -8,5 +16,5 @@
             (=> this means the new admin role has all priviledges of the existing role)
       3. add the WebLogic admin (directory) to the new role
 
-* Check if rc.d files are in place
+* separate system parameters by application (database machine, app server, etc.)
 
