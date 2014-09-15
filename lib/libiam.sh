@@ -78,7 +78,7 @@ patch_oud() {
 
 patch_oud_config() {
   log "patch_oud_conf" "starting"
-  sed -iorig -e '/1\.2\.840\.113556\.1\.4\.319/s/ldap:\/\/\/all/ldap:\/\/\/anyone/g' ${iam_app}/appl/iam/fmw/config/instances/oud1/OUD/config/config.ldif
+  sed -iorig -e '/1\.2\.840\.113556\.1\.4\.319/s/ldap:\/\/\/all/ldap:\/\/\/anyone/g' ${iam_app}/fmw/config/instances/oud1/OUD/config/config.ldif
   log "patch_oud_conf" "done"
 }
 
