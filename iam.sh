@@ -4,10 +4,10 @@ set -o errexit
 set -o nounset
 
 _DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-. ${_DIR}/lib/libcommon.sh
-. ${_DIR}/lib/librcu.sh
-. ${_DIR}/lib/libiam.sh
 . ${_DIR}/user-config/iam.config
+. ${_DIR}/lib/libcommon.sh
+. ${_DIR}/lib/libjdk.sh
+. ${_DIR}/lib/libiam.sh
 
 export JAVA_HOME=${s_runjdk}
 export      PATH=${JAVA_HOME}/bin:${PATH}

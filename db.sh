@@ -14,12 +14,12 @@ set -o nounset
 umask 0002
 
 _DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. ${_DIR}/user-config/database.config
+. ${_DIR}/user-config/iam.config
 . ${_DIR}/lib/libcommon.sh
 . ${_DIR}/lib/libdb.sh
 . ${_DIR}/lib/libsys.sh
 . ${_DIR}/lib/librcu.sh
-. ${_DIR}/user-config/database.config
-. ${_DIR}/user-config/iam.config
 
 log "main" "start"
 
@@ -55,14 +55,6 @@ fi
 # create bashrc, bash_profile and source them
 create_and_source_user_profile ORACLE_HOME ${HOME}/.bashrc \
     ${_DIR}/lib/templates/dbs/
-
-# deploy jdk -> not needed any more
-#jdk_deploy ${dbs_java_home} \
-#    ${s_jdkname} \
-#    ${s_jdk} \
-#    ${dbs_java_urandom} \
-#    ${dbs_java_cacerts} \
-#    ${dbs_java_current}   
 
 #  oraInventory pointer: /etc/oraInventory and empty inventory dir
 create_orainv ${dbs_orainv_ptr} \
