@@ -13,8 +13,13 @@ chown -R oracle /tmp/vagrant
 echo '*** database installation...'
 su - oracle -c '/tmp/vagrant/db.sh  | /usr/bin/tee /tmp/prov-dbs.log'
 chown -R iam /tmp/vagrant
+echo '*** database installation finished.'
 
 echo '*** application installation...'
 su - iam    -c '/tmp/vagrant/iam.sh | /usr/bin/tee /tmp/prov-iam.log'
-echo '*** finished successfully ***'
+echo '*** application installation finished.'
 
+echo '*** cleaning up ***'
+rm -Rf /tmp/vagrant
+echo '*** finished successfully ***'
+exit 0

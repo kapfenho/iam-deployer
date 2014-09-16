@@ -68,13 +68,14 @@ This procedure simplifies the deployment of Oracle Identity and Access
 Management. However, a knowledge of the Oracle software and the original
 documentation is essential for using and installing the components! 
 
-*This README is not a subsitiute for the Oracle installation guides!*
+**This README is not a subsitiute for the Oracle installation guides!**
 
-Read those guides before and then continue.
+__Read those guides before and then continue.__
 
 ### Download Software
 
-Download the software packages from edelivery.oracle.com, see at the end
+Download the software packages from
+[edelivery.oracle.com](https://edelivery.oracle.com/), see at the end
 of this file for a complete list with checksums.
 
 
@@ -91,32 +92,32 @@ them from any mounted location.
 The structure in this directory should look like
 
 ```
-├── iam-11.1.2.2                # the application packages
-│   ├── repo
-│   │   └── installers
-│   │       ├── appdev
-│   │       ├── fmw_rcu
-│   │       ├── iamsuite
-│   │       ├── idmlcm
-│   │       ├── jdk
-│   │       ├── oud
-│   │       ├── smart_update
-│   │       ├── soa
-│   │       ├── webgate
-│   │       ├── weblogic
-│   │       └── webtier
-├── oracle-db-ee-11.2.0.3       # the databaes packages
-│   └── p10404530_112030_Linux-x86-64
-│       ├── client
-│       ├── database
-│       ├── deinstall
-│       ├── examples
-│       ├── gateways
-│       └── grid
-├── patches                     # common location for software patches
-│   ├── p6880880_112000_Linux-x86-64.zip
-│   ├── 16619892
-│   │   ├── ...
+    ├── iam-11.1.2.2                <- the application packages
+    │   ├── repo
+    │   │   └── installers
+    │   │       ├── appdev
+    │   │       ├── fmw_rcu
+    │   │       ├── iamsuite
+    │   │       ├── idmlcm
+    │   │       ├── jdk
+    │   │       ├── oud
+    │   │       ├── smart_update
+    │   │       ├── soa
+    │   │       ├── webgate
+    │   │       ├── weblogic
+    │   │       └── webtier
+    ├── database-ee-11.2.0.3        <- the databaes packages
+    │   └── p10404530_112030_Linux-x86-64
+    │       ├── client
+    │       ├── database
+    │       ├── deinstall
+    │       ├── examples
+    │       ├── gateways
+    │       └── grid
+    ├── patches                     <- common location for software patches
+    │   ├── p6880880_112000_Linux-x86-64.zip
+    │   ├── 16619892
+    │   │   ├── ...
 ```
 
 ### Patch the installation images
@@ -141,22 +142,22 @@ Create your own copy of the config files with the included help-script:
 Adapt the configuration files according to your needs in:
 
 ```
-Vagrantfile                         # <- machine configs
-├── user-config
-|   ├── database.config             # <- database server
-|   ├── dbs
-|   │   ├── db_create.rsp           # <- database server
-|   │   ├── db_install.rsp          # <- database server
-|   │   └── db_netca.rsp            # <- database server
-|   ├── iam
-|   │   ├── provisioning.rsp        # <- other servers
-|   │   ├── provisioning_data
-|   │   │   └── cwallet.sso         # <- other servers
-|   │   ├── psa_access.rsp          # <- other servers
-|   │   └── psa_identity.rsp        # <- other servers
-|   ├── iam.config                  # <- other servers
-|   └── lcm
-        └── lcm_install.rsp         # <- other servers
+    Vagrantfile                         <- machine configs
+    ├── user-config
+    |   ├── database.config             <- database server
+    |   ├── dbs
+    |   │   ├── db_create.rsp           <- database server
+    |   │   ├── db_install.rsp          <- database server
+    |   │   └── db_netca.rsp            <- database server
+    |   ├── iam
+    |   │   ├── provisioning.rsp        <- other servers
+    |   │   ├── provisioning_data
+    |   │   │   └── cwallet.sso         <- other servers
+    |   │   ├── psa_access.rsp          <- other servers
+    |   │   └── psa_identity.rsp        <- other servers
+    |   ├── iam.config                  <- other servers
+    |   └── lcm
+            └── lcm_install.rsp         <- other servers
 ```
 
 See below for using configuration management.
@@ -175,20 +176,24 @@ hostname is simple using the script:
     
 Changing the installation path:
 
-    # ./changeconf.sh /appl/iam /usr/iam
+    ./changeconf.sh /appl/iam /usr/iam
 
 The location of your image folder needs to be specified in those
 variables:
 
 ```
-* user-config/database.config:
-    s_img_db
-    s_patches
-    s_rcu_home
-* user-config/iam/provisioning.rsp:
-    INSTALL_INSTALLERS_DIR
-    IL_INSTALLERDIR_LOCATION
-    COMMON_FUSION_REPO_INSTALL_DIR
+    user-config/database.config
+      s_img_db
+      s_patches
+      s_rcu_home
+    user-config/iam.config
+      s_runjdk
+      s_runjre
+      s_lcm
+    user-config/iam/provisioning.rsp
+      INSTALL_INSTALLERS_DIR
+      IL_INSTALLERDIR_LOCATION
+      COMMON_FUSION_REPO_INSTALL_DIR
 ```
 
 
@@ -238,85 +243,88 @@ You can add your own git server with
 Local config files are included.
 
 ```
-├── CHANGELOG
-├── LICENSE
-├── README.markdown
-├── TODO
-├── Vagrantfile
-├── Vagrantfile.example
-├── changeconf.sh
-├── createconf.sh
-├── db.sh
-├── iam.sh
-├── lib
-│   ├── dbs
-│   │   └── ocm.rsp
-│   ├── libcommon.sh
-│   ├── libdb.sh
-│   ├── libiam.sh
-│   ├── libjdk.sh
-│   ├── librcu.sh
-│   ├── libsys.sh
-│   ├── libsysprint.sh
-│   ├── libwlst.sh
-│   └── templates
-│       ├── dbs
-│       │   ├── bash_profile
-│       │   └── bashrc
-│       └── iam
-│           └── env
-│               ├── acc.sh
-│               ├── common.sh
-│               ├── dir.sh
-│               ├── idm.sh
-│               └── web.sh
-├── remove-iam.sh
-├── sys
-│   ├── redhat
-│   │   ├── centos6
-│   │   │   └── idm-common-preverify-build.xml.patch
-│   │   ├── epel-release-6-8.noarch.rpm
-│   │   └── rc.d
-│   │       ├── iam-access
-│   │       ├── iam-dir
-│   │       ├── iam-identity
-│   │       ├── iam-nodemanager
-│   │       ├── iam-webtier
-│   │       └── oracle
-│   └── vim
-│       ├── bundle.tar.gz
-│       ├── pathogen.vim
-│       └── vimrc
-├── sys.sh
-└── user-config
-    ├── database.config
-    ├── database.config.example
-    ├── dbs
-    │   ├── db_create.rsp
-    │   ├── db_create.rsp.example
-    │   ├── db_install.rsp
-    │   ├── db_install.rsp.example
-    │   ├── db_netca.rsp
-    │   └── db_netca.rsp.example
-    ├── iam
-    │   ├── provisioning.rsp
-    │   ├── provisioning.rsp.example
-    │   ├── provisioning_data
-    │   │   └── cwallet.sso
-    │   ├── provisioning_templ.rsp
-    │   ├── provisioning_used.rsp
-    │   ├── psa_access.rsp
-    │   ├── psa_access.rsp.commented_example
-    │   ├── psa_access.rsp.example
-    │   ├── psa_identity.rsp
-    │   ├── psa_identity.rsp.commented_example
-    │   └── psa_identity.rsp.example
-    ├── iam.config
-    ├── iam.config.example
-    └── lcm
-        ├── lcm_install.rsp
-        └── lcm_install.rsp.example
-
+    ├── CHANGELOG
+    ├── LICENSE
+    ├── README.markdown
+    ├── TODO
+    ├── Vagrantfile
+    ├── Vagrantfile.example
+    ├── changeconf.sh
+    ├── createconf.sh
+    ├── db.sh
+    ├── iam.sh
+    ├── lib
+    │   ├── dbs
+    │   │   └── ocm.rsp
+    │   ├── libcommon.sh
+    │   ├── libdb.sh
+    │   ├── libiam.sh
+    │   ├── libjdk.sh
+    │   ├── librcu.sh
+    │   ├── libsys.sh
+    │   ├── libsysprint.sh
+    │   ├── libwlst.sh
+    │   └── templates
+    │       ├── dbs
+    │       │   ├── bash_profile
+    │       │   └── bashrc
+    │       └── iam
+    │           └── env
+    │               ├── acc.sh
+    │               ├── common.sh
+    │               ├── dir.sh
+    │               ├── idm.sh
+    │               └── web.sh
+    ├── provision.sh
+    ├── remove-iam.sh
+    ├── run-rcu.sh
+    ├── sys
+    │   ├── redhat
+    │   │   ├── centos6
+    │   │   │   └── idm-common-preverify-build.xml.patch
+    │   │   ├── epel-release-6-8.noarch.rpm
+    │   │   └── rc.d
+    │   │       ├── iam-access
+    │   │       ├── iam-dir
+    │   │       ├── iam-identity
+    │   │       ├── iam-nodemanager
+    │   │       ├── iam-webtier
+    │   │       └── oracle
+    │   └── vim
+    │       ├── bundle.tar.gz
+    │       ├── pathogen.vim
+    │       └── vimrc
+    ├── sys.sh
+    └── user-config
+        ├── database.config
+        ├── database.config.example
+        ├── dbs
+        │   ├── db_create.rsp
+        │   ├── db_create.rsp.example
+        │   ├── db_create_short.rsp
+        │   ├── db_install.rsp
+        │   ├── db_install.rsp.example
+        │   ├── db_netca.rsp
+        │   └── db_netca.rsp.example
+        ├── iam
+        │   ├── provisioning.rsp
+        │   ├── provisioning.rsp.example
+        │   ├── provisioning_data
+        │   │   └── cwallet.sso
+        │   ├── provisioning_templ.rsp
+        │   ├── provisioning_used.rsp
+        │   ├── psa_access.rsp
+        │   ├── psa_access.rsp.commented_example
+        │   ├── psa_access.rsp.example
+        │   ├── psa_identity.rsp
+        │   ├── psa_identity.rsp.commented_example
+        │   └── psa_identity.rsp.example
+        ├── iam.config
+        ├── iam.config.example
+        └── lcm
+            ├── lcm_install.rsp
+            └── lcm_install.rsp.example
+    
 ```
 
 
