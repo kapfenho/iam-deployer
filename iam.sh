@@ -22,22 +22,31 @@ uc=${_DIR}/user-config/iam/provisioning.rsp
      s_repo=$(grep "INSTALL_INSTALLERS_DIR=" ${uc} | cut -d= -f2)
 iam_mw_home=$(grep "COMMON_FMW_DIR="         ${uc} | cut -d= -f2)
 
-create_user_profile
+# create_user_profile
 add_vim_user_config
 
 # deploy life cycle managment
 deploy_lcm
 
 # deployment and instance creation with lifecycle management
-for step in preverify install preconfigure configure configure-secondary postconfigure startup validate ; do
+for step in preverify install preconfigure configure configure-secondary postconfigure startup validate
+do
   deploy $step
 done
 
-for p in access dir identity web ; do
+# use urandom
+for p in access dir identity web
+do
   jdk_patch_config /appl/iam/fmw/products/$p/jdk6
 done
 
-# TODO: copy rc.d files and register as service
+for f in iam-dir iam-nodemanager iam-identity iam-access iam-webtier
+do
+  dest=/etc/init.d/$f
+  [ -a $dest ] || sudo -n cp ${_DIR}/sys/redhat/rc.d/$f $dest
+  sudo -n chmod 0755 $dest
+  sudo -n chkconfig --add $f
+done
 
 # post installs from enterprise guide:
 # patch_opss
