@@ -25,7 +25,7 @@
 
 logfile=/appl/logs/iam/nodemanager/nodemanager.log
 lockfile=${logfile}.lck
-exec=/appl/iam/fmw/config/nodemanager/iam2.dev.vm/startNodeManager.sh
+exec=/appl/iam/fmw/config/nodemanager/$(hostname -f)/startNodeManager.sh
 psfind='java .* weblogic.NodeManager '
 prog='iam-nodemanager'
 user='iam'

@@ -64,6 +64,14 @@ Database, Application and Web Server:
 
 ## Detailed Description
 
+This procedure simplifies the deployment of Oracle Identity and Access
+Management. However, a knowledge of the Oracle software and the original
+documentation is essential for using and installing the components! 
+
+*This README is not a subsitiute for the Oracle installation guides!*
+
+Read those guides before and then continue.
+
 ### Download Software
 
 Download the software packages from edelivery.oracle.com, see at the end
@@ -156,8 +164,18 @@ See below for using configuration management.
 There is an additional script you can use for changing values that are
 spread over multiple config files: `changeconf.sh`. Calling this script 
 with one paramter will search that value in all your config files, a
-second parameter is used for changing those occurences. Exchanging the 
-hostname is easy using the sctipt. 
+second parameter is used for changing those occurences. Changing the 
+hostname is simple using the script:
+
+    # check occurences
+    ./changeconf.sh iam2.agoracon.at
+
+    # check result, then change with:
+    ./changeconf.sh iam2.agoracon.at iam3.example.com
+    
+Changing the installation path:
+
+    # ./changeconf.sh /appl/iam /usr/iam
 
 The location of your image folder needs to be specified in those
 variables:

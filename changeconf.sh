@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 #  little helper for changing configs. will search for $1 in user config
 #+ files. in case $2 is stated, $1 will be changed to $2 in all files.
