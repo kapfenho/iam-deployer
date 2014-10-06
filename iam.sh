@@ -23,7 +23,7 @@ uc=${_DIR}/user-config/iam/provisioning.rsp
 iam_mw_home=$(grep "COMMON_FMW_DIR="         ${uc} | cut -d= -f2)
 
 # create_user_profile
-add_vim_user_config
+#add_vim_user_config
 
 # deploy life cycle managment
 deploy_lcm
