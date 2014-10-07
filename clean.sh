@@ -8,12 +8,12 @@ rm -f /tmp/prov.log
 echo "*** Starting at $(date)"
 echo "*** Cleaning..."
 
-vagrant ssh oud1 -- "sudo -u fmwuser -H -n /vagrant/testenv/resetonce.sh"
+vagrant ssh oud1 -- "sudo -u fmwuser -H -n /vagrant/env/resetonce.sh"
 echo "*** --> Completed reset once"
 
 for srv in ${servers[@]}
 do
-  vagrant ssh ${srv} -- "sudo -u fmwuser -H -n /vagrant/testenv/reset.sh"
+  vagrant ssh ${srv} -- "sudo -u fmwuser -H -n /vagrant/env/reset.sh"
   echo "*** --> Completed reset on ${srv}"
 done
 

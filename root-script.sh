@@ -43,6 +43,9 @@ yum install -y compat-libstdc++-33.i686 glibc-devel.i686 glibc.i686 libstdc++-de
 
 yum install -y nfs-utils unzip rlwrap tmux vim-enhanced
 
+service iptables stop
+service ip6tables stop
+
 chkconfig --del iptables
 chkconfig --del ip6tables
 
@@ -59,6 +62,12 @@ useradd -u 5104 -g 6100 dsadmin
 echo "%fmwgroup  ALL=(ALL)  NOPASSWD: ALL" > /etc/sudoers.d/fmwgroup
 chmod 440 /etc/sudoers.d/fmwgroup
 
+cat >> /etc/security/limits.d/91-fusion.conf <<-EOF
+@fmwgroup  soft    nofile     150000
+@fmwgroup  hard    nofile     150000
+@fmwgroup  soft    nproc        2048
+@fmwgroup  hard    nproc       16384
+EOF
 
 install --owner=fmwuser --group=fmwgroup --mode=0770 --directory /app/releases/fmw      # vcs
 install --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw               # configs

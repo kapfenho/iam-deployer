@@ -15,7 +15,7 @@ cd ${s_lcm}
 ./Disk1/runInstaller -silent \
   -jreLoc ${s_runjre} \
   -invPtrLoc ${ddir}/etc/oraInst.loc \
-  -response /vagrant/testenv/lcm_install.rsp \
+  -response /vagrant/env/lcm_install.rsp \
   -ignoreSysPrereqs \
   -nocheckForUpdates \
   -waitforcompletion
