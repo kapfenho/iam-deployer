@@ -116,6 +116,8 @@ packs=(
     unixODBC-devel
     nfs-utils
     unzip
+    telnet
+    traceroute
     rlwrap
     vim-enhanced )
 

@@ -7,6 +7,8 @@ echo '*** system preparation...'
 
 /vagrant/root-script.sh
 
+echo "nxy:/export/oracle    /mnt/oracle    nfs   " >> /etc/fstab
+
 # cp -R /vagrant /tmp/
 # chown -R oracle /tmp/vagrant
 # 

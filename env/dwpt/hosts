@@ -1,0 +1,32 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+#
+# RHN Satellite
+#
+172.20.100.252	syspmon1.deutsche-boerse.de syspmon1
+172.25.38.25	dbstsme.deutsche-boerse.de dbstsme
+#
+# ILMT
+#
+97.0.242.159     dwppilm1
+
+#IAM
+97.0.105.250           sso.applications.dwpbank.net                 sso
+97.0.105.250      oamadmin.applications.dwpbank.net            oamadmin
+97.0.105.250      oimadmin.applications.dwpbank.net            oimadmin
+97.0.105.250                idminternal.dwpbank.net         idminternal
+
+97.0.105.250                   dwptidw1.dwpbank.net            dwptidw1 web1
+97.0.105.249                   dwptidw2.dwpbank.net            dwptidw2 web2
+97.0.107.253                   dwptoam1.dwpbank.net            dwptoam1 oam1
+97.0.107.251                   dwptoam2.dwpbank.net            dwptoam2 oam2
+97.0.107.254                   dwptoim1.dwpbank.net            dwptoim1 oim1
+97.0.107.252                   dwptoim2.dwpbank.net            dwptoim2 oim2
+97.0.107.250                   dwptbip1.dwpbank.net            dwptbip1 bip1
+97.0.107.249                   dwptbip2.dwpbank.net            dwptbip2 bip2
+97.0.101.143                   dwptoud1.dwpbank.net            dwptoud1 oud1
+97.0.101.147                   dwptoud2.dwpbank.net            dwptoud2 oud2
+97.0.101.216              dwptpwl-plte1.dwpbank.net       dwptpwl-plte1
+97.0.101.217              dwptpwl-plte2.dwpbank.net       dwptpwl-plte2
+97.0.242.178                 ldap1_test.dwpbank.net          ldap1_test
+97.0.242.177                 ldap2_test.dwpbank.net          ldap2_test
+

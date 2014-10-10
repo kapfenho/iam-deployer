@@ -6,7 +6,6 @@ set -x
 echo "# customizations oracle start" >> /etc/sysctl.conf
 sed -i -e "/kernel.shmmax/d" /etc/sysctl.conf ; echo "kernel.shmmax=17179869184" >> /etc/sysctl.conf
 echo "kernel.sem=256 32000 100 142" >> /etc/sysctl.conf
-echo "fs.file-max=6815744" >> /etc/sysctl.conf
 
 # --- database specific start ----
 # sed -i -e "/kernel.msgmnb/d" /etc/sysctl.conf ; echo "kernel.msgmnb=65536" >> /etc/sysctl.conf
