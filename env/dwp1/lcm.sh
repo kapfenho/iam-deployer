@@ -2,8 +2,9 @@
 
 ddir=/opt/fmw
 s_lcm=/mnt/oracle/iam-11.1.2.2/repo/installers/idmlcm
-s_runjre=/mnt/oracle/iam-11.1.2.2/repo/installers/jdk/jdk6/jre
+s_runjre=/mnt/oracle/iam-11.1.2.2/repo/installers/jdk/jdk7/jre
 
+mkdir -p ${ddir}/lcm
 mkdir -p ${ddir}/etc
 
 cat > ${ddir}/etc/oraInst.loc <<-EOF 
@@ -15,12 +16,12 @@ cd ${s_lcm}
 ./Disk1/runInstaller -silent \
   -jreLoc ${s_runjre} \
   -invPtrLoc ${ddir}/etc/oraInst.loc \
-  -response /vagrant/env/lcm_install.rsp \
+  -response /vagrant/env/dwp1/lcm_install.rsp \
   -ignoreSysPrereqs \
   -nocheckForUpdates \
   -waitforcompletion
 
 
-  sed -i.orig 's/<antcall target=\"private-idm-preverify-os\"\/>/<!-- antcall target=\"private-idm-preverify-os\"\/ -->/' \
-    /mnt/oracle/shared/idmlcm/lcm/provisioning/idm-provisioning-build/idm-common-preverify-build.xml
+sed -i.orig 's/<antcall target=\"private-idm-preverify-os\"\/>/<!-- antcall target=\"private-idm-preverify-os\"\/ -->/' \
+  /opt/fmw/lcm/lcm/provisioning/idm-provisioning-build/idm-common-preverify-build.xml
 

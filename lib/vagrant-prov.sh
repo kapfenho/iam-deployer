@@ -1,13 +1,11 @@
 #!/bin/sh
 
-echo '*** mounting...'
-( [ -a /mnt/oracle ] || mkdir -m 0777 /mnt/oracle ) && if ! mount | grep -q 'oracle' ; then mount -t nfs nyx:/export/oracle /mnt/oracle ; fi
+# echo '*** mounting...'
+# ( [ -a /mnt/oracle ] || mkdir -m 0777 /mnt/oracle ) && if ! mount | grep -q 'oracle' ; then mount -t nfs nyx:/export/oracle /mnt/oracle ; fi
 
 echo '*** system preparation...'
 
 /vagrant/root-script.sh
-
-echo "nxy:/export/oracle    /mnt/oracle    nfs   " >> /etc/fstab
 
 # cp -R /vagrant /tmp/
 # chown -R oracle /tmp/vagrant

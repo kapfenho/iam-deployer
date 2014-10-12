@@ -10,9 +10,9 @@ rm -f /tmp/prov.log
 echo "*** Starting at $(date)"
 echo "*** Cleaning..."
 
-c="rm -Rf ${lcmhome}/*"
-echo "---> ${c}"
-${c}
+# c="rm -Rf ${lcmhome}/*"
+# echo "---> ${c}"
+# ${c}
 
 echo "*** --> Completed reset once"
 
