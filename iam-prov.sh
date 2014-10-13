@@ -6,7 +6,11 @@ set -o errexit nounset
 
 flog=/tmp/prov-$(date "+%Y%m%d-%H%M").log
 
-echo "*** Provisioning..." | tee $flog
+# echo "*** LCM" | tee $flog
+# 
+# on oud1 "/vagrant/env/${ENV}/lcm.sh" | tee -a $flog
+
+echo "*** Provisioning..." | tee -a $flog
 
 for step in preverify install 
 do

@@ -6,6 +6,7 @@ set -x
 echo "# customizations oracle start" >> /etc/sysctl.conf
 sed -i -e "/kernel.shmmax/d" /etc/sysctl.conf ; echo "kernel.shmmax=17179869184" >> /etc/sysctl.conf
 echo "kernel.sem=256 32000 100 142" >> /etc/sysctl.conf
+echo "fs.file-max=6815744" >> /etc/sysctl.conf
 
 # --- database specific start ----
 # sed -i -e "/kernel.msgmnb/d" /etc/sysctl.conf ; echo "kernel.msgmnb=65536" >> /etc/sysctl.conf
@@ -43,6 +44,9 @@ yum install -y compat-libstdc++-33.i686 glibc-devel.i686 glibc.i686 libstdc++-de
 
 yum install -y nfs-utils unzip rlwrap tmux vim-enhanced
 
+service iptables stop
+service ip6tables stop
+
 chkconfig --del iptables
 chkconfig --del ip6tables
 
@@ -50,7 +54,7 @@ chkconfig --del ip6tables
 
 groupadd -g 6100 fmwgroup
 
-useradd -u 5100 -g 6100 fmwuser
+useradd -u 5100 -g 6100 fmwuser -G vagrant
 useradd -u 5101 -g 6100 oamadmin
 useradd -u 5102 -g 6100 oimadmin
 useradd -u 5103 -g 6100 webadmin
@@ -59,11 +63,24 @@ useradd -u 5104 -g 6100 dsadmin
 echo "%fmwgroup  ALL=(ALL)  NOPASSWD: ALL" > /etc/sudoers.d/fmwgroup
 chmod 440 /etc/sudoers.d/fmwgroup
 
+cat >> /etc/security/limits.d/91-fusion.conf <<-EOF
+@fmwgroup  soft    nofile     150000
+@fmwgroup  hard    nofile     150000
+@fmwgroup  soft    nproc        2048
+@fmwgroup  hard    nproc       16384
+EOF
 
-install --owner=fmwuser --group=fmwgroup --mode=0770 --directory /app/releases/fmw      # vcs
-install --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw               # configs
-install --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw/products      # binaries
-install --owner=fmwuser --group=fmwgroup --mode=0770 --directory /var/log/fmw           # logs
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /app/releases/fmw      # vcs
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /var/log/fmw           # logs
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw               # configs
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/local             # local config
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /mnt/oracle            # images
+#install --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw/products      # binaries
 
+echo "nyx:/export/oracle /mnt/oracle  nfs  rw,bg,hard,nointr,proto=tcp,vers=3,timeo=300,rsize=32768,wsize=32768  0 0" >> /etc/fstab
+echo "nyx:/export/fmw    /opt/fmw     nfs  rw,bg,hard,nointr,proto=tcp,vers=3,timeo=300,rsize=32768,wsize=32768  0 0" >> /etc/fstab
+
+mount /opt/fmw
+mount /mnt/oracle
 
 set +x

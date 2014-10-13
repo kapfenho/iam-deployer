@@ -1,8 +1,8 @@
 #!/bin/sh
 
-s_lcm=/mnt/oracle/shared/idmlcm/lcm
+s_lcm=/opt/fmw/lcm/lcm
 
-export JAVA_HOME=/mnt/oracle/iam-11.1.2.2/repo/installers/jdk/jdk7
+export JAVA_HOME=/mnt/oracle/iam-11.1.2.2/repo/installers/jdk/jdk6
 export PATH=${JAVA_HOME}/bin:/usr/local/bin:/usr/bin:/bin
 
 cd ${s_lcm}/provisioning/bin

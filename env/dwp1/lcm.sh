@@ -1,10 +1,10 @@
 #!/bin/sh
 
-ddir=/opt/fmw
-s_lcm=/mnt/oracle/iam-11.1.2.2/repo/installers/idmlcm
+    ddir=/opt/fmw
+   s_lcm=/mnt/oracle/iam-11.1.2.2/repo/installers/idmlcm
 s_runjre=/mnt/oracle/iam-11.1.2.2/repo/installers/jdk/jdk7/jre
 
-mkdir -p ${ddir}/lcm
+mkdir -p ${ddir}/lcm/lcmhome
 mkdir -p ${ddir}/etc
 
 cat > ${ddir}/etc/oraInst.loc <<-EOF 

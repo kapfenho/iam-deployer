@@ -1,10 +1,8 @@
 export      ENV=dwp1
 export   idmtop=/opt/fmw
 export deployer=/vagrant
-#export     lcm=/opt/fmw/lcm
-export      lcm=/mnt/oracle/shared/idmlcm/lcm
-export  lcmhome=/mnt/oracle/shared/idmlcm/home
-export  lcmhome=/opt/fmw/lcmhome
+export      lcm=/opt/fmw/lcm/lcm
+export  lcmhome=/opt/fmw/lcm/lcmhome
 export   s_repo=/mnt/oracle/iam-11.1.2.2/repo
 export    s_lcm=${s_repo}/installers/idmlcm
 export s_runjre=${s_repo}/installers/jdk/jdk7/jre

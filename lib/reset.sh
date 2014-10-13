@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#rm -Rf /opt/fmw/*
+rm -Rf /opt/local
 
 # sudo -n install --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw/products
 # sudo -n install --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw/config
