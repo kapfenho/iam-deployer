@@ -39,6 +39,12 @@ echo "#!/bin/sh"
 echo "#  execute as root user"
 echo "if [ \$UID -ne 0 ] ; then echo \"ERROR: not root\" ; exit 77 ; fi"
 echo "set -x"
+echo
+
+# timezone
+echo "ln -s /usr/share/zoneinfo/Europe/Vienna /etc/localtime"
+echo "# ln -s /usr/share/zoneinfo/Europe/Berlin /etc/localtime"
+echo
 
 # fusion
 #   http://docs.oracle.com/html/E38978_01/r2_im_requirements.html
