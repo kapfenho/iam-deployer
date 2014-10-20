@@ -1,9 +1,9 @@
-/Vagrantfile
-/user-config/*.config
-/user-config/dbs/*.rsp
-/user-config/lcm/*.rsp
-/user-config/iam/*.rsp
-/user-config/iam/provisioning_data
+#/Vagrantfile
+#/user-config/*.config
+#/user-config/dbs/*.rsp
+#/user-config/lcm/*.rsp
+#/user-config/iam/*.rsp
+#/user-config/iam/provisioning_data
 /.vagrant
 /_attic
 /_releases
