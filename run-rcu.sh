@@ -14,9 +14,10 @@ set -o nounset
 #
 s_rcu_home=/mnt/oracle/iam-11.1.2.2/repo/installers/fmw_rcu/linux/rcuHome
 dbs_dbhost=dbhostname
-iam_sid=lunes
-dbs_sys_pass=Setup_123
-iam_oim_schema_pass=Setup.123
+iam_sid=mysid
+dbs_sys_pass=mysyspassword
+iam_oim_schema_pass=myoimpassword
+iam_oam_schema_pass=myoampassword
 #
 #  ---------------------------  thanks  ------------------------
 
@@ -117,6 +118,10 @@ EOF
 
 
 echo
+
+rcu_drop_identity
+rcu_drop_access
+
 echo "RUN-RCU: Starting identity creation..."
 rcu_identity
 echo "RUN-RCU: Starting access   creation..."

@@ -15,7 +15,6 @@ umask 0002
 
 _DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 . ${_DIR}/user-config/database.config
-. ${_DIR}/user-config/iam.config
 . ${_DIR}/lib/libcommon.sh
 . ${_DIR}/lib/libdb.sh
 . ${_DIR}/lib/libsys.sh
@@ -68,12 +67,6 @@ export PATH=${PATH}:${ORACLE_HOME}/bin
 export LD_LIBRARY_PATH=${ORACLE_HOME}/lib
 export ORACLE_HOME ORACLE_SID DB_SERVICENAME
 
-# patch the patcher
-patch_opatch
-    
-# apply rdbms patches
-patch_orahome 16619892
-
 # create Database Instance
 create_database
 
@@ -88,11 +81,6 @@ set +o errexit
 rcd_service oracle stop
 set -o errexit
 rcd_service oracle start
-
-# create database schemas for identity mgmt
-rcu_identity
-# create database schemas for access mgmt
-rcu_access
 
 log "main" "done"
 

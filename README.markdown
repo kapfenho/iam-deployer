@@ -12,6 +12,18 @@ This project will install and configure Oracle Identity and Access
 Management 11gR2 and all required components either on a local VM or on
 multiple servers in your data centre.
 
+
+## News
+
+We keep now different several configurations within the repo:
+
+* user-test: a multi machine setup in Vagrant
+* user-dwpt: user-test applied to bare metal servers
+
+The directory `user-conf` has disappeared, but other user-directories
+keep environment dependent configs. Activating an env is done by
+creating the symlink user-config.
+
 ## Auto Deployment in one VM
 
 If you go for the local VM setup you need those applications
@@ -55,7 +67,7 @@ new one with the _Oracle Life Cycle Management Wizard_.
 Database, Application and Web Server:
 
 * Cent OS 6.5 64bit minimal
-* Oracle Database 11.2.0.3.x Enterprise Edition
+* Oracle Database 11.2.0.4 Enterprise Edition
 * JRockit 64bit (JDK 1.6.0\_51)
 * WebLogic 10.3.6 (incl Coherence, without samples)
 * Oracle Unified Directory 11.1.2.2
@@ -106,7 +118,7 @@ The structure in this directory should look like
     │   │       ├── webgate
     │   │       ├── weblogic
     │   │       └── webtier
-    ├── database-ee-11.2.0.3        <- the databaes packages
+    ├── database-ee-11.2.0.4        <- the databaes packages
     │   └── p10404530_112030_Linux-x86-64
     │       ├── client
     │       ├── database
@@ -115,8 +127,6 @@ The structure in this directory should look like
     │       ├── gateways
     │       └── grid
     ├── patches                     <- common location for software patches
-    │   ├── p6880880_112000_Linux-x86-64.zip
-    │   ├── 16619892
     │   │   ├── ...
 ```
 
