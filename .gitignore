@@ -11,3 +11,4 @@
 /tmp
 /results
 *.orig
+/user-config
