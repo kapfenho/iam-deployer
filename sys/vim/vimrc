@@ -1,27 +1,27 @@
-" vim system config file
-" author: horst kapfenberger
-
+" for a better vim...
+"
 if v:progname =~? "evim"
   finish
 endif
 
+set nocompatible
 filetype plugin indent on
 
-" pathogen for module management
-execute pathogen#infect('bundle/{}', '/usr/share/vim/vimfiles/bundle/{}')
-
-set nocompatible
 set number
 set ruler
-" syntax on
+set showcmd
 syntax enable
+set scrolloff=3
+" allow backspacing over everything in insert mode
+set backspace=indent,eol,start
 
-"set mouse=a
+if has("gui_running")
+  set mouse=a
+endif
 
 set hidden
 set encoding=utf-8
 
-" tabs and whitespaces
 set nowrap
 set tabstop=8
 set shiftwidth=2
@@ -34,18 +34,23 @@ set smarttab autoindent
 set hlsearch
 set incsearch
 " set ignorecase
-" set smartcase
+set smartcase
 set showcmd
 
 " Tab completion
-" set wildmode=list:longest,list:full
-" set wildignore+=*.o,*.obj,.git,*.rbc,*.class,.svn,vendor/gems/*
+set wildmode=list:longest,list:full
+set wildignore+=*.o,*.obj,.git,*.rbc,*.class,.svn,vendor/gems/*
 
-" Status bar
 set laststatus=2
-
-" allow backspacing over everything in insert mode
-set backspace=indent,eol,start
+set statusline=
+set statusline+=%-3.3n\                       " buffer name
+set statusline+=%f\                           " filename
+set statusline+=%h%m%r%w                      " status flags
+set statusline+=\[%{strlen(&ft)?&ft:'none'}]  " file type
+set statusline+=%=                            " right align remainder
+set statusline+=0x%-8B                        " character value
+set statusline+=%-14(%l,%c%V%)                " line, character
+set statusline+=%<%P                          " file position
 
 " formatoptions
 " set formatoptions-=orc
@@ -57,17 +62,8 @@ set pastetoggle=
 let mapleader=","
 noremap \ ,
 
-" Without setting this, ZoomWin restores windows in a way that causes
-" equalalways behavior to be triggered the next time CommandT is used.
-" This is likely a bludgeon to solve some other issue, but it works
-" set noequalalways
-
-" NERDTree configuration
-" let NERDTreeIgnore=['\.pyc$', '\.rbc$', '\~$']
-" map <Leader>n :NERDTreeToggle<CR>
-
 " Command-T configuration
-let g:CommandTMaxHeight=20
+"let g:CommandTMaxHeight=20
 
 " ZoomWin configuration
 " map <Leader><Leader> :ZoomWin<CR>
@@ -99,12 +95,10 @@ endfunction
 " make uses real tabs
 au FileType make set noexpandtab
 
-" Thorfile, Rakefile, Vagrantfile and Gemfile are Ruby
-au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,Thorfile,config.ru}    set ft=ruby
-" md, markdown, and mk are markdown and define buffer-local preview
+au BufRead,BufNewFile *.schema set ft=ldapschema
+au BufRead,BufNewFile {Gemfile,Rakefile,Vagrantfile,Thorfile,config.ru} set ft=ruby
 au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn} call s:setupMarkup()
-" add json syntax highlighting
-au BufNewFile,BufRead *.json set ft=javascript
+au BufRead,BufNewFile *.json set ft=javascript
 au BufRead,BufNewFile *.txt call s:setupWrapping()
 " make Python follow PEP8 ( http://www.python.org/dev/peps/pep-0008/ )
 au FileType python set softtabstop=4 tabstop=4 shiftwidth=4 textwidth=79
@@ -150,7 +144,6 @@ cmap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
 " let g:gist_detect_filetype = 1
 " let g:gist_open_browser_after_post = 1
 
-" csv files
 let g:csv_autocmd_arrange = 1
 aug CSV_Editing
     au!
@@ -158,24 +151,21 @@ aug CSV_Editing
     au BufWritePre *.csv :%UnArrangeColumn
 aug end
 
-" Use modeline overrides
 set modeline
 set modelines=10
 
-" color settings
-" se t_Co=256
+silent! execute pathogen#infect()
 let g:solarized_termcolors=256
 " set background=light
 set background=dark
-colorscheme solarized
+colorscheme desert
+silent! colorscheme solarized
 
-" Directories for swp files
-set backupdir=~/.vim/backup/,/tmp
-set directory=~/.vim/backup/,/tmp
+set backupdir=~/.vim/backup/,/tmp/
+set directory=~/.vim/backup/,/tmp/
 " set nobackup
 " set nowritebackup
 
-" Turn off jslint errors by default
 " let g:JSLintHighlightErrorLine = 0
 
 " MacVIM shift+arrow-keys behavior (required in .vimrc)
@@ -184,11 +174,7 @@ let macvim_hig_shift_movement = 1
 " % to bounce from do to end etc.
 runtime! macros/matchit.vim
 
-" Include user's local vim config
 if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
 endif
-
-" abbreviations
-" ab #a ############################################################
 

@@ -57,7 +57,7 @@ set_sysctl_end() {
 # params: setting, value
 set_sysctl() {
   if grep -q $1 ${_sysctl} ; then
-    echo "sed -i -e \"/$1/d\" ${_sysctl}"
+    echo -n "sed -i -e \"/$1/d\" ${_sysctl} ; "
   fi
   echo "echo \"$1=$2\" >> ${_sysctl}"
 }
@@ -70,7 +70,6 @@ activate_sysctl() {
 
 # setting system security limits
 # params: setting, value
-# TODO: check to create file in /etc/security/limits.d/.
 set_limit() {
   _syslmt=/etc/security/limits.conf
   echo "echo \"$1\" >> ${_syslmt}"
@@ -78,23 +77,28 @@ set_limit() {
 
 # setting system security limits
 # params: setting, value
-# TODO: check to create file in /etc/security/limits.d/.
 set_proc_limit() {
   _syslmt=/etc/security/limits.d/99-nproc.conf
   # TODO: delete * nproc limits
   echo "echo \"$1\" >> ${_syslmt}"
 }
 
+# update repo
+update_repo() {
+  echo yum check-update
+  echo yum upgrade
+}
+
 # install packages
 add_packages() {
   _packs=$1
-  echo yum check-update
   eval echo yum install -y \${$_packs[*]}
 }
 
 # add repo epel for additional packages
 add_epel_rpm() {
   echo "rpm -Uvh $1"
+  echo yum check-update
 }
 
 # disable system service via chkconfig

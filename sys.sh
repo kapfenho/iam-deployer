@@ -40,18 +40,19 @@ echo "#  execute as root user"
 echo "if [ \$UID -ne 0 ] ; then echo \"ERROR: not root\" ; exit 77 ; fi"
 echo "set -x"
 
-# fusion
-#   http://docs.oracle.com/html/E38978_01/r2_im_requirements.html
-# database 
-#   http://docs.oracle.com/cd/E11882_01/install.112/e24326/toc.htm#BHCCADGD
+# fusion     http://docs.oracle.com/html/E38978_01/r2_im_requirements.html
+# database   http://docs.oracle.com/cd/E11882_01/install.112/e24326/toc.htm#BHCCADGD
 #
 set_sysctl_start
+
+set_sysctl   'kernel.shmmax'                 '17179869184'
+set_sysctl   'kernel.sem'                    '256 32000 100 142'
+
+echo "# --- database specific start ----"
 set_sysctl   'kernel.msgmnb'                 '65536'
 set_sysctl   'kernel.msgmax'                 '65536'
-set_sysctl   'kernel.shmmax'                 '17179869184'
 set_sysctl   'kernel.shmall'                 '16777216'
 set_sysctl   'kernel.shmmni'                 '4096'
-set_sysctl   'kernel.sem'                    '256 32000 100 142'
 
 set_sysctl   'fs.file-max'                   '6815744'
 set_sysctl   'fs.aio-max-nr'                 '1048576'
@@ -66,69 +67,105 @@ set_sysctl   'net.core.rmem_default'         '262144'
 set_sysctl   'net.core.rmem_max'             '4194304'
 set_sysctl   'net.core.wmem_default'         '262144'
 set_sysctl   'net.core.wmem_max'             '1048576'
+echo "# --- database specific end ----"
+
 set_sysctl_end
 echo
 
 activate_sysctl
 echo
 
-set_limit         '*          soft    nofile       2048' 
-set_limit         '*          hard    nofile       8192' 
-set_limit         'oracle     soft    nofile      65536'
-set_limit         'oracle     hard    nofile      65536'
-set_limit         'oracle     soft    stack       10240'
-set_limit         'iam        soft    nofile     150000'
-set_limit         'iam        hard    nofile     150000'
-set_proc_limit    '*          soft    nproc        2048' 
-set_proc_limit    '*          hard    nproc       16384' 
+# --- Security Limits ---
+
+# database
+echo >> /etc/security/limits.d/91-database.conf <<-EOF
+@dba       soft    nofile      65536
+@dba       hard    nofile      65536
+@dba       soft    stack       10240
+EOF
+
+# fusion
+echo >> /etc/security/limits.d/91-fusion.conf <<-EOF
+@fmwgroup  soft    nofile     150000
+@fmwgroup  hard    nofile     150000
+@fmwgroup  soft    nproc        2048
+@fmwgroup  hard    nproc       16384
+EOF
+
 echo
 
-packs=(
-    binutils.x86_64
-    compat-libcap1.x86_64
-    compat-libstdc++-33.i686
-    compat-libstdc++-33.x86_64
-    elfutils-libelf-devel.x86_64
-    gcc-c++.x86_64
-    gcc.x86_64
-    glibc-devel.i686
-    glibc-devel.x86_64
-    glibc.x86_64
-    glibc.i686
-    ksh.x86_64
-    libaio-devel.i686
-    libaio-devel.x86_64
-    libaio.x86_64
-    libaio.i686
-    libgcc.x86_64
-    libstdc++-devel.i686
-    libstdc++-devel.x86_64
-    libstdc++.i686
-    libstdc++.x86_64
-    libXext.i686
-    libXtst.i686
-    libXi.i686
-    make.x86_64
-    openmotif.x86_64
-    openmotif22.x86_64
-    redhat-lsb-core.x86_64
-    sysstat.x86_64
-    unixODBC-devel
-    nfs-utils
-    unzip
-    rlwrap
-    vim-enhanced )
+# --- System Packages ---
 
+# Fusion 64bit
+packs_fusion64=(
+  binutils
+  compat-libcap1
+  compat-libstdc++-33
+  gcc
+  gcc-c++
+  glibc
+  libaio
+  libaio-devel
+  libgcc
+  libstdc++
+  libstdc++-devel
+  libXext
+  libXtst
+  make
+  openmotif
+  openmotif22
+  redhat-lsb-core
+  sysstat
+  xorg-x11-utils
+  xorg-x11-apps
+  xorg-x11-xinit
+  xorg-x11-server-Xorg
+  xterm )
+
+# Fusion needs additional 32bit libs
+packs_fusion32=(
+  compat-libstdc++-33.i686
+  glibc-devel.i686
+  glibc.i686
+  libstdc++-devel.i686
+  libstdc++.i686
+  libXext.i686
+  libXtst.i686
+  libXi.i686 )
+
+# database server and rcu
+packs_database=(
+  elfutils-libelf-devel
+  glibc-devel
+  ksh
+  libaio-devel.i686
+  libaio.i686 )
+
+# additional
+packs_utils=(
+  nfs-utils
+  unzip
+  rlwrap
+  tmux
+  vim-enhanced )
+
+update_repo
 add_epel_rpm ${fedora_epel}
 echo
 
-add_packages packs
+add_packages packs_fusion64
+echo
+add_packages packs_fusion32
+echo
+add_packages packs_database
+echo
+add_packages packs_utils
 echo
 
 disable_service   'iptables'
 disable_service   'ip6tables'
 
-add_vim_features_p
+# --- Users Groups Directories ---
 
 # groups     name             id
 create_group "oinstall"       6001

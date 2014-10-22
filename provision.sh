@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo '*** mounting...'
-( [ -a /mnt/oracle ] || mkdir -m 0777 /mnt/oracle ) && if ! mount | grep -q 'oracle' ; then mount -t nfs nyx:/oracle /mnt/oracle ; fi
+( [ -a /mnt/oracle ] || mkdir -m 0777 /mnt/oracle ) && if ! mount | grep -q 'oracle' ; then mount -t nfs nyx:/export/oracle /mnt/oracle ; fi
 
 echo '*** system preparation...'
 
