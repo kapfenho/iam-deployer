@@ -39,6 +39,12 @@ echo "#!/bin/sh"
 echo "#  execute as root user"
 echo "if [ \$UID -ne 0 ] ; then echo \"ERROR: not root\" ; exit 77 ; fi"
 echo "set -x"
+echo
+
+# timezone
+echo "ln -s /usr/share/zoneinfo/Europe/Vienna /etc/localtime"
+echo "# ln -s /usr/share/zoneinfo/Europe/Berlin /etc/localtime"
+echo
 
 # fusion     http://docs.oracle.com/html/E38978_01/r2_im_requirements.html
 # database   http://docs.oracle.com/cd/E11882_01/install.112/e24326/toc.htm#BHCCADGD
@@ -92,7 +98,6 @@ echo >> /etc/security/limits.d/91-fusion.conf <<-EOF
 @fmwgroup  hard    nproc       16384
 EOF
 
-echo
 
 # --- System Packages ---
 
