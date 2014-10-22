@@ -1,8 +1,13 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-rm -Rf /opt/fmw/products/*
-rm -Rf /opt/fmw/config/*
-rm -Rf /opt/fmw/config.local/*
+set -o errexit nounset
+export deployer=/opt/install/dwpbank/iam-deployer
+. ${deployer}/user-conf/env/env.sh
+#  init done
+
+rm -Rf ${idmtop}/products/*
+rm -Rf ${idmtop}/config/*
+rm -Rf ${idmtop}/local/*
 
 sudo -n install --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw/products
 sudo -n install --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw/config

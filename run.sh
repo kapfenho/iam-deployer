@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 # vi: set ft=sh :
 
-. ./env/dwp1/env.sh
+. ./user-conf/env/env.sh
 
-for h in ${servers[@]}
-do
-  vagrant ssh ${h} -- ${1}
-done
+on_all ${1}
 
 exit 0

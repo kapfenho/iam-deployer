@@ -2,7 +2,7 @@
 
 set -o errexit nounset
 
-. ./env/dwp1/env.sh
+. ./user-conf/env/env.sh
 
 flog=/tmp/prov-$(date "+%Y%m%d-%H%M").log
 
@@ -17,7 +17,7 @@ do
   for srv in ${servers[@]}
   do
     echo "*** --> Starting ${step} on ${srv} at $(date)..." | tee -a $flog
-    on ${srv} "/vagrant/env/${ENV}/prov.sh ${step}" >> $flog
+    on ${srv} "/vagrant/user-conf/env/prov.sh ${step}" >> $flog
 
     if [[ $? -ne 0 ]]
     then
@@ -42,7 +42,7 @@ do
   for srv in ${servers[@]}
   do
     echo "*** --> Starting ${step} on ${srv} at $(date)..." | tee -a $flog
-    on ${srv} "/vagrant/env/${ENV}/prov.sh ${step}" | tee -a $flog
+    on ${srv} "/vagrant/user-conf/env/prov.sh ${step}" | tee -a $flog
 
     if [[ $? -ne 0 ]]
     then

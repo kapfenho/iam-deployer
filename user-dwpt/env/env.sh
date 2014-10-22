@@ -1,15 +1,15 @@
-export      ENV=dwp1
+export      ENV=dwpt
 export   idmtop=/opt/fmw
-export deployer=/vagrant
+export deployer=/opt/install/dwpbank/iam-deployer
 export      lcm=/opt/fmw/lcm/lcm
 export  lcmhome=/opt/fmw/lcm/lcmhome
-export   s_repo=/mnt/oracle/iam-11.1.2.2/repo
+export   s_repo=/opt/install/dwpbank/IAM-Base/iam-11.1.2.2/repo
 export    s_lcm=${s_repo}/installers/idmlcm
 export s_runjre=${s_repo}/installers/jdk/jdk7/jre
-export  servers=( oud1 oud2 oim1 oim2 oam1 oam2 web1 web2 )
+export  servers=( dwptoud1 dwptoud2 dwptoim1 dwptoim2 dwptoam1 dwptoam2 dwptidw1 dwptidw2 )
 
 on() { 
-  c="vagrant ssh ${1} -- sudo -u fmwuser -H -n ${2}"
+  c="ssh ${1} -- ${2}"
   echo "${c}" ; ${c}
 }
 

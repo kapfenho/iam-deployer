@@ -3,9 +3,6 @@
 if [ $UID -ne 0 ] ; then echo "ERROR: not root" ; exit 77 ; fi
 set -x
 
-ln -s /usr/share/zoneinfo/Europe/Vienna /etc/localtime
-# ln -s /usr/share/zoneinfo/Europe/Berlin /etc/localtime
-
 echo "# customizations oracle start" >> /etc/sysctl.conf
 sed -i -e "/kernel.shmmax/d" /etc/sysctl.conf ; echo "kernel.shmmax=17179869184" >> /etc/sysctl.conf
 echo "kernel.sem=256 32000 100 142" >> /etc/sysctl.conf
@@ -33,7 +30,7 @@ echo "# customizations oracle end" >> /etc/sysctl.conf
 
 /sbin/sysctl -p
 
-#   system packages
+
 yum check-update
 yum -y upgrade
 rpm -Uvh /vagrant/sys/redhat/epel-release-6-8.noarch.rpm
@@ -90,6 +87,8 @@ yum install -y \
     unzip \
     rlwrap \
     tmux \
+    telnet \
+    nc \
     vim-enhanced
 
 service iptables stop
@@ -102,7 +101,7 @@ chkconfig --del ip6tables
 
 groupadd -g 6100 fmwgroup
 
-useradd -u 5100 -g 6100 fmwuser -G vagrant
+useradd -u 5100 -g 6100 fmwuser
 useradd -u 5101 -g 6100 oamadmin
 useradd -u 5102 -g 6100 oimadmin
 useradd -u 5103 -g 6100 webadmin
@@ -118,17 +117,20 @@ cat >> /etc/security/limits.d/91-fusion.conf <<-EOF
 @fmwgroup  hard    nproc       16384
 EOF
 
-install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /app/releases/fmw      # vcs
-install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /var/log/fmw           # logs
-install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw               # configs
-install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/local             # local config
-install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /mnt/oracle            # images
-#install --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw/products      # binaries
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /app/releases/fmw      # vcs (local)
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /var/log/fmw           # logs (local)
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw               # products, config (shared, rw)
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/local             # config (local)
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /mnt/oracle            # images (shared, ro)
 
-echo "nyx:/export/oracle /mnt/oracle  nfs  rw,bg,hard,nointr,proto=tcp,vers=3,timeo=300,rsize=32768,wsize=32768  0 0" >> /etc/fstab
-echo "nyx:/export/fmw    /opt/fmw     nfs  rw,bg,hard,nointr,proto=tcp,vers=3,timeo=300,rsize=32768,wsize=32768  0 0" >> /etc/fstab
-
-mount /opt/fmw
-mount /mnt/oracle
+# shared mount points must be munally added
+# -----------------------------------------
+# echo "nyx:/export/oracle /mnt/oracle  nfs  rw,bg,hard,nointr,proto=udp,vers=3,timeo=300,rsize=32768,wsize=32768  0 0" >> /etc/fstab
+# echo "nyx:/export/fmw    /opt/fmw     nfs  rw,bg,hard,nointr,proto=udp,vers=3,timeo=300,rsize=32768,wsize=32768  0 0" >> /etc/fstab
+#
+# mount /opt/fmw
+# mount /mnt/oracle
 
 set +x
+exit 0
+
