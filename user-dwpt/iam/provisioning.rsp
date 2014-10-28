@@ -96,7 +96,7 @@ PROVPLAN_CREATEDDATE=2014-09-30 16:59:18 CEST
 PROVPLAN_DESC=Identity and Access Management Deployment Response File (multiple hosts)
 
 #Installation Locations
-INSTALL_INSTALLERS_DIR=/mnt/oracle/iam-11.1.2.2/repo
+INSTALL_INSTALLERS_DIR=/opt/install/dwpbank/iam-base/iam-11.1.2.2/repo
 INSTALL_APPHOME_DIR=/opt/fmw
 INSTALL_LCMHOME_DIR=/opt/fmw/lcm/lcmhome
 #INSTALL_LCMHOME_DIR=/mnt/oracle/shared/idmlcm/home
@@ -104,7 +104,7 @@ INSTALL_LCMHOME_IS_MOUNTED_IN_DIR_HOSTS=true
 INSTALL_LCMHOME_IS_MOUNTED_IN_WEB_HOSTS=true
 INSTALL_APPCONFIG_DIR=${provisioning.setup.install-location.locations.default.home.top}/config
 INSTALL_LOCALCONFIG_ENABLE=true
-INSTALL_LOCALCONFIG_DIR=/opt/local
+INSTALL_LOCALCONFIG_DIR=/opt/local/fmw
 INSTALL_OSWIN_USER=
 INSTALL_OSWIN_PWD=
 IDMPROV_IDMTOP_IS_SHARED=true
@@ -182,11 +182,11 @@ UC_CREATE_DATE=2014-09-30 16:59:18 CEST
 UC_PALN_DESC=Identity and Access Management Deployment Response File (multiple hosts)
 
 #Install Locations
-IL_INSTALLERDIR_LOCATION=/mnt/oracle/iam-11.1.2.2/repo
+IL_INSTALLERDIR_LOCATION=/opt/install/dwpbank/iam-base/iam-11.1.2.2/repo
 IL_APP_BASE=/opt/fmw
 IL_APP_CONFIG=${provisioning.setup.install-location.locations.default.home.top}/config
 IL_ENABLE_LOCALAPP_CONFIG=true
-IL_LOCALAPP_CONFIG=/opt/local
+IL_LOCALAPP_CONFIG=/opt/local/fmw
 IL_WIN_DOMAIN_USERNAME=
 IL_WIN_DOMAIN_PSWD=
 IL_STD_LOG_DIR=${provisioning.setup.install-location.locations.default.home.lcm}/provisioning/logs
@@ -198,7 +198,7 @@ COMMON_STD_ADMIN_NAME=admin
 COMMON_STD_ADMIN_PWD=
 COMMON_STD_ADMIN_PWD_CONFIRM=
 COMMON_FMW_DIR=/opt/fmw
-COMMON_FUSION_REPO_INSTALL_DIR=/mnt/oracle/iam-11.1.2.2/repo
+COMMON_FUSION_REPO_INSTALL_DIR=/opt/install/dwpbank/iam-base/iam-11.1.2.2/repo
 COMMON_STD_PROV_LOGDIR=${provisioning.setup.install-location.locations.default.log.directory}
 
 #DOMAIN TOPOLOGY
@@ -210,7 +210,7 @@ DT_ONEHOSTPERAPP=false
 PROVISIONING_IDMPROV=true
 
 #OID Configuration
-OID_IDSTORE_DB_REALM=dc=agoracon,dc=at
+OID_IDSTORE_DB_REALM=dc=dwpbank,dc=net
 OUD_REPLICATIONPORT=8989
 
 #OHS Configuration
@@ -221,23 +221,23 @@ OHS_ODSM_ADMIN_PORT=7779
 
 #OAM Configuration
 OAM_TRANSFER_MODE=simple
-OAM_COOKIE_DOMAIN=.vie.agoracon.at
+OAM_COOKIE_DOMAIN=.dwpbank.net
 OAM_MW_HOME=/opt/fmw/products/access
 
 #OAM DB Configuration
-OAM_DB_IS_RAC=false
-OAM_DB_IS_SINGLE=true
-OAM_DB_SERVICENAME=martes
+OAM_DB_IS_RAC=true
+OAM_DB_IS_SINGLE=false
+OAM_DB_SERVICENAME=IAMTST
 OAM_RAC_ONS_ADDRESS=${provisioning.idmprov.oam-db.rac.scanaddress}
 OAM_RAC_ONS_PORT=6200
-OAM_RAC_SCAN_ADDRESS=oradb.vie.agoracon.at
+OAM_RAC_SCAN_ADDRESS=dwptpwl-plte1
 OAM_RAC_SCAN_PORT=1521
 OAM_DB_SCHEMAPREFIX=DEVA
 OAM_DB_SCHEMAUSER=${provisioning.idmprov.oam-db.schema_prefix}_OAM
 OAM_DB_SCHEMAPASSWORD=Kfv7nt4tlhsgyPq5GKbd5Q==
 #OAM_SINGLE_DB_HOST=${provisioning.setup.domain-topology.topology.oam.host}
-OAM_SINGLE_DB_HOST=oradb.vie.agoracon.at
-OAM_SINGLE_DB_PORT=1521
+OAM_SINGLE_DB_HOST=
+OAM_SINGLE_DB_PORT=
 
 #OIM Configuration
 OIM_MW_HOME=/opt/fmw/products/identity
@@ -249,34 +249,34 @@ OIM_EMAIL_USERNAME=username
 OIM_EMAIL_PASSWORD=
 
 #OIM DB Configuration
-OIM_DB_IS_RAC=false
-OIM_DB_IS_SINGLE=true
+OIM_DB_IS_RAC=true
+OIM_DB_IS_SINGLE=false
 #OIM_SINGLE_DB_HOST=${provisioning.setup.domain-topology.topology.oim.host}
-OIM_SINGLE_DB_HOST=oradb.vie.agoracon.at
-OIM_SINGLE_DB_PORT=1521
+OIM_SINGLE_DB_HOST=
+OIM_SINGLE_DB_PORT=
 OIM_DB_SCHEMAPREFIX=DEVI
 OIM_DB_SCHEMAUSER=${provisioning.idmprov.oim-db.schema_prefix}_OIM
-OIM_DB_SERVICENAME=martes
+OIM_DB_SERVICENAME=IAMTST
 OIM_RAC_ONS_ADDRESS=${provisioning.idmprov.oim-db.rac.scanaddress}
 OIM_RAC_ONS_PORT=6200
-OIM_RAC_SCAN_ADDRESS=
+OIM_RAC_SCAN_ADDRESS=dwptpwl-plte1
 OIM_RAC_SCAN_PORT=1521
 OIM_DB_SCHEMAPASSWORD=Kfv7nt4tlhsgyPq5GKbd5Q==
 
 #Topology Configurations
-IDMPROV_PRODUCT_DIRECTORY_HOST=oud1.vie.agoracon.at
+IDMPROV_PRODUCT_DIRECTORY_HOST=dwptoud1.dwpbank.net
 IDMPROV_PRODUCT_DIRECTORY_DOMAIN=dir_test
 IDMPROV_PRODUCT_DIRTIER_IN_DEDICATED_ZONE=${provisioning.setup.domain-topology.topology.domain.topology.advanced}
-IDMPROV_PRODUCT_IDENTITY_HOST=oim1.vie.agoracon.at
+IDMPROV_PRODUCT_IDENTITY_HOST=dwptoim1.dwpbank.net
 IDMPROV_PRODUCT_IDENTITY_DOMAIN=identity_test
-IDMPROV_PRODUCT_WEBTIER_HOST=web1.vie.agoracon.at
+IDMPROV_PRODUCT_WEBTIER_HOST=dwptidw1.dwpbank.net
 IDMPROV_PRODUCT_WEBTIER_DOMAIN=iamweb_test
 IDMPROV_PRODUCT_WEBTIER_IN_DMZ=${provisioning.setup.domain-topology.topology.domain.topology.advanced}
-IDMPROV_IDMDOMAIN_ADMINSERVER_HOST=oam1.vie.agoracon.at
+IDMPROV_IDMDOMAIN_ADMINSERVER_HOST=dwptoam1.dwpbank.net
 IDMPROV_IDMDOMAIN_ADMINSERVER_PORT=7001
-IDMPROV_OIMDOMAIN_ADMINSERVER_HOST=oim1.vie.agoracon.at
+IDMPROV_OIMDOMAIN_ADMINSERVER_HOST=dwptoim1.dwpbank.net
 IDMPROV_OIMDOMAIN_ADMINSERVER_PORT=7101
-IDMPROV_OID_HOST=oud1.vie.agoracon.at
+IDMPROV_OID_HOST=dwptoud1.dwpbank.net
 IDMPROV_OID_PORT=3890
 IDMPROV_OID_SSLPORT=6360
 IDMPROV_OVD_HOST=${provisioning.setup.domain-topology.topology.oud.host}
@@ -287,15 +287,15 @@ IDMPROV_SOA_PORT=8001
 IDMPROV_OAM_HOST=${provisioning.setup.domain-topology.topology.idmdomain.host}
 IDMPROV_OAM_PORT=14100
 IDMPROV_OIF_HOST=${provisioning.setup.domain-topology.topology.oam.host}
-IDMPROV_OHS_HOST=web1.vie.agoracon.at
+IDMPROV_OHS_HOST=dwptidw1.dwpbank.net
 IDMPROV_OHS_PORT=7777
 IDMPROV_OHS_SSLPORT=4443
 IDMPROV_CONFIGURE_SECOND_INSTANCES=${provisioning.setup.domain-topology.topology.domain.topology.advanced}
-IDMPROV_SECOND_IDMDOMAIN_ADMINSERVER_HOST=oam2.vie.agoracon.at
+IDMPROV_SECOND_IDMDOMAIN_ADMINSERVER_HOST=dwptoam2.dwpbank.net
 IDMPROV_SECOND_IDMDOMAIN_ADMINSERVER_PORT=${provisioning.idmprov.oam.adminserverport}
-IDMPROV_SECOND_OIMDOMAIN_ADMINSERVER_HOST=oim2.vie.agoracon.at
+IDMPROV_SECOND_OIMDOMAIN_ADMINSERVER_HOST=dwptoim2.dwpbank.net
 IDMPROV_SECOND_OIMDOMAIN_ADMINSERVER_PORT=${provisioning.idmprov.oim.adminserverport}
-IDMPROV_SECOND_OID_HOST=oud2.vie.agoracon.at
+IDMPROV_SECOND_OID_HOST=dwptoud2.dwpbank.net
 IDMPROV_SECOND_OID_PORT=3890
 IDMPROV_SECOND_OID_SSLPORT=6360
 IDMPROV_SECOND_OVD_HOST=${provisioning.setup.domain-topology.topology.second.oud.host}
@@ -306,7 +306,7 @@ IDMPROV_SECOND_SOA_PORT=8001
 IDMPROV_SECOND_OAM_HOST=${provisioning.setup.domain-topology.topology.second.idmdomain.host}
 IDMPROV_SECOND_OAM_PORT=14100
 IDMPROV_SECOND_OIF_HOST=${provisioning.setup.domain-topology.topology.second.oam.host}
-IDMPROV_SECOND_OHS_HOST=web2.vie.agoracon.at
+IDMPROV_SECOND_OHS_HOST=dwptidw2.dwpbank.net
 IDMPROV_SECOND_OHS_PORT=7777
 IDMPROV_SECOND_OHS_SSLPORT=4443
 IDMPROV_ACCESS_DOMAIN=access_test
@@ -323,19 +323,19 @@ IDMPROV_VHN_OIM_SERVER=
 IDMPROV_VHN_SECOND_OIM_SERVER=
 
 #LDAP LBR Configuration
-IDMPROV_LBR_SSO_HOST=sso.vie.agoracon.at
+IDMPROV_LBR_SSO_HOST=sso.applications.dwpbank.net
 IDMPROV_LBR_SSO_PORT=4443
 IDMPROV_LBR_SSO_PORT_IS_SSL=true
-IDMPROV_LBR_OIMINTERNAL_HOST=oiminternal.vie.agoracon.at
+IDMPROV_LBR_OIMINTERNAL_HOST=idminternal.dwpbank.net
 IDMPROV_LBR_OIMINTERNAL_PORT=7777
 IDMPROV_LBR_OIMINTERNAL_PORT_IS_SSL=false
-IDMPROV_LBR_IDMADMIN_HOST=idmadmin.vie.agoracon.at
+IDMPROV_LBR_IDMADMIN_HOST=oamadmin.dwpbank.net
 IDMPROV_LBR_IDMADMIN_PORT=4443
 IDMPROV_LBR_IDMADMIN_PORT_IS_SSL=true
-IDMPROV_LBR_OIMADMIN_HOST=oimadmin.vie.agoracon.at
+IDMPROV_LBR_OIMADMIN_HOST=oimadmin.dwpbank.net
 IDMPROV_LBR_OIMADMIN_PORT=4443
 IDMPROV_LBR_OIMADMIN_PORT_IS_SSL=true
-IDMPROV_LBR_DIRADMIN_HOST=diradmin.vie.agoracon.at
+IDMPROV_LBR_DIRADMIN_HOST=oamadmin.dwpbank.net
 IDMPROV_LBR_DIRADMIN_PORT=4443
 IDMPROV_LBR_DIRADMIN_PORT_IS_SSL=true
 
