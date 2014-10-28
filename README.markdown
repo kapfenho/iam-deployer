@@ -20,7 +20,7 @@ We keep now different several configurations within the repo:
 * user-test: a multi machine setup in Vagrant
 * user-dwpt: user-test applied to bare metal servers
 
-The directory `user-conf` has disappeared, but other user-directories
+The directory `user-conf` has disappeared and other user-directories
 keep environment dependent configs. Activating an env is done by
 creating the symlink user-config.
 
