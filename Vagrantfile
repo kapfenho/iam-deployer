@@ -80,22 +80,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # ----------------------------------------------------- identity server
   config.vm.define :oim1 do |m|
     m.vm.box      = "centos6min"
-    m.vm.hostname = "oim1"
+    #m.vm.hostname = "oim1"
     m.vm.network  :private_network, ip: "192.168.168.36"
+    m.vm.network  :forwarded_port,  guest:  7101, host:  7101
+    m.vm.network  :forwarded_port,  guest: 14000, host: 14000
     m.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--memory", "6144",
-                    "--name", "oim1", "--cpus", "4"]
+      vb.customize ["modifyvm", :id, "--memory", "6144", "--cpus", "4"]
     end
     m.vm.provision :shell, inline: "echo '#{$hostfile}' > /etc/hosts" 
     m.vm.provision :shell, inline: "bash /vagrant/lib/vagrant-prov.sh"
   end
   config.vm.define :oim2 do |m|
     m.vm.box      = "centos6min"
-    m.vm.hostname = "oim2"
+    #m.vm.hostname = "oim2"
     m.vm.network  :private_network, ip: "192.168.168.37"
     m.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--memory", "6144",
-                    "--name", "oim2", "--cpus", "4"]
+      vb.customize ["modifyvm", :id, "--memory", "6144", "--cpus", "4"]
     end
     m.vm.provision :shell, inline: "echo '#{$hostfile}' > /etc/hosts" 
     m.vm.provision :shell, inline: "bash /vagrant/lib/vagrant-prov.sh"
@@ -114,9 +114,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.provision :shell, inline: "bash /vagrant/lib/vagrant-prov.sh"
   end
   config.vm.define :web2 do |m|
+    ip = "192.168.168.33"
     m.vm.box      = "centos6min"
     m.vm.hostname = "web2"
-    m.vm.network  :private_network, ip: "192.168.168.33"
+    m.vm.network  :private_network, ip: ip
+    m.vm.network  :forwarded_port,  guest: 4443, host: 4443
+    m.vm.network  :forwarded_port,  guest: 7777, host: 7777
     m.vm.provider :virtualbox do |vb|
       vb.customize ["modifyvm", :id, "--memory", "3072",
                     "--name", "web2", "--cpus", "2"]
