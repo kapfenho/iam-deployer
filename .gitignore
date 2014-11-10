@@ -1,4 +1,4 @@
-#/Vagrantfile
+/Vagrantfile
 #/user-config/*.config
 #/user-config/dbs/*.rsp
 #/user-config/lcm/*.rsp
