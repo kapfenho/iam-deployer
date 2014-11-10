@@ -1,0 +1,11 @@
+hostname=oam1
+nmPort=5556
+domName=access_test
+domDir=/opt/fmw/config/domains/access_test
+locDir=/opt/local/domains/access_test
+domAdminPort=7001
+domUrl=t3://oam1:7001
+domUC=/opt/fmw/config/creds/access_test.usr
+domUK=/opt/fmw/config/creds/access_test.key
+nmUC=/opt/fmw/config/creds/nm-oam1.usr
+nmUK=/opt/fmw/config/creds/nm-oam1.key
