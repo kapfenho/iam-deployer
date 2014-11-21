@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 # startup script for oracle webtier
+#                     horst.kapfenberger@agoracon.at
 #
 ### BEGIN INIT INFO
 # Provides:           Oracle WebTier
@@ -19,8 +20,8 @@
 # Source networking configuration.
 . /etc/sysconfig/network
 
-# Check that networking is up.
-[ ${NETWORKING} = "no" ] && exit 0
+svcuser=iam
+prog=iamweb
 
 # Source instance settings
 export     DOMAIN_HOME=/appl/iam/fmw/config/instances/ohs1
@@ -28,11 +29,11 @@ export         MW_HOME=/appl/iam/fmw/products/web
 export     ORACLE_HOME=${MW_HOME}/ohs
 export         WG_HOME=${MW_HOME}/webgate
 
+# Check that networking is up.
+[ ${NETWORKING} = "no" ] && exit 0
+
 export            PATH=${DOMAIN_HOME}/bin:${ORACLE_HOME}/bin:${PATH}
 export LD_LIBRARY_PATH=${ORACLE_HOME}/lib:${WG_HOME}/webgate/ohs/lib
-
-svcuser=iam
-
 prg=${DOMAIN_HOME}/bin/opmnctl
 
 [ -f $opmnctl ] || exit 0
@@ -58,8 +59,15 @@ status() {
   # opmnctl returns
   #   0..  running processes
   #   2..  no processes
-  su $svcuser -c "$prg status"
+  su $svcuser -c "$prg status" >/dev/null
   retval=$?
+  if [ "${retval}" == "0" ]
+  then
+	echo "${prog} is running"
+  else
+	echo "${prog} is stopped"
+  fi
+
   return $retval
 }  
  

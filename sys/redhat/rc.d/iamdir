@@ -5,8 +5,8 @@
 #
 ### BEGIN INIT INFO
 # Provides:           oracle unified directory
-# Required-Start:     $local_fs $remote_fs $named $network $time
-# Required-Stop:      $local_fs $remote_fs $named $network
+# Required-Start:     $local_fs $remote_fs $named $network $time nfslock
+# Required-Stop:      $local_fs $remote_fs $named $network nfslock
 # Should-Start:       
 # Should-Stop:        
 # Default-Start:      2 3 4 5
@@ -15,21 +15,23 @@
 # Description:        oracle unified directory is an RFC complient LDAP server
 ### END INIT INFO
 #
-# Source function library.
 . /etc/rc.d/init.d/functions
-# Source networking configuration.
 . /etc/sysconfig/network
+
+prog=iamdir
+user=iam
+
+logdir=/appl/logs/iam/oud1/logs
+inst=/appl/iam/fmw/config/instances/oud1/OUD
+psfind='org.opends.server.core.DirectoryServer .*instances\/oud1\/OUD\/config\/config.ldif'
+
+pidfile=${logdir}/server.pid
+logfile=${logdir}/server.out
+exec=${inst}/bin/start-ds
+stop=${inst}/bin/stop-ds
 
 # Check that networking is up.
 [ ${NETWORKING} = "no" ] && exit 0
-
-pidfile=/appl/logs/iam/oud1/logs/server.pid
-logfile=/appl/logs/iam/oud1/logs/server.out
-exec=/appl/iam/fmw/config/instances/oud1/OUD/bin/start-ds
-stop=/appl/iam/fmw/config/instances/oud1/OUD/bin/stop-ds
-psfind='org.opends.server.core.DirectoryServer .*instances\/oud1\/OUD\/config\/config.ldif'
-prog='iam-dir'
-user='iam'
 
 is_dir_running() {
   local dir_cnt=`ps -elF | \
@@ -73,7 +75,7 @@ start() {
 
 stop() {
   echo -n $"Stopping $prog: "
-  su - $user -c "$stop &>$logfile"
+  su - $user -c "$stop -X &>$logfile"
   retval=$?
   echo
   return $retval

@@ -1,0 +1,8 @@
+# wen can set production mode in user profile
+#
+JAVA_HOME=/appl/iam/fmw/products/access/jdk/current
+JAVA_VENDOR=Oracle
+PRODUCTION_MODE=true
+DOMAIN_PRODUCTION_MODE=true
+export JAVA_HOME JAVA_VENDOR PRODUCTION_MODE DOMAIN_PRODUCTION_MODE
+

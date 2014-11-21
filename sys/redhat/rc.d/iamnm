@@ -23,12 +23,13 @@
 # Check that networking is up.
 [ ${NETWORKING} = "no" ] && exit 0
 
-logfile=/var/log/fmw/nodemanager/nodemanager.log
+logfile=/appl/logs/iam/nodemanager/nodemanager.log
 lockfile=${logfile}.lck
-exec=/opt/fmw/config/nodemanager/$(hostname -f)/startNodeManagerWrapper.sh
+# exec=/appl/iam/fmw/config/nodemanager/$(hostname -f)/startNodeManagerWrapper.sh
+exec=/appl/iam/fmw/config/nodemanager/iam2.dev.vm/startNodeManager.sh
 psfind='java .* weblogic.NodeManager '
-prog='iamnm'
-user='fmwuser'
+prog=iamnm
+user=iam
 
 is_nodemgr_running() {
   local nodemgr_cnt=`ps -elF | \

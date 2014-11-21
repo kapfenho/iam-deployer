@@ -5,8 +5,8 @@
 #
 ### BEGIN INIT INFO
 # Provides:           oracle access mgmt weblogic domain
-# Required-Start:     $local_fs $remote_fs $named $network $time iamnm
-# Required-Stop:      $local_fs $remote_fs $named $network iamnm
+# Required-Start:     $local_fs $remote_fs $named $network $time iamnm oracle
+# Required-Stop:      $local_fs $remote_fs $named $network iamnm oracle
 # Should-Start:       
 # Should-Stop:        
 # Default-Start:      2 3 4 5
@@ -15,11 +15,10 @@
 # Description:        access management services - admin
 ### END INIT INFO
 
-user=fmwuser
-prog=iamadmin
+user=iam
+prog=iamoamadm
  svc=AdminServer
-ddir=/opt/fmw/config/domains/access_test
 
-. /etc/rc.d/init.d/wls-access
+. /etc/rc.d/init.d/iamcfg-access
 . /etc/rc.d/init.d/functions-wls
 

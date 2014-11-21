@@ -4,9 +4,9 @@
 #                     horst.kapfenberger@agoracon.at
 #
 ### BEGIN INIT INFO
-# Provides:           oracle identity mgmt weblogic domain
-# Required-Start:     $local_fs $remote_fs $named $network $time iamnm
-# Required-Stop:      $local_fs $remote_fs $named $network iamnm
+# Provides:           oracle identity mgmt weblogic domain soa services
+# Required-Start:     $local_fs $remote_fs $named $network $time iamnm oracle
+# Required-Stop:      $local_fs $remote_fs $named $network iamnm oracle
 # Should-Start:       
 # Should-Stop:        
 # Default-Start:      2 3 4 5
@@ -15,11 +15,10 @@
 # Description:        identity management middleware for workflows
 ### END INIT INFO
 
-user=fmwuser
-prog=iamsoa
- svc=wls_soa2
-ddir=/opt/local/domains/identity_test
+user=iam
+prog=iamoimsoa
+ svc=wls_soa1
 
-. /etc/rc.d/init.d/wls-identity
+. /etc/rc.d/init.d/iamcfg-identity
 . /etc/rc.d/init.d/functions-wls
 

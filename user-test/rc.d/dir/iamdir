@@ -20,16 +20,20 @@
 # Source networking configuration.
 . /etc/sysconfig/network
 
+prog=iamdir
+user=fmwuser
+
+logdir=/var/log/fmw/oud1/logs
+inst=/opt/local/instances/oud1/OUD
+psfind='org.opends.server.core.DirectoryServer .*instances\/oud1\/OUD\/config\/config.ldif'
+
 # Check that networking is up.
 [ ${NETWORKING} = "no" ] && exit 0
 
-pidfile=/var/log/fmw/oud1/logs/server.pid
-logfile=/var/log/fmw/oud1/logs/server.out
-exec=/opt/local/instances/oud1/OUD/bin/start-ds
-stop=/opt/local/instances/oud1/OUD/bin/stop-ds
-psfind='org.opends.server.core.DirectoryServer .*instances\/oud1\/OUD\/config\/config.ldif'
-prog='iamdir'
-user='fmwuser'
+pidfile=${logdir}/server.pid
+logfile=${logdir}/server.out
+exec=${inst}/bin/start-ds
+stop=${inst}/bin/stop-ds
 
 is_dir_running() {
   local dir_cnt=`ps -elF | \

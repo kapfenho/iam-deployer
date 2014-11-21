@@ -23,12 +23,12 @@
 # Check that networking is up.
 [ ${NETWORKING} = "no" ] && exit 0
 
-logfile=/appl/logs/iam/nodemanager/nodemanager.log
+logfile=/var/log/fmw/nodemanager/nodemanager.log
 lockfile=${logfile}.lck
-exec=/appl/iam/fmw/config/nodemanager/$(hostname -f)/startNodeManager.sh
+exec=/opt/fmw/config/nodemanager/$(hostname -f)/startNodeManagerWrapper.sh
 psfind='java .* weblogic.NodeManager '
-prog='iam-nodemanager'
-user='iam'
+prog=iamnm
+user=fmwuser
 
 is_nodemgr_running() {
   local nodemgr_cnt=`ps -elF | \
@@ -69,10 +69,14 @@ check_nodemgr_status () {
 }
 
 start() {
-  [ -x $exec ] || exit 5
+  # [ -x $exec ] || exit 5
+  if ! su - $user -c "test -a $exec" ; then
+    exit 5
+  fi
   echo -n $"Starting $prog: "
   su - $user -c "nohup $exec &>>$logfile &"
   retval=$?
+  [ retval ] && sleep 1s && [ -a ${log} ] && tail -f ${logfile} | grep -m 1 '.*started.*' 
   echo
   return $retval
 }
