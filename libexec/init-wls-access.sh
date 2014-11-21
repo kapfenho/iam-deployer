@@ -1,21 +1,22 @@
 #!/bin/sh
 
    prop=${HOME}/.env/access.prop
- keydir=${HOME}/.env
+ keydir=${HOME}/.cred
     dom=access_test
 admport=7001
 
 . /vagrant/lib/libwls.sh
 
-rm -f ${keydir}/*.{usr,key}
+# rm -f ${keydir}/*.{usr,key}
 
-create_dom_prop  ${prop} \
-  ${keydir} \
-  5556 \
-  ${dom} \
-  /opt/fmw/config/domains/${dom} \
-  /opt/local/domains/${dom} \
-  ${admport}
+# create prop file: dont exec, prop files now shipped with
+# create_dom_prop  ${prop} \
+#   ${keydir} \
+#   5556 \
+#   ${dom} \
+#   /opt/fmw/config/domains/${dom} \
+#   /opt/local/domains/${dom} \
+#   ${admport}
 
 # nodemanager
 wlst_create_nm_keyfiles ${prop} admin Montag11

@@ -90,6 +90,8 @@ yum install -y \
     unzip \
     rlwrap \
     tmux \
+    telnet \
+    nc \
     vim-enhanced
 
 service iptables stop
@@ -118,13 +120,14 @@ cat >> /etc/security/limits.d/91-fusion.conf <<-EOF
 @fmwgroup  hard    nproc       16384
 EOF
 
-install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /app/releases/fmw      # vcs
-install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /var/log/fmw           # logs
-install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw               # configs
-install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/local             # local config
-install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /mnt/oracle            # images
-#install --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw/products      # binaries
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /app/releases/fmw      # vcs (local)
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /var/log/fmw           # logs (local)
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw               # products, config (shared, rw)
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/local             # config (local)
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /mnt/oracle            # images (shared, ro)
 
+# shared mount points must be munally added
+# -----------------------------------------
 echo "nyx:/export/oracle /mnt/oracle  nfs  rw,bg,hard,nointr,proto=udp,vers=3,timeo=300,rsize=32768,wsize=32768  0 0" >> /etc/fstab
 echo "nyx:/export/fmw    /opt/fmw     nfs  rw,bg,hard,nointr,proto=udp,vers=3,timeo=300,rsize=32768,wsize=32768  0 0" >> /etc/fstab
 

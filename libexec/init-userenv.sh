@@ -3,11 +3,11 @@
 # * copy user environment settings
 # * copy wlst property files
 
-set -o errexit nounset
-set -x
-
 src=/vagrant/user-config/hostenv
 dst=${HOME}/.env
+
+set -o errexit nounset
+set -x
 
 case "$(hostname -s)" in
 oim1)

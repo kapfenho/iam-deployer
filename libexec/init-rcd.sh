@@ -1,12 +1,13 @@
 #!/bin/sh
 
 dst=/etc/rc.d/init.d
-src=
+src=/vagrant/user-config/rc.d
 
+set -o errexit nounset
 set -x
+
 case "$(hostname -s)" in
 oim1)
-  echo "oim1"
   cp $src/functions-wls     $dst
   cp $src/iamnm             $dst
   cp $src/oim1/iamadmin     $dst
@@ -19,7 +20,6 @@ oim1)
   chkconfig --add iamoim
   ;;
 oim2)
-  echo "oim2"
   cp $src/functions-wls     $dst
   cp $src/iamnm             $dst
   cp $src/oim2/iamsoa       $dst
@@ -30,7 +30,6 @@ oim2)
   chkconfig --add iamoim
   ;;
 oam1)
-  echo "oam1"
   cp $src/functions-wls     $dst
   cp $src/iamnm             $dst
   cp $src/oam1/iamadmin     $dst
@@ -41,7 +40,6 @@ oam1)
   chkconfig --add iamoam
   ;;
 oam2)
-  echo "oam2"
   cp $src/functions-wls     $dst
   cp $src/iamnm             $dst
   cp $src/oam2/iamoam       $dst
@@ -50,22 +48,18 @@ oam2)
   chkconfig --add iamoam
   ;;
 oud1)
-  echo "oud1"
   cp $src/iamdir            $dst
   chkconfig --add iamdir
   ;;
 oud2)
-  echo "oud2"
   cp $src/iamdir            $dst
   chkconfig --add iamdir
   ;;
 web1)
-  echo "web1"
   cp $src/iamweb            $dst
   chkconfig --add iamweb
   ;;
 web2)
-  echo "web2"
   cp $src/iamweb            $dst
   chkconfig --add iamweb
   ;;

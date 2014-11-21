@@ -32,14 +32,12 @@ $hostfile = "# ...cant touch this
  
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  # always
   config.vm.provision "shell",  run: "always" do |s|
     s.inline = "echo '#{$hostfile}' > /etc/hosts" 
   end
 
-  # once
   config.vm.provision "shell" do |s|
-    s.inline = "ln -sf /usr/share/zoneinfo/CET /etc/localtime" 
+    s.inline = "/vagrant/libexec/vagrant-prov.sh"
   end
 
   # ----------------------------------------------------- directory server
@@ -52,7 +50,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--memory", "3072",
                     "--name", name,  "--cpus", "2"]
     end
-    m.vm.provision :shell, inline: "bash /vagrant/lib/vagrant-prov.sh"
   end
   config.vm.define :oud2 do |m|
     name, ip      = "oud2", "192.168.168.39"
@@ -63,7 +60,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--memory", "3072",
                     "--name", name,  "--cpus", "2"]
     end
-    m.vm.provision :shell, inline: "bash /vagrant/lib/vagrant-prov.sh"
   end
   # ----------------------------------------------------- access server
   config.vm.define :oam1 do |m|
@@ -75,7 +71,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--memory", "6144",
                     "--name", name,  "--cpus", "4"]
     end
-    m.vm.provision :shell, inline: "bash /vagrant/lib/vagrant-prov.sh"
   end
   config.vm.define :oam2 do |m|
     name, ip      = "oam2", "192.168.168.35"
@@ -86,7 +81,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--memory", "6144",
                     "--name", name,  "--cpus", "4"]
     end
-    m.vm.provision :shell, inline: "bash /vagrant/lib/vagrant-prov.sh"
   end
 
   # ----------------------------------------------------- identity server
@@ -101,7 +95,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--memory", "6144",
                     "--name", name,  "--cpus", "4"]
     end
-    m.vm.provision :shell, inline: "bash /vagrant/lib/vagrant-prov.sh"
   end
   config.vm.define :oim2 do |m|
     name, ip      = "oim2", "192.168.168.37"
@@ -112,7 +105,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--memory", "6144",
                     "--name", name,  "--cpus", "4"]
     end
-    m.vm.provision :shell, inline: "bash /vagrant/lib/vagrant-prov.sh"
   end
 
   # ----------------------------------------------------- web server
@@ -128,7 +120,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--memory", "3072", 
                     "--name", name,  "--cpus", "2"]
     end
-    m.vm.provision :shell, inline: "bash /vagrant/lib/vagrant-prov.sh"
   end
   config.vm.define :web2 do |m|
     name, ip      = "web2", "192.168.168.33"
@@ -139,7 +130,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--memory", "3072",
                     "--name", name,  "--cpus", "2"]
     end
-    m.vm.provision :shell, inline: "bash /vagrant/lib/vagrant-prov.sh"
   end
 
 end

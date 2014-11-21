@@ -3,6 +3,9 @@
 if [ $UID -ne 0 ] ; then echo "ERROR: not root" ; exit 77 ; fi
 set -x
 
+ln -s /usr/share/zoneinfo/Europe/Vienna /etc/localtime
+# ln -s /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+
 echo "# customizations oracle start" >> /etc/sysctl.conf
 sed -i -e "/kernel.shmmax/d" /etc/sysctl.conf ; echo "kernel.shmmax=17179869184" >> /etc/sysctl.conf
 echo "kernel.sem=256 32000 100 142" >> /etc/sysctl.conf
@@ -30,7 +33,7 @@ echo "# customizations oracle end" >> /etc/sysctl.conf
 
 /sbin/sysctl -p
 
-
+#   system packages
 yum check-update
 yum -y upgrade
 rpm -Uvh /vagrant/sys/redhat/epel-release-6-8.noarch.rpm
@@ -120,8 +123,8 @@ EOF
 install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /app/releases/fmw      # vcs (local)
 install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /var/log/fmw           # logs (local)
 install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/fmw               # products, config (shared, rw)
-install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/local             # config (local)
-install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /mnt/oracle            # images (shared, ro)
+install  --owner=fmwuser --group=fmwgroup --mode=0770 --directory /opt/local/fmw         # config (local)
+
 
 # shared mount points must be munally added
 # -----------------------------------------
