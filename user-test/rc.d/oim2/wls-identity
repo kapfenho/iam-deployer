@@ -7,7 +7,7 @@
      dom=identity_test
 adm_port=7101
  nm_port=5556
-    keys=/opt/fmw/config/creds
+    keys=/opt/fmw/config/cred
      nmu=$keys/nm-$(hostname -s).usr
      nmk=$keys/nm-$(hostname -s).key
       du=$keys/$dom.usr
