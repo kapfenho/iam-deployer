@@ -1,0 +1,12 @@
+defAdminURL=t3://iam2.agoracon.at:7101
+defUC=/appl/iam/fmw/config/cred/IAMGovernanceDomain/user
+defUK=/appl/iam/fmw/config/cred/IAMGovernanceDomain/key
+defDomName=IAMGovernanceDomain
+defDomDir=/appl/iam/fmw/config/domains/IAMGovernanceDomain
+
+appName=dwp-report
+appArchive=dwp-report.war
+appDir=/appl/iam/fmw/config/deploy/dwp-report
+appPath=/appl/iam/fmw/config/deploy/dwp-report/current/dwp-report.war
+appPlan=/appl/iam/fmw/config/deploy/dwp-report/current/plan/Plan.xml
+appTargets=wls_oim1

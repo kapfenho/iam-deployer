@@ -47,8 +47,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.hostname = name
     m.vm.network  :private_network, ip: ip
     m.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--memory", "3072",
-                    "--name", name,  "--cpus", "2"]
+      vb.name     = name
+      vb.cpus     = 2
+      vb.memory   = 3072
     end
   end
   config.vm.define :oud2 do |m|
@@ -57,8 +58,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.hostname = name
     m.vm.network  :private_network, ip: ip
     m.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--memory", "3072",
-                    "--name", name,  "--cpus", "2"]
+      vb.name     = name
+      vb.cpus     = 2
+      vb.memory   = 3072
     end
   end
   # ----------------------------------------------------- access server
@@ -68,8 +70,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.hostname = name
     m.vm.network  :private_network, ip: ip
     m.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--memory", "6144",
-                    "--name", name,  "--cpus", "4"]
+      vb.name     = name
+      vb.cpus     = 4
+      vb.memory   = 6144
     end
   end
   config.vm.define :oam2 do |m|
@@ -78,8 +81,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.hostname = name
     m.vm.network  :private_network, ip: ip
     m.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--memory", "6144",
-                    "--name", name,  "--cpus", "4"]
+      vb.name     = name
+      vb.cpus     = 4
+      vb.memory   = 6144
     end
   end
 
@@ -89,11 +93,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.box      = "centos6min"
     m.vm.hostname = name
     m.vm.network  :private_network, ip: ip
-    m.vm.network  :forwarded_port, guest:  7101, guest_ip: ip, host:  7101
-    m.vm.network  :forwarded_port, guest: 14000, guest_ip: ip, host: 14000
     m.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--memory", "6144",
-                    "--name", name,  "--cpus", "4"]
+      vb.name     = name
+      vb.cpus     = 4
+      vb.memory   = 6144
     end
   end
   config.vm.define :oim2 do |m|
@@ -102,8 +105,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.hostname = name
     m.vm.network  :private_network, ip: ip
     m.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--memory", "6144",
-                    "--name", name,  "--cpus", "4"]
+      vb.name     = name
+      vb.cpus     = 4
+      vb.memory   = 6144
     end
   end
 
@@ -113,12 +117,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.box      = "centos6min"
     m.vm.hostname = name
     m.vm.network  :private_network, ip: ip
-    m.vm.network  :forwarded_port, guest: 7777, guest_ip: ip, host: 7777
-    m.vm.network  :forwarded_port, guest: 4443, guest_ip: ip, host: 4443
-    m.vm.network  :forwarded_port, guest: 9999, guest_ip: ip, host: 9999
     m.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--memory", "3072", 
-                    "--name", name,  "--cpus", "2"]
+      vb.name     = name
+      vb.cpus     = 2
+      vb.memory   = 3072
     end
   end
   config.vm.define :web2 do |m|
@@ -127,8 +129,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.hostname = name
     m.vm.network  :private_network, ip: ip
     m.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--memory", "3072",
-                    "--name", name,  "--cpus", "2"]
+      vb.name     = name
+      vb.cpus     = 2
+      vb.memory   = 3072
     end
   end
 

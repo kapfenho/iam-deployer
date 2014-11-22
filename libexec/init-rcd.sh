@@ -48,19 +48,19 @@ oam2)
   chkconfig --add iamoam
   ;;
 oud1)
-  cp $src/iamdir            $dst
+  cp $src/oud1/iamdir       $dst
   chkconfig --add iamdir
   ;;
 oud2)
-  cp $src/iamdir            $dst
+  cp $src/oud2/iamdir       $dst
   chkconfig --add iamdir
   ;;
 web1)
-  cp $src/iamweb            $dst
+  cp $src/web1/iamweb       $dst
   chkconfig --add iamweb
   ;;
 web2)
-  cp $src/iamweb            $dst
+  cp $src/web2/iamweb       $dst
   chkconfig --add iamweb
   ;;
 esac

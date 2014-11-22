@@ -8,8 +8,8 @@ create_dom_prop() {
   local       keyDir=${2}
   local       nmPort=${3}
   local      domName=${4}
-  local      domPath=${5}
-  local      admPath=${6}
+  local       domDir=${5}
+  local       admDir=${6}
   local domAdminPort=${7}
 
   local host=$(hostname -f)
@@ -18,12 +18,12 @@ create_dom_prop() {
 	hostname=${host}
 	nmPort=${nmPort}
 	domName=${domName}
-	domPath=${domPath}
-	admPath=${admPath}
+	domDir=${domDir}
+	admDir=${admDir}
 	domAdminPort=${domAdminPort}
 	domUrl=t3://${host}:${domAdminPort}
-	nmUC=${keyDir}/nm-$(hostname -s).usr
-	nmUK=${keyDir}/nm-$(hostname -s).key
+	nmUC=${keyDir}/nm.usr
+	nmUK=${keyDir}/nm.key
 	domUC=${keyDir}/${domName}.usr
 	domUK=${keyDir}/${domName}.key
 EOS
@@ -39,7 +39,7 @@ wlst_create_nm_keyfiles() {
 
   ${WL_HOME}/common/bin/wlst.sh -loadProperties ${propFile} <<-EOF
 nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
- port=nmPort, domainName=domName,domainDir=domPath, nmType='ssl')
+ port=nmPort, domainName=domName,domainDir=domDir, nmType='ssl')
 storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
 y
 exit()

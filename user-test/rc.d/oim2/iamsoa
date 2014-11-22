@@ -5,8 +5,8 @@
 #
 ### BEGIN INIT INFO
 # Provides:           oracle identity mgmt weblogic domain
-# Required-Start:     $local_fs $remote_fs $named $network $time iamnm
-# Required-Stop:      $local_fs $remote_fs $named $network iamnm
+# Required-Start:     $local_fs $remote_fs $named $network $time nfs iamnm
+# Required-Stop:      $local_fs $remote_fs $named $network nfs iamnm
 # Should-Start:       
 # Should-Stop:        
 # Default-Start:      2 3 4 5

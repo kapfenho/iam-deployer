@@ -1,0 +1,6 @@
+#!/bin/sh
+
+. ${HOME}/.env/web.sh ; opmnctl shutdown
+
+exit 0
+
