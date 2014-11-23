@@ -9,16 +9,18 @@
 # Required-Stop:      $local_fs $remote_fs $named $network nfslock
 # Should-Start:       
 # Should-Stop:        
-# Default-Start:      2 3 4 5
-# Default-Stop:       0 1 6
+# Default-Start:      3 4 5
+# Default-Stop:       0 1 2 6
 # Short-Description:  oracle unified directory service
 # Description:        oracle unified directory is an RFC complient LDAP server
 ### END INIT INFO
 #
+# Source function library.
 . /etc/rc.d/init.d/functions
+# Source networking configuration.
 . /etc/sysconfig/network
 
-prog=iamdir
+prog=iam-dir
 user=iam
 
 logdir=/appl/logs/iam/oud1/logs
@@ -34,10 +36,11 @@ stop=${inst}/bin/stop-ds
 [ ${NETWORKING} = "no" ] && exit 0
 
 is_dir_running() {
-  local dir_cnt=`ps -elF | \
-    grep -i "${psfind}" | \
-    grep -v grep | \
-    wc -l`
+  local dir_cnt=$(pgrep -f "${psfind}" | wc -l)
+  # local dir_cnt=`ps -elF | \
+  #   grep -i "${psfind}" | \
+  #   grep -v grep | \
+  #   wc -l`
   echo $dir_cnt
 }
 

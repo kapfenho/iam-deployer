@@ -12,3 +12,6 @@
 /results
 *.orig
 /user-config
+/patches
+/PASSWORD*
+

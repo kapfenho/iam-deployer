@@ -9,8 +9,8 @@
 # Required-Stop:      $local_fs $remote_fs $named $network
 # Should-Start:       
 # Should-Stop:        
-# Default-Start:      2 3 4 5
-# Default-Stop:       0 1 6
+# Default-Start:      3 4 5
+# Default-Stop:       0 1 2 6
 # Short-Description:  nodemanager manages weblogic server instances
 # Description:        daemon to control and monitor all java weblogic instances
 ### END INIT INFO
@@ -28,7 +28,7 @@ lockfile=${logfile}.lck
 # exec=/appl/iam/fmw/config/nodemanager/$(hostname -f)/startNodeManagerWrapper.sh
 exec=/appl/iam/fmw/config/nodemanager/iam2.dev.vm/startNodeManager.sh
 psfind='java .* weblogic.NodeManager '
-prog=iamnm
+prog=iam-node
 user=iam
 
 is_nodemgr_running() {
@@ -75,9 +75,10 @@ start() {
     exit 5
   fi
   echo -n $"Starting $prog: "
+  su - $user -c "echo -e '\n\n\n\n\n\n\n\n\n\n\n' >>$logfile"
   su - $user -c "nohup $exec &>>$logfile &"
   retval=$?
-  [ retval ] && sleep 1s && [ -a ${log} ] && tail -f ${logfile} | grep -m 1 '.*started.*' 
+  [ retval ] && sleep 2s && [ -a ${log} ] && tail -F ${logfile} | grep -m 1 '.*started.*' 
   echo
   return $retval
 }
