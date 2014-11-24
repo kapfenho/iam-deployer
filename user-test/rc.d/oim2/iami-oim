@@ -5,21 +5,21 @@
 #
 ### BEGIN INIT INFO
 # Provides:           oracle identity mgmt weblogic domain
-# Required-Start:     $local_fs $remote_fs $named $network $time iamnm nfs
-# Required-Stop:      $local_fs $remote_fs $named $network iamnm nfs
+# Required-Start:     $local_fs $remote_fs $named $network $time iam-node nfs
+# Required-Stop:      $local_fs $remote_fs $named $network iam-node nfs
 # Should-Start:       
 # Should-Stop:        
-# Default-Start:      2 3 4 5
-# Default-Stop:       0 1 6
+# Default-Start:      3 4 5
+# Default-Stop:       0 1 2 6
 # Short-Description:  identity management - identity manager
 # Description:        identity management - idm services
 ### END INIT INFO
 
 user=fmwuser
-prog=iamoim
+prog=iami-oim
  svc=wls_oim2
 ddir=/opt/local/domains/identity_test
 
-. /etc/rc.d/init.d/wls-identity
+. /etc/weblogic/wls-identity
 . /etc/rc.d/init.d/functions-wls
 

@@ -9,8 +9,8 @@
 # Required-Stop:      $local_fs $remote_fs $syslog $named $network
 # Should-Start:       
 # Should-Stop:        
-# Default-Start:      2 3 4 5
-# Default-Stop:       0 1 6
+# Default-Start:      3 4 5
+# Default-Stop:       0 1 2 6
 # Short-Description:  start and stop the Oracle WebTier stack
 # Description:        WebCache web accelerator and Apache HTTP server
 ### END INIT INFO
@@ -21,10 +21,10 @@
 . /etc/sysconfig/network
 
 svcuser=fmwuser
-prog=iamdir
+prog=iam-dir
 
 # Source instance settings
-export     DOMAIN_HOME=/opt/local/instances/ohs1
+export     DOMAIN_HOME=/opt/local/instances/ohs2
 export         MW_HOME=/opt/fmw/products/web
 export     ORACLE_HOME=${MW_HOME}/ohs
 export         WG_HOME=${MW_HOME}/webgate
