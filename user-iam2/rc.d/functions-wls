@@ -1,0 +1,108 @@
+# functions for weblogic rc.d scripts on redhat
+#                              vim: ft=sh :
+#                horst.kapfenberger@agoracon.at
+
+. /etc/rc.d/init.d/functions
+. /etc/sysconfig/network
+
+[ ${NETWORKING} = "no" ] && exit 0
+
+start_wls="nmConnect( userConfigFile='$nmu',userKeyFile='$nmk',
+  host='$host',port='$nm_port',domainName='$dom',domainDir='$ddir')
+nmStart('$svc')
+exit()
+"
+
+stop_wls="connect( userConfigFile='$du',userKeyFile='$dk',
+  url='t3://$host:$adm_port')
+shutdown(name='$svc',force='true')
+exit()
+"
+
+kill_wls="nmConnect( userConfigFile='$nmu', userKeyFile='$nmk',
+  host='$host',port='$nm_port',domainName='$dom',domainDir='$ddir')
+nmKill('$svc')
+exit()
+"
+
+rhstatus() {
+  ret=$(pgrep -f "weblogic\.Name=${svc}.*${dom}")
+  case "$?" in
+    0)
+      echo "$prog (pid ${ret}) is running..."
+      return 0
+      ;;
+    1)
+      echo "$prog is stopped"
+      return 1
+      ;;
+  esac
+}
+
+start() {
+  echo -n $"Starting $prog..."
+  su - $user -c "$exec &>>$logfile <<-EOS
+	${start_wls}
+EOS
+"
+  retval=$?
+  echo
+}
+
+stop() {
+  echo -n $"Stopping $prog..."
+  su - $user -c "$exec &>>$logfile <<-EOS
+	${kill_wls}
+EOS
+"
+  retval=$?
+  echo
+  return $retval
+}
+
+restart() {
+  stop
+  start
+}
+
+reload() {
+  restart
+}
+
+force_reload() {
+  restart
+}
+
+case "$1" in
+  status)
+   rhstatus 
+    ;;
+  start)
+    $1
+    ;;
+  stop)
+    $1
+    ;;
+  restart)
+    $1
+    ;;
+  reload)
+    $1
+    ;;
+  force-reload)
+    force_reload
+    ;;
+  *)
+    echo -n "Usage: $0 {"
+    echo -n "status|"
+    echo -n "start|"
+    echo -n "stop|"
+    echo -n "restart|"
+    echo -n "reload|"
+    echo -n "force-reload"
+    echo "}"
+
+    exit 2
+esac
+exit $?
+

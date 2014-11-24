@@ -1,0 +1,158 @@
+#!/bin/sh
+#
+# startup script for oracle unified directory
+#                     horst.kapfenberger@agoracon.at
+#
+### BEGIN INIT INFO
+# Provides:           oracle unified directory
+# Required-Start:     $local_fs $remote_fs $named $network $time nfslock
+# Required-Stop:      $local_fs $remote_fs $named $network nfslock
+# Should-Start:       
+# Should-Stop:        
+# Default-Start:      3 4 5
+# Default-Stop:       0 1 2 6
+# Short-Description:  oracle unified directory service
+# Description:        oracle unified directory is an RFC complient LDAP server
+### END INIT INFO
+#
+# Source function library.
+. /etc/rc.d/init.d/functions
+# Source networking configuration.
+. /etc/sysconfig/network
+
+prog=iam-dir
+user=iam
+
+logdir=/appl/logs/iam/oud1/logs
+inst=/appl/iam/fmw/config/instances/oud1/OUD
+psfind='org.opends.server.core.DirectoryServer .*instances\/oud1\/OUD\/config\/config.ldif'
+
+pidfile=${logdir}/server.pid
+logfile=${logdir}/server.out
+exec=${inst}/bin/start-ds
+stop=${inst}/bin/stop-ds
+
+# Check that networking is up.
+[ ${NETWORKING} = "no" ] && exit 0
+
+is_dir_running() {
+  local dir_cnt=$(pgrep -f "${psfind}" | wc -l)
+  # local dir_cnt=`ps -elF | \
+  #   grep -i "${psfind}" | \
+  #   grep -v grep | \
+  #   wc -l`
+  echo $dir_cnt
+}
+
+get_dir_pid() {
+  dir_pid=$(cat $pidfile)
+  echo $dir_pid
+}
+
+check_dir_status () {
+  local retval=0
+  local dir_cnt=`is_dir_running`
+  if [ $dir_cnt -eq 0 ]; then
+    if [ -f $lockfile ]; then
+      retval=2
+    else
+      retval=3
+    fi
+  elif [ $dir_cnt -gt 1 ]; then
+    retval=4
+  else
+    retval=0
+  fi
+
+  echo $retval
+}
+
+start() {
+  [ -x $exec ] || exit 5
+  echo -n $"Starting $prog: "
+  su - $user -c "$exec &>$logfile"
+  retval=$?
+  echo
+  return $retval
+}
+
+stop() {
+  echo -n $"Stopping $prog: "
+  su - $user -c "$stop -X &>$logfile"
+  retval=$?
+  echo
+  return $retval
+}
+
+restart() {
+  stop
+  start
+}
+
+reload() {
+  restart
+}
+
+force_reload() {
+  restart
+}
+
+rh_status() {
+  local retval=`check_dir_status`
+  if [ $retval -eq 0 ]; then
+    echo "$prog (pid:`get_dir_pid`) is running..."
+  elif [ $retval -eq 4 ]; then
+    echo "Multiple instances of $prog are running..."
+  else
+    echo "$prog is stopped"
+  fi
+  return $retval
+}
+
+rh_status_q() {
+  rh_status >/dev/null  2>&1
+}
+
+
+case "$1" in
+  start)
+    rh_status_q && exit 0
+    $1
+    ;;
+  stop)
+    rh_status_q || exit 0
+    $1
+    ;;
+  restart)
+    $1
+    ;;
+  reload)
+    rh_status_q || exit 7
+    $1
+    ;;
+  force-reload)
+    force_reload
+    ;;
+  status)
+    rh_status
+    ;;
+  condrestart|try-restart)
+    rh_status_q || exit 0
+    restart
+    ;;
+  *)
+    echo -n "Usage: $0 {"
+    echo -n "start|"
+    echo -n "stop|"
+    echo -n "status|"
+    echo -n "restart|"
+    echo -n "condrestart|"
+    echo -n "try-restart|"
+    echo -n "reload|"
+    echo -n "force-reload"
+    echo "}"
+
+    exit 2
+esac
+exit $?
+
