@@ -19,6 +19,6 @@ user=iam
 prog=iama-oam
  svc=wls_oam1
 
-. /etc/weblogic/iamcfg-access
+. /etc/weblogic/wls-access
 . /etc/rc.d/init.d/functions-wls
 

@@ -19,6 +19,6 @@ user=iam
 prog=iami-admin
  svc=AdminServer
 
-. /etc/weblogic/iamcfg-identity
+. /etc/weblogic/wls-identity
 . /etc/rc.d/init.d/functions-wls
 

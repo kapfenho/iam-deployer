@@ -19,6 +19,6 @@ user=iam
 prog=iami-oim
  svc=wls_oim1
 
-. /etc/weblogic/iamcfg-identity
+. /etc/weblogic/web-identity
 . /etc/rc.d/init.d/functions-wls
 

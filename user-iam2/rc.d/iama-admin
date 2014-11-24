@@ -19,6 +19,6 @@ user=iam
 prog=iama-admin
  svc=AdminServer
 
-. /etc/weblogic/iamcfg-access
+. /etc/weblogic/wls-access
 . /etc/rc.d/init.d/functions-wls
 
