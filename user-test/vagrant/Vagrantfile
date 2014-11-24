@@ -29,11 +29,11 @@ $hostfile = "# ...cant touch this
 192.168.168.38           ldap.vie.agoracon.at             ldap
 192.168.1.16              nyx.vie.agoracon.at              nyx
 "
- 
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "shell",  run: "always" do |s|
-    s.inline = "echo '#{$hostfile}' > /etc/hosts" 
+    s.inline = "echo '#{$hostfile}' > /etc/hosts"
   end
 
   config.vm.provision "shell" do |s|
@@ -117,6 +117,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.box      = "centos6min"
     m.vm.hostname = name
     m.vm.network  :private_network, ip: ip
+    m.vm.network  :public_network, ip: '192.168.1.32'
     m.vm.provider :virtualbox do |vb|
       vb.name     = name
       vb.cpus     = 2
