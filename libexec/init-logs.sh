@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# create log area and link locations
+# create log area and link locations.  this script shall be executed 
+# on each machine
 
 dst=/var/log/fmw
 
