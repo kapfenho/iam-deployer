@@ -24,7 +24,7 @@ case "$(hostname -s)" in
   cp ${src}/dir/tools.properies ${dst}/
   sed -i "s/_HOST_/$(hostname -f)/" ${dst}/tools.properties
   ;;
-*web*)
+*idw*)
   cp ${src}/web/common.env      ${dst}/
   ;;
 esac

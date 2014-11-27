@@ -11,3 +11,11 @@ domUC=/home/fmwuser/.cred/identity_test.usr
 domUK=/home/fmwuser/.cred/identity_test.key
 nmUC=/home/fmwuser/.cred/nm.usr
 nmUK=/home/fmwuser/.cred/nm.key
+
+# imint app
+appName=imint
+appArchive=imint.war
+appDir=/opt/fmw/config/deploy/imint
+appPath=/opt/fmw/config/deploy/imint/current/imint.war
+appPlan=/opt/fmw/config/deploy/imint/current/plan/Plan.xml
+appTargets=wls_oim1
