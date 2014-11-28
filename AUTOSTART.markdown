@@ -12,12 +12,10 @@ technology, and the dependencies.
 Description                 Name            Depends On
 --------------------------  --------------  -----------------------------
 Oracle Access Manager (OAM), WebLogic Domain
-
 AdminServer                 iama-admin      iam-node,iam-dir,iama-oam,db
 Access managed server       iama-oam        iam-node,iam-dir,db
 
 Oracle Identity Manager (OIM), WebLogic Domain
-
 AdminServer                 iami-admin      iam-node,iam-dir,iama-oam,db
 SOA Services                iami-soa        iam-node,iam-dir,db
 IDM Services                iami-oim        iam-node,iam-dir,iama-oam,db
@@ -57,17 +55,19 @@ All
     chkconfig --add <script>          # register service
     chkconfig <script> on | off       # auto start yes | no
 
+On a single host installation this looks like:
+
 ```
 $ chkconfig
 ...
-iamdir          0:off   1:off   2:on    3:on    4:on    5:on    6:off
-iamnm           0:off   1:off   2:on    3:on    4:on    5:on    6:off
-iamoamadm       0:off   1:off   2:on    3:on    4:on    5:on    6:off
-iamoamoam       0:off   1:off   2:on    3:on    4:on    5:on    6:off
-iamoimadm       0:off   1:off   2:on    3:on    4:on    5:on    6:off
-iamoimoim       0:off   1:off   2:on    3:on    4:on    5:on    6:off
-iamoimsoa       0:off   1:off   2:on    3:on    4:on    5:on    6:off
-iamweb          0:off   1:off   2:on    3:on    4:on    5:on    6:off
+iam-dir          0:off   1:off   2:off   3:on    4:on    5:on    6:off
+iam-node         0:off   1:off   2:off   3:on    4:on    5:on    6:off
+iama-admin       0:off   1:off   2:off   3:on    4:on    5:on    6:off
+iama-oam         0:off   1:off   2:off   3:on    4:on    5:on    6:off
+iami-admin       0:off   1:off   2:off   3:on    4:on    5:on    6:off
+iami-oim         0:off   1:off   2:off   3:on    4:on    5:on    6:off
+iami-soa         0:off   1:off   2:off   3:on    4:on    5:on    6:off
+iam-web          0:off   1:off   2:off   3:on    4:on    5:on    6:off
 ...
 ```
 
@@ -83,58 +83,59 @@ services can be tricky.
 ```
 server oim1
 -----------
-  iamnm           nodemanager
-  iamadmin        weblogic admin
-  iamsoa          soa services wls_soa_1
-  iamoim          identity manager wls_oim1
-    wls_identity  domain settings
-    funtions-wls  functions
+/etc/rc.d/init.d/iam-node        nodemanager
+/etc/rc.d/init.d/iami-admin      weblogic admin
+/etc/rc.d/init.d/iami-soa        soa services wls_soa_1
+/etc/rc.d/init.d/iami-oim        identity manager wls_oim1
+/etc/rc.d/init.d/funtions-wls    functions
+/etc/weblogic/wls-identity       domain settings
 
 
 server oim2
 -----------
-  iamnm           nodemanager
-  iamsoa          soa services wls_soa2
-  iamoim          identity manager wls_oim2
-    wls_identity  domain settings
-    de
-    funtions-wls  functions
+/etc/rc.d/init.d/iam-node        nodemanager
+                                 iami-admin only on oim1
+/etc/rc.d/init.d/iami-soa        soa services wls_soa_1
+/etc/rc.d/init.d/iami-oim        identity manager wls_oim1
+/etc/rc.d/init.d/funtions-wls    functions
+/etc/weblogic/wls-identity       domain settings
 
 
 server oam1
 -----------
-  iamnm           nodemanager
-  iamadmin        weblogic admin
-  iamoam          access manager wls_oam1
-    wls_access    domain settings
-    funtions-wls  functions
+/etc/rc.d/init.d/iam-node        nodemanager
+/etc/rc.d/init.d/iama-admin      weblogic admin
+/etc/rc.d/init.d/iama-oam        access manager services wls_oam1
+/etc/rc.d/init.d/funtions-wls    functions
+/etc/weblogic/wls-access         domain settings
 
 
 server oam2
 -----------
-  iamnm           nodemanager
-  iamoam          access manager wls_oam2
-    wls_access    domain settings
-    funtions-wls  functions
+/etc/rc.d/init.d/iam-node        nodemanager
+                                 admin only on node1
+/etc/rc.d/init.d/iama-oam        access manager services wls_oam1
+/etc/rc.d/init.d/funtions-wls    functions
+/etc/weblogic/wls-access         domain settings
 
 
 server oud1
 -----------
-  iamdir          unified directory oud1
+/etc/rc.d/init.d/iam-dir         directory service
 
 
 server oud2
 -----------
-  iamdir          unified directory oud2
+/etc/rc.d/init.d/iam-dir         directory service
 
 
 server web1
 -----------
-  iamweb          web services, policy enforcement
+/etc/rc.d/init.d/iam-web         webtier services
 
 
 server web2
 -----------
-  iamweb          web services, policy enforcement
+/etc/rc.d/init.d/iam-web         webtier services
 ```
 
