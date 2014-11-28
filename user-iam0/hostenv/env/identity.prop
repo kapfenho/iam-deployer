@@ -1,0 +1,19 @@
+hostname=iam0.dwpbank.net
+nmPort=5556
+domName=IAMGovernanceDomain
+domDir=/opt/fmw/config/domains/IAMGovernanceDomain
+locDir=/opt/fmw/config/domains/IAMGovernanceDomain
+domAdminPort=7101
+domUrl=t3://iam0.dwpbank.net:7101
+domUC=/opt/fmw/config/creds/IAMGovernanceDomain/usr
+domUK=/opt/fmw/config/creds/IAMGovernanceDomain/key
+nmUC=/opt/fmw/config/creds/nm/usr
+nmUK=/opt/fmw/config/creds/nm/key
+
+### set for identity-app-property-file
+# appName=my_app
+# appArchive=my_app.war
+# appDir=/opt/fmw/config/deploy/my_app
+# appPath=/opt/fmw/config/deploy/my_app/current/my_app.war
+# appPlan=/opt/fmw/config/deploy/my_app/current/plan/Plan.xml
+# appTargets=my_managed_server

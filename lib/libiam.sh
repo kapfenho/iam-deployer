@@ -5,18 +5,27 @@
 deploy_lcm() {
   log "iam_deploy_lcm" "start"
   cd ${s_lcm}
-  ./Disk1/runInstaller -silent \
-    -jreLoc ${s_runjre} \
-    -invPtrLoc /etc/oraInst.loc \
-    -response ${_DIR}/user-config/lcm/lcm_install.rsp \
-    -ignoreSysPrereqs \
-    -nocheckForUpdates \
-    -waitforcompletion
+
+  if ! [ -a ${lcm}/provisioning ]
+  then
+    ./Disk1/runInstaller -silent \
+      -jreLoc ${s_runjre} \
+      -invPtrLoc /etc/oraInst.loc \
+      -response ${_DIR}/user-config/lcm/lcm_install.rsp \
+      -ignoreSysPrereqs \
+      -nocheckForUpdates \
+      -waitforcompletion
+  fi
 
   log "iam_deploy_lcm" "software installed, now patching..."
 
-  sed -i.orig 's/<antcall target=\"private-idm-preverify-os\"\/>/<!-- antcall target=\"private-idm-preverify-os\"\/ -->/' \
-    ${iam_mw_home}/lcm/provisioning/idm-provisioning-build/idm-common-preverify-build.xml
+  dfile=${lcm}/provisioning/idm-provisioning-build/idm-common-preverify-build.xml
+
+  if ! [ -a ${dfile}.orig ]
+  then
+    sed -i.orig 's/<antcall target=\"private-idm-preverify-os\"\/>/<!-- antcall target=\"private-idm-preverify-os\"\/ -->/' \
+      ${dfile}
+  fi
 
   log "iam_deploy_lcm" "done"
 }
@@ -27,7 +36,7 @@ deploy_lcm() {
 deploy() {
   log "deploy" "executing step ${1}..."
   (
-    cd ${iam_app}/fmw/lcm/provisioning/bin
+    cd ${lcm}/provisioning/bin
     ./runIAMDeployment.sh -responseFile ${_DIR}/user-config/iam/provisioning.rsp \
       -ignoreSysPrereqs true \
       -target ${1}
@@ -40,14 +49,14 @@ patch_opss() {
   log "patch_opss" "logs in ${_log}"
   log "patch_opss" "patching access  opss"
 
-  ${iam_app}/fmw/products/access/iam/bin/psa \
+  ${idmtop}/products/access/iam/bin/psa \
     -response ${_DIR}/user-config/iam/psa_access.rsp \
     -logLevel WARNING \
     -logDir ${_log}
 
   log "patch_opss" "patching identity opss"
 
-  ${iam_app}/fmw/products/identity/iam/bin/psa \
+  ${idmtop}/products/identity/iam/bin/psa \
     -response ${_DIR}/user-config/iam/psa_identity.rsp \
     -logLevel WARNING \
     -logDir ${_log}
@@ -59,7 +68,7 @@ patch_oud() {
   log "patch_oud" "starting"
   local _p=$(mktemp /tmp/del.XXXXXX)
   echo "Montag11" > ${_p}
-  local c="${iam_app}/fmw/config/instances/oud1/OUD/bin/dsconfig set-access-control-handler-prop"
+  local c="${idmtop}/config/instances/oud1/OUD/bin/dsconfig set-access-control-handler-prop"
         c="${c} --hostname $(hostname --long) --port 4444 --trustAll"
         c="${c} --bindDN cn=oudadmin --bindPasswordFile ${_p} --no-prompt"
 

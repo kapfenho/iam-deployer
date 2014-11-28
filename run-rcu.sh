@@ -1,29 +1,32 @@
 #!/bin/sh
 #
 #  oracle rcu wrapper
-#                                                                    schemas
-#      http://docs.oracle.com/html/E38978_01/r2_im_requirements.htm#CIHEDGIH
+#  create or remove database schema for IAM
 #
-#                                 horst.kapfenberger@agoracon.at, 2014-09-10
-#                                                           vim: set ft=sh :
+#  * Configuration in  user-config/iam.config
+# 
+#  * Create schemas
+#      Execute without parameters
+#        ./run-rcu.hs
+#
+#  * Drop schemas
+#      specify any parameter
+#        ./run-rcu.sh drop
+#
+#  http://docs.oracle.com/html/E38978_01/r2_im_requirements.htm#CIHEDGIH
+#  horst.kapfenberger@agoracon.at, 2014-09-10
+#  vim: set ft=sh :
 
 set -o errexit
 set -o nounset
 
-#  ----------------------- configure me ------------------------
-#
-s_rcu_home=/mnt/oracle/iam-11.1.2.2/repo/installers/fmw_rcu/linux/rcuHome
-dbs_dbhost=dbhostname
-iam_sid=mysid
-dbs_sys_pass=mysyspassword
-iam_oim_schema_pass=myoimpassword
-iam_oam_schema_pass=myoampassword
-#
-#  ---------------------------  thanks  ------------------------
+_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+. ${_DIR}/user-config/iam.config
 
+# ------------------------------------------------------------------------
 #  create database schemas for identity management.
-#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, dbs_sys_pass,
+#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, iam_dba_pass,
 #+              iam_oim_schema_pass
 #+ 
 rcu_identity() {
@@ -35,7 +38,7 @@ rcu_identity() {
     -dbUser sys \
     -dbRole sysdba \
     -useSamePasswordForAllSchemaUsers true \
-    -schemaPrefix DEVI \
+    -schemaPrefix OIT \
     -component MDS       \
     -component IAU       \
     -component OPSS      \
@@ -43,13 +46,13 @@ rcu_identity() {
     -component ORASDPM   \
     -component OIM       \
     <<EOF
-${dbs_sys_pass}
+${iam_dba_pass}
 ${iam_oim_schema_pass}
 EOF
 }
 
 #  drop database schemas of identity management.
-#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, dbs_sys_pass
+#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, iam_dba_pass
 #+ 
 rcu_drop_identity() {
   ${s_rcu_home}/bin/rcu \
@@ -59,7 +62,7 @@ rcu_drop_identity() {
     -connectString ${dbs_dbhost}:1521:${iam_sid} \
     -dbUser sys \
     -dbRole sysdba \
-    -schemaPrefix DEVI \
+    -schemaPrefix OIT \
     -component MDS       \
     -component IAU       \
     -component OPSS      \
@@ -67,12 +70,12 @@ rcu_drop_identity() {
     -component ORASDPM   \
     -component OIM       \
     <<EOF
-${dbs_sys_pass}
+${iam_dba_pass}
 EOF
 }
 
 #  create database schemas for access management.
-#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, dbs_sys_pass,
+#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, iam_dba_pass,
 #+              iam_oam_schema_pass
 #+ 
 rcu_access() {
@@ -84,19 +87,19 @@ rcu_access() {
     -dbUser sys \
     -dbRole sysdba \
     -useSamePasswordForAllSchemaUsers true \
-    -schemaPrefix DEVA \
+    -schemaPrefix OAT \
     -component MDS       \
     -component IAU       \
     -component OPSS      \
     -component OAM       \
     <<EOF
-${dbs_sys_pass}
+${iam_dba_pass}
 ${iam_oam_schema_pass}
 EOF
 }
 
 #  drop database schemas of access management.
-#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, dbs_sys_pass
+#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, iam_dba_pass
 #+ 
 rcu_drop_access() {
   ${s_rcu_home}/bin/rcu \
@@ -106,27 +109,42 @@ rcu_drop_access() {
     -connectString ${dbs_dbhost}:1521:${iam_sid} \
     -dbUser sys \
     -dbRole sysdba \
-    -schemaPrefix DEVA \
+    -schemaPrefix OAT \
     -component MDS       \
     -component IAU       \
     -component OPSS      \
     -component OAM       \
     <<EOF
-${dbs_sys_pass}
+${iam_dba_pass}
 EOF
 }
 
+# -------------------------------------------------------
 
 echo
 
-rcu_drop_identity
-rcu_drop_access
+if [ ${#} -gt 0 ] 
+then
+  echo "*** Dropping schemas ***"
+  echo "  press RETURN to continue or Ctrl-C to stop"
+  read cont
+  echo
+  echo "***  Dropping Identity schema..."
+  rcu_drop_identity
+  echo "***  Dropping Access schema..."
+  rcu_drop_access
+else
+  echo "*** Creating schemas ***"
+  echo "  press RETURN to continue or Ctrl-C to stop"
+  read cont
+  echo
+  echo "***  Creating Identity schema..."
+  rcu_identity
+  echo "***  Creating Access schema..."
+  rcu_access
+fi
 
-echo "RUN-RCU: Starting identity creation..."
-rcu_identity
-echo "RUN-RCU: Starting access   creation..."
-rcu_access
-echo "RUN-RCU: Finished."
+echo "*** Schema actions finished. ***"
 
 exit 0
 
