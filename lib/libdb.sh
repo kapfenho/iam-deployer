@@ -55,7 +55,7 @@ EOF
 #+ Vars needed: dbs_sid
 #
 set_db_autostart() {
-  sudo -n sed -i -e "s/${dbs_sid}:\/appl\/dbs\/product\/11.2\/db:N/${dbs_sid}:\/appl\/dbs\/product\/11.2\/db:Y/g" /etc/oratab
+  sudo -n sed -i -e "s/${dbs_sid}:\/opt\/oracle\/product\/11.2\/db:N/${dbs_sid}:\/opt\/oracle\/product\/11.2\/db:Y/g" /etc/oratab
 }
 
 #  Oracle Database software installation. Configuration from response file used.

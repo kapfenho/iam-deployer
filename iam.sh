@@ -5,6 +5,7 @@ set -o nounset
 
 _DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 . ${_DIR}/user-config/iam.config
+. ${_DIR}/user-config/env/env.sh
 . ${_DIR}/lib/libcommon.sh
 . ${_DIR}/lib/libjdk.sh
 . ${_DIR}/lib/libiam.sh
@@ -25,11 +26,11 @@ iam_mw_home=$(grep "COMMON_FMW_DIR="         ${uc} | cut -d= -f2)
 # create_user_profile
 #add_vim_user_config
 
-# deploy life cycle managment
+# # deploy life cycle managment
 deploy_lcm
-
-# deployment and instance creation with lifecycle management
-for step in preverify install preconfigure configure configure-secondary postconfigure startup validate
+# 
+# # deployment and instance creation with lifecycle management
+for step in preverify install
 do
   deploy $step
 done
@@ -37,16 +38,22 @@ done
 # use urandom
 for p in access dir identity web
 do
-  jdk_patch_config /appl/iam/fmw/products/$p/jdk6
+  jdk_patch_config ${idmtop}/products/$p/jdk6
 done
 
-for f in iam-dir iam-nodemanager iam-identity iam-access iam-webtier
+# deployment and instance creation with lifecycle management
+for step in preconfigure configure configure-secondary postconfigure startup validate
 do
-  dest=/etc/init.d/$f
-  [ -a $dest ] || sudo -n cp ${_DIR}/sys/redhat/rc.d/$f $dest
-  sudo -n chmod 0755 $dest
-  sudo -n chkconfig --add $f
+  deploy $step
 done
+
+# for f in iam-dir iam-nodemanager iam-identity iam-access iam-webtier
+# do
+#   dest=/etc/init.d/$f
+#   [ -a $dest ] || sudo -n cp ${_DIR}/sys/redhat/rc.d/$f $dest
+#   sudo -n chmod 0755 $dest
+#   sudo -n chkconfig --add $f
+# done
 
 # post installs from enterprise guide:
 # patch_opss
