@@ -7,7 +7,7 @@
      dom=access_test
 adm_port=7001
  nm_port=5556
-    keys=/opt/fmw/config/cred
+    keys=/opt/fmw/config/creds
      nmu=${keys}/nm-$(hostname -s).usr
      nmk=${keys}/nm-$(hostname -s).key
       du=${keys}/${dom}.usr

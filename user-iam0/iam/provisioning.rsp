@@ -210,7 +210,7 @@ DT_ONEHOSTPERAPP=false
 PROVISIONING_IDMPROV=true
 
 #OID Configuration
-OID_IDSTORE_DB_REALM=dc=agoracon,dc=at
+OID_IDSTORE_DB_REALM=dc=dwpbank,dc=net
 OUD_REPLICATIONPORT=8989
 
 #OHS Configuration

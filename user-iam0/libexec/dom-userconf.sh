@@ -23,8 +23,16 @@ echo -e '\n[ -a ${HOME}/.env/common.sh ] && . ${HOME}/.env/common.sh' >> ${HOME}
 
 . ${HOME}/.env/common.sh
 
-# user key files access domain
+# oud env file  --------------
+#
+. ${HOME}/.env/dir.sh
 
+cp -b ${deployer}/user-config/hostenv/tools.properties ${INST_HOME}/config/
+
+echo -n Montag11 > ${HOME}/.creds/oudadmin
+
+# user key files access domain --
+#
 . ${HOME}/.env/acc.sh
 
 ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop <<-EOF
@@ -43,6 +51,8 @@ y
 exit()
 EOF
 
+# identity domain ------------
+#
 . ${HOME}/.env/idm.sh
 
 ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<-EOF
