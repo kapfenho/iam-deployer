@@ -12,14 +12,14 @@ unset       INSTANCE
 unset      INST_HOME
 unset       INST_LOG
 
-export          PATH=${ORACLE_HOME}/bin:${JAVA_HOME}/bin:/opt/ruby/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/iam/bin
+export          PATH=${ORACLE_HOME}/bin:${JAVA_HOME}/bin:${DEF_PATH}
 export             E=acc
 
 alias wlst='${ORACLE_COMMON}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop'
 
 deploy() {
   . ${WL_HOME}/server/bin/setWLSEnv.sh
-  java weblogic.WLST -loadProperties ~/.wlst/${1}.prop ${HOME}/lib/deploy.py
+  java weblogic.WLST -loadProperties ~/.env/${1}.prop ${HOME}/lib/deploy.py
 }
 
 

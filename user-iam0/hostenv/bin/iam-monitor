@@ -22,11 +22,11 @@ get_pid() {
   fi
 }
 
-get_pid pa1 IAMAccessDomain     AdminServer
-get_pid pa2 IAMAccessDomain     wls_oam1
-get_pid pi1 IAMGovernanceDomain AdminServer
-get_pid pi2 IAMGovernanceDomain wls_soa1
-get_pid pi3 IAMGovernanceDomain wls_oim1
+get_pid pa1 access_test   AdminServer
+get_pid pa2 access_test   wls_oam1
+get_pid pi1 identity_test AdminServer
+get_pid pi2 identity_test wls_soa1
+get_pid pi3 identity_test wls_oim1
 
 [ ${#pa1} -gt 1 ] && echo "$(ps --headers    -p ${pa1})    access:AdminServer"
 [ ${#pa2} -gt 1 ] && echo "$(ps --no-headers -p ${pa2})    access:wls_oam1"

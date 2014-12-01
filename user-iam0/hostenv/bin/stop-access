@@ -6,8 +6,9 @@ LOG=${DOMAIN_LOG}/AdminServer/wlst.log
 
 ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop > ${LOG} 2>&1 <<EOS
 nmConnect('admin','Montag11',hostname,'5556',domName,domDir,'ssl');
-nmStart('AdmdomDirinServer');
-nmStart('wls_oam1');
+connect('weblogic_idm','Montag11',domUrl);
+shutdown('wls_oam1',force='true');
+shutdown('AdminServer',force='true');
 exit();
 EOS
 

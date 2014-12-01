@@ -2,7 +2,7 @@ export         PS1='[\u@\h:\[\e[0;32m\]${E}\[\e[m\] \W]\$ '
 export       PAGER=less
 export      EDITOR=vi
 
-export    DEF_PATH=/opt/ruby/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/iam/bin
+export    DEF_PATH=${HOME}/bin:/opt/fmw/platform/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin
 export  REPOS_HOME=/mnt/orainst/iam-11.1.2.2/repo/installers
 export IDMLCM_HOME=/opt/fmw/lcm
 

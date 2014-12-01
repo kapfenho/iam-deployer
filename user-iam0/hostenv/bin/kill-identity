@@ -6,9 +6,9 @@ LOG=${DOMAIN_LOG}/AdminServer/wlst.log
 
 ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop > ${LOG} 2>&1 <<EOS
 nmConnect('admin','Montag11','$(hostname -f)','5556',domName,domDir,'ssl');
-nmStart('AdminServer');
-nmStart('wls_soa1');
-nmStart('wls_oim1');
+nmKill('wls_oim1');
+nmKill('wls_soa1');
+nmKill('AdminServer');
 exit();
 EOS
 

@@ -1,12 +1,12 @@
 #!/bin/sh
 
-NMHOME=/appl/iam/fmw/config/nodemanager/iam3
-   LOG=/appl/logs/iam/nodemanager/wlst.log
+NMHOME=/opt/fmw/config/nodemanager/$(hostname -f)
+   LOG=/var/log/fmw/nodemanager/wlst.log
 
 . ${HOME}/.env/acc.sh
 cd ${NMHOME}
 ${WL_HOME}/common/bin/wlst.sh > ${LOG} 2>&1 <<EOS
-startNodeManager(verbose='true',NodeManagerHome='${NMHOME}',ListenPort='5556',ListenAddress='iam3');
+startNodeManager(verbose='true',NodeManagerHome='${NMHOME}',ListenPort='5556',ListenAddress='$(hostname -f)');
 exit()
 EOS
 

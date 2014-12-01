@@ -1,1 +1,0 @@
-rlwrap ${ORACLE_COMMON}/common/bin/wlst.sh
