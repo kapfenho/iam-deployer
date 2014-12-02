@@ -71,6 +71,8 @@ iam-web          0:off   1:off   2:off   3:on    4:on    5:on    6:off
 ...
 ```
 
+_See below for the output on the mulit-node setup._
+
 Now you can use
 
     service <script> start | stop | restart | status
@@ -138,4 +140,81 @@ server web2
 -----------
 /etc/rc.d/init.d/iam-web         webtier services
 ```
+
+
+```
+###  dwptidw1  ### 
+iam-web         0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+
+###  dwptidw2  ### 
+iam-web         0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+
+###  dwptoam1  ### 
+iam-node        0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+iama-admin      0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+iama-oam        0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+
+###  dwptoam2  ### 
+iam-node        0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+iama-oam        0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+
+###  dwptoim1  ### 
+iam-node        0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+iami-admin      0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+iami-oim        0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+iami-soa        0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+
+###  dwptoim2  ### 
+iam-node        0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+iami-oim        0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+iami-soa        0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+
+###  dwptoud1  ### 
+iam-dir         0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+
+###  dwptoud2  ### 
+iam-dir         0:off   1:off   2:off   3:on    4:on    5:on    6:off 
+
+
+###  dwptidw1  ### 
+-rwxr-xr-x 1 root root 2142 Nov 28 14:33 /etc/rc.d/init.d/iam-web 
+
+###  dwptidw2  ### 
+-rwxr-xr-x 1 root root 2142 Nov 28 14:33 /etc/rc.d/init.d/iam-web 
+
+###  dwptoam1  ### 
+-rw-r--r-- 1 root root 1630 Nov 28 14:38 /etc/rc.d/init.d/functions-wls 
+-rwxr-xr-x 1 root root 3098 Nov 28 17:00 /etc/rc.d/init.d/iam-node 
+-rwxr-xr-x 1 root root  738 Nov 28 14:34 /etc/rc.d/init.d/iama-admin 
+-rwxr-xr-x 1 root root  715 Nov 28 14:34 /etc/rc.d/init.d/iama-oam 
+-rw-r--r-- 1 root root  431 Nov 28 14:34 /etc/rc.d/init.d/wls-access 
+
+###  dwptoam2  ### 
+-rw-r--r-- 1 root root 1630 Nov 28 14:38 /etc/rc.d/init.d/functions-wls 
+-rwxr-xr-x 1 root root 3098 Nov 28 17:00 /etc/rc.d/init.d/iam-node 
+-rwxr-xr-x 1 root root  715 Nov 28 14:35 /etc/rc.d/init.d/iama-oam 
+-rw-r--r-- 1 root root  431 Nov 28 14:35 /etc/rc.d/init.d/wls-access 
+
+###  dwptoim1  ### 
+-rw-r--r-- 1 root root 1630 Nov 28 14:37 /etc/rc.d/init.d/functions-wls 
+-rwxr-xr-x 1 root root 3098 Nov 28 17:00 /etc/rc.d/init.d/iam-node 
+-rwxr-xr-x 1 root root  758 Nov 28 14:35 /etc/rc.d/init.d/iami-admin 
+-rwxr-xr-x 1 root root  739 Nov 28 14:35 /etc/rc.d/init.d/iami-oim 
+-rwxr-xr-x 1 root root  737 Nov 28 14:35 /etc/rc.d/init.d/iami-soa 
+-rw-r--r-- 1 root root  425 Nov 28 14:35 /etc/rc.d/init.d/wls-identity 
+
+###  dwptoim2  ### 
+-rw-r--r-- 1 root root 1630 Nov 28 14:37 /etc/rc.d/init.d/functions-wls 
+-rwxr-xr-x 1 root root 3098 Nov 28 17:00 /etc/rc.d/init.d/iam-node 
+-rwxr-xr-x 1 root root  739 Nov 28 14:35 /etc/rc.d/init.d/iami-oim 
+-rwxr-xr-x 1 root root  737 Nov 28 14:35 /etc/rc.d/init.d/iami-soa 
+-rw-r--r-- 1 root root  425 Nov 28 14:35 /etc/rc.d/init.d/wls-identity 
+
+###  dwptoud1  ### 
+-rwxr-xr-x 1 root root 2744 Nov 28 14:35 /etc/rc.d/init.d/iam-dir 
+
+###  dwptoud2  ### 
+-rwxr-xr-x 1 root root 2744 Nov 28 14:36 /etc/rc.d/init.d/iam-dir 
+```
+
 
