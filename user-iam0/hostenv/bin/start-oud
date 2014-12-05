@@ -1,8 +1,0 @@
-#!/bin/sh
-
-. ${HOME}/.env/dir.sh
-cd ${INST_HOME}
-bin/start-ds
-
-exit 0
-

@@ -1,12 +1,11 @@
 #!/bin/sh
 
-. ${HOME}/.env/idm.sh
+. ${HOME}/.env/idm.env
 
-LOG=${DOMAIN_LOG}/AdminServer/wlst.log
-
-${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop > ${LOG} 2>&1 <<EOS
-nmConnect('admin','Montag11','$(hostname -f)','5556',domName,domDir,'ssl');
+${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<EOS
+nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=hostname,port=nmPort,domainName=domName,domainDir=domDir,nmType='ssl');
 nmStart('AdminServer');
+connect(userConfigFile=domUC,userKeyFile=domUK,url=domUrl);
 nmStart('wls_soa1');
 nmStart('wls_oim1');
 exit();

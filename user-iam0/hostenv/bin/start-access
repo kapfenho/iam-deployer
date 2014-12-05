@@ -1,15 +1,15 @@
 #!/bin/sh
 
-. ${HOME}/.env/acc.sh
+. ${HOME}/.env/acc.env
 
-LOG=${DOMAIN_LOG}/AdminServer/wlst.log
-
-${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop > ${LOG} 2>&1 <<EOS
-nmConnect('admin','Montag11',hostname,'5556',domName,domDir,'ssl');
-nmStart('AdmdomDirinServer');
-nmStart('wls_oam1');
+${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop <<EOS
+nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=hostname,port=nmPort,domainName=domName,domainDir=domDir,nmType='ssl');
+nmStart('AdminServer');
+connect(userConfigFile=domUC,userKeyFile=domUK,url=domUrl);
+start('wls_oam1');
 exit();
 EOS
+
 
 exit 0
 
