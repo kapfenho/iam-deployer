@@ -66,26 +66,26 @@ popd()
 # (http://download.oracle.com/docs/cd/E23943_01/web.1111/e13708/overview.htm).
 # *************************************************************************
 
-COMMON_COMPONENTS_HOME="/appl/iam/fmw/products/access/oracle_common"
+COMMON_COMPONENTS_HOME="/opt/fmw/products/access/oracle_common"
 export COMMON_COMPONENTS_HOME
 
 
-OAM_ORACLE_HOME="/appl/iam/fmw/products/access/iam/oam"
+OAM_ORACLE_HOME="/opt/fmw/products/access/iam/oam"
 export OAM_ORACLE_HOME
 
 
-ORACLE_HOME="/appl/iam/fmw/products/access/iam/"
+ORACLE_HOME="/opt/fmw/products/access/iam/"
 export ORACLE_HOME
 
 
-APPLICATIONS_DIRECTORY="/appl/iam/fmw/config/domains/IAMAccessDomain/applications"
+APPLICATIONS_DIRECTORY="/opt/fmw/config/domains/access_test/applications"
 export APPLICATIONS_DIRECTORY
 
 
-WL_HOME="/appl/iam/fmw/products/access/wlserver_10.3"
+WL_HOME="/opt/fmw/products/access/wlserver_10.3"
 export WL_HOME
 
-BEA_JAVA_HOME="/appl/iam/fmw/products/access/jdk/current"
+BEA_JAVA_HOME="/opt/fmw/products/access/jdk/current"
 export BEA_JAVA_HOME
 
 SUN_JAVA_HOME=""
@@ -101,7 +101,7 @@ else
 	else
 		JAVA_VENDOR="Oracle"
 		export JAVA_VENDOR
-		JAVA_HOME="/appl/iam/fmw/products/access/jdk/current"
+		JAVA_HOME="/opt/fmw/products/access/jdk/current"
 		export JAVA_HOME
 	fi
 fi
@@ -115,10 +115,10 @@ export JAVA_HOME
 SAMPLES_HOME="${WL_HOME}/samples"
 export SAMPLES_HOME
 
-DOMAIN_HOME="/appl/iam/fmw/config/domains/IAMAccessDomain"
+DOMAIN_HOME="/opt/fmw/config/domains/access_test"
 export DOMAIN_HOME
 
-LONG_DOMAIN_HOME="/appl/iam/fmw/config/domains/IAMAccessDomain"
+LONG_DOMAIN_HOME="/opt/fmw/config/domains/access_test"
 export LONG_DOMAIN_HOME
 
 if [ "${DEBUG_PORT}" = "" ] ; then
@@ -390,7 +390,7 @@ export EXTRA_JAVA_PROPERTIES
 EXTRA_JAVA_PROPERTIES=" -Doracle.idm.ipf.home=${ORACLE_HOME}/modules/oracle.idm.ipf_11.1.2 ${EXTRA_JAVA_PROPERTIES}"
 export EXTRA_JAVA_PROPERTIES
 
-EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Dem.oracle.home=/appl/iam/fmw/products/access/oracle_common -Djava.awt.headless=true"
+EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Dem.oracle.home=/opt/fmw/products/access/oracle_common -Djava.awt.headless=true"
 export EXTRA_JAVA_PROPERTIES
 
 EXTRA_JAVA_PROPERTIES="-Dcommon.components.home=${COMMON_COMPONENTS_HOME} -Djrf.version=11.1.1 -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.Jdk14Logger -Ddomain.home=${DOMAIN_HOME} -Djrockit.optfile=${COMMON_COMPONENTS_HOME}/modules/oracle.jrf_11.1.1/jrocket_optfile.txt -Doracle.server.config.dir=${ORACLE_DOMAIN_CONFIG_DIR}/servers/${SERVER_NAME} -Doracle.domain.config.dir=${ORACLE_DOMAIN_CONFIG_DIR}  -Digf.arisidbeans.carmlloc=${ORACLE_DOMAIN_CONFIG_DIR}/carml  -Digf.arisidstack.home=${ORACLE_DOMAIN_CONFIG_DIR}/arisidprovider -Doracle.security.jps.config=${DOMAIN_HOME}/config/fmwconfig/jps-config.xml -Doracle.deployed.app.dir=${DOMAIN_HOME}/servers/${SERVER_NAME}/tmp/_WL_user -Doracle.deployed.app.ext=/- -Dweblogic.alternateTypesDirectory=${ALT_TYPES_DIR} -Djava.protocol.handler.pkgs=${PROTOCOL_HANDLERS}  ${WLS_JDBC_REMOTE_ENABLED} ${EXTRA_JAVA_PROPERTIES}"

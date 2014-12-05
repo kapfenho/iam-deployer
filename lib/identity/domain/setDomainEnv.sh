@@ -65,40 +65,40 @@ popd()
 # (http://download.oracle.com/docs/cd/E23943_01/web.1111/e13708/overview.htm).
 # *************************************************************************
 
-COMMON_COMPONENTS_HOME="/appl/iam/fmw/products/identity/oracle_common"
+COMMON_COMPONENTS_HOME="/opt/fmw/products/identity/oracle_common"
 export COMMON_COMPONENTS_HOME
 
 
-OES_ORACLE_HOME="/appl/iam/fmw/products/identity/iam/oes/"
+OES_ORACLE_HOME="/opt/fmw/products/identity/iam/oes/"
 export OES_ORACLE_HOME
 
 
-APM_ORACLE_HOME="/appl/iam/fmw/products/identity/iam/apm/"
+APM_ORACLE_HOME="/opt/fmw/products/identity/iam/apm/"
 export APM_ORACLE_HOME
 
 
-OIM_ORACLE_HOME="/appl/iam/fmw/products/identity/iam"
+OIM_ORACLE_HOME="/opt/fmw/products/identity/iam"
 export OIM_ORACLE_HOME
 
 
-APPLICATIONS_DIRECTORY="/appl/iam/fmw/config/domains/IAMGovernanceDomain/applications"
+APPLICATIONS_DIRECTORY="/opt/fmw/config/domains/identity_test/applications"
 export APPLICATIONS_DIRECTORY
 
 
-ORACLE_HOME="/appl/iam/fmw/products/identity/iam/"
+ORACLE_HOME="/opt/fmw/products/identity/iam/"
 export ORACLE_HOME
 
 
-WL_HOME="/appl/iam/fmw/products/identity/wlserver_10.3"
+WL_HOME="/opt/fmw/products/identity/wlserver_10.3"
 export WL_HOME
 
-BEA_JAVA_HOME="/appl/iam/fmw/products/identity/jdk/current"
+BEA_JAVA_HOME="/opt/fmw/products/identity/jdk/current"
 export BEA_JAVA_HOME
 
 SUN_JAVA_HOME=""
 export SUN_JAVA_HOME
 
-UMS_ORACLE_HOME="/appl/iam/fmw/products/identity/soa"
+UMS_ORACLE_HOME="/opt/fmw/products/identity/soa"
 export UMS_ORACLE_HOME
 
 
@@ -111,7 +111,7 @@ else
 fi
 
 
-SOA_ORACLE_HOME="/appl/iam/fmw/products/identity/soa"
+SOA_ORACLE_HOME="/opt/fmw/products/identity/soa"
 export SOA_ORACLE_HOME
 
 
@@ -125,7 +125,7 @@ else
 	else
 		JAVA_VENDOR="Oracle"
 		export JAVA_VENDOR
-		JAVA_HOME="/appl/iam/fmw/products/identity/jdk/current"
+		JAVA_HOME="/opt/fmw/products/identity/jdk/current"
 		export JAVA_HOME
 	fi
 fi
@@ -139,10 +139,10 @@ export JAVA_HOME
 SAMPLES_HOME="${WL_HOME}/samples"
 export SAMPLES_HOME
 
-DOMAIN_HOME="/appl/iam/fmw/config/domains/IAMGovernanceDomain"
+DOMAIN_HOME="/opt/fmw/config/domains/identity_test"
 export DOMAIN_HOME
 
-LONG_DOMAIN_HOME="/appl/iam/fmw/config/domains/IAMGovernanceDomain"
+LONG_DOMAIN_HOME="/opt/fmw/config/domains/identity_test"
 export LONG_DOMAIN_HOME
 
 if [ "${DEBUG_PORT}" = "" ] ; then
@@ -423,7 +423,7 @@ export EXTRA_JAVA_PROPERTIES
 EXTRA_JAVA_PROPERTIES=" ${EXTRA_JAVA_PROPERTIES} -DXL.HomeDir=${OIM_ORACLE_HOME}/server  -Dscheduler.disabled=false -Djava.security.auth.login.config=${OIM_ORACLE_HOME}/server/config/authwl.conf  -Dorg.owasp.esapi.resources=${OIM_ORACLE_HOME}/server/apps/oim.ear/APP-INF/classes -DeditionOverride=ee -Djbo.ampool.doampooling=true -Djbo.ampool.minavailablesize=1 -Djbo.ampool.maxavailablesize=120 -Djbo.recyclethreshold=60 -Djbo.ampool.timetolive=-1 -Djbo.load.components.lazily=true -Djbo.doconnectionpooling=true -Djbo.txn.disconnect_level=1 -Djbo.connectfailover=false -Djbo.max.cursors=5 -Doracle.jdbc.implicitStatementCacheSize=5 -Doracle.jdbc.maxCachedBufferSize=19"
 export EXTRA_JAVA_PROPERTIES
 
-EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Dem.oracle.home=/appl/iam/fmw/products/identity/oracle_common -Djava.awt.headless=true"
+EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Dem.oracle.home=/opt/fmw/products/identity/oracle_common -Djava.awt.headless=true"
 export EXTRA_JAVA_PROPERTIES
 
 EXTRA_JAVA_PROPERTIES=" -Doracle.idm.ipf.home=${ORACLE_HOME}/modules/oracle.idm.ipf_11.1.2 ${EXTRA_JAVA_PROPERTIES}"
@@ -573,7 +573,7 @@ export POST_CLASSPATH
 POST_CLASSPATH="${UMS_ORACLE_HOME}/communications/modules/usermessaging-config_11.1.1.jar${CLASSPATHSEP}${POST_CLASSPATH}"
 export POST_CLASSPATH
 
-POST_CLASSPATH="/appl/iam/fmw/products/identity/soa/soa/modules/oracle.soa.common.adapters_11.1.1/oracle.soa.common.adapters.jar${CLASSPATHSEP}${POST_CLASSPATH}"
+POST_CLASSPATH="/opt/fmw/products/identity/soa/soa/modules/oracle.soa.common.adapters_11.1.1/oracle.soa.common.adapters.jar${CLASSPATHSEP}${POST_CLASSPATH}"
 export POST_CLASSPATH
 
 if [ "${DATABASE_CLASSPATH}" != "" ] ; then

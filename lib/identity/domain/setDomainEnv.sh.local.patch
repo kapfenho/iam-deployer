@@ -1,0 +1,64 @@
+95c95
+< BEA_JAVA_HOME="/opt/fmw/products/identity/jdk6"
+---
+> BEA_JAVA_HOME="/opt/fmw/products/identity/jdk/current"
+128c128
+< 		JAVA_HOME="/opt/fmw/products/identity/jdk6"
+---
+> 		JAVA_HOME="/opt/fmw/products/identity/jdk/current"
+164c164
+< PRODUCTION_MODE=""
+---
+> PRODUCTION_MODE="true"
+257a258,261
+> # Custom settings -- horst kapfenberger --
+> . ${DOMAIN_HOME}/bin/setCustDomainEnv.sh
+> # custom setting -- end --
+> 
+371,377c375,381
+< # IF USER_MEM_ARGS the environment variable is set, use it to override ALL MEM_ARGS values
+< 
+< if [ "${USER_MEM_ARGS}" != "" ] ; then
+< 	MEM_ARGS="${USER_MEM_ARGS}"
+< 	export MEM_ARGS
+< fi
+< 
+---
+> ## # IF USER_MEM_ARGS the environment variable is set, use it to override ALL MEM_ARGS values
+> ## 
+> ## if [ "${USER_MEM_ARGS}" != "" ] ; then
+> ## 	MEM_ARGS="${USER_MEM_ARGS}"
+> ## 	export MEM_ARGS
+> ## fi
+>  
+441,448c445,452
+< if [ "${SERVER_NAME}" = "wls_oim1" -o "${SERVER_NAME}" = "wls_oim2" ]
+< then
+<   EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Xmx2048m"
+<   export EXTRA_JAVA_PROPERTIES
+< else
+<   EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Xmx1536m"
+<   export EXTRA_JAVA_PROPERTIES
+< fi
+---
+> ## if [ "${SERVER_NAME}" = "wls_oim1" -o "${SERVER_NAME}" = "wls_oim2" ]
+> ## then
+> ##   EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Xmx2048m"
+> ##   export EXTRA_JAVA_PROPERTIES
+> ## else
+> ##   EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Xmx1536m"
+> ##   export EXTRA_JAVA_PROPERTIES
+> ## fi
+477,478c481,484
+< JAVA_PROPERTIES="${JAVA_PROPERTIES} ${MEM_ARGS}"
+< export JAVA_PROPERTIES
+---
+> ## JAVA_PROPERTIES="${JAVA_PROPERTIES} ${MEM_ARGS}"
+> ## export JAVA_PROPERTIES
+> 
+> # IF USER_MEM_ARGS the environment variable is set, use it to override ALL MEM_ARGS values
+479a486,489
+> if [ "${USER_MEM_ARGS}" != "" ] ; then
+> 	MEM_ARGS="${USER_MEM_ARGS}"
+> 	export MEM_ARGS
+> fi

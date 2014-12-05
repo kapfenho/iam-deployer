@@ -2,8 +2,8 @@ Environment
 -----------
 
 common.sh       common environment settings for all apps
-acc.sh          access manager env settings
-idm.sh          identity manager env settings
+oam.sh          access manager env settings
+oim.sh          identity manager env settings
 dir.sh          unified directory env settings
 web.sh          webtier env settings (ohs, webgate)
 

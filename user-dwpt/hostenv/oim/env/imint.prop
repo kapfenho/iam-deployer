@@ -1,12 +1,12 @@
 # change values in captiol letters before usage
 #
-hostname=_HOST_
+hostname=dwptoim1.dwpbank.net
 nmPort=5556
 domName=identity_test
 domDir=/opt/fmw/config/domains/identity_test
 locDir=/opt/local/domains/identity_test
 domAdminPort=7101
-domUrl=t3://oim1.vie.agoracon.at:7101
+domUrl=t3://dwptoim1.dwpbank.net:7101
 domUC=/home/fmwuser/.cred/identity_test.usr
 domUK=/home/fmwuser/.cred/identity_test.key
 nmUC=/home/fmwuser/.cred/nm.usr

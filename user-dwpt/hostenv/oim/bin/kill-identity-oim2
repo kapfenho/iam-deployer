@@ -1,0 +1,11 @@
+#!/bin/sh
+
+${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<EOS
+nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=hostname,port=nmPort,domainName=domName,domainDir=domDir,nmType='ssl');
+nmKill('wls_oim2');
+nmKill('wls_soa2');
+exit();
+EOS
+
+exit 0
+

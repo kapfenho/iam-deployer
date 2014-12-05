@@ -19,21 +19,24 @@ cp ${deployer}/user-config/hostenv/env/* ~/.env
 cp ${deployer}/user-config/hostenv/bin/* ~/bin
 cp ${deployer}/user-config/hostenv/lib/* ~/lib
 
-echo -e '\n[ -a ${HOME}/.env/common.sh ] && . ${HOME}/.env/common.sh' >> ${HOME}/.bash_profile
+echo -e '\n[ -a ${HOME}/.env/common.sh ] && . ${HOME}/.env/common.sh\n' >> ${HOME}/.bash_profile
 
 . ${HOME}/.env/common.sh
 
 # oud env file  --------------
 #
-. ${HOME}/.env/dir.sh
 
-cp -b ${deployer}/user-config/hostenv/tools.properties ${INST_HOME}/config/
+# oud
+[ -a ${HOME}/.env/dir.sh ] && . ${HOME}/.env/dir.sh
+[ -a ${HOME}/.env/oud.sh ] && . ${HOME}/.env/oud.sh
 
 echo -n Montag11 > ${HOME}/.creds/oudadmin
+cp -b ${deployer}/user-config/hostenv/tools.properties ${INST_HOME}/config/
 
 # user key files access domain --
 #
-. ${HOME}/.env/acc.sh
+[ -a ${HOME}/.env/acc.sh ] && . ${HOME}/.env/acc.sh
+[ -a ${HOME}/.env/oam.sh ] && . ${HOME}/.env/oam.sh
 
 ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop <<-EOF
 nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
@@ -53,15 +56,16 @@ EOF
 
 # identity domain ------------
 #
-. ${HOME}/.env/idm.sh
+[ -a ${HOME}/.env/idm.sh ] && . ${HOME}/.env/idm.sh
+[ -a ${HOME}/.env/oim.sh ] && . ${HOME}/.env/oim.sh
 
-${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<-EOF
-nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
- port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
-storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
-y
-exit()
-EOF
+# ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<-EOF
+# nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
+#  port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
+# storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
+# y
+# exit()
+# EOF
 
 
 ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<-EOF

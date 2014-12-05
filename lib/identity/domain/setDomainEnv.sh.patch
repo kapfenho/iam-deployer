@@ -1,3 +1,11 @@
+95c95
+< BEA_JAVA_HOME="/opt/fmw/products/identity/jdk6"
+---
+> BEA_JAVA_HOME="/opt/fmw/products/identity/jdk/current"
+128c128
+< 		JAVA_HOME="/opt/fmw/products/identity/jdk6"
+---
+> 		JAVA_HOME="/opt/fmw/products/identity/jdk/current"
 164c164
 < PRODUCTION_MODE=""
 ---

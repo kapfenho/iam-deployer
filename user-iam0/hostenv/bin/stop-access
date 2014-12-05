@@ -1,12 +1,10 @@
 #!/bin/sh
 
-. ${HOME}/.env/acc.sh
+. ${HOME}/.env/acc.env
 
-LOG=${DOMAIN_LOG}/AdminServer/wlst.log
-
-${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop > ${LOG} 2>&1 <<EOS
-nmConnect('admin','Montag11',hostname,'5556',domName,domDir,'ssl');
-connect('weblogic_idm','Montag11',domUrl);
+${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop <<EOS
+nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=hostname,port=nmPort,domainName=domName,domainDir=admDir,nmType='ssl');
+connect(userConfigFile=domUC,userKeyFile=domUK,url=domUrl);
 shutdown('wls_oam1',force='true');
 shutdown('AdminServer',force='true');
 exit();
