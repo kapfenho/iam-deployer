@@ -1,5 +1,13 @@
 2a3
 > 
+87c88
+< BEA_JAVA_HOME="/opt/fmw/products/access/jdk6"
+---
+> BEA_JAVA_HOME="/opt/fmw/products/access/jdk/current"
+103c104
+< 		JAVA_HOME="/opt/fmw/products/access/jdk6"
+---
+> 		JAVA_HOME="/opt/fmw/products/access/jdk/current"
 139,140c140,142
 < PRODUCTION_MODE=""
 < export PRODUCTION_MODE

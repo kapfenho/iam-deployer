@@ -26,7 +26,7 @@
 prog=oracle
 LOCKFILE=/var/lock/subsys/oracle
 ORACLE_USER=oracle
-PPROC=ora_pmon_miercoles
+PPROC=ora_pmon_jueves
 
 case "$1" in
 'start')

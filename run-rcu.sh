@@ -38,7 +38,7 @@ rcu_identity() {
     -dbUser sys \
     -dbRole sysdba \
     -useSamePasswordForAllSchemaUsers true \
-    -schemaPrefix OIT \
+    -schemaPrefix DIM \
     -component MDS       \
     -component IAU       \
     -component OPSS      \
@@ -62,7 +62,7 @@ rcu_drop_identity() {
     -connectString ${dbs_dbhost}:1521:${iam_sid} \
     -dbUser sys \
     -dbRole sysdba \
-    -schemaPrefix OIT \
+    -schemaPrefix DIM \
     -component MDS       \
     -component IAU       \
     -component OPSS      \
@@ -87,7 +87,7 @@ rcu_access() {
     -dbUser sys \
     -dbRole sysdba \
     -useSamePasswordForAllSchemaUsers true \
-    -schemaPrefix OAT \
+    -schemaPrefix DAM \
     -component MDS       \
     -component IAU       \
     -component OPSS      \
@@ -109,7 +109,7 @@ rcu_drop_access() {
     -connectString ${dbs_dbhost}:1521:${iam_sid} \
     -dbUser sys \
     -dbRole sysdba \
-    -schemaPrefix OAT \
+    -schemaPrefix DAM \
     -component MDS       \
     -component IAU       \
     -component OPSS      \

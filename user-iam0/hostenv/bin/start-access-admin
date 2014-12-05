@@ -1,0 +1,12 @@
+#!/bin/sh
+
+. ${HOME}/.env/acc.env
+
+${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop <<EOS
+nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=hostname,port=nmPort,domainName=domName,domainDir=admDir,nmType='ssl');
+nmStart('AdminServer');
+EOS
+
+
+exit 0
+

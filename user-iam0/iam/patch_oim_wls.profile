@@ -10,13 +10,13 @@ weblogic_password=Montag11
 soa_host=iam0.dwpbank.net
 soa_port=8001
 
-operationsDB.user=OIT_OIM  ***
+operationsDB.user=DIM_OIM  ***
 OIM.DBPassword=Montag11     ***
 operationsDB.host=oradb.dwpbank.net
 operationsDB.serviceName=martes
 operationsDB.port=1521
 
-mdsDB.user=OIT_MDS         ***
+mdsDB.user=DIM_MDS         ***
 mdsDB.password=Montag11     ***
 mdsDB.host=oradb.dwpbank.net
 mdsDB.port=1521

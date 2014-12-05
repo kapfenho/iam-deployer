@@ -1,0 +1,7 @@
+#!/bin/sh
+
+. ${HOME}/.env/dir.env
+start-ds
+
+exit 0
+
