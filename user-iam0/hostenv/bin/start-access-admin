@@ -4,11 +4,9 @@
 
 ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop <<EOS
 nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=hostname,port=nmPort,domainName=domName,domainDir=admDir,nmType='ssl');
-connect(userConfigFile=domUC,userKeyFile=domUK,url=domUrl);
-shutdown('wls_oam1',force='true');
-shutdown('AdminServer',force='true');
-exit();
+nmStart('AdminServer');
 EOS
+
 
 exit 0
 

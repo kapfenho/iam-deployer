@@ -3,7 +3,7 @@
 . ${HOME}/.env/idm.env
 
 ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<EOS
-nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=hostname,port=nmPort,domainName=domName,domainDir=domDir,nmType='ssl');
+nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=hostname,port=nmPort,domainName=domName,domainDir=admDir,nmType='ssl');
 connect(userConfigFile=domUC,userKeyFile=domUK,url=domUrl);
 shutdown('wls_oim1',force='true');
 shutdown('wls_soa1',force='true');

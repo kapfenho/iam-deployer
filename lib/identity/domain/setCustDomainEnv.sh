@@ -20,7 +20,7 @@ uma=""
 
 case ${SERVER_NAME} in
 AdminServer)
-  uma="-Xms512m -Xmx1500m -XX:MaxPermSize=1024m"
+  uma="-Xms512m -Xmx1536m -XX:MaxPermSize=512m"
   ;;
 *soa*)
   uma="-Xms512m -Xmx1536m -XX:MaxPermSize=1024m"

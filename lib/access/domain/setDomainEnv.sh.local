@@ -78,7 +78,7 @@ ORACLE_HOME="/opt/fmw/products/access/iam/"
 export ORACLE_HOME
 
 
-APPLICATIONS_DIRECTORY="/opt/fmw/config/domains/access_test/applications"
+APPLICATIONS_DIRECTORY="/opt/local/domains/access_test/applications"
 export APPLICATIONS_DIRECTORY
 
 
@@ -115,10 +115,10 @@ export JAVA_HOME
 SAMPLES_HOME="${WL_HOME}/samples"
 export SAMPLES_HOME
 
-DOMAIN_HOME="/opt/fmw/config/domains/access_test"
+DOMAIN_HOME="/opt/local/domains/access_test"
 export DOMAIN_HOME
 
-LONG_DOMAIN_HOME="/opt/fmw/config/domains/access_test"
+LONG_DOMAIN_HOME="/opt/local/domains/access_test"
 export LONG_DOMAIN_HOME
 
 if [ "${DEBUG_PORT}" = "" ] ; then
@@ -385,6 +385,9 @@ export EXTRA_JAVA_PROPERTIES
 
 EXTRA_JAVA_PROPERTIES="-Doracle.fusion.appsMode=true
 ${EXTRA_JAVA_PROPERTIES}"
+export EXTRA_JAVA_PROPERTIES
+
+EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Doracle.net.tns_admin=${DOMAIN_HOME}/config/jdbc"
 export EXTRA_JAVA_PROPERTIES
 
 EXTRA_JAVA_PROPERTIES=" -Doracle.idm.ipf.home=${ORACLE_HOME}/modules/oracle.idm.ipf_11.1.2 ${EXTRA_JAVA_PROPERTIES}"

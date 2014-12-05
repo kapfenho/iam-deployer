@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 # WARNING: This file is created by the Configuration Wizard.
 # Any changes to this script may be lost when adding extensions to this configuration.
 
@@ -66,30 +65,55 @@ popd()
 # (http://download.oracle.com/docs/cd/E23943_01/web.1111/e13708/overview.htm).
 # *************************************************************************
 
-COMMON_COMPONENTS_HOME="/opt/fmw/products/access/oracle_common"
+COMMON_COMPONENTS_HOME="/opt/fmw/products/identity/oracle_common"
 export COMMON_COMPONENTS_HOME
 
 
-OAM_ORACLE_HOME="/opt/fmw/products/access/iam/oam"
-export OAM_ORACLE_HOME
+OES_ORACLE_HOME="/opt/fmw/products/identity/iam/oes/"
+export OES_ORACLE_HOME
 
 
-ORACLE_HOME="/opt/fmw/products/access/iam/"
-export ORACLE_HOME
+APM_ORACLE_HOME="/opt/fmw/products/identity/iam/apm/"
+export APM_ORACLE_HOME
 
 
-APPLICATIONS_DIRECTORY="/opt/fmw/config/domains/access_test/applications"
+OIM_ORACLE_HOME="/opt/fmw/products/identity/iam"
+export OIM_ORACLE_HOME
+
+
+APPLICATIONS_DIRECTORY="/opt/local/domains/identity_test/applications"
 export APPLICATIONS_DIRECTORY
 
 
-WL_HOME="/opt/fmw/products/access/wlserver_10.3"
+ORACLE_HOME="/opt/fmw/products/identity/iam/"
+export ORACLE_HOME
+
+
+WL_HOME="/opt/fmw/products/identity/wlserver_10.3"
 export WL_HOME
 
-BEA_JAVA_HOME="/opt/fmw/products/access/jdk/current"
+BEA_JAVA_HOME="/opt/fmw/products/identity/jdk/current"
 export BEA_JAVA_HOME
 
 SUN_JAVA_HOME=""
 export SUN_JAVA_HOME
+
+UMS_ORACLE_HOME="/opt/fmw/products/identity/soa"
+export UMS_ORACLE_HOME
+
+
+if [ "${POST_CLASSPATH}" != "" ] ; then
+	POST_CLASSPATH="${OES_ORACLE_HOME}/oes-server-manifest.jar${CLASSPATHSEP}${POST_CLASSPATH}"
+	export POST_CLASSPATH
+else
+	POST_CLASSPATH="${OES_ORACLE_HOME}/oes-server-manifest.jar"
+	export POST_CLASSPATH
+fi
+
+
+SOA_ORACLE_HOME="/opt/fmw/products/identity/soa"
+export SOA_ORACLE_HOME
+
 
 if [ "${JAVA_VENDOR}" = "Oracle" ] ; then
 	JAVA_HOME="${BEA_JAVA_HOME}"
@@ -101,7 +125,7 @@ else
 	else
 		JAVA_VENDOR="Oracle"
 		export JAVA_VENDOR
-		JAVA_HOME="/opt/fmw/products/access/jdk/current"
+		JAVA_HOME="/opt/fmw/products/identity/jdk/current"
 		export JAVA_HOME
 	fi
 fi
@@ -115,10 +139,10 @@ export JAVA_HOME
 SAMPLES_HOME="${WL_HOME}/samples"
 export SAMPLES_HOME
 
-DOMAIN_HOME="/opt/fmw/config/domains/access_test"
+DOMAIN_HOME="/opt/local/domains/identity_test"
 export DOMAIN_HOME
 
-LONG_DOMAIN_HOME="/opt/fmw/config/domains/access_test"
+LONG_DOMAIN_HOME="/opt/local/domains/identity_test"
 export LONG_DOMAIN_HOME
 
 if [ "${DEBUG_PORT}" = "" ] ; then
@@ -138,8 +162,7 @@ enableHotswapFlag=""
 export enableHotswapFlag
 
 PRODUCTION_MODE="true"
-DOMAIN_PRODUCTION_MODE="true"
-export PRODUCTION_MODE DOMAIN_PRODUCTION_MODE
+export PRODUCTION_MODE
 
 doExitFlag="false"
 export doExitFlag
@@ -227,9 +250,15 @@ fi
 
 . ${WL_HOME}/common/bin/commEnv.sh
 
+. ${DOMAIN_HOME}/bin/setSOADomainEnv.sh
+
+
+. ${DOMAIN_HOME}/bin/setOIMDomainEnv.sh
+
 # Custom settings -- horst kapfenberger --
 . ${DOMAIN_HOME}/bin/setCustDomainEnv.sh
 # custom setting -- end --
+
 
 WLS_HOME="${WL_HOME}/server"
 export WLS_HOME
@@ -343,13 +372,13 @@ if [ "${JAVA_VENDOR}" = "Apple" ] ; then
 	export MEM_ARGS
 fi
 
-# IF USER_MEM_ARGS the environment variable is set, use it to override ALL MEM_ARGS values
-
-if [ "${USER_MEM_ARGS}" != "" ] ; then
-	MEM_ARGS="${USER_MEM_ARGS}"
-	export MEM_ARGS
-fi
-
+## # IF USER_MEM_ARGS the environment variable is set, use it to override ALL MEM_ARGS values
+## 
+## if [ "${USER_MEM_ARGS}" != "" ] ; then
+## 	MEM_ARGS="${USER_MEM_ARGS}"
+## 	export MEM_ARGS
+## fi
+ 
 ORACLE_DOMAIN_CONFIG_DIR="${DOMAIN_HOME}/config/fmwconfig"
 export ORACLE_DOMAIN_CONFIG_DIR
 WLS_JDBC_REMOTE_ENABLED="-Dweblogic.jdbc.remoteEnabled=false"
@@ -365,8 +394,12 @@ PROTOCOL_HANDLERS="oracle.mds.net.protocol"
 export PROTOCOL_HANDLERS
 
 
-ALT_TYPES_DIR="${OAM_ORACLE_HOME}/agent/modules/oracle.oam.wlsagent_11.1.1,${ALT_TYPES_DIR}"
+ALT_TYPES_DIR="${OIM_ORACLE_HOME}/server/loginmodule/wls,${ALT_TYPES_DIR}"
 export ALT_TYPES_DIR
+
+
+PROTOCOL_HANDLERS="${PROTOCOL_HANDLERS}|oracle.fabric.common.classloaderurl.handler|oracle.fabric.common.uddiurl.handler|oracle.bpm.io.fs.protocol"
+export PROTOCOL_HANDLERS
 
 
 #  To use Java Authorization Contract for Containers (JACC) in this domain, 
@@ -380,36 +413,80 @@ export ALT_TYPES_DIR
 # -Djavax.security.jacc.PolicyConfigurationFactory.provider=weblogic.security.jacc.simpleprovider.PolicyConfigurationFactoryImpl
 # -Dweblogic.security.jacc.RoleMapperFactory.provider=weblogic.security.jacc.simpleprovider.RoleMapperFactoryImpl
 
-EXTRA_JAVA_PROPERTIES=" -DCONFIG_DS=jdbc/oamds -DCONFIG_HISTORY=true -Doam.oes.new=true -DOAM_POLICY_FILE=${DOMAIN_HOME}/config/fmwconfig/oam-policy.xml -DOAM_CONFIG_FILE=${DOMAIN_HOME}/config/fmwconfig/oam-config.xml -DOAM_ORACLE_HOME=${OAM_ORACLE_HOME} -Doracle.security.am.SERVER_INSTNCE_NAME=${SERVER_NAME} -Does.jars.home=${OAM_ORACLE_HOME}/server/lib/oes-d8 -Does.integration.path=${OAM_ORACLE_HOME}/server/lib/oeslib/oes-integration.jar -Does.enabled=true  -Djavax.xml.soap.SOAPConnectionFactory=weblogic.wsee.saaj.SOAPConnectionFactoryImpl -Djavax.xml.soap.MessageFactory=oracle.j2ee.ws.saaj.soap.MessageFactoryImpl -Djavax.xml.soap.SOAPFactory=oracle.j2ee.ws.saaj.soap.SOAPFactoryImpl ${EXTRA_JAVA_PROPERTIES}"
+EXTRA_JAVA_PROPERTIES="-Doracle.apm.home=${APM_ORACLE_HOME} -DAPM_HELP_FILENAME=oesohwconfig.xml -Djavax.management.builder.initial=weblogic.management.jmx.mbeanserver.WLSMBeanServerBuilder ${EXTRA_JAVA_PROPERTIES}"
 export EXTRA_JAVA_PROPERTIES
 
 EXTRA_JAVA_PROPERTIES="-Doracle.fusion.appsMode=true
 ${EXTRA_JAVA_PROPERTIES}"
 export EXTRA_JAVA_PROPERTIES
 
+EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Doracle.net.tns_admin=${DOMAIN_HOME}/config/jdbc"
+export EXTRA_JAVA_PROPERTIES
+
+EXTRA_JAVA_PROPERTIES=" ${EXTRA_JAVA_PROPERTIES} -DXL.HomeDir=${OIM_ORACLE_HOME}/server  -Dscheduler.disabled=false -Djava.security.auth.login.config=${OIM_ORACLE_HOME}/server/config/authwl.conf  -Dorg.owasp.esapi.resources=${OIM_ORACLE_HOME}/server/apps/oim.ear/APP-INF/classes -DeditionOverride=ee -Djbo.ampool.doampooling=true -Djbo.ampool.minavailablesize=1 -Djbo.ampool.maxavailablesize=120 -Djbo.recyclethreshold=60 -Djbo.ampool.timetolive=-1 -Djbo.load.components.lazily=true -Djbo.doconnectionpooling=true -Djbo.txn.disconnect_level=1 -Djbo.connectfailover=false -Djbo.max.cursors=5 -Doracle.jdbc.implicitStatementCacheSize=5 -Doracle.jdbc.maxCachedBufferSize=19"
+export EXTRA_JAVA_PROPERTIES
+
+EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Dem.oracle.home=/opt/fmw/products/identity/oracle_common -Djava.awt.headless=true"
+export EXTRA_JAVA_PROPERTIES
+
 EXTRA_JAVA_PROPERTIES=" -Doracle.idm.ipf.home=${ORACLE_HOME}/modules/oracle.idm.ipf_11.1.2 ${EXTRA_JAVA_PROPERTIES}"
 export EXTRA_JAVA_PROPERTIES
 
-EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Dem.oracle.home=/opt/fmw/products/access/oracle_common -Djava.awt.headless=true"
+EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Dsoa.archives.dir=${SOA_ORACLE_HOME}/soa -Dsoa.oracle.home=${SOA_ORACLE_HOME} -Dsoa.instance.home=${DOMAIN_HOME} -Dtangosol.coherence.clusteraddress=227.7.7.9 -Dtangosol.coherence.clusterport=9778 -Dtangosol.coherence.log=jdk -Djavax.xml.soap.MessageFactory=oracle.j2ee.ws.saaj.soap.MessageFactoryImpl -Dweblogic.transaction.blocking.commit=true -Dweblogic.transaction.blocking.rollback=true -Djavax.net.ssl.trustStore=${WL_HOME}/server/lib/DemoTrust.jks"
+export EXTRA_JAVA_PROPERTIES
+
+EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Dums.oracle.home=${UMS_ORACLE_HOME}"
 export EXTRA_JAVA_PROPERTIES
 
 EXTRA_JAVA_PROPERTIES="-Dcommon.components.home=${COMMON_COMPONENTS_HOME} -Djrf.version=11.1.1 -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.Jdk14Logger -Ddomain.home=${DOMAIN_HOME} -Djrockit.optfile=${COMMON_COMPONENTS_HOME}/modules/oracle.jrf_11.1.1/jrocket_optfile.txt -Doracle.server.config.dir=${ORACLE_DOMAIN_CONFIG_DIR}/servers/${SERVER_NAME} -Doracle.domain.config.dir=${ORACLE_DOMAIN_CONFIG_DIR}  -Digf.arisidbeans.carmlloc=${ORACLE_DOMAIN_CONFIG_DIR}/carml  -Digf.arisidstack.home=${ORACLE_DOMAIN_CONFIG_DIR}/arisidprovider -Doracle.security.jps.config=${DOMAIN_HOME}/config/fmwconfig/jps-config.xml -Doracle.deployed.app.dir=${DOMAIN_HOME}/servers/${SERVER_NAME}/tmp/_WL_user -Doracle.deployed.app.ext=/- -Dweblogic.alternateTypesDirectory=${ALT_TYPES_DIR} -Djava.protocol.handler.pkgs=${PROTOCOL_HANDLERS}  ${WLS_JDBC_REMOTE_ENABLED} ${EXTRA_JAVA_PROPERTIES}"
 export EXTRA_JAVA_PROPERTIES
 
-# ***
-# if [ "${SERVER_NAME}" = "wls_oim1" -o "${SERVER_NAME}" = "wls_oim2" ]
-# then
-#   EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Xmx2048m"
-#   export EXTRA_JAVA_PROPERTIES
-# else
-#   EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Xmx1536m"
-#   export EXTRA_JAVA_PROPERTIES
-# fi
+
+## if [ "${SERVER_NAME}" = "wls_oim1" -o "${SERVER_NAME}" = "wls_oim2" ]
+## then
+##   EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Xmx2048m"
+##   export EXTRA_JAVA_PROPERTIES
+## else
+##   EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Xmx1536m"
+##   export EXTRA_JAVA_PROPERTIES
+## fi
 JAVA_PROPERTIES="${JAVA_PROPERTIES} ${EXTRA_JAVA_PROPERTIES}"
 export JAVA_PROPERTIES
 
 ARDIR="${WL_HOME}/server/lib"
 export ARDIR
+
+if [ "${JAVA_VENDOR}" = "Oracle" ] ; then
+	CUSTOM_MEM_ARGS_64BIT="-Xms1024m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=1024m"
+	export CUSTOM_MEM_ARGS_64BIT
+	CUSTOM_MEM_ARGS_32BIT="-Xms1024m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=1024m"
+	export CUSTOM_MEM_ARGS_32BIT
+else
+	CUSTOM_MEM_ARGS_64BIT="-Xms1024m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=1024m -XX:ReservedCodeCacheSize=256m"
+	export CUSTOM_MEM_ARGS_64BIT
+	CUSTOM_MEM_ARGS_32BIT="-Xms1024m -Xmx2048m -XX:PermSize=512m -XX:MaxPermSize=1024m -XX:ReservedCodeCacheSize=256m"
+	export CUSTOM_MEM_ARGS_32BIT
+fi
+MEM_ARGS_64BIT="${CUSTOM_MEM_ARGS_64BIT}"
+export MEM_ARGS_64BIT
+MEM_ARGS_32BIT="${CUSTOM_MEM_ARGS_32BIT}"
+export MEM_ARGS_32BIT
+if [ "${JAVA_USE_64BIT}" = "true" ] ; then
+	MEM_ARGS="${MEM_ARGS_64BIT}"
+	export MEM_ARGS
+else
+	MEM_ARGS="${MEM_ARGS_32BIT}"
+	export MEM_ARGS
+fi
+## JAVA_PROPERTIES="${JAVA_PROPERTIES} ${MEM_ARGS}"
+## export JAVA_PROPERTIES
+
+# IF USER_MEM_ARGS the environment variable is set, use it to override ALL MEM_ARGS values
+
+if [ "${USER_MEM_ARGS}" != "" ] ; then
+	MEM_ARGS="${USER_MEM_ARGS}"
+	export MEM_ARGS
+fi
 
 pushd ${LONG_DOMAIN_HOME}
 
@@ -432,7 +509,7 @@ fi
 JAVA_PROPERTIES="${JAVA_PROPERTIES} ${CLUSTER_PROPERTIES}"
 export JAVA_PROPERTIES
 
-PRE_CLASSPATH="${PRE_CLASSPATH}${CLASSPATHSEP}${OAM_ORACLE_HOME}/server/policy/sts-policies.jar"
+PRE_CLASSPATH="${SOA_ORACLE_HOME}/soa/modules/user-patch.jar${CLASSPATHSEP}${SOA_ORACLE_HOME}/soa/modules/soa-startup.jar${CLASSPATHSEP}${PRE_CLASSPATH}"
 export PRE_CLASSPATH
 
 JAVA_DEBUG=""
@@ -481,10 +558,25 @@ else
 fi
 
 
-POST_CLASSPATH="${OAM_ORACLE_HOME}/agent/modules/oracle.oam.wlsagent_11.1.1/oam-wlsagent.jar${CLASSPATHSEP}${POST_CLASSPATH}"
+POST_CLASSPATH="${OIM_ORACLE_HOME}/server/lib/oim-manifest.jar${CLASSPATHSEP}${SOA_ORACLE_HOME}/soa/modules/oracle.rules_11.1.1/rulesadf.jar${CLASSPATHSEP}${COMMON_COMPONENTS_HOME}/modules/oracle.owasp_11.1.1/ESAPI-2.0-rc4.jar${CLASSPATHSEP}${COMMON_COMPONENTS_HOME}/modules/oracle.owasp_11.1.1/antisamy-bin.1.3.jar${CLASSPATHSEP}${COMMON_COMPONENTS_HOME}/modules/oracle.owasp_11.1.1/commons-configuration-1.5.jar${CLASSPATHSEP}${COMMON_COMPONENTS_HOME}/modules/oracle.owasp_11.1.1/commons-fileupload-1.2.jar${CLASSPATHSEP}${COMMON_COMPONENTS_HOME}/modules/oracle.owasp_11.1.1/commons-lang-2.3.jar${CLASSPATHSEP}${COMMON_COMPONENTS_HOME}/modules/oracle.owasp_11.1.1/nekohtml-0.9.5.jar${CLASSPATHSEP}${COMMON_COMPONENTS_HOME}/modules/oracle.owasp_11.1.1/xercesImpl-2.9.1.jar${CLASSPATHSEP}${POST_CLASSPATH}"
+export POST_CLASSPATH
+
+POST_CLASSPATH="${SOA_ORACLE_HOME}/soa/modules/oracle.soa.fabric_11.1.1/oracle.soa.fabric.jar${CLASSPATHSEP}${SOA_ORACLE_HOME}/soa/modules/oracle.soa.fabric_11.1.1/fabric-runtime-ext-wls.jar${CLASSPATHSEP}${SOA_ORACLE_HOME}/soa/modules/oracle.soa.adapter_11.1.1/oracle.soa.adapter.jar${CLASSPATHSEP}${SOA_ORACLE_HOME}/soa/modules/oracle.soa.b2b_11.1.1/oracle.soa.b2b.jar${CLASSPATHSEP}${POST_CLASSPATH}"
+export POST_CLASSPATH
+
+POST_CLASSPATH="${DOMAIN_HOME}/config/soa-infra${CLASSPATHSEP}${SOA_ORACLE_HOME}/soa/modules/fabric-url-handler_11.1.1.jar${CLASSPATHSEP}${SOA_ORACLE_HOME}/soa/modules/quartz-all-1.6.5.jar${CLASSPATHSEP}${POST_CLASSPATH}"
+export POST_CLASSPATH
+
+POST_CLASSPATH="${COMMON_COMPONENTS_HOME}/modules/oracle.xdk_11.1.0/xsu12.jar${CLASSPATHSEP}${BEA_HOME}/modules/features/weblogic.server.modules.xquery_10.3.1.0.jar${CLASSPATHSEP}${SOA_ORACLE_HOME}/soa/modules/db2jcc4.jar${CLASSPATHSEP}${POST_CLASSPATH}"
 export POST_CLASSPATH
 
 POST_CLASSPATH="${COMMON_COMPONENTS_HOME}/soa/modules/commons-cli-1.1.jar${CLASSPATHSEP}${COMMON_COMPONENTS_HOME}/soa/modules/oracle.soa.mgmt_11.1.1/soa-infra-mgmt.jar${CLASSPATHSEP}${POST_CLASSPATH}"
+export POST_CLASSPATH
+
+POST_CLASSPATH="${UMS_ORACLE_HOME}/communications/modules/usermessaging-config_11.1.1.jar${CLASSPATHSEP}${POST_CLASSPATH}"
+export POST_CLASSPATH
+
+POST_CLASSPATH="/opt/fmw/products/identity/soa/soa/modules/oracle.soa.common.adapters_11.1.1/oracle.soa.common.adapters.jar${CLASSPATHSEP}${POST_CLASSPATH}"
 export POST_CLASSPATH
 
 if [ "${DATABASE_CLASSPATH}" != "" ] ; then

@@ -21,7 +21,7 @@ AdminServer)
   uma="-Xms256m -Xmx512m -XX:MaxPermSize=512m"
   ;;
 *oam*)
-  uma="-Xms512m -Xmx1500m -XX:MaxPermSize=512m"
+  uma="-Xms512m -Xmx1536m -XX:MaxPermSize=512m"
   ;;
 esac
 

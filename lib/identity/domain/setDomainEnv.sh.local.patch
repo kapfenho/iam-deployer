@@ -31,7 +31,7 @@
 > ## 	export MEM_ARGS
 > ## fi
 >  
-438,445c442,449
+441,448c445,452
 < if [ "${SERVER_NAME}" = "wls_oim1" -o "${SERVER_NAME}" = "wls_oim2" ]
 < then
 <   EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Xmx2048m"
@@ -49,7 +49,7 @@
 > ##   EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Xmx1536m"
 > ##   export EXTRA_JAVA_PROPERTIES
 > ## fi
-474,475c478,481
+477,478c481,484
 < JAVA_PROPERTIES="${JAVA_PROPERTIES} ${MEM_ARGS}"
 < export JAVA_PROPERTIES
 ---
@@ -57,7 +57,7 @@
 > ## export JAVA_PROPERTIES
 > 
 > # IF USER_MEM_ARGS the environment variable is set, use it to override ALL MEM_ARGS values
-476a483,486
+479a486,489
 > if [ "${USER_MEM_ARGS}" != "" ] ; then
 > 	MEM_ARGS="${USER_MEM_ARGS}"
 > 	export MEM_ARGS
