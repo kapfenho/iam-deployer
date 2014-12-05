@@ -232,7 +232,7 @@ OAM_RAC_ONS_ADDRESS=${provisioning.idmprov.oam-db.rac.scanaddress}
 OAM_RAC_ONS_PORT=6200
 OAM_RAC_SCAN_ADDRESS=dwptpwl-plte1
 OAM_RAC_SCAN_PORT=1521
-OAM_DB_SCHEMAPREFIX=DEVA
+OAM_DB_SCHEMAPREFIX=TAM
 OAM_DB_SCHEMAUSER=${provisioning.idmprov.oam-db.schema_prefix}_OAM
 OAM_DB_SCHEMAPASSWORD=Kfv7nt4tlhsgyPq5GKbd5Q==
 #OAM_SINGLE_DB_HOST=${provisioning.setup.domain-topology.topology.oam.host}
@@ -254,7 +254,7 @@ OIM_DB_IS_SINGLE=false
 #OIM_SINGLE_DB_HOST=${provisioning.setup.domain-topology.topology.oim.host}
 OIM_SINGLE_DB_HOST=
 OIM_SINGLE_DB_PORT=
-OIM_DB_SCHEMAPREFIX=DEVI
+OIM_DB_SCHEMAPREFIX=TIM
 OIM_DB_SCHEMAUSER=${provisioning.idmprov.oim-db.schema_prefix}_OIM
 OIM_DB_SERVICENAME=IAMTST
 OIM_RAC_ONS_ADDRESS=${provisioning.idmprov.oim-db.rac.scanaddress}

@@ -1,6 +1,6 @@
 export      ENV=dwpt
 export   idmtop=/opt/fmw
-export deployer=/opt/install/dwpbank/iam-deployer
+export deployer=/opt/fmw/iam-deployer
 export      lcm=/opt/fmw/lcm/lcm
 export  lcmhome=/opt/fmw/lcm/lcmhome
 export   s_repo=/opt/install/dwpbank/IAM-Base/iam-11.1.2.2/repo
