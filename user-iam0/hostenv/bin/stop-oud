@@ -2,7 +2,7 @@
 
 . ${HOME}/.env/dir.sh
 cd ${INST_HOME}
-bin/stop-ds
+bin/stop-ds -X
 
 exit 0
 

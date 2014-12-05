@@ -227,12 +227,12 @@ OAM_MW_HOME=/opt/fmw/products/access
 #OAM DB Configuration
 OAM_DB_IS_RAC=false
 OAM_DB_IS_SINGLE=true
-OAM_DB_SERVICENAME=miercoles
+OAM_DB_SERVICENAME=jueves
 OAM_RAC_ONS_ADDRESS=${provisioning.idmprov.oam-db.rac.scanaddress}
 OAM_RAC_ONS_PORT=6200
 OAM_RAC_SCAN_ADDRESS=oradb.dwpbank.net
 OAM_RAC_SCAN_PORT=1521
-OAM_DB_SCHEMAPREFIX=OAT
+OAM_DB_SCHEMAPREFIX=DAM
 OAM_DB_SCHEMAUSER=${provisioning.idmprov.oam-db.schema_prefix}_OAM
 OAM_DB_SCHEMAPASSWORD=Kfv7nt4tlhsgyPq5GKbd5Q==
 #OAM_SINGLE_DB_HOST=${provisioning.setup.domain-topology.topology.oam.host}
@@ -254,9 +254,9 @@ OIM_DB_IS_SINGLE=true
 #OIM_SINGLE_DB_HOST=${provisioning.setup.domain-topology.topology.oim.host}
 OIM_SINGLE_DB_HOST=oradb.dwpbank.net
 OIM_SINGLE_DB_PORT=1521
-OIM_DB_SCHEMAPREFIX=OIT
+OIM_DB_SCHEMAPREFIX=DIM
 OIM_DB_SCHEMAUSER=${provisioning.idmprov.oim-db.schema_prefix}_OIM
-OIM_DB_SERVICENAME=miercoles
+OIM_DB_SERVICENAME=jueves
 OIM_RAC_ONS_ADDRESS=${provisioning.idmprov.oim-db.rac.scanaddress}
 OIM_RAC_ONS_PORT=6200
 OIM_RAC_SCAN_ADDRESS=
