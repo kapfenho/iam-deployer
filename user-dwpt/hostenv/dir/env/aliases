@@ -1,0 +1,1 @@
+alias logs-oud='tail -F /var/log/fmw/${INSTANCE}/logs/{errors,access,admin,server.out}'
