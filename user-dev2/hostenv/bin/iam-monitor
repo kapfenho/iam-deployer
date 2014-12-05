@@ -1,0 +1,39 @@
+#!/bin/sh
+
+PS_FORMAT="%cpu,class,state,cputime,nice,sgi_p,nlwp,wchan:20,%mem:8,rss:8,sz:8,size:9,pid"
+export PS_FORMAT
+
+get_pid() {
+  local __rvar=${1}
+  local p_dom=${2}
+  local ret=""
+
+  if [ $# -gt 2 ] ; then
+    p_srv=${3}
+    ret=$(pgrep -f "weblogic.Name=${p_srv}.*\/domains\/${p_dom}")
+  else
+    ret=$(pgrep -f "\/domains\/${p_dom}")
+  fi
+
+  if [[ "${__rvar}" ]]; then
+      eval ${__rvar}="'${ret}'"
+  else
+      echo "${ret}"
+  fi
+}
+
+get_pid pa1 access_test   AdminServer
+get_pid pa2 access_test   wls_oam1
+get_pid pi1 identity_test AdminServer
+get_pid pi2 identity_test wls_soa1
+get_pid pi3 identity_test wls_oim1
+
+[ ${#pa1} -gt 1 ] && echo "$(ps --headers    -p ${pa1})    access:AdminServer"
+[ ${#pa2} -gt 1 ] && echo "$(ps --no-headers -p ${pa2})    access:wls_oam1"
+[ ${#pi1} -gt 1 ] && echo "$(ps --headers    -p ${pi1})  identity:AdminServer"
+[ ${#pi2} -gt 1 ] && echo "$(ps --no-headers -p ${pi2})  identity:wls_soa1"
+[ ${#pi3} -gt 1 ] && echo "$(ps --no-headers -p ${pi3})  identity:wls_oim1"      
+# echo
+
+exit 0
+
