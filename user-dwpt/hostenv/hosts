@@ -2,18 +2,17 @@
 #
 # RHN Satellite
 #
-172.20.100.252	syspmon1.deutsche-boerse.de syspmon1
-172.25.38.25	dbstsme.deutsche-boerse.de dbstsme
+172.20.100.252  syspmon1.deutsche-boerse.de syspmon1
+172.25.38.25    dbstsme.deutsche-boerse.de dbstsme
 #
 # ILMT
 #
 97.0.242.159     dwppilm1
 
 #  IAM load balancers
-
 #                          general sso redirect url
 #                                     public access
-#                  http/80    -->  returns http 301 
+#                  http/80    -->  returns http 301
 #                https/443    -->  dwptidw[12]:4443
 97.0.105.250           sso.applications.dwpbank.net                 sso
 #                    admin ui for access management
@@ -22,7 +21,7 @@
 #                  admin ui for identity management
 #                https/443    -->  dwptidw[12]:4443
 97.0.105.250                   oimadmin.dwpbank.net            oimadmin
-#                  API, http/80, used by app itself 
+#                  API, http/80, used by app itself
 #                                    and other apps
 #                  http/80    -->  dwptidw[12]:7777
 97.0.105.250                idminternal.dwpbank.net         idminternal
@@ -32,7 +31,7 @@
 97.0.101.143                    idstore.dwpbank.net             idstore
 
 #  IAM servers
-#             reverse proxies with 
+#             reverse proxies with
 #             policy enforcemant point
 97.0.105.250                   dwptidw1.dwpbank.net            dwptidw1 web1
 97.0.105.249                   dwptidw2.dwpbank.net            dwptidw2 web2
@@ -40,8 +39,8 @@
 97.0.107.253                   dwptoam1.dwpbank.net            dwptoam1 oam1
 97.0.107.251                   dwptoam2.dwpbank.net            dwptoam2 oam2
 #             identity manager app servers
-97.0.107.254                   dwptoim1.dwpbank.net            dwptoim1 oim1
-97.0.107.252                   dwptoim2.dwpbank.net            dwptoim2 oim2
+97.0.107.254    dwptoim1.dwpbank.net    dwptoim1        oim1    idmat01
+97.0.107.252    dwptoim2.dwpbank.net    dwptoim2        oim2    idmat02
 #             bi publisher app servers
 97.0.107.250                   dwptbip1.dwpbank.net            dwptbip1 bip1
 97.0.107.249                   dwptbip2.dwpbank.net            dwptbip2 bip2
@@ -52,3 +51,27 @@
 97.0.101.216              dwptpwl-plte1.dwpbank.net       dwptpwl-plte1
 97.0.101.217              dwptpwl-plte2.dwpbank.net       dwptpwl-plte2
 
+# sys / adm qmgr
+97.0.241.250    admt01
+97.0.241.249    admt02
+
+97.0.107.254    idmat01
+97.0.107.252    idmat02
+
+97.254.200.161  awa5        wqt3
+97.0.245.37     dwptdit1        wpdirt01
+97.0.247.33     dwpddiw2        wpdird02
+97.0.245.35     dwptdit2        wpdirt02
+97.0.245.46     dwptdit3        wpdirt03
+97.0.245.45     dwptdit4        wpdirt04
+97.0.247.44     dwpddiw6        wpdird06
+97.0.247.43     dwpddiw5        wpdird05
+97.0.248.222    pwlt01
+97.0.248.224    gatewt01
+97.0.101.197    pwlat01
+97.0.101.193    gatewat01       # GW External
+97.0.101.191    gatewat02       # GW Special Solutions
+97.0.101.194    gatewat03       # GW Internal
+97.0.101.192    gatewat04       # GW File Transfer
+97.0.101.237    repat01
+97.0.101.232    repat02
