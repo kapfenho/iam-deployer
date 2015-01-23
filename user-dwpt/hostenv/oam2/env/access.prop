@@ -1,0 +1,22 @@
+# change values in captiol letters before usage
+#
+hostname=dwptoam2.dwpbank.net
+nmPort=5556
+domName=access_test
+#domDir=/opt/fmw/config/domains/access_test
+domDir=/opt/local/fmw/domains/access_test
+locDir=/opt/local/fmw/domains/access_test
+domAdminPort=7001
+domUrl=t3://dwptoam1.dwpbank.net:7001
+domUC=/home/fmwuser/.creds/access_test.usr
+domUK=/home/fmwuser/.creds/access_test.key
+nmUC=/home/fmwuser/.creds/nm.usr
+nmUK=/home/fmwuser/.creds/nm.key
+
+### set for identity-app-property-file
+# appName=my_app
+# appArchive=my_app.war
+# appDir=/appl/iam/fmw/config/deploy/my_app
+# appPath=/appl/iam/fmw/config/deploy/my_app/current/my_app.war
+# appPlan=/appl/iam/fmw/config/deploy/my_app/current/plan/Plan.xml
+# appTargets=my_managed_server

@@ -40,7 +40,8 @@ _patch_oud() {
 
   ${c} --remove global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; deny (all) userdn=\"ldap:///anyone\";)"
   ${c} --add    global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; allow (read,search,compare,add,write,delete,export) groupdn=\"ldap:///cn=OIMAdministrators,cn=groups,dc=dwpbank,dc=net\";)"
-  # p3='--add    global-aci:"(targetcontrol="1.3.6.1.4.1.26027.1.5.4")(version 3.0; acl \"OIMAdministrators control access\";    allow (read)  groupdn=\"ldap:///cn=OIMAdministrators,cn=groups,dc=agoracon,dc=at\";)"'
+  echo "Dont forget to correct 1.2.840.113556.1.4.319!"
+  echo
 }
 
 # set variables from provisioning config file

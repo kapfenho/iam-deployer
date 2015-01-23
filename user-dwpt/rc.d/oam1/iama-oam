@@ -18,8 +18,8 @@
 user=fmwuser
 prog=iama-oam
  svc=wls_oam1
-ddir=/opt/local/domains/access_test
+ddir=/opt/local/fmw/domains/access_test
 
-. /etc/weblogic/wls-access
+. /etc/iam/wls-access
 . /etc/rc.d/init.d/functions-wls
 

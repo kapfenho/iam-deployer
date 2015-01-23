@@ -24,7 +24,7 @@ prog=iam-dir
 user=fmwuser
 
 logdir=/var/log/fmw/oud1/logs
-inst=/opt/local/instances/oud1/OUD
+inst=/opt/local/fmw/instances/oud1/OUD
 psfind='org.opends.server.core.DirectoryServer .*instances\/oud1\/OUD\/config\/config.ldif'
 
 # Check that networking is up.

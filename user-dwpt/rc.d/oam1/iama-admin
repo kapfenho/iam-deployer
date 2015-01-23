@@ -20,6 +20,6 @@ prog=iama-admin
  svc=AdminServer
 ddir=/opt/fmw/config/domains/access_test
 
-. /etc/weblogic/wls-access
+. /etc/iam/wls-access
 . /etc/rc.d/init.d/functions-wls
 

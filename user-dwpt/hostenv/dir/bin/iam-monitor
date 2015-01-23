@@ -1,8 +1,0 @@
-#!/bin/sh
-
-PS_FORMAT="%cpu,class,state,cputime,nice,sgi_p,nlwp,wchan:20,%mem:8,rss:8,sz:8,size:9,pid"
-export PS_FORMAT
-
-ps --headers -p $(pgrep -f 'core\.DirectoryServer')
-exit 0
-

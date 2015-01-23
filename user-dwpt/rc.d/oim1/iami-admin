@@ -5,8 +5,8 @@
 #
 ### BEGIN INIT INFO
 # Provides:           oracle identity mgmt weblogic domain
-# Required-Start:     $local_fs $remote_fs $named $network $time nfs iam-node
-# Required-Stop:      $local_fs $remote_fs $named $network nfs iam-node
+# Required-Start:     $local_fs $remote_fs $named $network $time iam-node
+# Required-Stop:      $local_fs $remote_fs $named $network iam-node
 # Should-Start:       
 # Should-Stop:        
 # Default-Start:      3 4 5
@@ -20,6 +20,6 @@ prog=iami-admin
  svc=AdminServer
 ddir=/opt/fmw/config/domains/identity_test
 
-. /etc/weblogic/wls-identity
+. /etc/iam/wls-identity
 . /etc/rc.d/init.d/functions-wls
 

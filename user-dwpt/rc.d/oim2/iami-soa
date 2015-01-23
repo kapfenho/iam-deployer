@@ -18,8 +18,8 @@
 user=fmwuser
 prog=iami-soa
  svc=wls_soa2
-ddir=/opt/local/domains/identity_test
+ddir=/opt/local/fmw/domains/identity_test
 
-. /etc/weblogic/wls-identity
+. /etc/iam/wls-identity
 . /etc/rc.d/init.d/functions-wls
 
