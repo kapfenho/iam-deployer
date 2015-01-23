@@ -3,4 +3,4 @@ stop-identity
 stop-access
 stop-webtier
 stop-nodemanager
-stop-oud
+stop-dir

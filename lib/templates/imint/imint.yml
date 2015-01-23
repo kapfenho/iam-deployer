@@ -1,0 +1,17 @@
+development:
+  oim:
+    url: t3://iam1:14000/
+    user: xelsysadm
+    password: Montag11
+
+test:
+  oim:
+    url: t3://dwptoim1:14000/
+    user: xelsysadm
+    password: Montag11
+
+production:
+  oim:
+    url: t3://iam0:14000/
+    user: xelsysadm
+    password: Montag11

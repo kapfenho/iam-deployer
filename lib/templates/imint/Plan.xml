@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<deployment-plan xmlns="http://xmlns.oracle.com/weblogic/deployment-plan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.oracle.com/weblogic/deployment-plan http://xmlns.oracle.com/weblogic/deployment-plan/1.0/deployment-plan.xsd">
+  <application-name>imint</application-name>
+  <module-override>
+    <module-name>imint.war</module-name>
+    <module-type>war</module-type>
+    <module-descriptor external="true">
+      <root-element>weblogic-web-app</root-element>
+      <uri>WEB-INF/weblogic.xml</uri>
+    </module-descriptor>
+    <module-descriptor external="false">
+      <root-element>web-app</root-element>
+      <uri>WEB-INF/web.xml</uri>
+    </module-descriptor>
+    <module-descriptor external="true">
+      <root-element>wldf-resource</root-element>
+      <uri>META-INF/weblogic-diagnostics.xml</uri>
+    </module-descriptor>
+    <module-descriptor external="true">
+      <root-element>persistence-configuration</root-element>
+      <uri>WEB-INF/lib/oimclient.jar!/META-INF/persistence-configuration.xml</uri>
+    </module-descriptor>
+    <module-descriptor external="false">
+      <root-element>persistence</root-element>
+      <uri>WEB-INF/lib/oimclient.jar!/META-INF/persistence.xml</uri>
+    </module-descriptor>
+  </module-override>
+  <config-root>/opt/fmw/config/deploy/imint/current</config-root>
+</deployment-plan>
+
