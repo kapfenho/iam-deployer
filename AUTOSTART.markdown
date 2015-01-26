@@ -2,7 +2,7 @@ RC.D Startup Scripts for RedHat and CentOS
 ==========================================
 
 Redhat versions below 7 supports SysV and LSB scripts and maintains them
-in /etc/rc.d/init.d
+in `/etc/rc.d/init.d`
 
 This project comes with several scripts and config files. In the
 following table you can find all services, ordered by type and
@@ -90,7 +90,7 @@ server oim1
 /etc/rc.d/init.d/iami-soa        soa services wls_soa_1
 /etc/rc.d/init.d/iami-oim        identity manager wls_oim1
 /etc/rc.d/init.d/funtions-wls    functions
-/etc/weblogic/wls-identity       domain settings
+/etc/iam/wls-identity            domain settings
 
 
 server oim2
@@ -100,7 +100,7 @@ server oim2
 /etc/rc.d/init.d/iami-soa        soa services wls_soa_1
 /etc/rc.d/init.d/iami-oim        identity manager wls_oim1
 /etc/rc.d/init.d/funtions-wls    functions
-/etc/weblogic/wls-identity       domain settings
+/etc/iam/wls-identity            domain settings
 
 
 server oam1
@@ -109,7 +109,7 @@ server oam1
 /etc/rc.d/init.d/iama-admin      weblogic admin
 /etc/rc.d/init.d/iama-oam        access manager services wls_oam1
 /etc/rc.d/init.d/funtions-wls    functions
-/etc/weblogic/wls-access         domain settings
+/etc/iam/wls-access              domain settings
 
 
 server oam2
@@ -118,7 +118,7 @@ server oam2
                                  admin only on node1
 /etc/rc.d/init.d/iama-oam        access manager services wls_oam1
 /etc/rc.d/init.d/funtions-wls    functions
-/etc/weblogic/wls-access         domain settings
+/etc/iam/wls-access              domain settings
 
 
 server oud1
