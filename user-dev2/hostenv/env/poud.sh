@@ -7,7 +7,7 @@ export       MW_HOME=${ORACLE_BASE}/oud_11gr2_11.1.2.0.0
 unset        WL_HOME
 export   ORACLE_HOME=${MW_HOME}
 unset  ORACLE_COMMON
-export     JAVA_HOME=/appexec/fmw/products/dir/jdk/current
+export     JAVA_HOME=/opt/fmw/products/dir/jdk/current
 
 unset         DOMAIN
 unset    DOMAIN_HOME

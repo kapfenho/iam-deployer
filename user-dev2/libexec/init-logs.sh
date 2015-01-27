@@ -10,43 +10,50 @@ set -o errexit nounset
 mvlog() {
   local src=${1}
   local dst=${2}
-  mkdir -p ${dst}
-  mv -f ${src}/* ${dst}/
-  rm -Rf ${src}
-  ln -sf ${dst} ${src}
+  if [ -h ${src} ] ; then
+    echo "** Already moved dir ${src}"
+    ls -l ${src}
+  else
+    mkdir -p ${dst}
+    rm -Rf   ${dst}/*
+    mv -f    ${src}/* ${dst}/
+    rm -Rf   ${src}
+    ln -sf   ${dst} ${src}
+  fi
 }
 
 set -x
 
-# nodemanager
+mydir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. ${mydir}/../env/env.sh
+
+gdom=/opt/fmw/config/domains
+ldom=/opt/local/domains
+lins=/opt/local/instances
+
+eval $(grep IDMPROV_ACCESS_DOMAIN   ${mydir}/../iam/provisioning.rsp)
+eval $(grep IDMPROV_IDENTITY_DOMAIN ${mydir}/../iam/provisioning.rsp)
+
+echo "-- nodemanager --"
 mkdir -p ${dst}/nodemanager
 
-# idenitity
-mvlog /appdata/fmw/config/domains/identity_test/servers/AdminServer/logs \
-      ${dst}/identity_test/AdminServer
-mvlog /appdata/fmw/local/domains/identity_test/servers/wls_soa1/logs \
-      ${dst}/identity_test/wls_soa1
-mvlog /appdata/fmw/local/domains/identity_test/servers/wls_oim1/logs \
-      ${dst}/identity_test/wls_oim1
+echo "-- identity domain --"
+mvlog ${gdom}/$IDMPROV_IDENTITY_DOMAIN/servers/AdminServer/logs ${dst}/$IDMPROV_IDENTITY_DOMAIN/AdminServer
+mvlog ${ldom}/$IDMPROV_IDENTITY_DOMAIN/servers/wls_soa1/logs    ${dst}/$IDMPROV_IDENTITY_DOMAIN/wls_soa1
+mvlog ${ldom}/$IDMPROV_IDENTITY_DOMAIN/servers/wls_oim1/logs    ${dst}/$IDMPROV_IDENTITY_DOMAIN/wls_oim1
 
-# access
-mvlog /appdata/fmw/config/domains/access_test/servers/AdminServer/logs \
-      ${dst}/access_test/AdminServer
-mvlog /appdata/fmw/local/domains/access_test/servers/wls_oam1/logs \
-      ${dst}/access_test/wls_oam1
+echo "-- access domain --"
+mvlog ${gdom}/$IDMPROV_ACCESS_DOMAIN/servers/AdminServer/logs   ${dst}/$IDMPROV_ACCESS_DOMAIN/AdminServer
+mvlog ${ldom}/$IDMPROV_ACCESS_DOMAIN/servers/wls_oam1/logs      ${dst}/$IDMPROV_ACCESS_DOMAIN/wls_oam1
 
-# directory
-mkdir -p ${dst}/oud1
-mv   /appdata/fmw/local/instances/oud1/OUD/logs ${dst}/oud1/
-ln -s ${dst}/oud1/logs /opt/local/instances/oud1/OUD/logs
+echo "-- directoy instance --"
+mvlog ${lins}/oud1/OUD/logs     ${dst}/oud1
 
-# webtier
-mkdir -p ${dst}/ohs1
-mv   /appdata/fmw/local/instances/ohs1/auditlogs   ${dst}/ohs1/
-mv   /appdata/fmw/local/instances/ohs1/diagnostics ${dst}/ohs1/
-ln -s ${dst}/ohs1/auditlogs   /opt/local/instances/ohs1/auditlogs
-ln -s ${dst}/ohs1/diagnostics /opt/local/instances/ohs1/diagnostics
-ln -s ${dst}/ohs1/diagnostics/logs/OHS/ohs1  ${dst}/ohs1/logs
+echo "-- webtier instance --"
+mvlog ${lins}/ohs1/auditlogs    ${dst}/ohs1/auditlogs
+mvlog ${lins}/ohs1/diagnostics  ${dst}/ohs1/diagnostics
+
+echo "-- done --"
 
 set +x
 

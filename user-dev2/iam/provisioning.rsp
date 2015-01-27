@@ -64,7 +64,7 @@ ARG_IGNORESYSPREREQS=true
 
 #Oracle Inventory File Properties
 INV_USE_LOCAL_OPTION=false
-INV_INVENTORY_DIRECTORY=/appexec/fmw/etc/oraInventory
+INV_INVENTORY_DIRECTORY=/opt/fmw/etc/oraInventory
 
 #Installation Options
 OPTION_INSTALLDB==oracle.isCurrentFlowMode("dbinstall")"
@@ -97,13 +97,14 @@ PROVPLAN_DESC=Identity and Access Management Deployment Response File (multiple 
 
 #Installation Locations
 INSTALL_INSTALLERS_DIR=/appdata/OIM/OIM_11gR2p2/oracle.com
-INSTALL_APPHOME_DIR=/appexec/fmw
-INSTALL_LCMHOME_DIR=/appexec/fmw/etc/lcm
+INSTALL_APPHOME_DIR=/opt/fmw
+INSTALL_LCMHOME_DIR=/opt/fmw/lcm/lcmhome
+#INSTALL_LCMHOME_DIR=/mnt/oracle/shared/idmlcm/home
 INSTALL_LCMHOME_IS_MOUNTED_IN_DIR_HOSTS=true
 INSTALL_LCMHOME_IS_MOUNTED_IN_WEB_HOSTS=true
-INSTALL_APPCONFIG_DIR=/appdata/fmw/config
+INSTALL_APPCONFIG_DIR=${provisioning.setup.install-location.locations.default.home.top}/config
 INSTALL_LOCALCONFIG_ENABLE=true
-INSTALL_LOCALCONFIG_DIR=/appdata/fmw/local
+INSTALL_LOCALCONFIG_DIR=/opt/local
 INSTALL_OSWIN_USER=
 INSTALL_OSWIN_PWD=
 IDMPROV_IDMTOP_IS_SHARED=true
@@ -114,7 +115,7 @@ IDM_BASE_DEPLOYMENT_SELECTED=true
 
 #Domain Topology
 TOPOLOGY_BASIC_SELECTED=true
-TOPOLOGY_BASIC_HOST=dwpidmdev02.admnet.fits
+TOPOLOGY_BASIC_HOST=idm.dev02.dwpbank.net
 TOPOLOGY_MEDIUM_SELECTED=false
 TOPOLOGY_ADVANCED_SELECTED=false
 
@@ -127,7 +128,7 @@ INTERNAL_PLAN_GRVIAM=413
 INTERNAL_PLAN_NACLIAM=15viwi8E1k/F8zZVQgM5gA==
 
 #Internal Class B
-INTERNAL_PHASEGUARDS_DIR=/appexec/fmw/lcm/lcmhome/provisioning/phaseguards
+INTERNAL_PHASEGUARDS_DIR=/opt/fmw/lcm/lcmhome/provisioning/phaseguards
 INTERNAL_COMMON_INITCOMP=enterprise
 
 #Internal Class C
@@ -182,10 +183,10 @@ UC_PALN_DESC=Identity and Access Management Deployment Response File
 
 #Install Locations
 IL_INSTALLERDIR_LOCATION=/appdata/OIM/OIM_11gR2p2/oracle.com
-IL_APP_BASE=/appexec/fmw
-IL_APP_CONFIG=/appdata/fmw/config
+IL_APP_BASE=/opt/fmw
+IL_APP_CONFIG=${provisioning.setup.install-location.locations.default.home.top}/config
 IL_ENABLE_LOCALAPP_CONFIG=true
-IL_LOCALAPP_CONFIG=/appdata/fmw/local
+IL_LOCALAPP_CONFIG=/opt/local
 IL_WIN_DOMAIN_USERNAME=
 IL_WIN_DOMAIN_PSWD=
 IL_STD_LOG_DIR=${provisioning.setup.install-location.locations.default.home.lcm}/provisioning/logs
@@ -196,13 +197,13 @@ COMMON_CONFIG_COMPONENTS=true
 COMMON_STD_ADMIN_NAME=admin
 COMMON_STD_ADMIN_PWD=
 COMMON_STD_ADMIN_PWD_CONFIRM=
-COMMON_FMW_DIR=/appexec/fmw
+COMMON_FMW_DIR=/opt/fmw
 COMMON_FUSION_REPO_INSTALL_DIR=/appdata/OIM/OIM_11gR2p2/oracle.com
 COMMON_STD_PROV_LOGDIR=${provisioning.setup.install-location.locations.default.log.directory}
 
 #DOMAIN TOPOLOGY
 DT_SINGLEHOST=true
-DT_APP_HOSTNAME=dwpidmdev02.admnet.fits
+DT_APP_HOSTNAME=idm.dev02.dwpbank.net
 DT_ONEHOSTPERAPP=false
 
 #IDM PROVISIONING
@@ -220,26 +221,26 @@ OHS_ODSM_ADMIN_PORT=7779
 
 #OAM Configuration
 OAM_TRANSFER_MODE=simple
-OAM_COOKIE_DOMAIN=.admnet.fits
-OAM_MW_HOME=/appexec/fmw/products/access
+OAM_COOKIE_DOMAIN=.dwpbank.net
+OAM_MW_HOME=/opt/fmw/products/access
 
 #OAM DB Configuration
 OAM_DB_IS_RAC=false
 OAM_DB_IS_SINGLE=true
-OAM_DB_SERVICENAME=orcl.admnet.fits
+OAM_DB_SERVICENAME=idmdev2
 OAM_RAC_ONS_ADDRESS=${provisioning.idmprov.oam-db.rac.scanaddress}
 OAM_RAC_ONS_PORT=6200
-OAM_RAC_SCAN_ADDRESS=dwpidmdev02.admnet.fits
+OAM_RAC_SCAN_ADDRESS=oradb.dev02.dwpbank.net
 OAM_RAC_SCAN_PORT=1521
-OAM_DB_SCHEMAPREFIX=DEVA
+OAM_DB_SCHEMAPREFIX=DAM2
 OAM_DB_SCHEMAUSER=${provisioning.idmprov.oam-db.schema_prefix}_OAM
 OAM_DB_SCHEMAPASSWORD=Kfv7nt4tlhsgyPq5GKbd5Q==
 #OAM_SINGLE_DB_HOST=${provisioning.setup.domain-topology.topology.oam.host}
-OAM_SINGLE_DB_HOST=dwpidmdev02.admnet.fits
+OAM_SINGLE_DB_HOST=oradb.dev02.dwpbank.net
 OAM_SINGLE_DB_PORT=1521
 
 #OIM Configuration
-OIM_MW_HOME=/appexec/fmw/products/identity
+OIM_MW_HOME=/opt/fmw/products/identity
 OIM_EMAIL_CONFIGURE=false
 OIM_EMAIL_SERVER_NAME=email.mycompany.com
 OIM_EMAIL_SERVER_PORT=465
@@ -251,11 +252,11 @@ OIM_EMAIL_PASSWORD=
 OIM_DB_IS_RAC=false
 OIM_DB_IS_SINGLE=true
 #OIM_SINGLE_DB_HOST=${provisioning.setup.domain-topology.topology.oim.host}
-OIM_SINGLE_DB_HOST=dwpidmdev02.admnet.fits
+OIM_SINGLE_DB_HOST=oradb.dev02.dwpbank.net
 OIM_SINGLE_DB_PORT=1521
-OIM_DB_SCHEMAPREFIX=DEVI
+OIM_DB_SCHEMAPREFIX=DIM2
 OIM_DB_SCHEMAUSER=${provisioning.idmprov.oim-db.schema_prefix}_OIM
-OIM_DB_SERVICENAME=orcl.admnet.fits
+OIM_DB_SERVICENAME=idmdev2
 OIM_RAC_ONS_ADDRESS=${provisioning.idmprov.oim-db.rac.scanaddress}
 OIM_RAC_ONS_PORT=6200
 OIM_RAC_SCAN_ADDRESS=
@@ -264,20 +265,20 @@ OIM_DB_SCHEMAPASSWORD=Kfv7nt4tlhsgyPq5GKbd5Q==
 
 #Topology Configurations
 IDMPROV_PRODUCT_DIRECTORY_HOST=
-IDMPROV_PRODUCT_DIRECTORY_DOMAIN=dir_dev2
+IDMPROV_PRODUCT_DIRECTORY_DOMAIN=dir_dev02
 IDMPROV_PRODUCT_DIRTIER_IN_DEDICATED_ZONE=${provisioning.setup.domain-topology.topology.domain.topology.advanced}
 IDMPROV_PRODUCT_IDENTITY_HOST=
-IDMPROV_PRODUCT_IDENTITY_DOMAIN=identity_dev2
+IDMPROV_PRODUCT_IDENTITY_DOMAIN=identity_dev02
 IDMPROV_PRODUCT_WEBTIER_HOST=
-IDMPROV_PRODUCT_WEBTIER_DOMAIN=iamweb_dev2
+IDMPROV_PRODUCT_WEBTIER_DOMAIN=iamweb_dev02
 IDMPROV_PRODUCT_WEBTIER_IN_DMZ=${provisioning.setup.domain-topology.topology.domain.topology.advanced}
 IDMPROV_IDMDOMAIN_ADMINSERVER_HOST=${provisioning.setup.domain-topology.topology.domain.host}
 IDMPROV_IDMDOMAIN_ADMINSERVER_PORT=7001
 IDMPROV_OIMDOMAIN_ADMINSERVER_HOST=${provisioning.setup.domain-topology.topology.domain.host}
 IDMPROV_OIMDOMAIN_ADMINSERVER_PORT=7101
 IDMPROV_OID_HOST=${provisioning.setup.domain-topology.topology.domain.host}
-IDMPROV_OID_PORT=3890
-IDMPROV_OID_SSLPORT=6360
+IDMPROV_OID_PORT=1389
+IDMPROV_OID_SSLPORT=1636
 IDMPROV_OVD_HOST=${provisioning.setup.domain-topology.topology.domain.host}
 IDMPROV_OIM_HOST=${provisioning.setup.domain-topology.topology.domain.host}
 IDMPROV_OIM_PORT=14000
@@ -295,8 +296,8 @@ IDMPROV_SECOND_IDMDOMAIN_ADMINSERVER_PORT=${provisioning.idmprov.oam.adminserver
 IDMPROV_SECOND_OIMDOMAIN_ADMINSERVER_HOST=
 IDMPROV_SECOND_OIMDOMAIN_ADMINSERVER_PORT=${provisioning.idmprov.oim.adminserverport}
 IDMPROV_SECOND_OID_HOST=
-IDMPROV_SECOND_OID_PORT=3890
-IDMPROV_SECOND_OID_SSLPORT=6360
+IDMPROV_SECOND_OID_PORT=1389
+IDMPROV_SECOND_OID_SSLPORT=1636
 IDMPROV_SECOND_OVD_HOST=${provisioning.setup.domain-topology.topology.second.oud.host}
 IDMPROV_SECOND_OIM_HOST=${provisioning.setup.domain-topology.topology.second.oimdomain.host}
 IDMPROV_SECOND_OIM_PORT=14000
@@ -308,9 +309,9 @@ IDMPROV_SECOND_OIF_HOST=${provisioning.setup.domain-topology.topology.second.oam
 IDMPROV_SECOND_OHS_HOST=
 IDMPROV_SECOND_OHS_PORT=7777
 IDMPROV_SECOND_OHS_SSLPORT=4443
-IDMPROV_ACCESS_DOMAIN=access_dev2
-IDMPROV_DIRECTORY_DOMAIN=dir_dev2
-IDMPROV_IDENTITY_DOMAIN=identity_dev2
+IDMPROV_ACCESS_DOMAIN=access_dev02
+IDMPROV_DIRECTORY_DOMAIN=dir_dev02
+IDMPROV_IDENTITY_DOMAIN=identity_dev02
 
 #Virtual Hosts Configuration
 IDMPROV_VHN_IS_CONFIGURE=false
@@ -322,26 +323,26 @@ IDMPROV_VHN_OIM_SERVER=
 IDMPROV_VHN_SECOND_OIM_SERVER=
 
 #LDAP LBR Configuration
-IDMPROV_LBR_SSO_HOST=dwpidmdev02.admnet.fits
-IDMPROV_LBR_SSO_PORT=7777
-IDMPROV_LBR_SSO_PORT_IS_SSL=false
-IDMPROV_LBR_OIMINTERNAL_HOST=dwpidmdev02.admnet.fits
-IDMPROV_LBR_OIMINTERNAL_PORT=7778
+IDMPROV_LBR_SSO_HOST=sso.dev02.dwpbank.net
+IDMPROV_LBR_SSO_PORT=4443
+IDMPROV_LBR_SSO_PORT_IS_SSL=true
+IDMPROV_LBR_OIMINTERNAL_HOST=oiminternal.dev02.dwpbank.net
+IDMPROV_LBR_OIMINTERNAL_PORT=7777
 IDMPROV_LBR_OIMINTERNAL_PORT_IS_SSL=false
-IDMPROV_LBR_IDMADMIN_HOST=dwpidmdev02.admnet.fits
-IDMPROV_LBR_IDMADMIN_PORT=7777
-IDMPROV_LBR_IDMADMIN_PORT_IS_SSL=false
-IDMPROV_LBR_OIMADMIN_HOST=dwpidmdev02.admnet.fits
-IDMPROV_LBR_OIMADMIN_PORT=7777
-IDMPROV_LBR_OIMADMIN_PORT_IS_SSL=false
-IDMPROV_LBR_DIRADMIN_HOST=dwpidmdev02.admnet.fits
-IDMPROV_LBR_DIRADMIN_PORT=7777
-IDMPROV_LBR_DIRADMIN_PORT_IS_SSL=false
+IDMPROV_LBR_IDMADMIN_HOST=idmadmin.dev02.dwpbank.net
+IDMPROV_LBR_IDMADMIN_PORT=4443
+IDMPROV_LBR_IDMADMIN_PORT_IS_SSL=true
+IDMPROV_LBR_OIMADMIN_HOST=oimadmin.dev02.dwpbank.net
+IDMPROV_LBR_OIMADMIN_PORT=4443
+IDMPROV_LBR_OIMADMIN_PORT_IS_SSL=true
+IDMPROV_LBR_DIRADMIN_HOST=diradmin.dev02.dwpbank.net
+IDMPROV_LBR_DIRADMIN_PORT=4443
+IDMPROV_LBR_DIRADMIN_PORT_IS_SSL=true
 
 #DIR LDAP LBR Configuration
-IDMPROV_DIR_LBR_OID_HOST=${provisioning.setup.domain-topology.topology.oud.host}
-IDMPROV_DIR_LBR_OID_PORT=3890
-IDMPROV_DIR_LBR_OID_SSLPORT=6360
+IDMPROV_DIR_LBR_OID_HOST=idstore.dev02.dwpbank.net
+IDMPROV_DIR_LBR_OID_PORT=1389
+IDMPROV_DIR_LBR_OID_SSLPORT=1636
 IDMPROV_DIR_LBR_AUTH_DIR_TYPE=OUD
 IDMPROV_DIR_LBR_AUTH_DIR_HOST=${provisioning.idmprov.oud.lbr.host}
 IDMPROV_DIR_LBR_AUTH_DIR_PORT=${provisioning.idmprov.oud.lbr.port}

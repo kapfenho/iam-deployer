@@ -1,12 +1,12 @@
-export      ENV=test
-export   idmtop=/appexec/fmw
-export deployer=/vagrant
-export      lcm=/appexec/fmw/lcm/lcm
-export  lcmhome=/appexec/fmw/lcm/lcmhome
-export   s_repo=/mnt/oracle/iam-11.1.2.2/repo
+export      ENV=dev2
+export   idmtop=/opt/fmw
+export deployer=/opt/fmw/iam-deployer
+export      lcm=/opt/fmw/lcm/lcm
+export  lcmhome=/opt/fmw/lcm/lcmhome
+export   s_repo=/appdata/install/oracle/iam-11.1.2.2
 export    s_lcm=${s_repo}/installers/idmlcm
-export s_runjre=${s_repo}/installers/jdk/jdk7/jre
-servers=(oud1 oud2 oim1 oim2 oam1 oam2 web1 web2)
+export s_runjre=${s_repo}/installers/jdk/jdk6/jre
+servers=(dwpidmdev02)
 export servers
 
 # environment functions and variables for working with vms

@@ -1,5 +1,5 @@
 #!/bin/sh
-start-oud
+start-dir
 start-nodemanager
 start-access
 start-identity

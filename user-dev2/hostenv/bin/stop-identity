@@ -1,14 +1,20 @@
 #!/bin/sh
 
-. ${HOME}/.env/idm.sh
+. ${HOME}/.env/idm.env
 
-LOG=${DOMAIN_LOG}/AdminServer/wlst.log
+${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<EOS
+nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=hostname,port=nmPort,domainName=domName,domainDir=admDir,nmType='ssl');
+connect(userConfigFile=domUC,userKeyFile=domUK,url=domUrl);
+try:
+  shutdown('wls_oim1',force='true');
+except:
+  pass
 
-${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop > ${LOG} 2>&1 <<EOS
-nmConnect('admin','Montag11','$(hostname -f)','5556',domName,domDir,'ssl');
-connect('weblogic','Montag11',domUrl);
-shutdown('wls_oim1',force='true');
-shutdown('wls_soa1',force='true');
+try:
+  shutdown('wls_soa1',force='true');
+except:
+  pass
+
 shutdown('AdminServer',force='true');
 exit();
 EOS
