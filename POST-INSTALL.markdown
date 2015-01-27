@@ -1,6 +1,11 @@
 IAM Deployment Steps
 ====================
 
+# Deploy Platform
+
+Otherwise the envs will bring errors.
+
+
 ## Move Log Directories to Log Disk
 
 ## Hostenv
@@ -31,6 +36,11 @@ Copy the custom functions to both domains.
 ## Configure Identity Domain
 
     wlst identity-config.py
+
+
+## TODO:
+* nodemanager configs
+* nm_host problem
 
 
 ## OIM Scheduler Clustering
