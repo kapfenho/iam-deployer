@@ -18,8 +18,8 @@ mkdir -p ${base}/current/{config,plan}
 [ -a ${base}/current/config/imint.yml       ] || cp ${src}/imint.yml       ${base}/current/config/
 [ -a ${base}/current/plan/Plan.xml          ] || cp ${src}/Plan.xml        ${base}/current/plan/
 
-mkdir -p /opt/local/domains/identity_dev02/servers/wls_oim1/data/nodemanager
-cp ${DEPLOYER}/user-config/identity/startup.properties /opt/local/domains/identity_dev02/servers/wls_oim1/data/nodemanager/
+# mkdir -p /opt/local/domains/identity_dev02/servers/wls_oim1/data/nodemanager
+# cp ${DEPLOYER}/user-config/identity/startup.properties /opt/local/domains/identity_dev02/servers/wls_oim1/data/nodemanager/
 
 if [ -a ${base}/new/imint* ]
 then 
