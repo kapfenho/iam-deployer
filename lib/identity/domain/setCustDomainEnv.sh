@@ -17,7 +17,6 @@ PRODUCTION_MODE="true"
 export PRODUCTION_MODE
 
 uma=""
-
 case ${SERVER_NAME} in
 AdminServer)
   uma="-Xms512m -Xmx1536m -XX:MaxPermSize=512m"
@@ -27,6 +26,8 @@ AdminServer)
   ;;
 *oim*)
   uma="-Xms512m -Xmx2048m -XX:MaxPermSize=1024m"
+  EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Dimint.env=development -Dimint.config=/opt/fmw/config/deploy/imint/current/config/imint.yml"
+  export EXTRA_JAVA_PROPERTIES
   ;;
 esac
 

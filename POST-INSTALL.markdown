@@ -66,11 +66,16 @@ WebTier
 
 ## Deploy Web Config Files
 
+cp /opt/fmw/products/web/webgate/webgate/ohs/config/oblog_config_wg.xml /opt/fmw/products/web/webgate/webgate/ohs/config/oblog_config.xml
+
 ```
 # user-config call
 lib/copy-webtier.sh user-config/webtier /opt/local/instances/ohs1/config/OHS/ohs1
 ```
-
+* adjust hostnames and ip addresses
+* manual: add hostnames in UI
+* manual: add URIs as resources in app domain
+* bin/get... -> copy new keyfiles to webgate
 
 # Deploy Certificates
 
