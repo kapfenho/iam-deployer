@@ -1,0 +1,97 @@
+div#classic_image_body {
+	background-color:#FFFFFF;
+	height:250px;
+	width:670px;
+	margin-left: 30px;
+	margin-top: 10px;
+	margin-bottom: 30px;
+}
+div#classic_as{
+	position:absolute;
+	left: 267px;
+	top: 355px;
+	height: 239px;
+	z-index: 100;
+}
+div#classic_as_text{
+	position:absolute;
+	left: 211px;
+	top: 207px;
+	width: 158px;
+	height: 32px;
+}
+div#classic_portal{
+	width:502px;
+	height:102px;
+	position:absolute;
+	left: 270px;
+	top: 296px;
+	z-index: 1000;
+}
+div#classic_portal_text{
+	position:absolute;
+	left: 227px;
+	top: 232px;
+	width: 76px;
+	height: 33px;
+}
+div#classic_forms{
+	width:127px;
+	height:145px;
+	position:absolute;
+	left: 330px;
+	top: 334px;
+	z-index: 2000;
+}
+div#classic_forms_text{
+	position:absolute;
+	left: 12px;
+	top: 60px;
+	width: 37px;
+	height: 34px;
+}
+div#classic_reports{
+	width:190px;
+	height:143px;
+	position:absolute;
+	left: 510px;
+	top: 336px;
+	z-index: 2000;
+}
+div#classic_reports_text{
+	position:absolute;
+	left: 131px;
+	top: 60px;
+	width: 37px;
+	height: 34px;
+}
+div#classic_database{
+	width:250px;
+	height:144px;
+	position:absolute;
+	left: 386px;
+	top: 338px;
+	z-index: 3000;
+}
+div#classic_database_text{
+	position:absolute;
+	left: 99px;
+	top: 40px;
+	width: 37px;
+	height: 34px;
+}
+div#classic_discover{
+	width:250px;
+	height:46px;
+	position:absolute;
+	left: 404px;
+	top: 315px;
+	z-index: 4000;	
+}
+div#classic_discover_text{
+	position:absolute;
+	left: 82px;
+	top: 2px;
+	width: 37px;
+	height: 25px;
+}

@@ -5,7 +5,7 @@ acConnect()
 edit()
 startEdit()
 
-cd('/AdminConsole/identity_test')
+cd('/AdminConsole/'+domName)
 cmo.setCookieName('OIMADMINCONSSESS')
 
 cd('/JDBCSystemResources/oimOperationsDB/JDBCResource/oimOperationsDB/JDBCConnectionPoolParams/oimOperationsDB')
@@ -17,6 +17,7 @@ cmo.setWeblogicPluginEnabled(true)
 cd('/Clusters/oim_cluster')
 cmo.setWeblogicPluginEnabled(true)
 
+cd('/')
 servers = cmo.getServers()
 for s in servers:
     srvName = s.getName()

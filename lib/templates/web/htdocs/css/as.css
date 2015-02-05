@@ -1,0 +1,195 @@
+div#as_image_body {
+	background-image:url(../welcome_images/AS/AS_bgmain.png);
+	height:528px;
+	width:971px;
+	margin-left: 20px;
+	margin-top: 25px;
+	margin-bottom: 30px;
+}
+
+div#AS_Dev_tool{
+	position:absolute;
+	left: 302px;
+	top: 261px;
+}
+div#AS_JDEV{
+	position:absolute;
+	left: 462px;
+	top: 275px;
+}
+div#AS_Eclipse{
+	position:absolute;
+	left: 324px;
+	top: 353px;
+}
+#AS_diagnostics {
+	position:absolute;
+	left: 879px;
+	top: 721px;
+}
+div#Security {
+	position:absolute;
+	left: 876px;
+	top: 581px;
+}
+#AS_automation {
+	position:absolute;
+	left: 990px;
+	top: 689px;
+}
+#AS_RAC {
+	position:absolute;
+	left: 405px;
+	top: 514px;
+}
+#AS_coherence {
+	position:absolute;
+	left: 538px;
+	top: 593px;
+}
+#AS_JRockit {
+	position:absolute;
+	left: 699px;
+	top: 684px;
+}
+#AS_Kernel {
+	position:absolute;
+	left: 446px;
+	top: 683px;
+}
+#AS_admin {
+	position:absolute;
+	left: 991px;
+	top: 733px;
+}
+
+div#jsf{
+	position:absolute;
+	left: 556px;
+	top: 294px;
+}
+div#jsf_text{
+	position:absolute;
+	left: 104px;
+	top: 0px;
+}
+div#ejb{
+	position:absolute;
+	left: 649px;
+	top: 365px;
+}
+div#ejb_text{
+	position:absolute;
+	left: 49px;
+	top: -15px;
+}
+div#pojo{
+	position:absolute;
+	left: 717px;
+	top: 363px;
+}
+div#pojo_text{
+	position:absolute;
+	left: 79px;
+	top: -5px;
+}
+div#webservices{
+	position:absolute;
+	left: 791px;
+	top: 391px;
+}
+div#webservices_text{
+	position:absolute;
+	left: 77px;
+	top: 3px;
+}
+div#jms{
+	position:absolute;
+	left: 863px;
+	top: 447px;
+}
+div#jms_text{
+	position:absolute;
+	left: 77px;
+	top: 3px;
+}
+div#jca{
+	position:absolute;
+	left: 934px;
+	top: 500px;
+}
+div#jca_text{
+	position:absolute;
+	left: 97px;
+	top: -5px;
+}
+div#transactions{
+	position:absolute;
+	left: 429px;
+	top: 358px;
+}
+div#transactions_text{
+	position:absolute;
+	left: 77px;
+	top: 3px;
+}
+div#connection{
+	position:absolute;
+	left: 523px;
+	top: 408px;
+}
+div#connection_text{
+	position:absolute;
+	left: 77px;
+	top: 3px;
+}
+div#toplink{
+	position:absolute;
+	left: 600px;
+	top: 451px;
+}
+div#toplink_text{
+	position:absolute;
+	left: 77px;
+	top: 3px;
+}
+div#workload{
+	position:absolute;
+	left: 668px;
+	top: 480px;
+}
+div#workload_text{
+	position:absolute;
+	left: 77px;
+	top: 3px;
+}
+div#cluster{
+	position:absolute;
+	left: 731px;
+	top: 536px;
+}
+div#cluster_text{
+	position:absolute;
+	left: 77px;
+	top: 3px;
+}
+div#console{
+	position:absolute;
+	left: 1038px;
+	top: 558px;
+}
+div#console_text{
+	position:absolute;
+	left: 48px;
+	top: 102px;
+}
+div#as_em{
+	position:absolute;
+	left: 1104px;
+	top: 511px;
+}
+div#as_em_text{
+	position:absolute;
+	left: 92px;
+	top: 68px;
+}

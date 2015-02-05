@@ -1,0 +1,81 @@
+div#em_image_body {
+	background-image:url(../welcome_images/EM/em_back.png);
+	height:398px;
+	width:780px;
+	margin-left: 20px;
+	margin-top: 25px;
+	margin-bottom: 30px;
+}
+div#control_pane{
+	position:absolute;
+	left: 492px;
+	top: 406px;
+}
+div#control_pane_text{
+	position:absolute;
+	left: 170px;
+	top: -85px;
+}
+div#config_fusion{
+	position:absolute;
+	left: 677px;
+	top: 383px;
+}
+div#config_fusion_text{
+	position:absolute;
+	left: 80px;
+	top: -6px;
+}
+div#deploy_app{
+	position:absolute;
+	left: 828px;
+	top: 397px;
+}
+div#deploy_app_text{
+	position:absolute;
+	left: 86px;
+	top: 6px;
+	width: 119px;
+}
+div#diagnose{
+	position:absolute;
+	left: 624px;
+	top: 536px;
+}
+div#diagnose_text{
+	position:absolute;
+	left: 73px;
+	top: 1px;
+}
+div#monitor_avail{
+	position:absolute;
+	left: 784px;
+	top: 549px;
+}
+div#monitor_avail_text{
+	position:absolute;
+	left: 61px;
+	top: 9px;
+	width: 97px;
+}
+div#secure_fusion{
+	position:absolute;
+	left: 942px;
+	top: 460px;
+}
+div#secure_fusion_text{
+	position:absolute;
+	left: 74px;
+	top: 11px;
+}
+div#fusion{
+	position:absolute;
+	left: 268px;
+	top: 264px;
+	z-index:1000;
+}
+div#fusion_text{
+	position:absolute;
+	left: 33px;
+	top: -13px;
+}

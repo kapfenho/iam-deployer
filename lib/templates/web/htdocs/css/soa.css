@@ -1,0 +1,307 @@
+div#image_body {
+	background-image:url(../welcome_images/SOA/soa_o_newview_cs2_v2_ALL.png);
+	height:383px;
+	width:708px;
+	margin-left: 35px;
+	margin-top: 35px;
+	margin-bottom: 30px;
+}
+div#mediator{
+	position:absolute;
+	left: 548px;
+	top: 271px;
+}
+div#mediator_text{
+	position:absolute;
+	left: 5px;
+	top: -14px;
+}
+div#business_rules{
+	width:57px;
+	height:95px;
+	position:absolute;
+	left: 449px;
+	top: 318px;
+}
+div#business_rules_text{
+	position:absolute;
+	left: 27px;
+	top: -11px;
+}
+div#Event{
+	width:56px;
+	height:64px;
+	position:absolute;
+	left: 347px;
+	top: 438px;
+}
+div#Event_text{
+	position:absolute;
+	left: -28px;
+	top: 12px;
+}
+div#Registry{
+	width:57px;
+	height:116px;
+	position:absolute;
+	left: 412px;
+	top: 432px;
+}
+div#Registry_text{
+	position:absolute;
+	left: -43px;
+	top: 73px;
+}
+div#Metadate_Repository{
+	width:37px;
+	height:42px;
+	position:absolute;
+	left: 475px;
+	top: 495px;
+}
+div#Metadate_Repository_text{
+	position:absolute;
+	left: -100px;
+	top: 33px;
+	width: 108px;
+}
+
+div#B2B{
+	position:absolute;
+	left: 834px;
+	top: 372px;
+}
+
+div#Adapters{
+	position:absolute;
+	left: 532px;
+	top: 524px;
+}
+div#B2B_text{
+	position:absolute;
+	left: 10px;
+	top: -13px;
+}
+div#JMS_text{
+	position:absolute;
+	left: -20px;
+	top: 27px;
+}
+div#SOAP_text{
+	position:absolute;
+	left: -22px;
+	top: 25px;
+}
+div#JMS{
+	width:39px;
+	height:47px;
+	position:absolute;
+	left: 578px;
+	top: 545px;
+}
+div#SOAP{
+	width:39px;
+	height:47px;
+	position:absolute;
+	left: 625px;
+	top: 567px;
+}
+div#validation{
+	width:72px;
+	height:76px;
+	position:absolute;
+	left: 524px;
+	top: 374px;
+}
+
+div#validation_text{
+	position:absolute;
+	left: 12px;
+	top: 74px;
+}
+
+div#filter{
+	width:53px;
+	height:64px;
+	position:absolute;
+	left: 596px;
+	top: 420px;
+}
+div#filter_text{
+	position:absolute;
+	left: 16px;
+	top: 65px;
+}
+
+div#route{
+	width:55px;
+	height:62px;
+	position:absolute;
+	left: 598px;
+	top: 347px;
+}
+
+div#route_text{
+	position:absolute;
+	left: 18px;
+	top: 59px;
+}
+
+
+div#transformation{
+	width:50px;
+	height:84px;
+	position:absolute;
+	left: 662px;
+	top: 377px;
+}
+div#transformation_text{
+	position:absolute;
+	left: 3px;
+	top: 81px;
+}
+
+
+div#human_workflow{
+	width:55px;
+	height:95px;
+	position:absolute;
+	left: 632px;
+	top: 271px;
+}
+
+div#human_workflow_text{
+	position:absolute;
+	left: 3px;
+	top: -26px;
+}
+
+div#BPEL{
+	width:56px;
+	height:95px;
+	position:absolute;
+	left: 699px;
+	top: 305px;
+}
+div#BPEL_text{
+	position:absolute;
+	left: 5px;
+	top: -14px;
+}
+
+
+div#BAM{
+	width:56px;
+	height:95px;
+	position:absolute;
+	left: 768px;
+	top: 341px;
+}
+div#BAM_text{
+	position:absolute;
+	left: 6px;
+	top: -15px;
+}
+
+div#CEP{
+	position:absolute;
+	left: 736px;
+	top: 547px;
+}
+div#CEP_text{
+	position:absolute;
+	left: 30px;
+	top: 45px;
+}
+
+div#enforcement{
+	position:absolute;
+	left: 709px;
+	top: 452px;
+}
+div#enforcement_text{
+	position:absolute;
+	left: 52px;
+	top: 26px;
+}
+
+
+div#Jdev{
+	width:43px;
+	height:62px;
+	position:absolute;
+	left: 689px;
+	top: 558px;
+}
+div#Jdev_text{
+	position:absolute;
+	left: -2px;
+	top: 63px;
+}
+
+
+div#ws_manager{
+	width:54px;
+	height:45px;
+	position:absolute;
+	left: 783px;
+	top: 536px;
+}
+div#ws_manager_text{
+	position:absolute;
+	left: 25px;
+	top: 28px;
+}
+
+
+div#monitor{
+	position:absolute;
+	left: 842px;
+	top: 488px;
+}
+div#monitor_text{
+	position:absolute;
+	left: 45px;
+	top: 21px;
+}
+#OSB{
+	position:absolute;
+	left: 380px;
+	top: 378px;
+}
+#OSB_text{
+	position:absolute;
+	left: -4px;
+	top: -25px;
+}
+
+div#mail{
+	position:absolute;
+	left: 896px;
+	top: 517px;
+}
+div#mail_text{
+	position:absolute;
+	left: 61px;
+	top: 25px;
+}
+div#ESB_text{
+	position:absolute;
+	left: 413px;
+	top: 373px;
+}
+div#Bindings_text{
+	position:absolute;
+	left: 519px;
+	top: 598px;
+}
+div#Mediator_text{
+	position:absolute;
+	left: 619px;
+	top: 503px;
+}
+div#Service_Infrastructure_text{
+	position:absolute;
+	left: 906px;
+	top: 473px;
+}

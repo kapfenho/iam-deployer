@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?> 
+<!DOCTYPE SimpleResult PUBLIC "-//ORACLE//DTD SimpleResult 1.1//EN"
+"http://xmlns.oracle.com/ias/dtds/SimpleResult_1_1_0.dtd">
+<SimpleResult>
+  <SimpleContainer> 
+    <SimpleText> 
+      <SimpleTextItem> 
+        <SimpleStrong>
+        HTTP_RANGE_NOT_SATISFIABLE
+        </SimpleStrong>
+        <SimpleBreak />
+        None of the range-specifier values in the Range 
+        <SimpleBreak />
+        request-header field overlap the current extent. 
+        <SimpleBreak />
+        of the selected resource. 
+      </SimpleTextItem> 
+    </SimpleText> 
+  </SimpleContainer>
+</SimpleResult>

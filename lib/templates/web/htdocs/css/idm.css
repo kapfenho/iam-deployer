@@ -1,0 +1,124 @@
+div#idm_image_body {
+	background-image:url(../welcome_images/IDM/IDM_overview.png);
+	height:481px;
+	width:736px;
+	margin-left: 20px;
+	margin-top: 25px;
+	margin-bottom: 30px;
+}
+
+div#titleOverall{
+	position:absolute;
+	left: 590px;
+	top: 248px;
+}
+div#oea{
+	position:absolute;
+	left: 616px;
+	top: 573px;
+}
+div#oea_text{
+	position:absolute;
+	left: -46px;
+	top: 110px;
+}
+div#odm{
+	height:102px;
+	position:absolute;
+	left: 491px;
+	top: 311px;
+}
+div#idm_text{
+	position:absolute;
+	left: -100px;
+	top: 7px;
+}
+div#odip{
+	position:absolute;
+	left: 579px;
+	top: 366px;
+}
+div#odip_text{
+	position:absolute;
+	left: 113px;
+	top: 14px;
+}
+div#oid{
+	position:absolute;
+	left: 499px;
+	top: 420px;
+}
+div#oid_text{
+	position:absolute;
+	left: 50px;
+	top: 42px;
+}
+div#ovd{
+	position:absolute;
+	left: 378px;
+	top: 473px;
+}
+div#ovd_text{
+	position:absolute;
+	left: -70px;
+	top: 67px;
+}
+
+div#oam{
+	position:absolute;
+	left: 636px;
+	top: 449px;
+}
+div#oam_text{
+	position:absolute;
+	left: -1px;
+	top: 92px;
+}
+
+
+div#oesso{
+	position:absolute;
+	left: 765px;
+	top: 418px;
+}
+
+div#oesso_text{
+	position:absolute;
+	left: 63px;
+	top: 11px;
+}
+
+div#oif{
+	position:absolute;
+	left: 488px;
+	top: 518px;
+}
+div#oif_text{
+	position:absolute;
+	left: -109px;
+	top: 74px;
+}
+
+div#oaam{
+	position:absolute;
+	left: 809px;
+	top: 495px;
+}
+
+div#oaam_text{
+	position:absolute;
+	left: 65px;
+	top: 94px;
+}
+
+div#orm{
+	position:absolute;
+	left: 345px;
+	top: 414px;
+}
+
+div#orm_text{
+	position:absolute;
+	left: -26px;
+	top: -21px;
+}

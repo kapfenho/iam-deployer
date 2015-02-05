@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?> 
+<!DOCTYPE SimpleResult PUBLIC "-//ORACLE//DTD SimpleResult 1.1//EN"
+"http://xmlns.oracle.com/ias/dtds/SimpleResult_1_1_0.dtd">
+<SimpleResult>
+  <SimpleContainer> 
+    <SimpleText> 
+      <SimpleTextItem> 
+        <SimpleStrong>
+        HTTP_SEE_OTHER
+        </SimpleStrong>
+        <SimpleBreak />
+        The answer to your request is not located here. 
+      </SimpleTextItem> 
+    </SimpleText> 
+  </SimpleContainer>
+</SimpleResult>

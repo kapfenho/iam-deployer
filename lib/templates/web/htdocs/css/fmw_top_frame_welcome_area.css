@@ -1,0 +1,118 @@
+.learn_more_Org {
+	color: #afcd87;
+	margin-left:10px;
+	margin-top:5px;
+	font-weight:bold;
+}
+.learn_more_Org_over {
+	color: #68c3ff;
+	margin-left:10px;
+	margin-top:5px;
+	font-weight:bold;
+}
+
+
+div#modern_platform {
+	background-image:url(../welcome_images/top_tab.png);
+	height:25px;
+	width:97px;
+}
+
+div#user_centric {
+	background-image:url(../welcome_images/top_tab.png);
+	height:25px;
+	width:97px;
+}
+	
+div#extreme_scalability {
+	background-image:url(../welcome_images/top_tab.png);
+	height:25px;
+	width:97px;
+}
+
+div#hot_pluggable {
+	background-image:url(../welcome_images/top_tab.png);
+	height:25px;
+	width:97px;
+}	
+div#go_icon{
+	background-image:url(../welcome_images/go_button.png);
+	height:16px;
+	width:16px;
+	float:right;
+	margin-top: 8px;
+	margin-right: 4px;
+}
+div#go {
+	color: #0c4889;
+	font-weight:bold;
+	margin-left:12px;
+	font-size: 12px;
+	margin-top: 2px;
+}
+div#FMW_control {
+	margin-left:14px;
+	font-stretch:ultra-condensed
+	font-size:11px;
+}
+
+div#content {
+	position: absolute;
+	left: 5px;
+	padding: 0px;
+	width: 241px;
+}	
+div#welcome{
+	font-size:16px;
+	color: #0D4988;
+	font-weight: bold;
+	margin-left:5px;
+	margin-top: 1px;
+	position:absolute;
+	left: 248px;
+	top: 26px;
+}					
+div#welcome_text {
+	font-size:12px;
+	margin-left:20px;
+	position:absolute;
+	left: 268px;
+	top: 43px;
+	min-width: 400px;
+}						
+
+div#modern_platform{
+	position:absolute;
+	left: 200px;
+	top: 62px;
+}
+div#user_centric{
+	position:absolute;
+	left: 200px;
+	top: 97px;
+}
+div#extreme_scalability{
+	position:absolute;
+	left: 200px;
+	top: 132px;
+}
+div#hot_pluggable{
+	position:absolute;
+	left: 200px;
+	top: 167px;
+}
+.key_message_text{
+	font-size:11px;
+	font-weight:bold;
+	margin-left:10px;
+	min-width: 150px;
+	max-width: 200px;
+	margin-top: 15px;
+}
+.key_message_des {
+	color:#595959;
+	min-width: 500px;
+	margin-top: 15px;
+	margin-left:5px;
+}
+.style1 {color: #68c3ff}

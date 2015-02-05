@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?> 
+<!DOCTYPE SimpleResult PUBLIC "-//ORACLE//DTD SimpleResult 1.1//EN"
+"http://xmlns.oracle.com/ias/dtds/SimpleResult_1_1_0.dtd">
+<SimpleResult>
+  <SimpleContainer> 
+    <SimpleText> 
+      <SimpleTextItem> 
+        <SimpleStrong>
+        HTTP_SERVICE_UNAVAILABLE
+        </SimpleStrong>
+        <SimpleBreak />
+        The server is temporarily unable to service your 
+        <SimpleBreak />
+        request due to maintenance downtime or capacity  
+        <SimpleBreak />
+        problems. Please try again later.   
+      </SimpleTextItem> 
+    </SimpleText> 
+  </SimpleContainer>
+</SimpleResult>

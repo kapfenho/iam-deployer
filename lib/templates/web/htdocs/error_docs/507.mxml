@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?> 
+<!DOCTYPE SimpleResult PUBLIC "-//ORACLE//DTD SimpleResult 1.1//EN"
+"http://xmlns.oracle.com/ias/dtds/SimpleResult_1_1_0.dtd">
+<SimpleResult>
+  <SimpleContainer> 
+    <SimpleText> 
+      <SimpleTextItem> 
+        <SimpleStrong>
+        HTTP_INSUFFICIENT_STORAGE
+        </SimpleStrong>
+        <SimpleBreak />
+        The method could not be performed on the resource 
+        <SimpleBreak />
+        because the server is unable to store the representation  
+        <SimpleBreak />
+        needed to successfully complete the request. There is   
+        <SimpleBreak />
+        insufficient free space left in your storage allocation.  
+      </SimpleTextItem> 
+    </SimpleText> 
+  </SimpleContainer>
+</SimpleResult>

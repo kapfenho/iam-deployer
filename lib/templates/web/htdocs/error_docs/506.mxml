@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?> 
+<!DOCTYPE SimpleResult PUBLIC "-//ORACLE//DTD SimpleResult 1.1//EN"
+"http://xmlns.oracle.com/ias/dtds/SimpleResult_1_1_0.dtd">
+<SimpleResult>
+  <SimpleContainer> 
+    <SimpleText> 
+      <SimpleTextItem> 
+        <SimpleStrong>
+        VARIANT_ALSO_VARIES 
+        </SimpleStrong>
+        <SimpleBreak />
+        The variant for the requested resource is 
+        <SimpleBreak />
+        itself a negotiable resource. This  
+        <SimpleBreak />
+        indicates a configuration error.  
+      </SimpleTextItem> 
+    </SimpleText> 
+  </SimpleContainer>
+</SimpleResult>

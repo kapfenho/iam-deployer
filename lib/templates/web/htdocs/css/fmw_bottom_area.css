@@ -1,0 +1,150 @@
+div#tab_text{
+	margin-left:12px;
+	margin-top: 5px;
+	font-size:12px;
+}
+
+.tab_text_original {
+	color:#000000;
+}
+.tab_text_over{
+	font-size:11px;
+	color:#0D4988;
+	font-weight: bold;
+}
+div#graphics_area {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+div#illustration_header{
+	background-image:url(../welcome_images/botton_illustration_header_background.png);
+	height:37px;
+	width:auto;
+	border-top: 1px solid #9cb1ce;
+}
+div#Overview{
+	font-size:16px;
+	color: #0D4988;
+	font-weight: bold;
+	margin-left:6px;
+	margin-top:3px;
+}
+div#Overview_text {
+	font-size:12px;
+	margin-left: 43px;
+}
+.shadowAlphaPng{
+	filter:alpha(opacity = 1);
+}
+imgBWrap {
+	position:absolute; 
+	left:40%; 
+	top:25%; 
+	width:250px; 
+	height:180px; 
+    #border:solid black 1px; 
+	z-index:31;
+}
+.bottom_line{
+	border-bottom: 1px solid #000000;
+	background-color:#000000;
+	height:1px;
+	border-bottom-style:solid;
+}
+
+.oppacity{filter:alpha(opacity=10);}
+.halfalpha{filter: alpha(opacity=50);}
+
+subButts{
+	border:#999999;
+	border-width:thin;
+	border-style:groove;
+	
+}
+tab{
+	border:#999999;
+	border-width:thin;
+	border-style:groove;
+	
+}
+.contTdclass{
+	background:#FFFFFF;
+	padding:0px; 
+	border-spacing:0px;
+	vertical-align:top;
+	padding:5px;
+}	
+.table{
+
+	background-color:#FFFFFF;
+
+	padding: 0; 
+	border-spacing: 0; 
+}
+		 
+
+.slider{
+	background-color: #FFFFFF;
+}
+.labeltext{
+	font-family:Tahoma, Kalimati, FreeSans, Verdana, Arial, sans-serif;
+	font-size:11;
+	font-weight:normal;
+	color:#333333;
+}
+.trnspTxtField{
+	/*border:hidden;*/
+	border:0px solid;
+	background:url(../welcome_images/menuBarItem_bg_md.gif);
+}
+.copy{
+	font-family:Tahoma, Kalimati, FreeSans, Verdana, Arial, sans-serif;
+	font-size:10px;
+	font-weight:normal;
+	color:#333333;
+}
+.biggercopy{
+	font-family:Tahoma, Kalimati, FreeSans, Verdana, Arial, sans-serif;
+	font-size:12px;
+	font-weight:normal;
+	color:#333333;
+}
+.promtcopy{
+	font-family:Tahoma, Kalimati, FreeSans, Verdana, Arial, sans-serif;
+	font-size:12px;
+	font-weight:normal;
+	color:#704A00;
+}
+.text{
+	font-family:Tahoma, Kalimati, FreeSans, Verdana, Arial, sans-serif;
+	font-size:12px;
+	font-weight:normal;
+	color:#000000;
+}
+.style5 {
+	font-size: 12px;
+}
+.style7 {font-size: 15px}
+
+
+div#document{
+	margin-top:200px;
+	background-image:url(../welcome_images/document_background.png);
+	height:25px;
+	width: 224px;
+}
+div#tutorial{
+	position:relative;
+	background-image:url(../welcome_images/document_background.png);
+	height:25px;
+	width: 184px;
+	margin-top:0px;
+	margin-bottom:10px;
+}
+div#doc_text{
+	position:relative;
+	font-size:12px;
+	margin-left:12px;
+	padding: 5px;
+}

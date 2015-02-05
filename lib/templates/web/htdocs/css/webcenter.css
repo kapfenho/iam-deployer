@@ -1,0 +1,124 @@
+div#wc_image_body {
+	background-image:url(../welcome_images/WebCenter/WebCenter.png);
+	height:441px;
+	width:489px;
+	margin-left: 100px;
+	margin-top: 38px;
+	margin-bottom: 30px;
+}
+div#webcenter_spaces{
+	position:absolute;
+	left: 598px;
+	top: 234px;
+	z-index:2000;
+}
+div#webcenter_spaces_text{
+	position:absolute;
+	left: 89px;
+	top: 23px;
+}
+div#custom_application{
+	position:absolute;
+	left: 495px;
+	top: 228px;
+	z-index:2000;
+}
+div#custom_application_text{
+	position:absolute;
+	left: -109px;
+	top: 31px;
+}
+div#portlets{
+	position:absolute;
+	left: 436px;
+	top: 425px;
+	z-index:2000;
+}
+div#portlets_text{
+	position:absolute;
+	left: -28px;
+	top: 12px;
+}
+div#composer{
+	position:absolute;
+	left: 355px;
+	top: 526px;
+	z-index:2000;
+}
+div#composer_text{
+	position:absolute;
+	left: -12px;
+	top: 7px;
+}
+div#application_integration{
+	position:absolute;
+	left: 482px;
+	top: 554px;
+	z-index:2000;
+}
+div#application_integration_text{
+	position:absolute;
+	left: -58px;
+	top: 67px;
+}
+
+div#social_networking{
+	position:absolute;
+	left: 605px;
+	top: 570px;
+	z-index:2000;
+}
+div#social_networking_text{
+	position:absolute;
+	left: 2px;
+	top: 82px;
+}
+
+div#web_2{
+	position:absolute;
+	left: 672px;
+	top: 530px;
+	z-index:2000;
+}
+
+div#web_2_text{
+	position:absolute;
+	left: 32px;
+	top: 80px;
+}
+
+div#wc_content{
+	position:absolute;
+	left: 566px;
+	top: 445px;
+	z-index:2000;
+}
+div#wc_content_text{
+	position:absolute;
+	left: 57px;
+	top: 88px;
+}
+
+div#site_analytics{
+	position:absolute;
+	left: 671px;
+	top: 445px;
+	z-index:2000;
+}
+
+div#site_analytics_text{
+	position:absolute;
+	left: 74px;
+	top: 34px;
+}
+div#webcenter_framework{
+	position:absolute;
+	left: 341px;
+	top: 467px;
+	z-index:1000;
+}
+div#webcenter_framework_text{
+	position:absolute;
+	left: 211px;
+	top: 223px;
+}

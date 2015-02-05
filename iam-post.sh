@@ -36,6 +36,9 @@ cp ${deployer}/user-config/hostenv/env/* ~/.env
 cp ${deployer}/user-config/hostenv/bin/* ~/bin
 cp ${deployer}/user-config/hostenv/lib/* ~/lib
 
+cp /opt/fmw/products/web/webgate/webgate/ohs/config/oblog_config_wg.xml \
+   /opt/fmw/products/web/webgate/webgate/ohs/config/oblog_config.xml
+
 echo -e '\n[ -a ${HOME}/.env/common.sh ] && . ${HOME}/.env/common.sh\n' >> ${HOME}/.bash_profile
 
 . ${HOME}/.env/common.sh
@@ -207,6 +210,7 @@ ${HOME}/bin/start-all
 
 # web config
 #
+
 generate_httpd_config /tmp iam0.dwpbank.net
 
 exit 0

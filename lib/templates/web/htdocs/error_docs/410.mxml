@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?> 
+<!DOCTYPE SimpleResult PUBLIC "-//ORACLE//DTD SimpleResult 1.1//EN"
+"http://xmlns.oracle.com/ias/dtds/SimpleResult_1_1_0.dtd">
+<SimpleResult>
+  <SimpleContainer> 
+    <SimpleText> 
+      <SimpleTextItem> 
+        <SimpleStrong>
+        HTTP_GONE
+        </SimpleStrong>
+        <SimpleBreak />
+        The requested resource is no longer
+        <SimpleBreak />
+        available on this server and there is
+        <SimpleBreak />
+        no forwarding address. Please remove  
+        <SimpleBreak />
+        all references to this resource.  
+      </SimpleTextItem> 
+    </SimpleText> 
+  </SimpleContainer>
+</SimpleResult>

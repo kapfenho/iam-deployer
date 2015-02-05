@@ -1,0 +1,181 @@
+@charset "utf-8";
+
+body {
+	/*background-image: url(welcome_images/background.png);*/
+	background-color: #9cb1ce;
+	margin-left:0px;
+	margin-top:0px;
+	margin-right: 0px;
+	font-family: Tahoma, Kalimati, FreeSans, Verdana, Arial, sans-serif;
+	font-size:11px;
+}
+#message_area{
+	background-color: white;
+	border-top:1px solid #0D4988;
+}
+
+table#botton_table {
+	margin-top: 4px;
+}
+table#top_table {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+}
+td#top_middle{
+	background-color:#FFFFFF;
+}
+
+div#top_window {
+	background-image:url(../welcome_images/background_top.png);
+}
+div#botton_window{
+	background-color: #9cb1ce;
+	height:100%;
+}
+
+
+div#line{
+	background-color:#FFFFFF;
+	height:1px;
+	width:100%;
+}
+div#oracle_logo {
+	margin-left:0px;
+	margin-top:0px;
+	height:24px;
+	background-image:url(../welcome_images/header_back.png);
+	background-position:right;
+	background-repeat:no-repeat;
+	background-color:#FFFFFF;
+}
+div#top_left_tab_area{
+	margin-top:7px;
+}
+div#top_left_tab_empty {
+	margin-top:2px;
+	margin-left: 0px;
+	width: 246px;
+	height: 32px;
+	
+}
+div#top_left_tab {
+	margin-top:2px;
+	margin-left: 0px;
+	width: 246px;
+	height: 32px;
+	background-image:url(../welcome_images/go_fusion_mw.png);
+}
+
+div#buttom_left_tab {
+	margin-top:2px;
+	margin-left: 0px;
+	width: 199px;
+	height: 32px;
+	background-image:url(../welcome_images/go_fusion_mw.png);
+}
+
+div#fusion_welcome_area{
+	background-color:#FFFFFF;
+	margin-top:1px;
+}
+div#space_between {
+	height:3px;
+}
+div#right_side_menu{
+	width:100%;
+}
+div#top_right_white{
+	margin-top:1px;
+	background-color:#FFFFFF;
+	height:35px;
+}
+div#explore_interactive{
+	margin-left: 0px;
+	width: 246px;
+	height: 37px;
+	background-image:url(../welcome_images/explore_interactive_overview.png);
+	margin-top: 1px;
+}
+div#finger_tabs{
+	margin-left:10px;
+}
+div#soa{
+	background-image:url(../welcome_images/FingerTab.png);
+	height:20px;
+	width: 236px;
+	margin-top:4px;
+	border-top: 1px solid #9cb1ce;
+}
+div#webcenter{
+	background-image:url(../welcome_images/FingerTab.png);
+	height:20px;
+	width: 236px;
+	border-top: 1px solid #9cb1ce;
+}
+
+div#appserver{
+	background-image:url(../welcome_images/FingerTab.png);
+	height:20px;
+	width: 236px;
+	border-top: 1px solid #9cb1ce;
+}
+
+div#idm{
+	background-image:url(../welcome_images/FingerTab.png);
+	height:20px;
+	width: 236px;
+	border-top: 1px solid #9cb1ce;
+}
+
+div#em{
+	background-image:url(../welcome_images/FingerTab.png);
+	height:20px;
+	width: 236px;
+	border-top: 1px solid #9cb1ce;
+}
+
+div#grid{
+	background-image:url(../welcome_images/FingerTab.png);
+	height:20px;
+	width: 236px;
+	border-top: 1px solid #9cb1ce;
+}
+
+div#classic{
+	background-image:url(../welcome_images/FingerTab.png);
+	height:20px;
+	width: 236px;
+	border-top: 1px solid #9cb1ce;
+}
+div#fusion_illustration_area{
+	background-color:#FFFFFF;
+}
+div#botton_window{
+	margin-top:3px;
+}
+div#buttom_blue_area {
+	background-color:#9cb1ce;
+	height:100%;
+}				
+div#bottom_links{
+	margin-left: 246px;
+	margin-top: 4px;
+	color:#0D4988;
+}
+a#bottom:link{
+	color:#0D4988;
+	text-decoration:none;
+}
+a#bottom:hover{
+	color:#FFFFFF;
+	text-decoration:none;
+}
+.style8 {
+	color: #FF0000;
+	font-weight: bold;
+}
+div#copyright {
+	color: #666666;
+	text-align:right;
+}

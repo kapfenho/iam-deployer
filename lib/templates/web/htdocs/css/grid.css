@@ -1,0 +1,185 @@
+div#grid_image_body {
+	background-image:url(../welcome_images/Grid/Grid_background.png);
+	height:502px;
+	width:864px;
+	margin-left: 20px;
+	margin-top: 10px;
+	margin-bottom: 30px;
+}
+
+#autoManage{
+	position:absolute;
+	left: 645px;
+	top: 281px;
+}
+#conAvail{
+	position:absolute;
+	left: 817px;
+	top: 370px;
+}
+#scalePerf{
+	position:absolute;
+	left: 994px;
+	top: 461px;
+}
+#siteAvail{
+	position:absolute;
+	left: 1138px;
+	top: 532px;
+}
+#backup_rec{
+	position:absolute;
+	left: 823px;
+	top: 640px;
+}
+#backup_rec_text{
+	position:absolute;
+	left: 25px;
+	top: 65px;
+}
+#disaster_rec{
+	position:absolute;
+	left: 926px;
+	top: 624px;
+}
+#disaster_rec_text{
+	position:absolute;
+	left: 115px;
+	top: 69px;
+}
+#high_perf_JDK{
+	position:absolute;
+	left: 865px;
+	top: 521px;
+}
+#high_perf_JDK_text{
+	position:absolute;
+	left: 8px;
+	top: 67px;
+	width: 118px;
+}
+#data_grid{
+	position:absolute;
+	left: 756px;
+	top: 483px;
+}
+#data_grid_text{
+	position:absolute;
+	left: -7px;
+	top: 50px;
+	width: 139px;
+}
+#scalability{
+	position:absolute;
+	left: 712px;
+	top: 544px;
+}
+#scalability_text{
+	position:absolute;
+	left: 49px;
+	top: 81px;
+	width: 118px;
+}
+#load_balanding{
+	position:absolute;
+	left: 609px;
+	top: 529px;
+}
+#load_balanding_text{
+	position:absolute;
+	left: -38px;
+	top: 71px;
+	width: 118px;
+}
+#session_rep{
+	position:absolute;
+	left: 549px;
+	top: 480px;
+}
+#session_rep_text{
+	position:absolute;
+	left: -90px;
+	top: 40px;
+	width: 155px;
+}
+#clusting{
+	position:absolute;
+	left: 448px;
+	top: 450px;
+}
+#clusting_text{
+	position:absolute;
+	left: -13px;
+	top: 35px;
+}
+#enterprise_deployment{
+	position:absolute;
+	left: 596px;
+	top: 394px;
+}
+#enterprise_deployment_text{
+	position:absolute;
+	left: -46px;
+	top: 53px;
+	width: 170px;
+}
+#rac_database{
+	position:absolute;
+	left: 670px;
+	top: 449px;
+}
+#rac_database_text{
+	position:absolute;
+	left: -24px;
+	top: 41px;
+	width: 120px;
+	height: 26px;
+}
+#self_tuning{
+	position:absolute;
+	left: 402px;
+	top: 276px;
+}
+#self_tuning_text{
+	position:absolute;
+	left: -15px;
+	top: -3px;
+	width: 110px;
+	height: 26px;
+}
+#enterprise_m{
+	position:absolute;
+	left: 465px;
+	top: 341px;
+}
+#enterprise_m_text{
+	position:absolute;
+	left: 67px;
+	top: 30px;
+	width: 110px;
+	height: 26px;
+}
+#management{
+	position:absolute;
+	left: 365px;
+	top: 369px;
+}
+#management_text{
+	position:absolute;
+	left: -2px;
+	top: 64px;
+	width: 110px;
+	height: 26px;
+}
+#online_op{
+	position:absolute;
+	left: 299px;
+	top: 292px;
+}
+#online_op_text{
+	position:absolute;
+	left: -24px;
+	top: -13px;
+	width: 110px;
+	height: 26px;
+}

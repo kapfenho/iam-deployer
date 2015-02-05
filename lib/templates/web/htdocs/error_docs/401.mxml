@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?> 
+<!DOCTYPE SimpleResult PUBLIC "-//ORACLE//DTD SimpleResult 1.1//EN"
+"http://xmlns.oracle.com/ias/dtds/SimpleResult_1_1_0.dtd">
+<SimpleResult>
+  <SimpleContainer> 
+    <SimpleText> 
+      <SimpleTextItem> 
+        <SimpleStrong>
+        HTTP_UNAUTHORIZED
+        </SimpleStrong>
+        <SimpleBreak />
+        This server could not verify that you
+        <SimpleBreak />
+        are authorized to access the document 
+        <SimpleBreak />
+        requested. Either you supplied the wrong 
+        <SimpleBreak />
+        credentials (e.g., bad password), or your 
+        <SimpleBreak />
+        browser doesn't understand how to supply 
+        <SimpleBreak />
+        the credentials required 
+      </SimpleTextItem> 
+    </SimpleText> 
+  </SimpleContainer>
+</SimpleResult>

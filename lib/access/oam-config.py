@@ -5,12 +5,13 @@ acConnect()
 edit()
 startEdit()
 
-cd('/AdminConsole/access_test')
+cd('/AdminConsole/'+domName)
 cmo.setCookieName('OAMCONSOLESESS')
 
 cd('/Clusters/oam_cluster')
 cmo.setWeblogicPluginEnabled(true)
 
+cd('/')
 servers = cmo.getServers()
 for s in servers:
     srvName = s.getName()
