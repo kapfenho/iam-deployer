@@ -1,6 +1,12 @@
 IAM Deployment Steps
 ====================
 
++ TODO
+------
+  * iam0 platform
+  * poud
+
+
 # Deploy Platform
 
 Otherwise the envs will bring errors.

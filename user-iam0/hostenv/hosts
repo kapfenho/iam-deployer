@@ -1,24 +1,15 @@
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+::1                                         localhost6 localhost6.localdomain6
 
 192.168.168.64           iam0.dwpbank.net             iam0
 
-192.168.168.64           web1.dwpbank.net             web1
-192.168.168.64           web2.dwpbank.net             web2
-192.168.168.64           oam1.dwpbank.net             oam1
-192.168.168.64           oam2.dwpbank.net             oam2
-192.168.168.64           oim1.dwpbank.net             oim1
-192.168.168.64           oim2.dwpbank.net             oim2
-192.168.168.64           oud1.dwpbank.net             oud1
-192.168.168.64           oud2.dwpbank.net             oud2
-
-192.168.168.64    oiminternal.dwpbank.net      oiminternal
-192.168.168.64       idmadmin.dwpbank.net         idmadmin
-192.168.168.64       oimadmin.dwpbank.net         oimadmin
-192.168.168.64       diradmin.dwpbank.net         diradmin
+192.168.168.64    idminternal.dwpbank.net      idminternal
+192.168.168.64         oamadm.dwpbank.net           oamadm
+192.168.168.64         oimadm.dwpbank.net           oimadm
+192.168.168.64            idm.dwpbank.net              idm
+192.168.168.64         idmrep.dwpbank.net           idmrep
 192.168.168.64            sso.dwpbank.net              sso
 192.168.168.64           ldap.dwpbank.net             ldap
-
 192.168.168.64          oradb.dwpbank.net            oradb
 
 192.168.1.16          nyx.vie.agoracon.at              nyx
