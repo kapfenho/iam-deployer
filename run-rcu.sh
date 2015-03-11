@@ -38,7 +38,7 @@ rcu_identity() {
     -dbUser sys \
     -dbRole sysdba \
     -useSamePasswordForAllSchemaUsers true \
-    -schemaPrefix DIM \
+    -schemaPrefix ${iam_oim_prefix} \
     -component MDS       \
     -component IAU       \
     -component OPSS      \
@@ -62,7 +62,7 @@ rcu_drop_identity() {
     -connectString ${dbs_dbhost}:1521:${iam_sid} \
     -dbUser sys \
     -dbRole sysdba \
-    -schemaPrefix DIM \
+    -schemaPrefix ${iam_oim_prefix} \
     -component MDS       \
     -component IAU       \
     -component OPSS      \
@@ -87,7 +87,7 @@ rcu_access() {
     -dbUser sys \
     -dbRole sysdba \
     -useSamePasswordForAllSchemaUsers true \
-    -schemaPrefix DAM \
+    -schemaPrefix ${iam_oam_prefix} \
     -component MDS       \
     -component IAU       \
     -component OPSS      \
@@ -98,6 +98,7 @@ ${iam_oam_schema_pass}
 EOF
 }
 
+# ------------------------------------------------------------------------
 #  drop database schemas of access management.
 #+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, iam_dba_pass
 #+ 
@@ -109,7 +110,7 @@ rcu_drop_access() {
     -connectString ${dbs_dbhost}:1521:${iam_sid} \
     -dbUser sys \
     -dbRole sysdba \
-    -schemaPrefix DAM \
+    -schemaPrefix ${iam_oam_prefix} \
     -component MDS       \
     -component IAU       \
     -component OPSS      \
@@ -119,8 +120,51 @@ ${iam_dba_pass}
 EOF
 }
 
-# -------------------------------------------------------
 
+# ------------------------------------------------------------------------
+#  create database schemas for identity management.
+#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, iam_dba_pass,
+#+              iam_oim_schema_pass
+#+ 
+rcu_bi_publisher() {
+  ${s_rcu_home}/bin/rcu \
+    -silent \
+    -createRepository \
+    -databaseType ORACLE \
+    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -dbUser sys \
+    -dbRole sysdba \
+    -useSamePasswordForAllSchemaUsers true \
+    -schemaPrefix ${iam_bip_prefix} \
+    -component MDS  \
+    -component BIPLATFORM \
+    <<EOF
+${iam_dba_pass}
+${iam_bip_schema_pass}
+EOF
+}
+
+# ------------------------------------------------------------------------
+#  drop database schemas of access management.
+#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, iam_dba_pass
+#+ 
+rcu_drop_bi_publisher() {
+  ${s_rcu_home}/bin/rcu \
+    -silent \
+    -dropRepository \
+    -databaseType ORACLE \
+    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -dbUser sys \
+    -dbRole sysdba \
+    -schemaPrefix ${iam_bip_prefix} \
+    -component MDS  \
+    -component BIPLATFORM \
+    <<EOF
+${iam_dba_pass}
+EOF
+}
+
+# -------------------------------------------------------
 echo
 
 if [ ${#} -gt 0 ] 
@@ -130,18 +174,22 @@ then
   read cont
   echo
   echo "***  Dropping Identity schema..."
-  rcu_drop_identity
+  # rcu_drop_identity
   echo "***  Dropping Access schema..."
-  rcu_drop_access
+  # rcu_drop_access
+  echo "***  Dropping BI Publisher schema..."
+  rcu_drop_bi_publisher
 else
   echo "*** Creating schemas ***"
   echo "  press RETURN to continue or Ctrl-C to stop"
   read cont
   echo
   echo "***  Creating Identity schema..."
-  rcu_identity
+  # rcu_identity
   echo "***  Creating Access schema..."
-  rcu_access
+  # rcu_access
+  echo "***  Creating BI Publisher schema..."
+  rcu_bi_publisher
 fi
 
 echo "*** Schema actions finished. ***"
