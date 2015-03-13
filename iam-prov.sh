@@ -30,7 +30,7 @@ done
 echo "*** --> Fixing perf problem at $(date)" | tee -a $flog
 
 for p in access identity dir ; do
-  on oim1 "cp /vagrant/sys/jdk6/java.security /opt/fmw/products/$p/jdk6/jre/lib/security/java.security"   | tee -a $flog
+  on oim1 "sed -i.orig 's/securerandom\.source=file:\/dev\/urandom/securerandom\.source=file:\/dev\/\.\/urandom/g' ${iam_top}/products/${p}/jdk6/jre/lib/security/java.security" | tee -a $flog
 done
 
 echo "*** Prov 2 at $(date)" | tee -a $flog
