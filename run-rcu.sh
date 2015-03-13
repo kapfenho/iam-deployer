@@ -17,12 +17,15 @@
 #  horst.kapfenberger@agoracon.at, 2014-09-10
 #  vim: set ft=sh :
 
-set -o errexit
-set -o nounset
+set -o errexit nounset
 
-_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [ -z ${DEPLOYER} ] ; then
+  echo "ERROR: env variable DEPLOYER not set!"
+  exit 80
+fi
 
-. ${_DIR}/user-config/iam.config
+. ${DEPLOYER}/user-config/iam.config
+. ${DEPLOYER}/lib/libcommon2.sh
 
 # ------------------------------------------------------------------------
 #  create database schemas for identity management.
@@ -174,9 +177,9 @@ then
   read cont
   echo
   echo "***  Dropping Identity schema..."
-  # rcu_drop_identity
+  rcu_drop_identity
   echo "***  Dropping Access schema..."
-  # rcu_drop_access
+  rcu_drop_access
   echo "***  Dropping BI Publisher schema..."
   rcu_drop_bi_publisher
 else
@@ -185,9 +188,9 @@ else
   read cont
   echo
   echo "***  Creating Identity schema..."
-  # rcu_identity
+  rcu_identity
   echo "***  Creating Access schema..."
-  # rcu_access
+  rcu_access
   echo "***  Creating BI Publisher schema..."
   rcu_bi_publisher
 fi

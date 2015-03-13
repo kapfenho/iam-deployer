@@ -1,8 +1,0 @@
-# environment functions and variables for working with vms
-# load this file
-#
-# vi: set ft=sh :
-
-_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-. ${_DIR}/user-config/env/env.sh
-
