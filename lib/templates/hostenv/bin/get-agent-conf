@@ -1,0 +1,27 @@
+#!/bin/sh
+
+dest=/opt/local/instances/ohs1/config/OHS/ohs1/webgate
+arch=$dest/archive
+src=/opt/fmw/config/domains/access_test/output/Webgate_IDM_11g
+
+echo "Creating backup..."
+
+[ -d $arch ] || mkdir -p $arch
+
+narch=$arch/$(date +'%Y%m%d-%H%M')
+
+echo "Copying files..."
+
+cp -Rp $dest/config $narch
+
+cp -fp $src/cwallet.sso         $dest/config/
+cp -fp $src/password.xml        $dest/config/
+cp -fp $src/ObAccessClient.xml  $dest/config/
+cp -fp $src/aaa_cert.pem        $dest/config/simple/
+cp -fp $src/aaa_key.pem         $dest/config/simple/
+
+echo "Finished."
+echo
+
+exit 0
+

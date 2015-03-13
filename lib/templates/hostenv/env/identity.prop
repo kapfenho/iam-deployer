@@ -1,0 +1,21 @@
+hostname=iam0.dwpbank.net
+nmPort=5556
+domName=identity_test
+admDir=/opt/fmw/config/domains/identity_test
+domDir=/opt/local/domains/identity_test
+domAdminPort=7101
+domSoaPort=8001
+domOimPort=14000
+domUrl=t3://iam0.dwpbank.net:7101
+domUC=/home/fmwuser/.creds/identity_test.usr
+domUK=/home/fmwuser/.creds/identity_test.key
+nmUC=/home/fmwuser/.creds/nm.usr
+nmUK=/home/fmwuser/.creds/nm.key
+
+### set for identity-app-property-file
+# appName=my_app
+# appArchive=my_app.war
+# appDir=/opt/fmw/config/deploy/my_app
+# appPath=/opt/fmw/config/deploy/my_app/current/my_app.war
+# appPlan=/opt/fmw/config/deploy/my_app/current/plan/Plan.xml
+# appTargets=my_managed_server

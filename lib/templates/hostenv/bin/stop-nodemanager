@@ -1,0 +1,3 @@
+#!/bin/sh
+pkill -SIGTERM -f '\ weblogic\.NodeManager'
+exit 0

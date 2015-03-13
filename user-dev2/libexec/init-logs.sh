@@ -27,14 +27,12 @@ set -x
 mydir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 . ${mydir}/../env/env.sh
 
-eval $(grep INSTALL_APPHOME_DIR     ${mydir}/../iam/provisioning.rsp)
-eval $(grep INSTALL_LOCALCONFIG_DIR ${mydir}/../iam/provisioning.rsp)
+gdom=/opt/fmw/config/domains
+ldom=/opt/local/domains
+lins=/opt/local/instances
+
 eval $(grep IDMPROV_ACCESS_DOMAIN   ${mydir}/../iam/provisioning.rsp)
 eval $(grep IDMPROV_IDENTITY_DOMAIN ${mydir}/../iam/provisioning.rsp)
-
-gdom=${INSTALL_APPHOME_DIR}/config/domains
-ldom=${INSTALL_LOCALCONFIG_DIR}/domains
-lins=${INSTALL_LOCALCONFIG_DIR}/instances
 
 echo "-- nodemanager --"
 mkdir -p ${dst}/nodemanager

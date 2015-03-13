@@ -1,7 +1,5 @@
 #!/bin/sh
 
-orainst_loc=/opt/fmw/etc/oraInst.loc
-
 . ${DEPLOYER}/user-config/iam.config
 . ${DEPLOYER}/lib/libcommon2.sh
 
@@ -36,11 +34,13 @@ bip_domain_home=$(grep "DOMAIN_HOME_PATH=" ${uc2} | cut -d= -f2)
 check_input
 
 # Inventory pointer
-if ! [ -a ${orainst_loc} ] ; then
+if ! [ -a ${iam_orainv_ptr} ] ; then
   log "Creating oraInst.loc"
-  mkdir -p /opt/fmw/etc
-  echo "inventory_loc=/opt/oracle/oraInventory" > ${orainst_loc}
-  echo "inst_group=oinstall"                   >> ${orainst_loc}
+  if ! [ -a $(basedir ${iam_orainv_ptr}) ] ; then
+    mkdir -p $(basedir ${iam_orainv_ptr})
+  fi
+  echo "inventory_loc=/opt/oracle/oraInventory" > ${iam_orainv_ptr}
+  echo "inst_group=oinstall"                   >> ${iam_orainv_ptr}
 else
   log "Skipped: Creating oraInst.loc"
 fi
@@ -92,7 +92,7 @@ if ! [ -a ${bip_domain_home} ] ; then
   cp -f ${DEPLOYER}/user-config/bip/staticports.ini /tmp/
   ${bip_ora_home}/bin/config.sh \
     -silent \
-    -invPtrLoc ${orainst_loc} \
+    -invPtrLoc ${iam_orainv_ptr} \
     -responseFile ${DEPLOYER}/user-config/bip/bip_config.rsp \
     -jreLoc ${JAVA_HOME}/jre \
     -waitforcompletion \

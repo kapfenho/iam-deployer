@@ -1,0 +1,6 @@
+#!/bin/sh
+start-dir
+start-nodemanager
+start-access
+start-identity
+start-webtier

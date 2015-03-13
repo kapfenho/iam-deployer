@@ -16,61 +16,75 @@ mvlog() {
   ln -s ${dst} ${src}
 }
 
+idmdom=${IDMPROV_IDENTITY_DOMAIN}
+accdom=${IDMPROV_ACCESS_DOMAIN}
+
+if [ -z ${idmdom} ] ; then
+  error "Env variable IDMPROV_IDENTITY_DOMAIN not defined"
+  exit 81
+fi
+
 set -x
 case "$(hostname -s)" in
-oim1)
-  mkdir -p ${dst}/nodemanager
-  mvlog /opt/fmw/config/domains/identity_test/servers/AdminServer/logs \
-        ${dst}/identity_test/AdminServer
-  mvlog /opt/local/domains/identity_test/servers/wls_soa1/logs \
-        ${dst}/identity_test/wls_soa1
-  mvlog /opt/local/domains/identity_test/servers/wls_oim1/logs \
-        ${dst}/identity_test/wls_oim1
-  ;;
-oim2)
-  mkdir -p ${dst}/nodemanager
-  mvlog /opt/local/domains/identity_test/servers/wls_soa2/logs \
-        ${dst}/identity_test/wls_soa2
-  mvlog /opt/local/domains/identity_test/servers/wls_oim2/logs \
-        ${dst}/identity_test/wls_oim2
-  ;;
-oam1)
-  mkdir -p ${dst}/nodemanager
-  mvlog /opt/fmw/config/domains/access_test/servers/AdminServer/logs \
-        ${dst}/access_test/AdminServer
-  mvlog /opt/local/domains/access_test/servers/wls_oam1/logs \
-        ${dst}/access_test/wls_oam1
-  ;;
-oam2)
-  mkdir -p ${dst}/nodemanager
-  mvlog /opt/local/domains/access_test/servers/wls_oam2/logs \
-        ${dst}/access_test/wls_oam2
-  ;;
-oud1)
-  mkdir -p ${dst}/oud1
-  mv   /opt/local/instances/oud1/OUD/logs ${dst}/oud1/
-  ln -s ${dst}/oud1/logs /opt/local/instances/oud1/OUD/logs
-  ;;
-oud2)
-  mkdir -p ${dst}/oud2
-  mv   /opt/local/instances/oud2/OUD/logs ${dst}/oud2/
-  ln -s ${dst}/oud2/logs /opt/local/instances/oud2/OUD/logs
-  ;;
-web1)
-  mkdir -p ${dst}/ohs1
-  mv   /opt/local/instances/ohs1/auditlogs   ${dst}/ohs1/
-  mv   /opt/local/instances/ohs1/diagnostics ${dst}/ohs1/
-  ln -s ${dst}/ohs1/auditlogs   /opt/local/instances/ohs1/auditlogs
-  ln -s ${dst}/ohs1/diagnostics /opt/local/instances/ohs1/diagnostics
-  ln -s ${dst}/ohs1/diagnostics/logs/OHS/ohs1  ${dst}/ohs1/logs
-  ;;
-web2)
-  mkdir -p ${dst}/ohs2
-  mv   /opt/local/instances/ohs2/auditlogs   ${dst}/ohs2/
-  mv   /opt/local/instances/ohs2/diagnostics ${dst}/ohs2/
-  ln -s ${dst}/ohs2/auditlogs   /opt/local/instances/ohs2/auditlogs
-  ln -s ${dst}/ohs2/diagnostics /opt/local/instances/ohs2/diagnostics
-  ln -s ${dst}/ohs2/diagnostics/logs/OHS/ohs2  ${dst}/ohs2/logs
-  ;;
+  dwpidmdev02 | dwptoim[34] )
+    mkdir -p ${dst}/{nodemanager,${idmdom},${accdom},oud1,ohs1}
+    mvlog /opt/fmw/config/domains/${idmdom}/servers/AdminServer/logs ${dst}/${idmdom}/AdminServer
+    mvlog /opt/local/${lfmw}/domains/${idmdom}/servers/wls_soa1/logs ${dst}/${idmdom}/wls_soa1
+    mvlog /opt/local/${lfmw}/domains/${idmdom}/servers/wls_oim1/logs ${dst}/${idmdom}/wls_oim1
+    mvlog /opt/fmw/config/domains/${accdom}/servers/AdminServer/logs ${dst}/${accdom}/AdminServer
+    mvlog /opt/local/${lfmw}/domains/${accdom}/servers/wls_oam1/logs ${dst}/${accdom}/wls_oam1
+    oudins=oud1
+    mkdir -p ${dst}/${oudins}
+    mvlog /opt/local/${lfmw}/instances/${oudins}/OUD/logs            ${dst}/${oudins}/logs
+    ohsins=ohs1
+    mkdir -p ${dst}/${ohsins}
+    mvlog /opt/local/${lfmw}/instances/${ohsins}/auditlogs                      ${dst}/${ohsins}/auditlogs
+    mvlog /opt/local/${lfmw}/instances/${ohsins}/diagnostics/logs/OHS/${ohsins} ${dst}/${ohsins}/logs
+    mvlog /opt/local/${lfmw}/instances/${ohsins}/diagnostics/logs/OPMN/opmn     ${dst}/${ohsins}/opmn
+    ;;
+  dwp[tp]oim1 )
+    mkdir -p ${dst}/nodemanager
+    mvlog /opt/fmw/config/domains/${idmdom}/servers/AdminServer/logs ${dst}/${idmdom}/AdminServer
+    mvlog /opt/local/${lfmw}/domains/${idmdom}/servers/wls_soa1/logs ${dst}/${idmdom}/wls_soa1
+    mvlog /opt/local/${lfmw}/domains/${idmdom}/servers/wls_oim1/logs ${dst}/${idmdom}/wls_oim1
+    ;;
+  dwp[tp]oim2 )
+    mkdir -p ${dst}/nodemanager
+    mvlog /opt/local/${lfmw}/domains/${idmdom}/servers/wls_soa2/logs ${dst}/${idmdom}/wls_soa2
+    mvlog /opt/local/${lfmw}/domains/${idmdom}/servers/wls_oim2/logs ${dst}/${idmdom}/wls_oim2
+    ;;
+  dwp[tp]oam1 )
+    mkdir -p ${dst}/nodemanager
+    mvlog /opt/fmw/config/domains/${accdom}/servers/AdminServer/logs ${dst}/${accdom}/AdminServer
+    mvlog /opt/local/${lfmw}/domains/${accdom}/servers/wls_oam1/logs ${dst}/${accdom}/wls_oam1
+    ;;
+  dwp[tp]oam2 )
+    mkdir -p ${dst}/nodemanager
+    mvlog /opt/local/${lfmw}/domains/${accdom}/servers/wls_oam2/logs ${dst}/${accdom}/wls_oam2
+    ;;
+  dwp[tp]oud1 )
+    oudins=oud1
+    mkdir -p ${dst}/${oudins}
+    mvlog /opt/local/${lfmw}/instances/${oudins}/OUD/logs            ${dst}/${oudins}/logs
+    ;;
+  dwp[tp]oud2 )
+    oudins=oud2
+    mkdir -p ${dst}/${oudins}
+    mvlog /opt/local/${lfmw}/instances/${oudins}/OUD/logs            ${dst}/${oudins}/logs
+    ;;
+  dwp[tp]idw1 )
+    ohsins=ohs1
+    mkdir -p ${dst}/${ohsins}
+    mvlog /opt/local/${lfmw}/instances/${ohsins}/auditlogs                      ${dst}/${ohsins}/auditlogs
+    mvlog /opt/local/${lfmw}/instances/${ohsins}/diagnostics/logs/OHS/${ohsins} ${dst}/${ohsins}/logs
+    mvlog /opt/local/${lfmw}/instances/${ohsins}/diagnostics/logs/OPMN/opmn     ${dst}/${ohsins}/opmn
+    ;;
+  dwp[tp]idw2 )
+    ohsins=ohs2
+    mkdir -p ${dst}/${ohsins}
+    mvlog /opt/local/${lfmw}/instances/${ohsins}/auditlogs                      ${dst}/${ohsins}/auditlogs
+    mvlog /opt/local/${lfmw}/instances/${ohsins}/diagnostics/logs/OHS/${ohsins} ${dst}/${ohsins}/logs
+    mvlog /opt/local/${lfmw}/instances/${ohsins}/diagnostics/logs/OPMN/opmn     ${dst}/${ohsins}/opmn
+    ;;
 esac
 
