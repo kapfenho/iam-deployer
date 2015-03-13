@@ -1,8 +1,10 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 set -o errexit nounset
 
-. ./user-conf/env/env.sh
+. ${DEPLOYER}/user-config/iam.config
+. ${DEPLOYER}/lib/env.sh
+. ${DEPLOYER}/lib/libcommon2.sh
 
 flog=/tmp/prov-$(date "+%Y%m%d-%H%M").log
 
@@ -12,15 +14,12 @@ flog=/tmp/prov-$(date "+%Y%m%d-%H%M").log
 
 echo "*** Provisioning..." | tee -a $flog
 
-for step in preverify install 
-do
-  for srv in ${servers[@]}
-  do
+for step in preverify install ; do
+  for srv in ${servers[@]} ; do
     echo "*** --> Starting ${step} on ${srv} at $(date)..." | tee -a $flog
-    on ${srv} "/vagrant/user-conf/env/prov.sh ${step}" >> $flog
+    on ${srv} "${DEPLOYER}/user-conf/env/prov.sh ${step}" >> $flog
 
-    if [[ $? -ne 0 ]]
-    then
+    if [[ $? -ne 0 ]] ; then
       echo "*** Error in this step ***" | tee -a $flog
       exit 77
     fi
@@ -30,22 +29,18 @@ done
 
 echo "*** --> Fixing perf problem at $(date)" | tee -a $flog
 
-for p in access identity dir
-do
+for p in access identity dir ; do
   on oim1 "cp /vagrant/sys/jdk6/java.security /opt/fmw/products/$p/jdk6/jre/lib/security/java.security"   | tee -a $flog
 done
 
 echo "*** Prov 2 at $(date)" | tee -a $flog
 
-for step in preconfigure configure configure-secondary postconfigure startup validate
-do
-  for srv in ${servers[@]}
-  do
+for step in preconfigure configure configure-secondary postconfigure startup validate ; do
+  for srv in ${servers[@]} ; do
     echo "*** --> Starting ${step} on ${srv} at $(date)..." | tee -a $flog
     on ${srv} "/vagrant/user-conf/env/prov.sh ${step}" | tee -a $flog
 
-    if [[ $? -ne 0 ]]
-    then
+    if [[ $? -ne 0 ]] ; then
       echo "*** Error in this step ***" | tee -a $flog
       exit 77
     fi
