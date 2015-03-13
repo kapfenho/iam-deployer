@@ -8,6 +8,17 @@ set -o errexit nounset
 # export JAVA_HOME=${s_runjdk}
 # export      PATH=${JAVA_HOME}/bin:${PATH}
 
+if [ $# -gr 0 -a "${1}" == "-d" ] ; then
+  echo
+  log "DELETING BI-Publisher, press RETURN to continue, Ctrl-C to cancel"
+  read nil
+  rm -Rf /opt/fmw/products/bip \
+         /opt/fmw/config/domains/bip* \
+         /opt/local/instances/bip*
+  log "Deletion completed"
+  exit 0
+fi
+
 check_input() {
   if ! which java 2>/dev/null ; then
     error "MISSING: Java not found"
