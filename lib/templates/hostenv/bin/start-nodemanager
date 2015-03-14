@@ -1,11 +1,11 @@
 #!/bin/sh
 
-# dir=/opt/fmw/config/nodemanage/iam0.dwpbank.net
+# dir=/opt/fmw/config/nodemanage/_HOST_
 
 # nohup ${dir}/startNodemanager.sh >${log} 2>&1 &
 
 WLS_HOME=/opt/fmw/products/access/wlserver_10.3
-NM_HOME=/opt/fmw/config/nodemanager/iam0.dwpbank.net
+NM_HOME=/opt/fmw/config/nodemanager/_HOST_
 LOG=/var/log/fmw/nodemanager/nodemanager.log
 
 JAVA_OPTIONS="-DNodeManagerHome=${NM_HOME} ${JAVA_OPTIONS}"

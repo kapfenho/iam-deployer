@@ -1,12 +1,12 @@
-hostname=iam0.dwpbank.net
+hostname=_HOST_
 nmPort=5556
-domName=identity_test
-admDir=/opt/fmw/config/domains/identity_test
-domDir=/opt/local/domains/identity_test
+domName=_DOMAIN_
+admDir=/opt/fmw/config/domains/_DOMAIN_
+domDir=/opt/local/domains/_DOMAIN_
 domAdminPort=7101
-domUrl=t3://iam0.dwpbank.net:7101
-domUC=/home/fmwuser/.creds/identity_test.usr
-domUK=/home/fmwuser/.creds/identity_test.key
+domUrl=t3://_HOST_:7101
+domUC=/home/fmwuser/.creds/_DOMAIN_.usr
+domUK=/home/fmwuser/.creds/_DOMAIN_.key
 nmUC=/home/fmwuser/.creds/nm.usr
 nmUK=/home/fmwuser/.creds/nm.key
 

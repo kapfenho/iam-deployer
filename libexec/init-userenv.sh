@@ -18,17 +18,18 @@ cp_oim() {
   cp ${src}/env/identity.prop       ${env}/
   cp ${src}/env/imint.prop          ${env}/
   cp ${src}/lib/deploy.py           ${lib}/
-  sed -i "s/_HOST_/$(hostname -f)/" ${env}/identity.prop
-  sed -i "s/_HOST_/$(hostname -f)/" ${env}/imint.prop
-  sed -i "s/_DOMAIN_/${IDMPROV_IDENTITY_DOMAIN}/" ${env}/*.prop
+  sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
+  sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
+  sed -i "s/_DOMAIN_/${IDMPROV_IDENTITY_DOMAIN}/" ${env}/*
 }
 cp_oam() {
   cp ${src}/bin/*access*            ${bin}/
   cp ${src}/bin/*nodemanager*       ${bin}/
   cp ${src}/env/acc.env             ${env}/
   cp ${src}/env/access.prop         ${env}/
-  sed -i "s/_HOST_/$(hostname -f)/" ${env}/access.prop
-  sed -i "s/_DOMAIN_/${IDMPROV_ACCESS_DOMAIN}/" ${env}/*.prop
+  sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
+  sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
+  sed -i "s/_DOMAIN_/${IDMPROV_ACCESS_DOMAIN}/" ${env}/*
 }
 cp_oud() {
   cp ${src}/bin/*dir*               ${bin}/
