@@ -1,0 +1,8 @@
+#!/bin/sh
+
+dir=/opt/fmw/config/deploy/ssocc/current/ssocc
+
+( cd ${dir} ; RAKE_ENV=production rake stop )
+
+exit 0
+

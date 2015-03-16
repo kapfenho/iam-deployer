@@ -1,0 +1,5 @@
+#!/bin/sh
+
+( . ~/.env/tls.env 
+  apachectl -d /opt/local/instances/tls1 -f conf/httpd.conf -k stop
+)

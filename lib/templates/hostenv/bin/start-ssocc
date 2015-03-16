@@ -1,0 +1,7 @@
+#!/bin/sh
+
+dir=/opt/local/fmw/instances/ssocc
+
+cd ${dir} ; RAKE_ENV=production rake start
+
+exit $?
