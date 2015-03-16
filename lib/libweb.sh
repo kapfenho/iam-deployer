@@ -13,7 +13,6 @@ _prov_connections() {
       -i.a ${cf}
 }
 
-
 # generate the ohs/apache config files
 #    httpd.conf
 #    sso-base.conf
@@ -31,9 +30,11 @@ generate_httpd_config() {
   outdir=${1}
   webhost=${2}
 
+  . ${DEPLOYER}/user-config/iam.config
+
   [ -a ${outdir}/moduleconf ] || mkdir -p ${outdir}/moduleconf
 
-  cf=$(mktemp -t vhostconfig)
+  cf=$(mktemp /tmp/vhostconfig-XXXXXX)
 
   sed "s/PROV_HEADER_IDM/${PROV_HEADER_IDM}/g" \
     ${DEPLOYER}/lib/templates/web/moduleconf/idm.conf > ${cf}
@@ -50,7 +51,7 @@ generate_httpd_config() {
   _prov_connections ${cf}
   cat ${cf} > ${outdir}/moduleconf/oimadm.conf
   
-  sed "s/PROV_HEADER_OIMINTERNAL/${PROV_HEADER_OIMINTERNAL}/g" \
+  sed "s/PROV_HEADER_IDMINTERNAL/${PROV_HEADER_OIMINTERNAL}/g" \
     ${DEPLOYER}/lib/templates/web/moduleconf/oiminternal.conf > ${cf}
   _prov_connections ${cf}
   cat ${cf} > ${outdir}/moduleconf/oiminternal.conf
@@ -63,11 +64,10 @@ generate_httpd_config() {
   sed "s/^ServerName.*/ServerName ${webhost}/g" \
     ${DEPLOYER}/lib/templates/web/httpd.conf >${outdir}/httpd.conf
 
-  for f in ssl-base.conf ssl.conf
-  do
+  for f in ssl-base.conf ssl.conf ; do
     cp ${DEPLOYER}/lib/templates/web/${f} ${outdir}/${f}
   done
 
   rm -f ${cf}
 }
-  
+

@@ -14,23 +14,23 @@ if [ -z ${DEPLOYER} ] ; then
 fi
 
 deployer=${DEPLOYER}
-#. ${DEPLOYER}/user-config/env/env.sh
 . ${DEPLOYER}/user-config/iam.config
 . ${DEPLOYER}/lib/libcommon2.sh
 . ${DEPLOYER}/lib/libweb.sh
 . ${DEPLOYER}/lib/liboud.sh
+. ${DEPLOYER}/lib/libjdk.sh
 
 cfg_prov=${DEPLOYER}/user-config/iam/provisioning.rsp
 # INSTALL_APPHOME_DIR=/opt/fmw
-eval $(grep INSTALL_APPHOME_DIR     ${cfg_prov})
+eval $(grep INSTALL_APPHOME_DIR     ${cfg_prov}) ; export INSTALL_APPHOME_DIR
 # INSTALL_LOCALCONFIG_DIR=/opt/local
-eval $(grep INSTALL_LOCALCONFIG_DIR ${cfg_prov})
+eval $(grep INSTALL_LOCALCONFIG_DIR ${cfg_prov}) ; export INSTALL_LOCALCONFIG_DIR
 # IDMPROV_ACCESS_DOMAIN=access_dev
-eval $(grep IDMPROV_ACCESS_DOMAIN   ${cfg_prov})
+eval $(grep IDMPROV_ACCESS_DOMAIN   ${cfg_prov}) ; export IDMPROV_ACCESS_DOMAIN
 # IDMPROV_IDENTITY_DOMAIN=identity_dev
-eval $(grep IDMPROV_IDENTITY_DOMAIN ${cfg_prov})
+eval $(grep IDMPROV_IDENTITY_DOMAIN ${cfg_prov}) ; export IDMPROV_IDENTITY_DOMAIN
 # OHS_INSTANCENAME=ohs1
-eval $(grep OHS_INSTANCENAME        ${cfg_prov})
+eval $(grep OHS_INSTANCENAME        ${cfg_prov}) ; export OHS_INSTANCENAME
 
 set -o errexit nounset
 set -x
@@ -45,10 +45,21 @@ fi
 
 # additional oud files
 (
-  . ${HOME}/.env/dir.sh
+  . ${HOME}/.env/dir.env
   echo -n ${oudPwd} > ${HOME}/.creds/oudadmin
-  cp -b ${deployer}/user-config/hostenv/tools.properties ${INST_HOME}/config/
+  cp -b ${HOME}/.env/tools.properties ${INST_HOME}/config/
 )
+
+# install jdk7 --------------------
+#
+for d in access identity dir web ; do
+  dest=${INSTALL_APPHOME_DIR}/products/${d}
+  [ -a ${dest} ] && continue
+  mkdir -p ${dest}/jdk
+  tar xzf ${s_jdk} -C ${dest}/jdk
+  ln -s ${dest}/jdk/${jdkname} ${dest}/jdk/current
+  jdk_patch_config ${dest}/jdk/${jdkname}
+done
 
 # user key files access domain ----------------------------------
 #
@@ -59,21 +70,24 @@ ${ORACLE_HOME}/bin/psa \
     -logLevel WARNING \
     -logDir /tmp
 
-${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop <<-EOF
+if ! [ -a ${HOME}/.creds/nm.key ] ; then
+  ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop <<-EOF
 nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
  port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
 storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
 y
 exit()
 EOF
+fi
 
-
-${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop <<-EOF
+if ! [ -a ${HOME}/.creds/${IDMPROV_ACCESS_DOMAIN}.key ] ; then
+  ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop <<-EOF
 connect(username="${domaUser}", password="${domaPwd}", url=domUrl)
 storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm="false")
 y
 exit()
 EOF
+fi
 
 # identity domain ---------------------------------------------
 #
@@ -84,7 +98,7 @@ ${ORACLE_HOME}/bin/psa \
     -logLevel WARNING \
     -logDir /tmp
 
-if [ ! -a ~/.creds/nm.key ] ; then
+if ! [ -a ~/.creds/nm.key ] ; then
   ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<-EOF
 nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
  port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
@@ -94,21 +108,23 @@ exit()
 EOF
 fi
 
-${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<-EOF
+if ! [ -a ${HOME}/.creds/${IDMPROV_IDENTITY_DOMAIN}.key ] ; then
+  ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<-EOF
 connect(username="${domiUser}", password="${domiPwd}", url=domUrl)
 storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm="false")
 y
 exit()
 EOF
+fi
 
 # copy rc.d files ----------------------------------------------
 
-set +x
-
 # pspatching postinstalls
 
-# last postinstall
+. ~/.env/dir.env
 patch_oud_post_inst
+apply_oud_tls_settings
+
 # postinstalls done
 
 ${HOME}/bin/stop-identity
@@ -125,14 +141,10 @@ fi
 
 # install jdk7 --------------------
 #
-
 for d in access identity dir web ; do
   dest=${INSTALL_APPHOME_DIR}/products/${d}
-  mkdir -p ${dest}/jdk
-  tar xzf ${s_jdk} -C ${dest}/jdk
-  local jdkname=$(ls ${dest}/jdk)
+  [ -h ${dest}/jdk6 ] && continue
   mv ${dest}/jdk6 ${dest}/jdk/
-  ln -s ${dest}/jdk/${jdkname} ${dest}/jdk/current
   ln -s ${dest}/jdk/${jdkname} ${dest}/jdk6
 done
 
@@ -143,7 +155,7 @@ ${DEPLOYER}/libexec/patch-wls-domain.sh ${DEPLOYER}/lib/access
 . ~/.env/idm.env
 ${DEPLOYER}/libexec/patch-wls-domain.sh ${DEPLOYER}/lib/identity
 
-local _webg=/opt/fmw/products/web/webgate/webgate/ohs/config
+_webg=/opt/fmw/products/web/webgate/webgate/ohs/config
 
 if [ -a ${_webg}/oblog_config_wg.xml -a ! -a ${_webg}/oblog_config.xml ] ; then
   cp ${_webg}/oblog_config_wg.xml ${_webg}/oblog_config.xml
@@ -151,12 +163,11 @@ fi
 
 # web config
 #
-
-generate_httpd_config /tmp iam0.dwpbank.net
+generate_httpd_config /tmp $(hostname -f)
 
 # bundle patches
 
-${HOME}/bin/start-all
+# ${HOME}/bin/start-all
 
 
 exit 0

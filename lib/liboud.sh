@@ -1,14 +1,14 @@
 # oud functions
 
 patch_oud_post_inst() {
-  local c="dsconfig set-access-control-handler-prop -X --hostname $(hostname --long) --no-prompt"
+  local c="dsconfig set-access-control-handler-prop --no-prompt"
 
   ${c} --remove global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; deny (all) userdn=\"ldap:///anyone\";)"
-  ${c} --add    global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; allow (read,search,compare,add,write,delete,export) groupdn=\"ldap:///cn=OIMAdministrators,cn=groups,dc=dwpbank,dc=net\";)"
-  echo "Dont forget to correct 1.2.840.113556.1.4.319!"
-  echo
-}
 
+  ${c} --add    global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; allow (read,search,compare,add,write,delete,export) groupdn=\"ldap:///cn=OIMAdministrators,cn=groups,dc=dwpbank,dc=net\";)"
+
+  warning "Dont forget to correct 1.2.840.113556.1.4.319!"
+}
 
 apply_oud_tls_settings() {
 
@@ -39,6 +39,4 @@ apply_oud_tls_settings() {
     --no-prompt 
 
 }
-
-
 

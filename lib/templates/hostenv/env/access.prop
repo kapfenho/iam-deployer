@@ -1,8 +1,8 @@
-lostname=_HOST_
+hostname=_HOST_
 nmPort=5556
 domName=_DOMAIN_
 admDir=/opt/fmw/config/domains/_DOMAIN_
-domDir=/opt/local/domains/_DOMAIN_
+domDir=/opt/local/fmw/domains/_DOMAIN_
 domAdminPort=7001
 domUrl=t3://_HOST_:7001
 domUC=/home/fmwuser/.creds/_DOMAIN_.usr
