@@ -20,7 +20,7 @@ _prov_connections() {
 #    moduleconf/idm.conf
 #    moduleconf/oimadm.conf
 #    moduleconf/oamadm.conf
-#    moduleconf/oiminternal.conf
+#    moduleconf/idminternal.conf
 #    moduleconf/sso.conf
 #
 # param 1: output directory, directory of httpd.conf
@@ -51,10 +51,10 @@ generate_httpd_config() {
   _prov_connections ${cf}
   cat ${cf} > ${outdir}/moduleconf/oimadm.conf
   
-  sed "s/PROV_HEADER_IDMINTERNAL/${PROV_HEADER_OIMINTERNAL}/g" \
-    ${DEPLOYER}/lib/templates/web/moduleconf/oiminternal.conf > ${cf}
+  sed "s/PROV_HEADER_IDMINTERNAL/${PROV_HEADER_IDMINTERNAL}/g" \
+    ${DEPLOYER}/lib/templates/web/moduleconf/idminternal.conf > ${cf}
   _prov_connections ${cf}
-  cat ${cf} > ${outdir}/moduleconf/oiminternal.conf
+  cat ${cf} > ${outdir}/moduleconf/idminternal.conf
 
   sed "s/PROV_HEADER_SSO/${PROV_HEADER_SSO}/g" \
     ${DEPLOYER}/lib/templates/web/moduleconf/sso.conf > ${cf}

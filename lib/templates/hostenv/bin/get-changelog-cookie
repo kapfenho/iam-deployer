@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if ! ret=$(ldapsearch -s base -b "" "objectclass=*" lastExternalChangelogCookie) 
+then
+  echo "Error in quering OUD - have you set a proper environment?"
+  echo
+  exit 75
+fi
+
+echo "The last cookie is:"
+echo ${ret} | grep lastExternalChangelogCookie | cut -d ' ' -f 3-
+echo
+
+exit 0
+
