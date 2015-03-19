@@ -11,6 +11,8 @@ domUC=/home/fmwuser/.creds/_DOMAIN_.usr
 domUK=/home/fmwuser/.creds/_DOMAIN_.key
 nmUC=/home/fmwuser/.creds/nm.usr
 nmUK=/home/fmwuser/.creds/nm.key
+targetOIM=oim_cluster
+targetSOA=soa_cluster
 
 ### set for identity-app-property-file
 # appName=my_app

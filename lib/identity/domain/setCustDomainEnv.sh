@@ -19,14 +19,14 @@ export PRODUCTION_MODE
 uma=""
 case ${SERVER_NAME} in
 AdminServer)
-  uma="-Xms512m -Xmx1536m -XX:MaxPermSize=512m"
+  uma="-Xms1024m -Xmx1536m -XX:MaxPermSize=512m"
   ;;
 *soa*)
-  uma="-Xms512m -Xmx1536m -XX:MaxPermSize=1024m"
+  uma="-Xms2g -Xmx3g -XX:MaxPermSize=1024m"
   ;;
 *oim*)
-  uma="-Xms512m -Xmx2048m -XX:MaxPermSize=1024m"
-  EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Dimint.env=development -Dimint.config=/opt/fmw/config/deploy/imint/current/config/imint.yml"
+  uma="-Xms2g -Xmx4g -XX:MaxPermSize=1024m"
+  EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Dimint.env=production -Dimint.config=/opt/fmw/config/deploy/imint/current/config/imint.yml"
   export EXTRA_JAVA_PROPERTIES
   ;;
 esac

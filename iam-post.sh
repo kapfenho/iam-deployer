@@ -50,6 +50,13 @@ fi
   cp -b ${HOME}/.env/tools.properties ${INST_HOME}/config/
 )
 
+# acStdLib for wlst -------------------------------
+#
+for d in access identity ; do
+  dest=${INSTALL_APPHOME_DIR}/products/${d}/wlserver_10.3/common/wlst
+  cp -f ${DEPLOYER}/lib/wlst/common/* ${dest}/
+done
+
 # install jdk7 --------------------
 #
 for d in access identity dir web ; do
@@ -89,6 +96,9 @@ exit()
 EOF
 fi
 
+${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop \
+  ${DEPLOYER}/lib/access/oam-config.py
+
 # identity domain ---------------------------------------------
 #
 . ${HOME}/.env/idm.env
@@ -116,6 +126,9 @@ y
 exit()
 EOF
 fi
+
+${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop \
+  ${DEPLOYER}/lib/identity/idm-config.py
 
 # copy rc.d files ----------------------------------------------
 
@@ -163,7 +176,18 @@ fi
 
 # web config
 #
-generate_httpd_config /tmp $(hostname -f)
+_webd1=/opt/local/fmw/instances/ohs1/config/OHS/ohs1
+_webd2=/opt/local/instances/ohs1/config/OHS/ohs1
+_webd3=/opt/local/fmw/instances/ohs2/config/OHS/ohs2
+_webd4=/opt/local/instances/ohs2/config/OHS/ohs2
+[ -a ${_webd1} ] && webd=${_webd1}
+[ -a ${_webd2} ] && webd=${_webd2}
+[ -a ${_webd3} ] && webd=${_webd3}
+[ -a ${_webd4} ] && webd=${_webd4}
+
+if [ -n ${webd} ] ; then
+  generate_httpd_config ${webd} $(hostname -f)
+fi
 
 # bundle patches
 
