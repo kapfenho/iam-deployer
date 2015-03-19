@@ -20,6 +20,7 @@ Setup TODOs
 bring back to git
 -----------------
 * extensions in idminternal, idm (int or uat)
+* small,medium setCustomEnv.sh
 
 
 
