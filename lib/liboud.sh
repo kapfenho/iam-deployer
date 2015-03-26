@@ -7,6 +7,9 @@ patch_oud_post_inst() {
   ${c} --remove global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; deny(all) userdn=\"ldap:///anyone\";)"
   ${c} --add    global-aci:"(target=\"ldap:///cn=changelog\")(targetattr=\"*\")(version 3.0; acl \"External changelog access\"; allow(read,search,compare,add,write,delete,export) groupdn=\"ldap:///cn=OIMAdministrators,cn=Groups,dc=dwpbank,dc=net\";)"
 
+  ${c} --remove global-aci:"(targetcontrol=\"1.3.6.1.4.1.26027.1.5.4\")(version 3.0; acl \"OimAdmingroup control access\"; allow(read) groupdn=\"ldap:///cn=OIMAdministrators,cn=Groups,dc=dwpbank,dc=net\";)"
+  ${c} --add    global-aci:"(targetcontrol=\"1.3.6.1.4.1.26027.1.5.4\")(version 3.0; acl \"OIMAdministrators control access\"; allow(read) userdn=\"ldap:///anyone\";)"
+
   ${c} --remove global-aci:"(targetcontrol=\"1.3.6.1.1.12 || 1.3.6.1.1.13.1 || 1.3.6.1.1.13.2 || 1.2.840.113556.1.4.319 || 1.2.826.0.1.3344810.2.3 || 2.16.840.1.113730.3.4.18 || 2.16.840.1.113730.3.4.9 || 1.2.840.113556.1.4.473 || 1.3.6.1.4.1.42.2.27.9.5.9\") (version 3.0; acl \"Authenticated users control access\"; allow(read) userdn=\"ldap:///all\";)"
   ${c} --add    global-aci:"(targetcontrol=\"1.3.6.1.1.12 || 1.3.6.1.1.13.1 || 1.3.6.1.1.13.2 || 1.2.826.0.1.3344810.2.3 || 2.16.840.1.113730.3.4.18 || 2.16.840.1.113730.3.4.9 || 1.2.840.113556.1.4.473 || 1.3.6.1.4.1.42.2.27.9.5.9\") (version 3.0; acl \"Authenticated users control access\"; allow(read) userdn=\"ldap:///all\";)"
 

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-dir=/opt/fmw/config/deploy/ssocc/current/ssocc
+. ${HOME}/.env/web.env
 
-( cd ${dir} ; RAKE_ENV=production rake stop )
+cd ${SSOCC}
+rake stop
 
 exit 0
-

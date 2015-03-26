@@ -29,7 +29,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     app.ssh.username    = 'fmwuser'
 
     app.vm.network :private_network, ip: app_ip
-    app.vm.network :public_network,  ip: app_pubip
+    app.vm.network :public_network,  ip: app_pubip, :bridge => 'en0: Wi-Fi (AirPort)'
 
     app.vm.provider :virtualbox do |v|
       v.name   = app_name

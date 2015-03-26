@@ -1,7 +1,8 @@
 #!/bin/sh
 
-dir=/opt/local/fmw/instances/ssocc
+. ${HOME}/.env/web.env
 
-cd ${dir} ; RAKE_ENV=production rake start
+cd ${SSOCC}
+rake start
 
-exit $?
+exit 0

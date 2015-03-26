@@ -1,4 +1,44 @@
-IAMTST =
+IAMINT1 =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = dwptpwl-plte1)(PORT=1521))
+    (CONNECT_DATA =
+      (SERVICE_NAME = IAMINT)
+    )
+  )
+
+IAMINT =
+  (DESCRIPTION=
+    (ENABLE=BROKEN)
+    (ADDRESS_LIST=
+      (LOAD_BALANCE=OFF)
+      (FAILOVER=ON)
+      (ADDRESS=(PROTOCOL=TCP)(HOST=dwptpwl-plte1)(PORT=1521))
+      (ADDRESS=(PROTOCOL=TCP)(HOST=dwptpwl-plte2)(PORT=1521)))
+    (CONNECT_DATA=
+      (SERVICE_NAME=IAMINT)
+      (SERVER=DEDICATED)))
+
+IAMACC1 =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = dwptpwl-plte1)(PORT=1521))
+    (CONNECT_DATA =
+      (SERVICE_NAME = IAMACC)
+    )
+  )
+
+IAMACC =
+  (DESCRIPTION=
+    (ENABLE=BROKEN)
+    (ADDRESS_LIST=
+      (LOAD_BALANCE=OFF)
+      (FAILOVER=ON)
+      (ADDRESS=(PROTOCOL=TCP)(HOST=dwptpwl-plte1)(PORT=1521))
+      (ADDRESS=(PROTOCOL=TCP)(HOST=dwptpwl-plte2)(PORT=1521)))
+    (CONNECT_DATA=
+      (SERVICE_NAME=IAMACC)
+      (SERVER=DEDICATED)))
+
+IAMTST1 =
   (DESCRIPTION =
     (ADDRESS = (PROTOCOL = TCP)(HOST = dwptpwl-plte1)(PORT=1521))
     (CONNECT_DATA =
@@ -6,27 +46,15 @@ IAMTST =
     )
   )
 
-IAMINT =
-  (DESCRIPTION =
-    (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT=1521))
-    (CONNECT_DATA =
-      (SERVICE_NAME = IAMINT)
-    )
-  )
-
-# IAMINT =
-#   (DESCRIPTION =
-#     (ADDRESS = (PROTOCOL = TCP)(HOST = dwptpwl-plte1)(PORT=1521))
-#     (CONNECT_DATA =
-#       (SERVICE_NAME = IAMINT)
-#     )
-#   )
-
-IAMACC =
-  (DESCRIPTION =
-    (ADDRESS = (PROTOCOL = TCP)(HOST = dwptpwl-plte1)(PORT=1521))
-    (CONNECT_DATA =
-      (SERVICE_NAME = IAMACC)
-    )
-  )
+IAMTST =
+  (DESCRIPTION=
+    (ENABLE=BROKEN)
+    (ADDRESS_LIST=
+      (LOAD_BALANCE=OFF)
+      (FAILOVER=ON)
+      (ADDRESS=(PROTOCOL=TCP)(HOST=dwptpwl-plte1)(PORT=1521))
+      (ADDRESS=(PROTOCOL=TCP)(HOST=dwptpwl-plte2)(PORT=1521)))
+    (CONNECT_DATA=
+      (SERVICE_NAME=IAMTST)
+      (SERVER=DEDICATED)))
 
