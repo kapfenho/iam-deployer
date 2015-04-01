@@ -1,0 +1,13 @@
+#!/bin/sh
+
+. ${HOME}/.env/idm.env
+
+log=/var/log/fmw/connectorservers/dwpldap/dwpldap.out
+
+nohup ${CONSRV_DWP1}/bin/connectorserver.sh /run >${log} 2>&1 &
+
+echo "Started successfully"
+echo 
+
+exit 0
+
