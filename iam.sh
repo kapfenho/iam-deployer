@@ -6,19 +6,23 @@ set -o errexit nounset
 . ${DEPLOYER}/lib/libcommon2.sh
 . ${DEPLOYER}/lib/libiam.sh
 . ${DEPLOYER}/lib/libjdk.sh
+. ${DEPLOYER}/lib/librcu.sh
 
 export JAVA_HOME=${s_runjdk}
 export      PATH=${JAVA_HOME}/bin:${PATH}
+export RCU_LOG_LOCATION=/tmp 
 
 umask ${iam_user_umask}
 
 # set variables from provisioning config file
 uc=${DEPLOYER}/user-config/iam/provisioning.rsp
+orainst_loc=${iam_orainv_ptr}
+db_flag=${iam_top}/.db_schemas_completed
 
      s_repo=$(grep "INSTALL_INSTALLERS_DIR=" ${uc} | cut -d= -f2)
 iam_mw_home=$(grep "COMMON_FMW_DIR="         ${uc} | cut -d= -f2)
 
-if [ $# -gr 0 -a "${1}" == "-d" ] ; then
+if [ $# -gt 0 -a "${1}" == "-d" ] ; then
   echo
   warning "I am gonna DELETE IAM - RETURN to continue, Ctrl-C to cancel"
   read nil
@@ -37,9 +41,19 @@ if [ $# -gr 0 -a "${1}" == "-d" ] ; then
   log "Deletion completed"
   exit 0
 fi
+set -x
+if ! [ -a ${db_flag} ] ; then
+  log "Creating database schemas"
+  if rcu_identity && rcu_access && rcu_bi_publisher ; then
+    touch ${db_flag}
+    log "Database schemas created successfully"
+  else
+    error "Error in creating database schemas, check logs in /tmp"
+    exit 1
+  fi
+fi
 
 log "Start deploying"
-
 # deploy life cycle managment
 deploy_lcm
  

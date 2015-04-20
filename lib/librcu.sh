@@ -3,111 +3,145 @@
 #  schemas:
 #    http://docs.oracle.com/html/E38978_01/r2_im_requirements.htm#CIHEDGIH
 
+# ------------------------------------------------------------------------
 #  create database schemas for identity management.
-#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, dbs_sys_pass,
+#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, iam_dba_pass,
 #+              iam_oim_schema_pass
 #+ 
 rcu_identity() {
-  log "rcu_identity" "start"
-
-  # TODO: if exists
   ${s_rcu_home}/bin/rcu \
-  -silent \
-  -createRepository \
-  -databaseType ORACLE \
-  -connectString ${dbs_dbhost}:1521:${iam_sid} \
-  -dbUser sys \
-  -dbRole sysdba \
-  -useSamePasswordForAllSchemaUsers true \
-  -schemaPrefix DEVI \
-  -component MDS       \
-  -component IAU       \
-  -component OPSS      \
-  -component SOAINFRA  \
-  -component ORASDPM   \
-  -component OIM       \
-  <<EOF
-${dbs_sys_pass}
+    -silent \
+    -createRepository \
+    -databaseType ORACLE \
+    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -dbUser sys \
+    -dbRole sysdba \
+    -useSamePasswordForAllSchemaUsers true \
+    -schemaPrefix ${iam_oim_prefix} \
+    -component MDS \
+    -component IAU \
+    -component OPSS \
+    -component SOAINFRA \
+    -component ORASDPM \
+    -component OIM  > /dev/null \
+    <<EOF
+${iam_dba_pass}
 ${iam_oim_schema_pass}
 EOF
-  log "rcu_identity" "done"
 }
 
 #  drop database schemas of identity management.
-#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, dbs_sys_pass
+#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, iam_dba_pass
 #+ 
 rcu_drop_identity() {
-  log "rcu_drop_identity" "start"
-
   ${s_rcu_home}/bin/rcu \
-  -silent \
-  -dropRepository \
-  -databaseType ORACLE \
-  -connectString ${dbs_dbhost}:1521:${iam_sid} \
-  -dbUser sys \
-  -dbRole sysdba \
-  -schemaPrefix DEVI \
-  -component MDS       \
-  -component IAU       \
-  -component OPSS      \
-  -component SOAINFRA  \
-  -component ORASDPM   \
-  -component OIM       \
-  <<EOF
-${dbs_sys_pass}
+    -silent \
+    -dropRepository \
+    -databaseType ORACLE \
+    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -dbUser sys \
+    -dbRole sysdba \
+    -schemaPrefix ${iam_oim_prefix} \
+    -component MDS \
+    -component IAU \
+    -component OPSS \
+    -component SOAINFRA \
+    -component ORASDPM \
+    -component OIM > /dev/null \
+    <<EOF
+${iam_dba_pass}
 EOF
-  log "rcu_drop_identity" "done"
 }
 
 #  create database schemas for access management.
-#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, dbs_sys_pass,
+#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, iam_dba_pass,
 #+              iam_oam_schema_pass
 #+ 
 rcu_access() {
-  log "rcu_access" "start"
- 
-  # TODO: if exists
-  ${s_rcu_home}/bin/rcu \
-  -silent \
-  -createRepository \
-  -databaseType ORACLE \
-  -connectString ${dbs_dbhost}:1521:${iam_sid} \
-  -dbUser sys \
-  -dbRole sysdba \
-  -useSamePasswordForAllSchemaUsers true \
-  -schemaPrefix DEVA \
-  -component MDS       \
-  -component IAU       \
-  -component OPSS      \
-  -component OAM       \
-  <<EOF
-${dbs_sys_pass}
+  RCU_LOG_LOCATION=/tmp ${s_rcu_home}/bin/rcu \
+    -silent \
+    -createRepository \
+    -databaseType ORACLE \
+    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -dbUser sys \
+    -dbRole sysdba \
+    -useSamePasswordForAllSchemaUsers true \
+    -schemaPrefix ${iam_oam_prefix} \
+    -component MDS \
+    -component IAU \
+    -component OPSS \
+    -component OAM  > /dev/null \
+    <<EOF
+${iam_dba_pass}
 ${iam_oam_schema_pass}
 EOF
-  log "rcu_access" "done"
 }
 
+# ------------------------------------------------------------------------
 #  drop database schemas of access management.
-#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, dbs_sys_pass
+#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, iam_dba_pass
 #+ 
 rcu_drop_access() {
-  log "rcu_drop_access" "start"
- 
   ${s_rcu_home}/bin/rcu \
-  -silent \
-  -dropRepository \
-  -databaseType ORACLE \
-  -connectString ${dbs_dbhost}:1521:${iam_sid} \
-  -dbUser sys \
-  -dbRole sysdba \
-  -schemaPrefix DEVA \
-  -component MDS       \
-  -component IAU       \
-  -component OPSS      \
-  -component OAM       \
-  <<EOF
-${dbs_sys_pass}
+    -silent \
+    -dropRepository \
+    -databaseType ORACLE \
+    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -dbUser sys \
+    -dbRole sysdba \
+    -schemaPrefix ${iam_oam_prefix} \
+    -component MDS \
+    -component IAU \
+    -component OPSS \
+    -component OAM > /dev/null \
+    <<EOF
+${iam_dba_pass}
 EOF
-  log "rcu_drop_access" "done"
 }
+
+
+# ------------------------------------------------------------------------
+#  create database schemas for identity management.
+#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, iam_dba_pass,
+#+              iam_oim_schema_pass
+#+ 
+rcu_bi_publisher() {
+  ${s_rcu_home}/bin/rcu \
+    -silent \
+    -createRepository \
+    -databaseType ORACLE \
+    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -dbUser sys \
+    -dbRole sysdba \
+    -useSamePasswordForAllSchemaUsers true \
+    -schemaPrefix ${iam_bip_prefix} \
+    -component MDS  \
+    -component BIPLATFORM > /dev/null \
+    <<EOF
+${iam_dba_pass}
+${iam_bip_schema_pass}
+EOF
+}
+
+# ------------------------------------------------------------------------
+#  drop database schemas of access management.
+#+ vars needed: s_rcu_home, dbs_dbhost, iam_sid, iam_dba_pass
+#+ 
+rcu_drop_bi_publisher() {
+  ${s_rcu_home}/bin/rcu \
+    -silent \
+    -dropRepository \
+    -databaseType ORACLE \
+    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -dbUser sys \
+    -dbRole sysdba \
+    -schemaPrefix ${iam_bip_prefix} \
+    -component MDS  \
+    -component BIPLATFORM > /dev/null \
+    <<EOF
+${iam_dba_pass}
+EOF
+}
+
+
 

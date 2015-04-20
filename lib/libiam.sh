@@ -4,7 +4,7 @@
 #
 deploy_lcm() {
 
-  if ! [ -a ${lcm}/provisioning ] ; then
+  if ! [ -a ${iam_lcm}/provisioning ] ; then
     log "Deploying LCM..."
 
     ${s_lcm}/Disk1/runInstaller -silent \
@@ -20,7 +20,7 @@ deploy_lcm() {
     warning "Skipped: LCM installation, already here"
   fi
 
-  local dfile=${lcm}/provisioning/idm-provisioning-build/idm-common-preverify-build.xml
+  local dfile=${iam_lcm}/provisioning/idm-provisioning-build/idm-common-preverify-build.xml
 
   if ! [ -a ${dfile}.orig ] ; then
     log "Patching provisioning build plan"
@@ -38,7 +38,7 @@ deploy_lcm() {
 deploy() {
   log "Deployment: executing step ${1}..."
   (
-    cd ${lcm}/provisioning/bin
+    cd ${iam_lcm}/provisioning/bin
     ./runIAMDeployment.sh -responseFile ${DEPLOYER}/user-config/iam/provisioning.rsp \
       -ignoreSysPrereqs true \
       -target ${1}
@@ -53,7 +53,7 @@ patch_opss() {
   log "Post install 1: patching access  opss"
   log "logs in ${_log}"
 
-  ${idmtop}/products/access/iam/bin/psa \
+  ${iam_top}/products/access/iam/bin/psa \
     -response ${DEPLOYER}/user-config/iam/psa_access.rsp \
     -logLevel WARNING \
     -logDir ${_log}
@@ -61,7 +61,7 @@ patch_opss() {
   log "Post install 2: patching identity opss"
   log "logs in ${_log}"
 
-  ${idmtop}/products/identity/iam/bin/psa \
+  ${iam_top}/products/identity/iam/bin/psa \
     -response ${_DIR}/user-config/iam/psa_identity.rsp \
     -logLevel WARNING \
     -logDir ${_log}
