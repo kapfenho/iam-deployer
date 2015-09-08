@@ -6,7 +6,11 @@ cp -f /vagrant/user-config/hostenv/hosts /etc/hosts
 /vagrant/user-config/env/root-script.sh
 
 echo '*** database installation...'
-su - oracle -c '/vagrant/db.sh  | /usr/bin/tee /tmp/prov-dbs.log'
+su - oracle -c 'DEPLOYER=/vagrant /vagrant/db.sh  | /usr/bin/tee /tmp/prov-dbs.log'
+echo '*** database installation finished.'
+
+echo '*** database installation...'
+su - oracle -c 'DEPLOYER=/vagrant /vagrant/rcu.sh  | /usr/bin/tee /tmp/prov-rcu.log'
 echo '*** database installation finished.'
 
 echo '*** application installation...'

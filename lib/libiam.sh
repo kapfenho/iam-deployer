@@ -20,16 +20,16 @@ deploy_lcm() {
     warning "Skipped: LCM installation, already here"
   fi
 
-  local dfile=${iam_lcm}/provisioning/idm-provisioning-build/idm-common-preverify-build.xml
+  # local dfile=${iam_lcm}/provisioning/idm-provisioning-build/idm-common-preverify-build.xml
 
-  if ! [ -a ${dfile}.orig ] ; then
-    log "Patching provisioning build plan"
-    sed -i.orig 's/<antcall target=\"private-idm-preverify-os\"\/>/<!-- antcall target=\"private-idm-preverify-os\"\/ -->/' \
-      ${dfile}
-    log "Provisioning file patched"
-  else
-    warning "Skipped: patching of build file, already done"
-  fi
+  # if ! [ -a ${dfile}.orig ] ; then
+  #   log "Patching provisioning build plan"
+  #   sed -i.orig 's/<antcall target=\"private-idm-preverify-os\"\/>/<!-- antcall target=\"private-idm-preverify-os\"\/ -->/' \
+  #     ${dfile}
+  #   log "Provisioning file patched"
+  # else
+  #   warning "Skipped: patching of build file, already done"
+  # fi
 }
 
 #  deploy step within life cycle manager wizard

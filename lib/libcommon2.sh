@@ -27,3 +27,35 @@ warning() {
   fi
 }
 
+do_idm() {
+  local _ret
+  case "${DO_IDM}" in
+    YES|yes|1)
+      _ret=0;;
+    *)
+      _ret=1;;
+  esac
+  return $_ret
+}
+
+do_acc() {
+  local _ret
+  case "${DO_ACC}" in
+    YES|yes|1)
+      _ret=0;;
+    *)
+      _ret=1;;
+  esac
+  return $_ret
+}
+
+do_bip() {
+  local _ret
+  case "${DO_BIP}" in
+    YES|yes|1)
+      _ret=0;;
+    *)
+      _ret=1;;
+  esac
+  return $_ret
+}
