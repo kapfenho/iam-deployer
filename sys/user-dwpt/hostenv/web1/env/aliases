@@ -1,2 +1,0 @@
-alias logs-oud='tail -F /var/log/fmw/${INSTANCE}/logs/{errors,access,admin,server.out}'
-alias logs-web='tail -F ${INST_LOG}/${INSTANCE}.log ${INST_LOG}/{oblog.log,access_log}'

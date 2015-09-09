@@ -1,5 +1,0 @@
-#!/bin/sh
-
-opmnctl shutdown
-exit 0
-

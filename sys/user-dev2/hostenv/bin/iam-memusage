@@ -1,2 +1,0 @@
-#!/bin/sh
-iam-monitor | awk '{t=t+$10};END{print"Total Java RSS: "t" KB"}'
