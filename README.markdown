@@ -18,16 +18,34 @@ multiple servers in your data centre.
 * Oracle Identity and Access Managemt 11.1.2.2
 * Oracle Identity Analytics 11.1.1.5
 
-## News
 
-We keep now different several configurations within the repo:
+# Multipe Scenarios
 
-* user-test: a multi machine setup in Vagrant
-* user-dwpt: user-test applied to bare metal servers
+The project can be used in different scenarious:
 
-The directory `user-conf` has disappeared and other user-directories
-keep environment dependent configs. Activating an env is done by
-creating the symlink user-config.
+* create new VM (single host setup) from scratch
+* create new VMs (cluster setup) in virtual network from scratch
+* deploy environment on one pre-existing host (single host)
+* deploy environment on multiple pre-existing hosts (cluster setup)
+
+When you deploy on pre-exsiting hosts, you need the necessary network
+connectivity already set up. This includes setting up firewall rules 
+and configuration of load balancers.
+
+In any case a multi-host setup uses one controller machine for executing
+the tasks on the remote machines. In the first two approaches this is 
+the virtualization host using Vagrant, in the other ones this may be one
+of the existing hosts using ssh connections to the other members.
+
+## Root Actions
+
+All actions with root permissions are collected in one script:
+
+`user-config/env/root-script.sh`
+
+The execution of this script is always the first action on a new
+VM/host. Administrators can adapt this script. However, keep the
+applicaton paths in sync with the other config files (see below).
 
 ## Auto Deployment in one VM
 
@@ -49,13 +67,13 @@ you can create the environment with:
 Start using your env:
 
 * Identity Manager: `http://machine:7777/identity`
-* Access Manager:   `http://machine:7777/oamconsole`
 
 Remove the environment with:
 
 ```
     $ vagrant destroy
 ```
+
 
 ## Multi Server Deployment
 
@@ -71,11 +89,10 @@ new one with the _Oracle Life Cycle Management Wizard_.
 
 Database, Application and Web Server:
 
-* Cent OS 6.5 64bit minimal
+* Cent OS 6.7 64bit minimal
 * Oracle Database 11.2.0.4 Enterprise Edition
 * JRockit 64bit (JDK 1.6.0\_51)
 * WebLogic 10.3.6 (incl Coherence, without samples)
-* Oracle Unified Directory 11.1.2.2
 * Oracle Identity and Access Mgmt Suite 11.1.2.2
 
 
@@ -100,13 +117,13 @@ of this file for a complete list with checksums.
 
 You will need the following software packages from Oracle:
 
-Put the installation images in a directory on your local machine (when
+Extract the installation images in a directory on your local machine (when
 deploying to VM on your local machine) or on a network server. This
 directory will be mounted on the new servers via NFS. There is no need
 to copy the files onto the new virtual machines, the installer can read
 them from any mounted location.
 
-The structure in this directory should look like
+The structure with the extracted images shall look like this:
 
 ```
     ├── iam-11.1.2.2                <- the application packages
@@ -124,7 +141,7 @@ The structure in this directory should look like
     │   │       ├── weblogic
     │   │       └── webtier
     ├── database-ee-11.2.0.4        <- the databaes packages
-    │   └── p10404530_112030_Linux-x86-64
+    │   └── p13390677_112040_Linux-x86-64
     │       ├── client
     │       ├── database
     │       ├── deinstall
@@ -137,13 +154,26 @@ The structure in this directory should look like
 
 ### Patch the installation images
 
-Yes, even the installation images need patching to be installed properly.
+The installation images need patching to be installed properly.
 Download from [Oracle Support](https://support.oracl.com) the following
 patch and apply it to the downloaded repository:
 
 ```
 # fix for wrong 32bit specs: i386 -> i686
 patch 18231786
+```
+
+You can apply this patch to all products: exchange the old `refhost.xml`
+with the new version:
+
+```
+./appdev/Disk1/stage/prereq/linux64/refhost.xml
+./iamsuite/Disk1/stage/prereq/linux64/refhost.xml
+./idmlcm/Disk1/stage/prereq/linux64/refhost.xml
+./oud/Disk1/stage/prereq/linux64/refhost.xml
+./soa/Disk1/stage/prereq/linux64/refhost.xml
+./webgate/Disk1/stage/prereq/linux64/refhost.xml
+./webtier/Disk1/stage/prereq/linux64/refhost.xml
 ```
 
 ### Create your config files
@@ -193,24 +223,6 @@ Changing the installation path:
 
     ./changeconf.sh /appl/iam /usr/iam
 
-The location of your image folder needs to be specified in those
-variables:
-
-```
-    user-config/database.config
-      s_img_db
-      s_patches
-      s_rcu_home
-    user-config/iam.config
-      s_runjdk
-      s_runjre
-      s_lcm
-    user-config/iam/provisioning.rsp
-      INSTALL_INSTALLERS_DIR
-      IL_INSTALLERDIR_LOCATION
-      COMMON_FUSION_REPO_INSTALL_DIR
-```
-
 
 ### Start Installation
 
@@ -253,94 +265,6 @@ You can add your own git server with
     $ git push mygit mydevboxbranch
 ```
 
-## Project Directories and Files
-
-Local config files are included.
-
-```
-    ├── CHANGELOG
-    ├── LICENSE
-    ├── README.markdown
-    ├── TODO
-    ├── Vagrantfile
-    ├── Vagrantfile.example
-    ├── changeconf.sh
-    ├── createconf.sh
-    ├── db.sh
-    ├── iam.sh
-    ├── lib
-    │   ├── dbs
-    │   │   └── ocm.rsp
-    │   ├── libcommon.sh
-    │   ├── libdb.sh
-    │   ├── libiam.sh
-    │   ├── libjdk.sh
-    │   ├── librcu.sh
-    │   ├── libsys.sh
-    │   ├── libsysprint.sh
-    │   ├── libwlst.sh
-    │   └── templates
-    │       ├── dbs
-    │       │   ├── bash_profile
-    │       │   └── bashrc
-    │       └── iam
-    │           └── env
-    │               ├── acc.sh
-    │               ├── common.sh
-    │               ├── dir.sh
-    │               ├── idm.sh
-    │               └── web.sh
-    ├── provision.sh
-    ├── remove-iam.sh
-    ├── run-rcu.sh
-    ├── sys
-    │   ├── redhat
-    │   │   ├── centos6
-    │   │   │   └── idm-common-preverify-build.xml.patch
-    │   │   ├── epel-release-6-8.noarch.rpm
-    │   │   └── rc.d
-    │   │       ├── iam-access
-    │   │       ├── iam-dir
-    │   │       ├── iam-identity
-    │   │       ├── iam-nodemanager
-    │   │       ├── iam-webtier
-    │   │       └── oracle
-    │   └── vim
-    │       ├── bundle.tar.gz
-    │       ├── pathogen.vim
-    │       └── vimrc
-    ├── sys.sh
-    └── user-config
-        ├── database.config
-        ├── database.config.example
-        ├── dbs
-        │   ├── db_create.rsp
-        │   ├── db_create.rsp.example
-        │   ├── db_create_short.rsp
-        │   ├── db_install.rsp
-        │   ├── db_install.rsp.example
-        │   ├── db_netca.rsp
-        │   └── db_netca.rsp.example
-        ├── iam
-        │   ├── provisioning.rsp
-        │   ├── provisioning.rsp.example
-        │   ├── provisioning_data
-        │   │   └── cwallet.sso
-        │   ├── provisioning_templ.rsp
-        │   ├── provisioning_used.rsp
-        │   ├── psa_access.rsp
-        │   ├── psa_access.rsp.commented_example
-        │   ├── psa_access.rsp.example
-        │   ├── psa_identity.rsp
-        │   ├── psa_identity.rsp.commented_example
-        │   └── psa_identity.rsp.example
-        ├── iam.config
-        ├── iam.config.example
-        └── lcm
-            ├── lcm_install.rsp
-            └── lcm_install.rsp.example
-    
-```
 
 
 ## Software Packages to Download 
@@ -352,44 +276,20 @@ https://edelivery.oracle.com/EPD/ViewDigest/get_form?epack_part_number=B77727&ex
 ```
 
 ```
-Oracle Database 11gR2 Enterprise Edition
-----------------------------------------
+Enterprise Database 11.2.0.4 p13390677
+--------------------------------------
 
 Download from Oracle eDelivery:
   https://support.oracle.com
 
-p10404530_112030_Linux-x86-64_1of7.zip    1.3 GB    (1358454646 bytes)
-  SHA-1    80A78DF21976A6586FA746B1B05747230B588E34
-  MD5    BDBF8E263663214DC60B0FDEF5A30B0A
-p10404530_112030_Linux-x86-64_2of7.zip    1.1 GB    (1142195302 bytes)
-  SHA-1    A39BED06195681E31FBB0F6D7D393673BA938660
-  MD5    E56B3D9C6BC54B7717E14B6C549CEF9E
-p10404530_112030_Linux-x86-64_3of7.zip    933.8 MB    (979195792 bytes)
-  SHA-1    D33E19BB7EC804019F7A6B62C400F90FEDC0FDDD
-  MD5    695CBAD744752239C76487E324F7B1AB
-p10404530_112030_Linux-x86-64_4of7.zip    628.7 MB    (659229728 bytes)
-  SHA-1    ACBA25F9D1B4ADD7F2D78734C5ED67B5753AA678
-  MD5    281A124E45C9DE60314478074330E92B
-p10404530_112030_Linux-x86-64_5of7.zip    587.9 MB    (616473105 bytes)
-  SHA-1    8C914DA9EC06B7251A9E8F09B030F6AEDAD3953D
-  MD5    4C0C62B6B005FE784E5EDFAD4CAE6F87
-p10404530_112030_Linux-x86-64_6of7.zip    457.7 MB    (479890040 bytes)
-  SHA-1    809D9FC97A7AE455E9E04FCFF50647D30A353441
-  MD5    285EDC5DCCB14C26249D8274A02F9179
-p10404530_112030_Linux-x86-64_7of7.zip    108.6 MB    (113915106 bytes)
-  SHA-1    B71AC759C499BBA8D55504A1F8BE62F5DF469879
-  MD5    D78C75A453B57F23A01A6234A29BFD3B
+0b399a6593804c04b4bd65f61e73575341a49f8a273acaba0dcda2dfec4979e0  p13390677_112040_Linux-x86-64_1of7.zip
+73e04957ee0bf6f3b3e6cfcf659bdf647800fe52a377fb8521ba7e3105ccc8dd  p13390677_112040_Linux-x86-64_2of7.zip
+09c08ad3e1ee03db1707f01c6221c7e3e75ec295316d0046cc5d82a65c7b928c  p13390677_112040_Linux-x86-64_3of7.zip
+88b4a4abb57f7e94941fe21fa99f8481868badf2e1e0749522bba53450f880c2  p13390677_112040_Linux-x86-64_4of7.zip
+f9c9d077549efa10689804b3b07e3efd56c655a4aba51ec307114b46b8eafc5f  p13390677_112040_Linux-x86-64_5of7.zip
+b2e08f605d7a4f8ece2a15636a65c922933c7ef29f7ad8b8f71b23fe1ecbaca8  p13390677_112040_Linux-x86-64_6of7.zip
+1cb47b7c0b437d7d25d497ed49719167a9fb8f97a434e93e4663cfa07590e2ba  p13390677_112040_Linux-x86-64_7of7.zip
 
-Patch for OPatch
-  Don't extract the downloaded zip file!
-  p6880880_112000_Linux-x86-64.zip
-    SHA-1    8452c5e7bc27bfa528c49294c8b5a25e9c8f63b5
-    MD5    75c2adc4c5e0111153267bf55189d48c
-
-Patch for Database to 11.2.0.3.7
-  p16619892_112030_Linux-x86-64.zip
-    SHA-1    F80E2D18DF8A5EA46AAF3C2CF9FDF4AA0D162959
-    MD5    6E306C6BC9C12185C9F0E12E34AAEC86
 
 Identity and Access Management
 ------------------------------
@@ -398,29 +298,21 @@ Download from Oracle eDelivery:
   https://edelivery.oracle.com/EPD/Download/get_form?egroup_aru_number=15364661
 
 Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 1 of 2 (Part 1 of 4)
-  MD5         A4A9CDB1B0409EC04FCC5B5C0D46E9C7
   SHA-1         4326D264BA21CC87AE724CF6B5D3B130A966579B
 Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 1 of 2 (Part 2 of 4)
-  MD5         875971FBE7E241BD52630E908A620C23
   SHA-1         C1AC8EEA2ADD699EE6D8723445D5FCBE8603DAFF
 Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 1 of 2 (Part 3 of 4)
-  MD5         120C4C8D23C1CD77A99EAC38B7ABA761
   SHA-1         7FB76DF9ACE7B0E54F4B8448307720DBA8635071
 Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 1 of 2 (Part 4 of 4)
-  MD5         9B9BBCB2F77F10EF096F0D8E50557ADF
   SHA-1         B9739C4D0B3A9D704FB7356F946E049882616637
 Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 2 of 2 (Part 1 of 3)
-  MD5         7D1EE366658DA75AB22024096F2AC5BF
   SHA-1         F96849F2781B581419A1852865C44C6E69881B21
 Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 2 of 2 (Part 2 of 3)
-  MD5         4514EE590EDE5C78D78292418133E82A
   SHA-1         560C49239B05C4DC7DEF69B44865FF19894F0846
 Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 2 of 2 (Part 3 of 3)
-  MD5         09A352A3BFC14C20DCD4FF2EB3822CC0
   SHA-1         71E1FE0A15FC54DBC7EAC279F7B6FB8E4B879CC3
 
 p18231786_111220_Generic.zip - Patch for installation images
-  MD5         14f26521bc7763baf2d03770419bf9b6
   SHA-1         72d6dc6c1e970e44736ba25f50723645ebc9bd10
 ```
 
