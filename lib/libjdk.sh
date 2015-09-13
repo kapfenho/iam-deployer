@@ -15,13 +15,20 @@ jdk_create_softlink() {
 }
 
 #  patch the configuration of the new jdk, currrently the urandom
-#+ system device will be used for random generation. Don't use in 
-#+ production if you wanna be super secure (placebo warning - I am 
-#+ sure there are enough other ways to break into the system).
+#+ system device will be used for random generation. 
+#+ param1: path of JDK to patch
 #
 jdk_patch_config() {
-  sed -i.orig 's/securerandom\.source=file:\/dev\/urandom/securerandom\.source=file:\/dev\/\.\/urandom/g' \
-    $1/jre/lib/security/java.security
+  local fp=${1}/jre/lib/security/java.security
+  if [[ -a ${fp} ]] ; then
+    if sed -i.orig 's/securerandom\.source=file:\/dev\/urandom/securerandom\.source=file:\/dev\/\.\/urandom/g' ${fp} ; then
+      log "JDK performance patch urandom done for ${fp}"
+    else
+      error "Error while patching ${fp}"
+    fi
+  else
+    warning "Could not find JDK file ${fp}"
+  fi
 }
 
 #  configuring the cacerts within the jdk.

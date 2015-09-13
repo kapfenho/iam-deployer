@@ -1,0 +1,17 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1                                         localhost6 localhost6.localdomain6
+
+# hostname
+192.168.168.30                iam1.agoracon.at    iam1
+
+# end user URL
+192.168.168.30            sso.iam1.agoracon.at
+192.168.168.30            idm.iam1.agoracon.at
+192.168.168.30         idmrep.iam1.agoracon.at
+192.168.168.30         oamadm.iam1.agoracon.at
+192.168.168.30         oimadm.iam1.agoracon.at
+192.168.168.30    idminternal.iam1.agoracon.at
+192.168.168.30           ldap.iam1.agoracon.at
+192.168.168.30          oradb.iam1.agoracon.at
+
+192.168.168.1    horst12
