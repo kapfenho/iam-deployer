@@ -64,7 +64,7 @@ ARG_IGNORESYSPREREQS=false
 
 #Oracle Inventory File Properties
 INV_USE_LOCAL_OPTION=false
-INV_INVENTORY_DIRECTORY=/l/ora/oraInventory
+INV_INVENTORY_DIRECTORY=/l/ora/etc/oraInventory
 
 #Installation Options
 OPTION_INSTALLDB==oracle.isCurrentFlowMode("dbinstall")"

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# TODO: check /tmp avail size
+# TODO: check $TMP $TMPDIR avail size
+# TODO: check hostname -s, hostname -f
+
 log() {
   if [[ -t 1 ]]; then
     printf "%b>>>%b %b%s%b\n" "\x1b[1m\x1b[32m" "\x1b[0m" \
