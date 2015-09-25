@@ -19,14 +19,14 @@
 
 set -o errexit nounset
 
+. ${DEPLOYER}/user-config/iam.config
+. ${DEPLOYER}/lib/libcommon2.sh
+. ${DEPLOYER}/lib/librcu.sh
+
 if [ -z ${DEPLOYER} ] ; then
   error "Environment variable DEPLOYER not set!"
   exit 80
 fi
-
-. ${DEPLOYER}/user-config/iam.config
-. ${DEPLOYER}/lib/libcommon2.sh
-. ${DEPLOYER}/lib/librcu.sh
 
 export DO_ACC DO_IDM DO_BIP
 

@@ -33,16 +33,14 @@ deploy_lcm() {
     warning "Skipped: LCM installation, already here"
   fi
 
-  # local dfile=${iam_lcm}/provisioning/idm-provisioning-build/idm-common-preverify-build.xml
-
-  # if ! [ -a ${dfile}.orig ] ; then
-  #   log "Patching provisioning build plan"
-  #   sed -i.orig 's/<antcall target=\"private-idm-preverify-os\"\/>/<!-- antcall target=\"private-idm-preverify-os\"\/ -->/' \
-  #     ${dfile}
-  #   log "Provisioning file patched"
-  # else
-  #   warning "Skipped: patching of build file, already done"
-  # fi
+  #  without this patch the weblogic installation will use require approx. 1300 MB free
+  #  space available in /tmp. We want the environment variable TMPDIR tpo be used.
+  #
+  patch -b ${iam_lcm}/provisioning/idm-provisioning-build/idm-common-build.xml   <<EOS
+78a79
+                                                     <arg value="-Djava.io.tmpdir=\$TMPDIR" />
+EOS
+  log "LCM has been patched to use env TMPDIR for Weblogic installation"
 }
 
 #  deploy step within life cycle manager wizard

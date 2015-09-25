@@ -12,6 +12,8 @@ export RCU_LOG_LOCATION=/tmp
 
 umask ${iam_user_umask}
 
+set -o verbose
+
 # set variables from provisioning config file
 uc=${DEPLOYER}/user-config/iam/provisioning.rsp
 orainst_loc=${iam_orainv_ptr}
@@ -32,9 +34,9 @@ remove_files() {
   rm -Rf ${iam_top}/products \
          ${iam_top}/config \
          ${iam_top}/plan.lck \
-         ${iam_top}/lcm/provisioning/phaseguards/* \
-         ${iam_top}/lcm/provisioning/provlocks/* \
-         ${iam_top}/lcm/privisioning/logs/*
+         ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
+         ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
+         ${iam_top}/lcm/lcmhome/provisioning/logs/*
 }
 
 # main program -----------------------------

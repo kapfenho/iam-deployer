@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: check hostname -s, hostname -f
+
 log() {
   if [[ -t 1 ]]; then
     printf "%b>>>%b %b%s%b\n" "\x1b[1m\x1b[32m" "\x1b[0m" \
@@ -27,21 +29,21 @@ warning() {
   fi
 }
 
+# ---------------------------------------------
 
-semmsl=$(cat /proc/sys/kernel/sem | cut -f 1)
-semmns=$(cat /proc/sys/kernel/sem | cut -f 2)
-semopm=$(cat /proc/sys/kernel/sem | cut -f 3)
-semmni=$(cat /proc/sys/kernel/sem | cut -f 4)
+: ${TMPDIR:=/tmp}
 
-if expr $semmsl \<   256 >/dev/null ; then warning "semmsl too small" ; fi
-if expr $semmns \< 32000 >/dev/null ; then warning "semmns too small" ; fi
-if expr $semopm \<   100 >/dev/null ; then warning "semopm too small" ; fi
-if expr $semmni \<   142 >/dev/null ; then warning "semmni too small" ; fi
-
-if expr $(cat /proc/sys/kernel/shmmax) \< 17179869184 >/dev/null ; then warning "shmmax too small" ; fi
-if expr $(cat /proc/sys/fs/file-max)   \<     6815744 >/dev/null ; then warning "file-max too small" ; fi
-
-# check ipv4 addresses
+checks='semmsl:256:cat /proc/sys/kernel/sem | cut -f 1
+semmns:32000:cat /proc/sys/kernel/sem | cut -f 2
+semopm:100:cat /proc/sys/kernel/sem | cut -f 3
+semmni:142:cat /proc/sys/kernel/sem | cut -f 4
+shmmax:17179869184:cat /proc/sys/kernel/shmmax
+file-max:6815744:cat /proc/sys/fs/file-max
+nofile-soft:15000:ulimit -Sf
+nofile-hard:15000:ulimit -Hf
+nproc-soft:16384:ulimit -Su
+nproc-hard:16384:ulimit -Hu
+tmpspace:1300:df -m ${TMPDIR} | tail -1 | awk "{ print $3 }"'
 
 #   64bit packages for all fusion apps
 fusion64=(
@@ -83,49 +85,95 @@ fusion32=(
 tools=(
     nfs-utils 
     unzip 
-    rlwrap 
-    tmux 
-    telnet 
-    nc 
+#   rlwrap 
+#   tmux 
+#   telnet 
+#   nc 
     vim-enhanced )
+
+# -------------------------------------------------
+
+declare -i issues
+issues=0
+IFS="
+"
+
+log "Starting checks..."
+log
+
+for c in ${checks[@]} ; do 
+
+   cname=$(echo -n ${c} | cut -d : -f 1)
+  climit=$(echo -n ${c} | cut -d : -f 2)
+  ccheck=$(echo -n ${c} | cut -d : -f 3)
+
+  if expr $( eval "${ccheck}" ) \< ${climit} >/dev/null ; then
+    warning "${cname} is lower than ${climit}."
+    let issues++
+  else
+    log "${cname} ok"
+  fi
+
+done
+
+# -------------------------------------------------
 
 yums=$(mktemp /tmp/yums-XXXXXXXXX)
 yum list installed >${yums}
 
-echo "++ checking 64bit packages..."
+log
+log "--- checking 64bit packages..."
 for l in ${fusion64[@]} ; do
   if ! grep -q "${l}.x86_64" ${yums} ; then
     warning "package missing: ${l}.x86_64"
+    let issues++
+  else
+    log "package <${l}.x86_64> is installed"
   fi
 done
 
-echo "++ checking 32bit packages..."
+log
+log "--- checking 32bit packages..."
 for l in ${fusion32[@]} ; do
   if ! grep -q "${l}" ${yums} ; then
     warning "package missing: ${l}"
+    let issues++
+  else
+    log "package <${l}> is installed"
   fi
 done
 
-echo "++ checking additional tools..."
+log
+log "--- checking additional tools..."
 for l in ${tools[@]} ; do
   if ! grep -q "${l}" ${yums} ; then
     warning "package missing: ${l}"
+    let issues++
+  else
+    log "package <${l}> is installed"
   fi
 done
-
 rm -f ${yums}
 
-echo "++ checking system security resource limits..."
-if expr $(ulimit -Sf) \<   15000 >/dev/null ; then warning "soft limit open files less than 15000" ; fi
-if expr $(ulimit -Hf) \<   15000 >/dev/null ; then warning "hard limit open files less than 15000" ; fi
+# ---------------------------------
 
-if expr $(ulimit -Su) \<   16384 >/dev/null ; then warning "soft limit nproc less than 16384" ; fi
-if expr $(ulimit -Hu) \<   16384 >/dev/null ; then warning "hard limit nproc less than 16384" ; fi
+if [[ "$(hostname -s)" == "$(hostname -f)" ]] ; then
+  # dnsdomainname
+  warning "Hostname problem: hostname -s ... hostname"
+  warning "Hostname problem: hostname -f ... full qualified hostname"
+fi
 
-echo "In case of no ERROR or WARNING: you are fine!"
-echo
+# TODO: check ipaddress of hostname
 
-echo "Please check now the date and time:  $(date)"
+log
+if [ ${issues} -gt 0 ] ; then
+  warning "There are ${issues} issues to correct before proceeding"
+else
+  info "No problems found!"
+fi
+
+log
+log "Please check now the date and time:  $(date)"
 
 exit 0
 
