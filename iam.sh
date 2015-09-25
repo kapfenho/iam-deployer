@@ -24,6 +24,9 @@ iam_mw_home=$(grep "COMMON_FMW_DIR="         ${uc} | cut -d= -f2)
 
 log "Start deploying"
 
+# create oraInventory pointer
+create_orainvptr
+
 # deploy life cycle managment
 deploy_lcm
  

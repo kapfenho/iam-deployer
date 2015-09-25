@@ -64,7 +64,7 @@ ARG_IGNORESYSPREREQS=false
 
 #Oracle Inventory File Properties
 INV_USE_LOCAL_OPTION=false
-INV_INVENTORY_DIRECTORY=/opt/oracle/oraInventory
+INV_INVENTORY_DIRECTORY=/l/ora/etc/oraInventory
 
 #Installation Options
 OPTION_INSTALLDB==oracle.isCurrentFlowMode("dbinstall")"
@@ -97,13 +97,13 @@ PROVPLAN_DESC=
 
 #Installation Locations
 INSTALL_INSTALLERS_DIR=/mnt/oracle/iam-11.1.2.2/repo
-INSTALL_APPHOME_DIR=/l/ora/product
-INSTALL_LCMHOME_DIR=/l/ora/product/lcm/lcmhome
+INSTALL_APPHOME_DIR=/l/ora
+INSTALL_LCMHOME_DIR=/l/ora/lcm/lcmhome
 INSTALL_LCMHOME_IS_MOUNTED_IN_DIR_HOSTS=true
 INSTALL_LCMHOME_IS_MOUNTED_IN_WEB_HOSTS=true
 INSTALL_APPCONFIG_DIR=${provisioning.setup.install-location.locations.default.home.top}/config
 INSTALL_LOCALCONFIG_ENABLE=true
-INSTALL_LOCALCONFIG_DIR=/l/ora/product/local
+INSTALL_LOCALCONFIG_DIR=/l/ora/services
 INSTALL_OSWIN_USER=
 INSTALL_OSWIN_PWD=
 IDMPROV_IDMTOP_IS_SHARED=true
@@ -114,7 +114,7 @@ IDM_BASE_DEPLOYMENT_SELECTED=true
 
 #Domain Topology
 TOPOLOGY_BASIC_SELECTED=true
-TOPOLOGY_BASIC_HOST=iam1.agoracon.at
+TOPOLOGY_BASIC_HOST=iamvs.agoracon.at
 TOPOLOGY_MEDIUM_SELECTED=false
 TOPOLOGY_ADVANCED_SELECTED=false
 
@@ -127,7 +127,7 @@ INTERNAL_PLAN_GRVIAM=171
 INTERNAL_PLAN_NACLIAM=M+8n5+9ppOc6UEDdfpyKPA==
 
 #Internal Class B
-INTERNAL_PHASEGUARDS_DIR=/l/ora/product/lcm/lcmhome/provisioning/phaseguards
+INTERNAL_PHASEGUARDS_DIR=/l/ora/lcm/lcmhome/provisioning/phaseguards
 INTERNAL_COMMON_INITCOMP=enterprise
 
 #Internal Class C
@@ -182,10 +182,10 @@ UC_PALN_DESC=Identity Manager
 
 #Install Locations
 IL_INSTALLERDIR_LOCATION=/mnt/oracle/iam-11.1.2.2/repo
-IL_APP_BASE=/l/ora/product
+IL_APP_BASE=/l/ora
 IL_APP_CONFIG=${provisioning.setup.install-location.locations.default.home.top}/config
 IL_ENABLE_LOCALAPP_CONFIG=true
-IL_LOCALAPP_CONFIG=/l/ora/product/local
+IL_LOCALAPP_CONFIG=/l/ora/services
 IL_WIN_DOMAIN_USERNAME=
 IL_WIN_DOMAIN_PSWD=
 IL_STD_LOG_DIR=${provisioning.setup.install-location.locations.default.home.lcm}/provisioning/logs
@@ -196,13 +196,13 @@ COMMON_CONFIG_COMPONENTS=true
 COMMON_STD_ADMIN_NAME=admin
 COMMON_STD_ADMIN_PWD=
 COMMON_STD_ADMIN_PWD_CONFIRM=
-COMMON_FMW_DIR=/l/ora/product
+COMMON_FMW_DIR=/l/ora
 COMMON_FUSION_REPO_INSTALL_DIR=/mnt/oracle/iam-11.1.2.2/repo
 COMMON_STD_PROV_LOGDIR=${provisioning.setup.install-location.locations.default.log.directory}
 
 #DOMAIN TOPOLOGY
 DT_SINGLEHOST=true
-DT_APP_HOSTNAME=iam1.agoracon.at
+DT_APP_HOSTNAME=iamvs.agoracon.at
 DT_ONEHOSTPERAPP=false
 
 #IDM PROVISIONING
@@ -211,11 +211,11 @@ PROVISIONING_IDMPROV=true
 #OHS Configuration
 OHS_INSTANCENAME=ohs1
 OHS_OAM_ADMIN_PORT=${provisioning.idmprov.ohs.port}
-OHS_OIM_ADMIN_PORT=7778
+OHS_OIM_ADMIN_PORT=7777
 OHS_ODSM_ADMIN_PORT=7779
 
 #OIM Configuration
-OIM_MW_HOME=/l/ora/product/products/identity
+OIM_MW_HOME=/l/ora/products/identity
 OIM_EMAIL_CONFIGURE=false
 OIM_EMAIL_SERVER_NAME=email.mycompany.com
 OIM_EMAIL_SERVER_PORT=465
@@ -226,7 +226,7 @@ OIM_EMAIL_PASSWORD=
 #OIM DB Configuration
 OIM_DB_IS_RAC=false
 OIM_DB_IS_SINGLE=true
-OIM_SINGLE_DB_HOST=oradb.iam1.agoracon.at
+OIM_SINGLE_DB_HOST=oradb.iamvs.agoracon.at
 OIM_SINGLE_DB_PORT=1521
 OIM_DB_SCHEMAPREFIX=IAM1I
 OIM_DB_SCHEMAUSER=${provisioning.idmprov.oim-db.schema_prefix}_OIM
@@ -242,7 +242,7 @@ IDMPROV_PRODUCT_DIRECTORY_HOST=
 IDMPROV_PRODUCT_DIRECTORY_DOMAIN=IAMDirectoryDomain
 IDMPROV_PRODUCT_DIRTIER_IN_DEDICATED_ZONE=${provisioning.setup.domain-topology.topology.domain.topology.advanced}
 IDMPROV_PRODUCT_IDENTITY_HOST=
-IDMPROV_PRODUCT_IDENTITY_DOMAIN=oim_iam1
+IDMPROV_PRODUCT_IDENTITY_DOMAIN=oim_iamvs
 IDMPROV_PRODUCT_WEBTIER_HOST=
 IDMPROV_PRODUCT_WEBTIER_DOMAIN=IDMDomain
 IDMPROV_PRODUCT_WEBTIER_IN_DMZ=${provisioning.setup.domain-topology.topology.domain.topology.advanced}
@@ -277,7 +277,7 @@ IDMPROV_SECOND_OHS_PORT=7777
 IDMPROV_SECOND_OHS_SSLPORT=4443
 IDMPROV_ACCESS_DOMAIN=IAMAccessDomain
 IDMPROV_DIRECTORY_DOMAIN=IAMDirectoryDomain
-IDMPROV_IDENTITY_DOMAIN=oim_iam1
+IDMPROV_IDENTITY_DOMAIN=oim_iamvs
 
 #Virtual Hosts Configuration
 IDMPROV_VHN_IS_CONFIGURE=false
@@ -289,19 +289,19 @@ IDMPROV_VHN_OIM_SERVER=
 IDMPROV_VHN_SECOND_OIM_SERVER=
 
 #LDAP LBR Configuration
-IDMPROV_LBR_SSO_HOST=sso.iam1.agoracon.at
+IDMPROV_LBR_SSO_HOST=sso.iamvs.agoracon.at
 IDMPROV_LBR_SSO_PORT=4443
 IDMPROV_LBR_SSO_PORT_IS_SSL=true
-IDMPROV_LBR_OIMINTERNAL_HOST=idminternal.iam1.agoracon.at
+IDMPROV_LBR_OIMINTERNAL_HOST=idminternal.iamvs.agoracon.at
 IDMPROV_LBR_OIMINTERNAL_PORT=4443
 IDMPROV_LBR_OIMINTERNAL_PORT_IS_SSL=true
-IDMPROV_LBR_IDMADMIN_HOST=oamadm.iam1.agoracon.at
+IDMPROV_LBR_IDMADMIN_HOST=oamadm.iamvs.agoracon.at
 IDMPROV_LBR_IDMADMIN_PORT=4443
 IDMPROV_LBR_IDMADMIN_PORT_IS_SSL=true
-IDMPROV_LBR_OIMADMIN_HOST=oimadm.iam1.agoracon.at
+IDMPROV_LBR_OIMADMIN_HOST=oimadm.iamvs.agoracon.at
 IDMPROV_LBR_OIMADMIN_PORT=4443
 IDMPROV_LBR_OIMADMIN_PORT_IS_SSL=true
-IDMPROV_LBR_DIRADMIN_HOST=oimadm.iam1.agoracon.at
+IDMPROV_LBR_DIRADMIN_HOST=oimadm.iamvs.agoracon.at
 IDMPROV_LBR_DIRADMIN_PORT=4443
 IDMPROV_LBR_DIRADMIN_PORT_IS_SSL=true
 

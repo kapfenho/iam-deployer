@@ -1,5 +1,18 @@
 #  iam deploy and config functions
 
+#  create oracle inventory pointer
+#
+create_orainvptr()
+{
+  if [[ ! -a ${iam_orainv_ptr} ]] ; then
+    cat > ${iam_orainv_ptr} <<-EOS
+      inventory_loc=${iam_orainv}
+      inst_group=${iam_orainv_grp}
+EOS
+  fi
+}
+
+
 #  deloy life cycle management (deployment wizard)
 #
 deploy_lcm() {
