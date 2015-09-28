@@ -1,0 +1,21 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+192.168.168.32           web1.vie.agoracon.at             web1
+192.168.168.33           web2.vie.agoracon.at             web2
+192.168.168.34           oam1.vie.agoracon.at             oam1
+192.168.168.35           oam2.vie.agoracon.at             oam2
+192.168.168.36           oim1.vie.agoracon.at             oim1
+192.168.168.37           oim2.vie.agoracon.at             oim2
+192.168.168.38           oud1.vie.agoracon.at             oud1
+192.168.168.39           oud2.vie.agoracon.at             oud2
+192.168.168.32    oiminternal.vie.agoracon.at      oiminternal
+192.168.168.32       idmadmin.vie.agoracon.at         idmadmin
+192.168.168.32       oimadmin.vie.agoracon.at         oimadmin
+192.168.168.32       diradmin.vie.agoracon.at         diradmin
+192.168.168.32            sso.vie.agoracon.at              sso
+192.168.168.38           ldap.vie.agoracon.at             ldap
+
+192.168.168.20          oradb.vie.agoracon.at            oradb
+192.168.1.16              nyx.vie.agoracon.at              nyx
+
