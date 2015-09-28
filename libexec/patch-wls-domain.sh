@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # the patches correct bugs of the default configuration:
 #   * several concurrent jvm memory options are stated

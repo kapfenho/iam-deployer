@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # create log area and link locations.  this script shall be executed 
 # on each machine

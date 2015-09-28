@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #  oracle rcu wrapper
 #  create or remove database schema for IAM

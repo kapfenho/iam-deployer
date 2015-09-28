@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #  copy user environment settings
 #

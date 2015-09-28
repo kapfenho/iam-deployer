@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #  System preparation script for Oracle Identity and Access Management
 # 
@@ -35,7 +35,7 @@ iam_user=${iam_user:-iam}
 # redirect to output file
 exec 6>&1 ; exec > ${ofile}
 
-echo "#!/bin/sh"
+echo "#!/bin/bash"
 echo "#  execute as root user"
 echo "if [ \$UID -ne 0 ] ; then echo \"ERROR: not root\" ; exit 77 ; fi"
 echo "set -x"

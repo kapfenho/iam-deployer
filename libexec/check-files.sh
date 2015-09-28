@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # compare the deployed files with the repo version
 
