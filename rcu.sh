@@ -17,8 +17,6 @@
 #  horst.kapfenberger@agoracon.at, 2014-09-10
 #  vim: set ft=sh :
 
-set -o errexit nounset
-
 . ${DEPLOYER}/user-config/iam.config
 . ${DEPLOYER}/lib/libcommon2.sh
 . ${DEPLOYER}/lib/librcu.sh

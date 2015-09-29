@@ -19,11 +19,10 @@ rcu_identity() {
     -useSamePasswordForAllSchemaUsers true \
     -schemaPrefix ${iam_oim_prefix} \
     -component MDS \
-    -component IAU \
     -component OPSS \
     -component SOAINFRA \
     -component ORASDPM \
-    -component OIM  > /dev/null \
+    -component OIM \
     <<EOF
 ${iam_dba_pass}
 ${iam_oim_schema_pass}
@@ -43,7 +42,6 @@ rcu_drop_identity() {
     -dbRole sysdba \
     -schemaPrefix ${iam_oim_prefix} \
     -component MDS \
-    -component IAU \
     -component OPSS \
     -component SOAINFRA \
     -component ORASDPM \
@@ -70,7 +68,7 @@ rcu_access() {
     -component MDS \
     -component IAU \
     -component OPSS \
-    -component OAM  > /dev/null \
+    -component OAM \
     <<EOF
 ${iam_dba_pass}
 ${iam_oam_schema_pass}
