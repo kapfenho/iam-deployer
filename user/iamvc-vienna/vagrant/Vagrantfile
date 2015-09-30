@@ -69,7 +69,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.memory   = 8192
     end
     m.vm.provision "nfs", type: "shell" do |s|
-      s.inline = "echo '#{$exports}' >>/etc/exports; echo '#{$images}' >>/etc/fstab"
+      s.inline = "echo '#{$exports}' >>/etc/exports;
+        echo '#{$images}' >>/etc/fstab;
+        mount /mnt/oracle"
     end
     m.vm.provision "nfs-start", type: "shell" do |s|
       s.inline = "/sbin/service nfs start && /sbin/chkconfig nfs on"
