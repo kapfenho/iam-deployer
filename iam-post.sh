@@ -29,6 +29,7 @@ deployer=${DEPLOYER}
 . ${DEPLOYER}/lib/liboud.sh
 . ${DEPLOYER}/lib/libjdk.sh
 . ${DEPLOYER}/lib/liblog.sh
+. ${DEPLOYER}/lib/libpatchwls.sh
 
 # export parameters fmor iam.config
 export iam_hostenv iam_top iam_log DO_IDM DO_ACC DO_WEB DO_OUD DO_BIP
@@ -116,7 +117,7 @@ if ! [ -a ${iam_hostenv}/env ] ; then
   ${DEPLOYER}/libexec/init-userenv.sh
 fi
 
-. ${HOSTENV}/env/common.env
+. ~/.env/common.env
 
 #  ----------------------------------------------------------------------
 #  copy environment files for OUD
@@ -310,13 +311,15 @@ done
 if [ "${acchost}" == "yes" ] ; then
   log "Applying patches for JDK7 upgrade to WebLogic and Access Domain..."
   . ${HOSTENV}/env/acc.env
-  ${DEPLOYER}/libexec/patch-wls-domain.sh ${DEPLOYER}/lib/access
+  # ${DEPLOYER}/libexec/patch-wls-domain.sh ${DEPLOYER}/lib/access
+  patch_wls_domain ${DEPLOYER}/lib/access
   log "Patches have been applied"
 fi
 if [ "${idmhost}" == "yes" ] ; then
   log "Applying patches for JDK7 upgrade to WebLogic and Idenity Domain..."
   . ${HOSTENV}/env/idm.env
-  ${DEPLOYER}/libexec/patch-wls-domain.sh ${DEPLOYER}/lib/identity
+  #${DEPLOYER}/libexec/patch-wls-domain.sh ${DEPLOYER}/lib/identity
+  patch_wls_domain ${DEPLOYER}/lib/identity
   log "Patches have been applied"
 fi
 

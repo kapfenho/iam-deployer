@@ -137,8 +137,8 @@ cat >> /etc/security/limits.d/91-fusion.conf <<-EOF
 EOF
 
 cat >> /etc/security/limits.d/91-fusion.conf <<-EOF
-oracle     soft    nofiles     65536
-oracle     hard    nofiles     65536
+oracle     soft    nofile      65536
+oracle     hard    nofile      65536
 oracle     soft    stack       10240
 EOF
 

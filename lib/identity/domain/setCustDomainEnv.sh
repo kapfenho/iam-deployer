@@ -26,7 +26,7 @@ AdminServer)
   ;;
 *oim*)
   uma="-Xms2g -Xmx4g -XX:MaxPermSize=1024m"
-  EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Dimint.env=production -Dimint.config=/opt/fmw/config/deploy/imint/current/config/imint.yml"
+  EXTRA_JAVA_PROPERTIES="${EXTRA_JAVA_PROPERTIES} -Dimint.env=production -Dimint.config=/l/ora/config/deploy/imint/current/config/imint.yml"
   export EXTRA_JAVA_PROPERTIES
   ;;
 esac

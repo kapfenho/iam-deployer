@@ -17,14 +17,16 @@ _hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
 
 cp_nodemanager() {
   local _d=${iam_top}/config/nodemanager/$(hostname -f)/
-  [ -a ${_d}/nodemanger.properties.orig ] && return
-  mv ${_d}/nodemanager.properties ${_d}/nodemanger.properties.orig
-  grep Custom ${_d}/nodemanager.properties.orig >>${_d}/nodemanager.properties
+  local _nm=nodemanager.properties
+  [ -a ${_d}/${_nm}.orig ] && return
+  mv ${_d}/${_nm} ${_d}/${_nm}.orig
+  cp ${nodesrc}/${_nm} ${_d}/${_nm}
+  grep Custom ${_d}/${_nm}.orig >>${_d}/${_nm}
   cp -b ${nodesrc}/startNodeManagerWrapper.sh ${_d}/
   chmod 0755 ${_d}/startNodeManagerWrapper.sh
-  sed -i "s/_HOST_/$(hostname -f)/" ${_d}/startNodeManagerWrapper.sh ${_d}/nodemanager.properties
-  sed -i "s/_IAMTOP_/${_top}/"      ${_d}/startNodeManagerWrapper.sh ${_d}/nodemanager.properties
-  sed -i "s/_IAMLOG_/${_log}/"      ${_d}/nodemanager.properties
+  sed -i "s/_HOST_/$(hostname -f)/" ${_d}/startNodeManagerWrapper.sh ${_d}/${_nm}
+  sed -i "s/_IAMTOP_/${_top}/"      ${_d}/startNodeManagerWrapper.sh ${_d}/${_nm}
+  sed -i "s/_IAMLOG_/${_log}/"      ${_d}/${_nm}
 }
 cp_oim() {
   [ "${idmhost}" != "yes" ] && return

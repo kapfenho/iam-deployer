@@ -133,8 +133,8 @@ cat >> /etc/security/limits.d/91-fusion.conf <<-EOF
 @fmwgroup  hard    nofile     150000
 @fmwgroup  soft    nproc       16384
 @fmwgroup  hard    nproc       16384
-oracle     soft    nofiles     65536
-oracle     hard    nofiles     65536
+oracle     soft    nofile      65536
+oracle     hard    nofile      65536
 oracle     soft    stack       10240
 EOF
 

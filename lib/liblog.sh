@@ -8,9 +8,12 @@ _mvlog()
 {
   local src=${1}
   local dst=${2}
-  # first check if already done
+  if [ ! -a ${src} ] ; then
+    return
+  fi
+  # check if already done
   if [ -h ${src} ] ; then
-    warn "Already moved log dir ${src}"
+    warning "Already moved log dir ${src}"
   else
     mkdir -p "${dst}"
     # delete destination file if exsiting
