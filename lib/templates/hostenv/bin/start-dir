@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ${HOME}/.env/dir.env
+. ${HOSTENV}/env/dir.env
 start-ds
 
 exit 0

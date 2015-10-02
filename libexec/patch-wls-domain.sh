@@ -20,19 +20,20 @@ set -x
 
 # wl_home
 if grep -e 'PRODUCTION_MODE="true"' ${WL_HOME}/common/bin/commEnv.sh >/dev/null ; then
-  echo "WL_HOME already patch, nothing to do"
-  echo
+  log "WL_HOME already patch, nothing to do"
 else
   patch -b ${WL_HOME}/common/bin/commEnv.sh <${src}/wl_home/commEnv.sh.patch
+  log "WL_HOME patched: ${WL_HOME}"
 fi
 
 # admin domain
-if ! [ -a ${DOMAIN_HOME}/bin/setCustDomainEnv.sh ]; then
-  cp ${src}/domain/setCustDomainEnv.sh ${DOMAIN_HOME}/bin/
+if ! [ -a ${ADMIN_HOME}/bin/setCustDomainEnv.sh ]; then
+  cp ${src}/domain/setCustDomainEnv.sh ${ADMIN_HOME}/bin/
 fi
 
-if ! grep setCustDomainEnv ${DOMAIN_HOME}/bin/setDomainEnv.sh >/dev/null 2>&1 ; then
-  patch -b ${DOMAIN_HOME}/bin/setDomainEnv.sh <${src}/domain/setDomainEnv.sh.patch
+if ! grep setCustDomainEnv ${ADMIN_HOME}/bin/setDomainEnv.sh >/dev/null 2>&1 ; then
+  patch -b ${ADMIN_HOME}/bin/setDomainEnv.sh <${src}/domain/setDomainEnv.sh.patch
+  log "ADMIN_HOME patched: ${ADMIN_HOME}"
 fi
 
 # local domain
@@ -42,5 +43,6 @@ fi
 
 if ! grep setCustDomainEnv ${WRK_HOME}/bin/setDomainEnv.sh >/dev/null 2>&1 ; then
   patch -b ${WRK_HOME}/bin/setDomainEnv.sh <${src}/domain/setDomainEnv.sh.patch
+  log "WRK_HOME patched: ${WRK_HOME}"
 fi
 

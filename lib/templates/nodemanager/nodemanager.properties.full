@@ -25,3 +25,8 @@ StartScriptEnabled=true
 LogFile=_IAMLOG_/nodemanager/nodemanager.log
 LogFormatter=weblogic.nodemanager.server.LogFormatter
 ListenBacklog=50
+KeyStores=CustomIdentityAndCustomTrust
+CustomIdentityKeyStoreFileName=/opt/fmw/config/keystores/appIdentityKeyStore.jks
+CustomIdentityKeyStorePassPhrase={3DES}tGz61k33EgsnLRernbzfbw==
+CustomIdentityPrivateKeyPassPhrase={3DES}tGz61k33EgsnLRernbzfbw==
+CustomIdentityAlias=appIdentity-iam0.dwpbank.net

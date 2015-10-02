@@ -4,6 +4,7 @@
 #
 
 src=${DEPLOYER}/lib/templates/hostenv
+nodesrc=${DEPLOYER}/lib/templates/nodemanager
 env=${iam_hostenv}/env
 bin=${iam_hostenv}/bin
 lib=${iam_hostenv}/lib
@@ -14,8 +15,19 @@ _hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
     _log=$(echo ${iam_log}     | sed -e 's/[\/&]/\\&/g')
 # set -o errexit nounset
 
+cp_nodemanager() {
+  local _d=${iam_top}/config/nodemanager/$(hostname -f)/
+  [ -a ${_d}/nodemanger.properties.orig ] && return
+  mv ${_d}/nodemanager.properties ${_d}/nodemanger.properties.orig
+  grep Custom ${_d}/nodemanager.properties.orig >>${_d}/nodemanager.properties
+  cp -b ${nodesrc}/startNodeManagerWrapper.sh ${_d}/
+  chmod 0755 ${_d}/startNodeManagerWrapper.sh
+  sed -i "s/_HOST_/$(hostname -f)/" ${_d}/startNodeManagerWrapper.sh ${_d}/nodemanager.properties
+  sed -i "s/_IAMTOP_/${_top}/"      ${_d}/startNodeManagerWrapper.sh ${_d}/nodemanager.properties
+  sed -i "s/_IAMLOG_/${_log}/"      ${_d}/nodemanager.properties
+}
 cp_oim() {
-  [ "${DO_IDM}" != "yes" -a "${DO_IDM}" != "YES" ] && return
+  [ "${idmhost}" != "yes" ] && return
 
   cp ${src}/bin/*identity*          ${bin}/
   cp ${src}/bin/*nodemanager*       ${bin}/
@@ -26,13 +38,16 @@ cp_oim() {
   cp ${src}/lib/deploy.py           ${lib}/
   sed -i "s/_HOSTENV_/${_hostenv}/" ${env}/*
   sed -i "s/_IAMTOP_/${_top}/"      ${env}/*
+  sed -i "s/_IAMTOP_/${_top}/"      ${bin}/*
   sed -i "s/_IAMLOG_/${_log}/"      ${env}/*
+  sed -i "s/_IAMLOG_/${_log}/"      ${bin}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
   sed -i "s/_DOMAIN_/${IDMPROV_IDENTITY_DOMAIN}/" ${env}/*
+  cp_nodemanager
 }
 cp_oam() {
-  [ "${DO_ACC}" != "yes" -a "${DO_ACC}" != "YES" ] && return
+  [ "${acchost}" != "yes" ] && return
 
   cp ${src}/bin/*access*            ${bin}/
   cp ${src}/bin/*nodemanager*       ${bin}/
@@ -40,27 +55,36 @@ cp_oam() {
   cp ${src}/env/access.prop         ${env}/
   sed -i "s/_HOSTENV_/${_hostenv}/" ${env}/*
   sed -i "s/_IAMTOP_/${_top}/"      ${env}/*
+  sed -i "s/_IAMTOP_/${_top}/"      ${bin}/*
   sed -i "s/_IAMLOG_/${_log}/"      ${env}/*
+  sed -i "s/_IAMLOG_/${_log}/"      ${bin}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
   sed -i "s/_DOMAIN_/${IDMPROV_ACCESS_DOMAIN}/" ${env}/*
+  cp_nodemanager
 }
 cp_oud() {
-  [ "${DO_OUD}" != "yes" -a "${DO_OUD}" != "YES" ] && return
+  [ "${oudhost}" != "yes" ] && return
 
   cp ${src}/bin/*dir*               ${bin}/
   cp ${src}/env/dir.env             ${env}/
   cp ${src}/env/tools.properties    ${env}/
+  sed -i "s/_HOSTENV_/${_hostenv}/" ${env}/*
+  sed -i "s/_IAMTOP_/${_top}/"      ${env}/*
+  sed -i "s/_IAMLOG_/${_log}/"      ${env}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
 }
 cp_web() {
-  [ "${DO_WEB}" != "yes" -a "${DO_WEB}" != "YES" ] && return
+  [ "${webhost}" != "yes" ] && return
 
   cp ${src}/bin/*webtier*           ${bin}/
   cp ${src}/env/web.env             ${env}/
   sed -i "s/_HOSTENV_/${_hostenv}/" ${env}/*
+  sed -i "s/_HOSTENV_/${_hostenv}/" ${bin}/*
   sed -i "s/_IAMTOP_/${_top}/"      ${env}/*
+  sed -i "s/_IAMTOP_/${_top}/"      ${bin}/*
   sed -i "s/_IAMLOG_/${_log}/"      ${env}/*
+  sed -i "s/_IAMLOG_/${_log}/"      ${bin}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
 }
