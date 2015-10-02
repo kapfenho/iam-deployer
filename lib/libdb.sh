@@ -27,7 +27,7 @@ config_database_for_iam() {
     ORACLE_SID=${dbs_sid}
   fi
   ${ORACLE_HOME}/bin/sqlplus -s / as sysdba &> /dev/null << EOF
-  alter system set processes=500 scope=spfile;
+  alter system set processes=1500 scope=spfile;
   alter system set open_cursors=1500 scope=spfile;
   shutdown immediate;
   startup;
