@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 #  -----------------------------------------------------------------
 #  post install steps
@@ -48,11 +48,11 @@ eval $(grep IDMPROV_IDENTITY_DOMAIN ${cfg_prov}) ; export IDMPROV_IDENTITY_DOMAI
 # OHS_INSTANCENAME=ohs1
 eval $(grep OHS_INSTANCENAME        ${cfg_prov}) ; export OHS_INSTANCENAME
 
-eval $(grep INSTALL_IDENTITY        ${cfg_prov})
-eval $(grep INSTALL_ACCESS          ${cfg_prov})
-eval $(grep INSTALL_WEBTIER         ${cfg_prov})
-eval $(grep INSTALL_SUITE_COMPLETE  ${cfg_prov})
-INSTALL_DIRECTORY=${INSTALL_SUITE_COMPLETE}
+# eval $(grep INSTALL_IDENTITY        ${cfg_prov})
+# eval $(grep INSTALL_ACCESS          ${cfg_prov})
+# eval $(grep INSTALL_WEBTIER         ${cfg_prov})
+# eval $(grep INSTALL_SUITE_COMPLETE  ${cfg_prov})
+# INSTALL_DIRECTORY=${INSTALL_SUITE_COMPLETE}
 
 set -o nounset errexit
 
@@ -63,26 +63,51 @@ set -o nounset errexit
 acchost="no" ; idmhost="no" ; oudhost="no" ; webhost="no"
 
 if [ "${DO_ACC}" == "yes" -o "${DO_ACC}" == "YES" ] ; then
-  if pgrep -q ${IDMPROV_ACCESS_DOMAIN} 2>/dev/null ; then
+  if [ -a ${iam_top}/services/domains/${IDMPROV_ACCESS_DOMAIN} ] ; then
     acchost="yes"
+    if ! pgrep -f ${IDMPROV_ACCESS_DOMAIN} >/dev/null ; then
+      error "Access domain is not running, please start services"
+      exit 80
+    fi
   fi
 fi
 if [ "${DO_IDM}" == "yes" -o "${DO_IDM}" == "YES" ] ; then
-  if pgrep -q ${IDMPROV_IDENTITY_DOMAIN} 2>/dev/null ; then
+  if [ -a ${iam_top}/services/domains/${IDMPROV_IDENTITY_DOMAIN} ] ; then
     idmhost="yes"
+    if ! pgrep -f ${IDMPROV_IDENTITY_DOMAIN} >/dev/null ; then
+      error "Identity domain is not running, please start services"
+      exit 80
+    fi
   fi
 fi
 if [ "${DO_OUD}" == "yes" -o "${DO_OUD}" == "YES" ] ; then
-  if pgrep -q oud 2>/dev/null ; then
+  if [ -a ${iam_top}/services/instances/oud1 ] ; then
     oudhost="yes"
+    if ! pgrep -f oud >/dev/null ; then
+      error "OUD is not running, please start service"
+      exit 80
+    fi
   fi
 fi
 if [ "${DO_WEB}" == "yes" -o "${DO_WEB}" == "YES" ] ; then
-  if pgrep -q ohs 2>/dev/null ; then
+  if [ -a ${iam_top}/services/instances/ohs1 ] ; then
     webhost="yes"
+    if ! pgrep -f ohs >/dev/null ; then
+      error "Webtier is not running, please start service"
+      exit 80
+    fi
   fi
 fi
 export oudhost webhost idmhost acchost
+
+log ""
+log "Provisioning tasks on host $(hostname -f)"
+log "-----------------------------------------------"
+log "  Identity:    ${idmhost}"
+log "  Access:      ${acchost}"
+log "  Directory:   ${oudhost}"
+log "  Webtier:     ${webhost}"
+log ""
 
 #  ----------------------------------------------------------------------
 #  copy environment files and source common env
@@ -117,14 +142,14 @@ fi
 #  ----------------------------------------------------------------------
 #  JDK7 upgrade - part 1
 #
-log "Upgrading to JDK7"
+log "Upgrading to JDK7 - part 1"
 for d in access identity dir web ; do
   dest=${INSTALL_APPHOME_DIR}/products/${d}
   # when oracle_home dir does not exists: skip
   [ -a ${dest} ] || continue
   # when new jdk already exists: skip
   if [ -a ${dest}/jdk/current ] ; then
-    warn "Skipping - found JDK in ${dest}"
+    warning "Skipping - found JDK in ${dest}"
     continue
   fi
   log "upgrading JDK in product dir ${dest}"
@@ -134,7 +159,7 @@ for d in access identity dir web ; do
   ln -s ${dest}/jdk/${jdkname} ${dest}/jdk/current
   log "Patching JDK...."
   jdk_patch_config ${dest}/jdk/${jdkname}
-  log "Finished JDK upgrade in ${dest}"
+  log "Finished JDK upgrade part 1 in ${dest}"
 done
 
 #  ----------------------------------------------------------------------
@@ -144,14 +169,14 @@ if [ "${acchost}" == "yes" ] ; then
 
   . ${HOSTENV}/env/acc.env
 
-  log "Running PSA (Patch Set Assistant) for Access Manager..."
+  log "Access Domain: running PSA (Patch Set Assistant) for OAM..."
 
   ${ORACLE_HOME}/bin/psa \
     -response ${DEPLOYER}/user-config/iam/psa_access.rsp \
     -logLevel WARNING \
     -logDir /tmp
 
-  log "Creating keyfile for nodemanager..."
+  log "Access Domain: creating nodemanager keyfiles..."
 
   if ! [ -a ${HOSTENV}/.creds/nm.key ] ; then
     ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop <<-EOF
@@ -163,7 +188,7 @@ exit()
 EOF
   fi
 
-  log "Creating keyfile for access domain..."
+  log "Access Domain: creating keyfiles for domain..."
 
   if ! [ -a ${HOSTENV}/.creds/${IDMPROV_ACCESS_DOMAIN}.key ] ; then
     ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop <<-EOF
@@ -174,12 +199,12 @@ exit()
 EOF
   fi
 
-  log "Configuring access domain..."
+  log "Access Domain: configuring access domain..."
 
   ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop \
     ${DEPLOYER}/lib/access/oam-config.py
   
-  log "Configuring done"
+  log "Access Domain: configuration steps done"
 fi
 
 #  ----------------------------------------------------------------------
@@ -188,14 +213,14 @@ fi
 if [ "${idmhost}" == "yes" ] ; then
   . ${HOSTENV}/env/idm.env
 
-  log "Running PSA (Patch Set Assistant) for Access Manager..."
+  log "Identity Domain: Running PSA (Patch Set Assistant) for IDM..."
 
   ${ORACLE_HOME}/bin/psa \
     -response ${DEPLOYER}/user-config/iam/psa_identity.rsp \
     -logLevel WARNING \
     -logDir /tmp
 
-  log "Creating keyfile for nodemanager..."
+  log "Identity Domain: creating nodemanager keyfiles..."
 
   if ! [ -a ${HOSTENV}/.creds/nm.key ] ; then
     ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop <<-EOF
@@ -207,7 +232,7 @@ exit()
 EOF
   fi
 
-  log "Creating kefile for identity domain..."
+  log "Identity Domain: creating keyfiles for domain..."
 
   if ! [ -a ${HOSTENV}/.creds/${IDMPROV_IDENTITY_DOMAIN}.key ] ; then
     ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop <<-EOF
@@ -218,16 +243,18 @@ exit()
 EOF
   fi
 
-  log "Configuring identity domain..."
+  log "Identity Domain: configuring domain..."
 
   ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop \
     ${DEPLOYER}/lib/identity/idm-config.py
-  log "Configuration done."
+  log "Identity Domain: configuration steps done."
 fi
 
 # ----------------------------------------------------------------------
 # TODO: install runlevel scripts
 #
+warning "TODO: install runlevel scripts"
+
 
 # ----------------------------------------------------------------------
 #  OUD postinstalls, patching
@@ -264,14 +291,17 @@ log "Log files: done"
 # ----------------------------------------------------------------------
 # install jdk7
 #
-log "Search for JDK6 dirs to move..."
+log "JDK7 upgrade part 2 - Search for JDK6 dirs to move..."
 for d in access identity dir web ; do
   dest=${INSTALL_APPHOME_DIR}/products/${d}
+  # skip if mw home doesnt exist
+  [ -a ${dest} ] || continue
+  # skip if already dóne
   [ -h ${dest}/jdk6 ] && continue
   log "We will move and replace JDK6 in ${dest}"
   mv ${dest}/jdk6 ${dest}/jdk/
   ln -s ${dest}/jdk/${jdkname} ${dest}/jdk6
-  log "JDK6 moved"
+  log "JDK6 moved - done"
 done
 
 # ----------------------------------------------------------------------
@@ -293,21 +323,28 @@ fi
 # ----------------------------------------------------------------------
 # webgate
 #
+log "Webgate: fix installation bug"
+
 _webg=${iam_top}/products/web/webgate/webgate/ohs/config
 
 if [ -a ${_webg}/oblog_config_wg.xml -a ! -a ${_webg}/oblog_config.xml ] ; then
   cp ${_webg}/oblog_config_wg.xml ${_webg}/oblog_config.xml
 fi
 
+log "Webgate: done"
+
 exit 0
 
 # ----------------------------------------------------------------------
 # httpd server, ohs, apache
 #
+log "HTTP Server: deploying configs..."
+
 _webd1=/opt/local/fmw/instances/ohs1/config/OHS/ohs1
 _webd2=/opt/local/instances/ohs1/config/OHS/ohs1
 _webd3=/opt/local/fmw/instances/ohs2/config/OHS/ohs2
 _webd4=/opt/local/instances/ohs2/config/OHS/ohs2
+
 [ -a ${_webd1} ] && webd=${_webd1}
 [ -a ${_webd2} ] && webd=${_webd2}
 [ -a ${_webd3} ] && webd=${_webd3}
@@ -317,7 +354,11 @@ if [ -n ${webd} ] ; then
   generate_httpd_config ${webd} $(hostname -f)
 fi
 
-# bundle patches
+log "HTTP Server: done"
+
+# ----------------------------------------------------------------------
+# TODO: bundle patches
+#
 
 # ${HOME}/bin/start-all
 
