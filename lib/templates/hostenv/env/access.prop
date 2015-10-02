@@ -1,11 +1,11 @@
 hostname=_HOST_
 nmPort=5556
 domName=_DOMAIN_
-admDir=/opt/fmw/config/domains/_DOMAIN_
-domDir=/opt/local/fmw/domains/_DOMAIN_
+admDir=_IAMTOP_/config/domains/_DOMAIN_
+domDir=_IAMTOP_/services/domains/_DOMAIN_
 domAdminPort=7001
 domUrl=t3://_HOST_:7001
-domUC=/home/fmwuser/.creds/_DOMAIN_.usr
-domUK=/home/fmwuser/.creds/_DOMAIN_.key
-nmUC=/home/fmwuser/.creds/nm.usr
-nmUK=/home/fmwuser/.creds/nm.key
+domUC=_HOSTENV_/.creds/_DOMAIN_.usr
+domUK=_HOSTENV_/.creds/_DOMAIN_.key
+nmUC=_HOSTENV_/.creds/nm.usr
+nmUK=_HOSTENV_/.creds/nm.key

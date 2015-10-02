@@ -1,8 +1,8 @@
 #!/bin/sh
 
-. ${HOME}/.env/idm.env
+. ${HOSTENV}/env/idm.env
 
-${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<EOS
+${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop <<EOS
 nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=hostname,port=nmPort,domainName=domName,domainDir=admDir,nmType='ssl');
 connect(userConfigFile=domUC,userKeyFile=domUK,url=domUrl);
 try:

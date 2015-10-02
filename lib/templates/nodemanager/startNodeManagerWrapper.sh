@@ -1,7 +1,7 @@
 #!/bin/sh
 
-WLS_HOME=/opt/fmw/products/access/wlserver_10.3
-NM_HOME=/opt/fmw/config/nodemanager/iam0.dwpbank.net
+WLS_HOME=_IAMTOP_/products/identity/wlserver_10.3
+NM_HOME=_IAMTOP_/config/nodemanager/_HOST_
 JAVA_OPTIONS="-DNodeManagerHome=${NM_HOME} ${JAVA_OPTIONS}"
 #JAVA_OPTIONS="-Dweblogic.security.SSL.enableJSSE=true ${JAVA_OPTIONS}"
 
