@@ -44,7 +44,7 @@ set -x
 
 # copy user env --------------------------------------
 #
-if ! [ -a ${HOME}/.env ] ; then
+if ! [ -a ${iam_hostenv}/env ] ; then
   ${DEPLOYER}/libexec/init-userenv.sh
 fi
 
