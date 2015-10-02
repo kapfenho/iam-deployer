@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
    nmUser=admin
     nmPwd=Montag11
@@ -20,6 +20,8 @@ deployer=${DEPLOYER}
 . ${DEPLOYER}/lib/liboud.sh
 . ${DEPLOYER}/lib/libjdk.sh
 
+export iam_hostenv iam_top iam_log DO_IDM DO_ACC DO_WEB DO_OUD DO_BIP
+
 cfg_prov=${DEPLOYER}/user-config/iam/provisioning.rsp
 # INSTALL_APPHOME_DIR=/opt/fmw
 eval $(grep INSTALL_APPHOME_DIR     ${cfg_prov}) ; export INSTALL_APPHOME_DIR
@@ -38,9 +40,7 @@ eval $(grep INSTALL_WEBTIER         ${cfg_prov})
 eval $(grep INSTALL_SUITE_COMPLETE  ${cfg_prov})
 INSTALL_DIRECTORY=${INSTALL_SUITE_COMPLETE}
 
-
-set -o errexit nounset
-set -x
+set -o nounset errexit
 
 # copy user env --------------------------------------
 #
@@ -48,27 +48,31 @@ if ! [ -a ${iam_hostenv}/env ] ; then
   ${DEPLOYER}/libexec/init-userenv.sh
 fi
 
-. ${HOME}/.env/common.env
+. ${HOSTENV}/env/common.env
 
 # additional oud files
-(
-  . ${HOME}/.env/dir.env
-  echo -n ${oudPwd} > ${HOME}/.creds/oudadmin
-  cp -b ${HOME}/.env/tools.properties ${INST_HOME}/config/
-)
+if [ "${DO_OUD}" == "yes" -o "${DO_OUD}" == "YES" ] ; then
+  (
+    . ${HOSTENV}/env/dir.env
+    echo -n ${oudPwd} > ${HOSTENV}/.creds/oudadmin
+    cp -b ${HOSTENV}/env/tools.properties ${INST_HOME}/config/
+  )
+fi
 
 # acStdLib for wlst -------------------------------
 #
-for d in access identity ; do
-  dest=${INSTALL_APPHOME_DIR}/products/${d}/wlserver_10.3/common/wlst
-  cp -f ${DEPLOYER}/lib/wlst/common/* ${dest}/
-done
+if [ "${DO_ACC}" == "yes" -o "${DO_ACC}" == "YES" ] ; then
+  cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/access/wlserver_10.3/common/wlst
+fi
+if [ "${DO_IDM}" == "yes" -o "${DO_IDM}" == "YES" ] ; then
+  cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/identity/wlserver_10.3/common/wlst
+fi
 
 # install jdk7 --------------------
 #
 for d in access identity dir web ; do
   dest=${INSTALL_APPHOME_DIR}/products/${d}
-  [ -a ${dest} ] && continue
+  [ -a ${dest} ] || continue
   mkdir -p ${dest}/jdk
   tar xzf ${s_jdk} -C ${dest}/jdk
   ln -s ${dest}/jdk/${jdkname} ${dest}/jdk/current
@@ -77,85 +81,92 @@ done
 
 # user key files access domain ----------------------------------
 #
-. ${HOME}/.env/acc.env
+if [ "${DO_ACC}" == "yes" -o "${DO_ACC}" == "YES" ] ; then
+  . ${HOSTENV}/env/acc.env
 
-${ORACLE_HOME}/bin/psa \
+  ${ORACLE_HOME}/bin/psa \
     -response ${DEPLOYER}/user-config/iam/psa_access.rsp \
     -logLevel WARNING \
     -logDir /tmp
 
-if ! [ -a ${HOME}/.creds/nm.key ] ; then
-  ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop <<-EOF
+  if ! [ -a ${HOSTENV}/.creds/nm.key ] ; then
+    ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop <<-EOF
 nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
  port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
 storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
 y
 exit()
 EOF
-fi
+  fi
 
-if ! [ -a ${HOME}/.creds/${IDMPROV_ACCESS_DOMAIN}.key ] ; then
-  ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop <<-EOF
+  if ! [ -a ${HOSTENV}/.creds/${IDMPROV_ACCESS_DOMAIN}.key ] ; then
+    ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop <<-EOF
 connect(username="${domaUser}", password="${domaPwd}", url=domUrl)
 storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm="false")
 y
 exit()
 EOF
-fi
+  fi
 
-${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/access.prop \
-  ${DEPLOYER}/lib/access/oam-config.py
+  ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop \
+    ${DEPLOYER}/lib/access/oam-config.py
+fi
 
 # identity domain ---------------------------------------------
 #
-. ${HOME}/.env/idm.env
+if [ "${DO_IDM}" == "yes" -o "${DO_IDM}" == "YES" ] ; then
+  . ${HOSTENV}/env/idm.env
 
-${ORACLE_HOME}/bin/psa \
+  ${ORACLE_HOME}/bin/psa \
     -response ${DEPLOYER}/user-config/iam/psa_identity.rsp \
     -logLevel WARNING \
     -logDir /tmp
 
-if ! [ -a ~/.creds/nm.key ] ; then
-  ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<-EOF
+  if ! [ -a ${HOSTENV}/.creds/nm.key ] ; then
+    ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop <<-EOF
 nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
  port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
 storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
 y
 exit()
 EOF
-fi
+  fi
 
-if ! [ -a ${HOME}/.creds/${IDMPROV_IDENTITY_DOMAIN}.key ] ; then
-  ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop <<-EOF
+  if ! [ -a ${HOSTENV}/.creds/${IDMPROV_IDENTITY_DOMAIN}.key ] ; then
+    ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop <<-EOF
 connect(username="${domiUser}", password="${domiPwd}", url=domUrl)
 storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm="false")
 y
 exit()
 EOF
-fi
+  fi
 
-${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOME}/.env/identity.prop \
-  ${DEPLOYER}/lib/identity/idm-config.py
+  ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop \
+    ${DEPLOYER}/lib/identity/idm-config.py
+fi
 
 # copy rc.d files ----------------------------------------------
 
 # pspatching postinstalls
 
-. ~/.env/dir.env
-patch_oud_post_inst
-apply_oud_tls_settings
+
+if [ "${DO_OUD}" == "yes" -o "${DO_OUD}" == "YES" ] ; then
+  . ${HOSTENV}/env/dir.env
+  patch_oud_post_inst
+  apply_oud_tls_settings
+fi
 
 # postinstalls done
 
-${HOME}/bin/stop-identity
-${HOME}/bin/stop-access
-${HOME}/bin/stop-dir
-${HOME}/bin/stop-webtier
-${HOME}/bin/stop-nodemanager
+${HOSTENV}/bin/stop-identity
+${HOSTENV}/bin/stop-access
+${HOSTENV}/bin/stop-dir
+${HOSTENV}/bin/stop-webtier
+${HOSTENV}/bin/stop-nodemanager
 
 # log file setting
 #
-if [ ! -a /var/log/fmw/nodemanager ] ; then
+if [ ! -a ${iam_log}/nodemanager ] ; then
   ${DEPLOYER}/libexec/init-logs.sh
 fi
 
@@ -170,16 +181,18 @@ done
 
 # patch domains and wl_home for jdk7
 #
-. ~/.env/acc.env
+. ${HOSTENV}/env/acc.env
 ${DEPLOYER}/libexec/patch-wls-domain.sh ${DEPLOYER}/lib/access
-. ~/.env/idm.env
+. ${HOSTENV}/env/idm.env
 ${DEPLOYER}/libexec/patch-wls-domain.sh ${DEPLOYER}/lib/identity
 
-_webg=/opt/fmw/products/web/webgate/webgate/ohs/config
+_webg=${iam_top}/products/web/webgate/webgate/ohs/config
 
 if [ -a ${_webg}/oblog_config_wg.xml -a ! -a ${_webg}/oblog_config.xml ] ; then
   cp ${_webg}/oblog_config_wg.xml ${_webg}/oblog_config.xml
 fi
+
+exit 0
 
 # web config
 #

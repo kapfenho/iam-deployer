@@ -9,6 +9,9 @@ bin=${iam_hostenv}/bin
 lib=${iam_hostenv}/lib
 crd=${iam_hostenv}/.creds
 
+_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
+    _top=$(echo ${iam_top}     | sed -e 's/[\/&]/\\&/g')
+    _log=$(echo ${iam_log}     | sed -e 's/[\/&]/\\&/g')
 # set -o errexit nounset
 
 cp_oim() {
@@ -21,9 +24,9 @@ cp_oim() {
   cp ${src}/env/identity.prop       ${env}/
   cp ${src}/env/imint.prop          ${env}/
   cp ${src}/lib/deploy.py           ${lib}/
-  sed -i "s/_HOSTENV_/${iam_hostenv}/" ${env}/*
-  sed -i "s/_IAMTOP_/${iam_top}/" ${env}/*
-  sed -i "s/_IAMLOG_/${iam_log}/" ${env}/*
+  sed -i "s/_HOSTENV_/${_hostenv}/" ${env}/*
+  sed -i "s/_IAMTOP_/${_top}/"      ${env}/*
+  sed -i "s/_IAMLOG_/${_log}/"      ${env}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
   sed -i "s/_DOMAIN_/${IDMPROV_IDENTITY_DOMAIN}/" ${env}/*
@@ -35,6 +38,9 @@ cp_oam() {
   cp ${src}/bin/*nodemanager*       ${bin}/
   cp ${src}/env/acc.env             ${env}/
   cp ${src}/env/access.prop         ${env}/
+  sed -i "s/_HOSTENV_/${_hostenv}/" ${env}/*
+  sed -i "s/_IAMTOP_/${_top}/"      ${env}/*
+  sed -i "s/_IAMLOG_/${_log}/"      ${env}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
   sed -i "s/_DOMAIN_/${IDMPROV_ACCESS_DOMAIN}/" ${env}/*
@@ -52,15 +58,25 @@ cp_web() {
 
   cp ${src}/bin/*webtier*           ${bin}/
   cp ${src}/env/web.env             ${env}/
+  sed -i "s/_HOSTENV_/${_hostenv}/" ${env}/*
+  sed -i "s/_IAMTOP_/${_top}/"      ${env}/*
+  sed -i "s/_IAMLOG_/${_log}/"      ${env}/*
+  sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
+  sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
 }
 
 set -x
 
 mkdir -p ${env} ${bin} ${lib} ${crd}
+ln -sf ${env} ~/.env
+ln -sf ${bin} ~/bin
+ln -sf ${lib} ~/lib
+ln -sf ${crd} ~/.cred
 
 cp  ${src}/bin/iam*                 ${bin}/
 cp  ${src}/env/common.env           ${env}/
-cat ${src}/env/bash_profile >> ${HOME}/.bash_profile
+cat ${src}/env/bash_profile       > ${HOME}/.bash_profile
+sed -i "s/_HOSTENV_/${_hostenv}/"   ${HOME}/.bash_profile
 
 cp_oim
 cp_oam
