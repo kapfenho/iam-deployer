@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # deploy rc.d scripts, see AUTOSTART file for more info
 

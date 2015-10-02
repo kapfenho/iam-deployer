@@ -36,11 +36,18 @@ deploy_lcm() {
   #  without this patch the weblogic installation will use require approx. 1300 MB free
   #  space available in /tmp. We want the environment variable TMPDIR tpo be used.
   #
-  patch -b ${iam_lcm}/provisioning/idm-provisioning-build/idm-common-build.xml   <<EOS
+  local patchfile=${iam_lcm}/provisioning/idm-provisioning-build/idm-common-build.xml
+
+  if ! grep -qe 'java.io.tmpdir' ${patchfile} >/dev/null
+  then
+    patch -b ${patchfile} <<EOS
 78a79
-                                                     <arg value="-Djava.io.tmpdir=\$TMPDIR" />
+>                                                    <arg value="-Djava.io.tmpdir=${iam_top}" />
 EOS
-  log "LCM has been patched to use env TMPDIR for Weblogic installation"
+    log "LCM has been patched to use differen tempdir for Weblogic installation"
+  else
+    log "LCM patching skipped, already done"
+  fi
 }
 
 #  deploy step within life cycle manager wizard
@@ -54,6 +61,15 @@ deploy() {
       -ignoreSysPrereqs true \
       -target ${1}
   )
+  log "Deployment: step ${1} completed"
+}
+
+deploy_on_all() {
+  log "Deployment: executing step ${1}..."
+  for h in ${provhosts[@]}
+  do
+    ssh ${h} -- /vagrant/user-config/env/prov.sh ${1}
+  done
   log "Deployment: step ${1} completed"
 }
 

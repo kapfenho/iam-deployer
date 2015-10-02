@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 . ${DEPLOYER}/user-config/iam.config
 . ${DEPLOYER}/lib/libcommon2.sh

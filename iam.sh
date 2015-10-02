@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -o errexit nounset
 
@@ -32,20 +32,20 @@ deploy_lcm
 
 # the patched weblogic installier uses env TMPDIR and needs 1300 MB
 #
-oldtmp=${TMPDIR}
-${TMPDIR:=/tmp}
-if expr $(df -m ${TMPDIR} | tail -1 | awk '{ print $3 }') \< 1300 >/dev/null ; then
-  export TMPDIR=${iam_top}
-fi
+# oldtmp=${TMPDIR}
+# ${TMPDIR:=/tmp}
+# if expr $(df -m ${TMPDIR} | tail -1 | awk '{ print $3 }') \< 1300 >/dev/null ; then
+#   export TMPDIR=${iam_top}
+# fi
 
 # deployment and instance creation with lifecycle management
 for step in preverify install
 do
-  deploy $step
+  deploy_on_all $step
 done
 
 # restore old TMPDIR config
-export TMPDIR=${oldtmp}
+#export TMPDIR=${oldtmp}
 
 # use urandom
 for p in access dir identity web
@@ -56,7 +56,7 @@ done
 # deployment and instance creation with lifecycle management
 for step in preconfigure configure configure-secondary postconfigure startup validate
 do
-  deploy $step
+  deploy_on_all $step
 done
 
 log "Deployment finished"

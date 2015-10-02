@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
    nmUser=admin
     nmPwd=Montag11
@@ -32,12 +32,19 @@ eval $(grep IDMPROV_IDENTITY_DOMAIN ${cfg_prov}) ; export IDMPROV_IDENTITY_DOMAI
 # OHS_INSTANCENAME=ohs1
 eval $(grep OHS_INSTANCENAME        ${cfg_prov}) ; export OHS_INSTANCENAME
 
+eval $(grep INSTALL_IDENTITY        ${cfg_prov})
+eval $(grep INSTALL_ACCESS          ${cfg_prov})
+eval $(grep INSTALL_WEBTIER         ${cfg_prov})
+eval $(grep INSTALL_SUITE_COMPLETE  ${cfg_prov})
+INSTALL_DIRECTORY=${INSTALL_SUITE_COMPLETE}
+
+
 set -o errexit nounset
 set -x
 
 # copy user env --------------------------------------
 #
-if ! [ -a ${HOME}/.env ] ; then
+if ! [ -a ${iam_hostenv}/env ] ; then
   ${DEPLOYER}/libexec/init-userenv.sh
 fi
 

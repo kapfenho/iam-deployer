@@ -1,23 +1,23 @@
 hostname=_HOST_
 nmPort=5556
 domName=_DOMAIN_
-admDir=/opt/fmw/config/domains/_DOMAIN_
-domDir=/opt/local/fmw/domains/_DOMAIN_
-domAdminPort=7101
+admDir=_IAMTOP_/config/domains/_DOMAIN_
+domDir=_IAMTOP_/services/domains/_DOMAIN_
+domAdminPort=7001
 domSoaPort=8001
-domOimPort=14000
-domUrl=t3://_HOST_:7101
-domUC=/home/fmwuser/.creds/_DOMAIN_.usr
-domUK=/home/fmwuser/.creds/_DOMAIN_.key
-nmUC=/home/fmwuser/.creds/nm.usr
-nmUK=/home/fmwuser/.creds/nm.key
+domOimPort=8005
+domUrl=t3://_HOST_:7001
+domUC=_HOSTENV_/.creds/_DOMAIN_.usr
+domUK=_HOSTENV_/.creds/_DOMAIN_.key
+nmUC=_HOSTENV_/.creds/nm.usr
+nmUK=_HOSTENV_/.creds/nm.key
 targetOIM=oim_cluster
 targetSOA=soa_cluster
 
 ### set for identity-app-property-file
 # appName=my_app
 # appArchive=my_app.war
-# appDir=/opt/fmw/config/deploy/my_app
-# appPath=/opt/fmw/config/deploy/my_app/current/my_app.war
-# appPlan=/opt/fmw/config/deploy/my_app/current/plan/Plan.xml
+# appDir=_IAMTOP_/config/deploy/my_app
+# appPath=_IAMTOP_/config/deploy/my_app/current/my_app.war
+# appPlan=_IAMTOP_/config/deploy/my_app/current/plan/Plan.xml
 # appTargets=my_managed_server

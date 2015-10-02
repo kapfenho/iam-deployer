@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #  oracle rcu wrapper
 #  create or remove database schema for IAM
@@ -16,8 +16,6 @@
 #  http://docs.oracle.com/html/E38978_01/r2_im_requirements.htm#CIHEDGIH
 #  horst.kapfenberger@agoracon.at, 2014-09-10
 #  vim: set ft=sh :
-
-set -o errexit nounset
 
 . ${DEPLOYER}/user-config/iam.config
 . ${DEPLOYER}/lib/libcommon2.sh

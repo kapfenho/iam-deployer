@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #  database system installation, instance and application schema creation.
 #+ Run as OS user that owns the database binaries.

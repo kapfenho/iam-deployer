@@ -1,0 +1,124 @@
+#  Oracle Identity and Access Management
+#
+
+VAGRANTFILE_API_VERSION = "2"
+
+$frontend_ip = "192.168.1.242"
+$hostfile = "# ...cant touch this
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+192.168.168.250         oradb.iamvc.agoracon.at            oradb
+192.168.168.242          web1.iamvc.agoracon.at             web1
+192.168.168.243          web2.iamvc.agoracon.at             web2
+192.168.168.240          oim1.iamvc.agoracon.at             oim1
+192.168.168.241          oim2.iamvc.agoracon.at             oim2
+#{$frontend_ip}   idminternal.iamvc.agoracon.at      idminternal
+#{$frontend_ip}        oimadm.iamvc.agoracon.at           oimadm
+#{$frontend_ip}        oiaadm.iamvc.agoracon.at           oiaadm
+#{$frontend_ip}           sso.iamvc.agoracon.at              sso
+192.168.1.16              nyx.iamvc.agoracon.at              nyx
+"
+
+$images = "nyx:/export/oracle /mnt/oracle nfs rw,bg,rsize=32768,wsize=32768 0 0\n"
+$exports, $fstab = "", "\n#{$images}"
+[ '/l/ora/config',
+  '/l/ora/products',
+  '/l/ora/lcm',
+  '/l/ora/etc' ].each do |d|
+  $exports << "#{d} 192.168.168.0/24(rw,async,no_subtree_check)\n"
+  $fstab   << "oim1:#{d} #{d} nfs rw,async 0 0\n"
+end
+
+# ---------------------------------------------------------
+# not included:
+# * database installation
+# * rcu schema creation
+# ---------------------------------------------------------
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.provision "hosts-file", type: "shell" do |s|
+    s.inline = "echo '#{$hostfile}' > /etc/hosts"
+  end
+
+  config.vm.provision "nfs", type: "shell" do |s|
+    s.inline = "echo '#{$fstab}' >> /etc/fstab"
+  end
+
+  config.vm.provision "root-actions", type: "shell" do |s|
+    s.inline ="/vagrant/user-config/env/root-script.sh"
+  end
+
+  config.vm.provision "ssh-key", type: "shell" do |s|
+    s.inline = "su - fmwuser -c 'mkdir -p ~/.ssh;
+      chmod 0700 ~/.ssh; 
+      cp /vagrant/user-config/hostenv/ssh/* ~/.ssh/; 
+      chmod 0644 ~/.ssh/*; 
+      chmod 0600 ~/.ssh/id_rsa'"
+  end
+
+  # ----------------------------------------------------- identity server
+  config.vm.define :oim1 do |m|
+    name, ip      = "oim1", "192.168.168.240"
+    m.vm.box      = "centos66min"
+    m.vm.hostname = name
+    m.vm.network  :private_network, ip: ip
+    m.vm.provider :virtualbox do |vb|
+      vb.name     = name
+      vb.cpus     = 4
+      vb.memory   = 8192
+    end
+    m.vm.provision "nfs", type: "shell" do |s|
+      s.inline = "echo '#{$exports}' >>/etc/exports;
+        echo '#{$images}' >>/etc/fstab;
+        mount /mnt/oracle"
+    end
+    m.vm.provision "nfs-start", type: "shell" do |s|
+      s.inline = "/sbin/service nfs start && /sbin/chkconfig nfs on"
+    end
+
+  end
+
+  config.vm.define :oim2 do |m|
+    name, ip      = "oim2", "192.168.168.241"
+    m.vm.box      = "centos66min"
+    m.vm.hostname = name
+    m.vm.network  :private_network, ip: ip
+    m.vm.provider :virtualbox do |vb|
+      vb.name     = name
+      vb.cpus     = 4
+      vb.memory   = 8192
+    end
+  end
+
+  # ----------------------------------------------------- web server
+  config.vm.define :web1 do |m|
+    name, ip      = "web1", "192.168.168.242"
+    m.vm.box      = "centos66min"
+    m.vm.hostname = name
+    m.vm.network  :private_network, ip: ip
+    m.vm.network  :public_network,  ip: $frontend_ip, bridge: "em0"
+    m.vm.provider :virtualbox do |vb|
+      vb.name     = name
+      vb.cpus     = 2
+      vb.memory   = 4096
+    end
+    m.vm.provision "load balancer simulation", type: "shell",
+      inline: "/vagrant/user-config/env/load-balancer.sh #{$frontend_ip}"
+  end
+
+  config.vm.define :web2 do |m|
+    name, ip      = "web2", "192.168.168.243"
+    m.vm.box      = "centos66min"
+    m.vm.hostname = name
+    m.vm.network  :private_network, ip: ip
+    m.vm.provider :virtualbox do |vb|
+      vb.name     = name
+      vb.cpus     = 2
+      vb.memory   = 4096
+    end
+  end
+
+end
+
+#  vi: set ft=ruby :

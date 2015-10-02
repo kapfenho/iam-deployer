@@ -1,6 +1,4 @@
-#!/bin/sh
-
-set -o errexit nounset
+#!/bin/bash
 
 . ${DEPLOYER}/user-config/iam.config
 . ${DEPLOYER}/lib/libcommon2.sh
@@ -31,12 +29,14 @@ help() {
 }
 
 remove_files() {
-  rm -Rf ${iam_top}/products \
-         ${iam_top}/config \
-         ${iam_top}/plan.lck \
+  set -x
+  rm -Rf ${iam_top}/products/* \
+         ${iam_top}/config/* \
+         ${iam_top}/*.lck \
          ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
          ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
          ${iam_top}/lcm/lcmhome/provisioning/logs/*
+  set +x
 }
 
 # main program -----------------------------
@@ -56,6 +56,8 @@ while getopts iabf FLAG; do
       help ;;
   esac
 done
+
+remove_files
 
 exit 0
 
