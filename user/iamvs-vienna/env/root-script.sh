@@ -1,7 +1,6 @@
-#!/bin/sh
+#!/bin/sh -x
 #  execute as root user
 if [ $UID -ne 0 ] ; then echo "ERROR: not root" ; exit 77 ; fi
-set -x
 
 ln -sf /usr/share/zoneinfo/Europe/Vienna /etc/localtime
 
@@ -9,7 +8,6 @@ echo "# customizations oracle start"           >> /etc/sysctl.conf
 sed -i -e "/kernel.shmmax/d" /etc/sysctl.conf ; echo "kernel.shmmax=17179869184" >> /etc/sysctl.conf
 echo "kernel.sem=256 32000 100 142"            >> /etc/sysctl.conf
 echo "fs.file-max=6815744"                     >> /etc/sysctl.conf
-
 # --- database specific start ----
 sed -i -e "/kernel.msgmnb/d" /etc/sysctl.conf ; echo "kernel.msgmnb=65536" >> /etc/sysctl.conf
 sed -i -e "/kernel.msgmax/d" /etc/sysctl.conf ; echo "kernel.msgmax=65536" >> /etc/sysctl.conf
@@ -103,6 +101,9 @@ yum install -y \
     nc \
     vim-enhanced
 
+# rebuild virtualbox guest additions after kernel update
+[ -e /etc/init.d/vboxadd ] && /sbin/service vboxadd setup
+
 service iptables stop
 service ip6tables stop
 
@@ -133,6 +134,9 @@ cat >> /etc/security/limits.d/91-fusion.conf <<-EOF
 @fmwgroup  hard    nofile     150000
 @fmwgroup  soft    nproc       16384
 @fmwgroup  hard    nproc       16384
+EOF
+
+cat >> /etc/security/limits.d/91-fusion.conf <<-EOF
 oracle     soft    nofile      65536
 oracle     hard    nofile      65536
 oracle     soft    stack       10240
@@ -143,23 +147,20 @@ EOF
 install  --owner=oracle  --group=oinstall --mode=0775 --directory /var/log/oracle     # logs (local)
 install  --owner=oracle  --group=oinstall --mode=0775 --directory /opt/oracle         # products, config (shared, rw)
 
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora              # products, config (shared, rw)
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/products     # binaries, oracle_home         
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/config       # shared instance configs, nodemanager
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/lcm          # life cycle manager
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/etc          # oraInventory
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora              # base directory
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/lcm          # life cycle manager (shared)
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/etc          # oraInventory (shared)
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/config       # common config (shared)
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/products     # binaires, oracle_home (shared)
 install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/services     # local instance data
 install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/IAM/logs     # logs (local)
 
 install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /mnt/oracle         # images (shared, ro)
 
-# shared mount points must be munally added
-# -----------------------------------------
-echo "192.168.168.1:/Volumes/hext01/install/oracle /mnt/oracle  nfs  rw,bg,rsize=32768,wsize=32768  0 0" >> /etc/fstab
-mount /mnt/oracle
+# mount all mountpoints now
+mount -a
 
 echo "Red Hat Enterprise Linux Server release 6.7 (Santiago)" >>/etc/redhat-release
 
-set +x
 exit 0
 
