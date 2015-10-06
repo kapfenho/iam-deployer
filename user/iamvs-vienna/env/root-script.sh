@@ -142,16 +142,20 @@ EOF
 #
 install  --owner=oracle  --group=oinstall --mode=0775 --directory /var/log/oracle     # logs (local)
 install  --owner=oracle  --group=oinstall --mode=0775 --directory /opt/oracle         # products, config (shared, rw)
+
 install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora              # products, config (shared, rw)
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/products     # binaries, oracle_home         
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/config       # shared instance configs, nodemanager
 install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/lcm          # life cycle manager
 install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/etc          # oraInventory
 install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/services     # local instance data
 install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/IAM/logs     # logs (local)
+
 install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /mnt/oracle         # images (shared, ro)
 
 # shared mount points must be munally added
 # -----------------------------------------
-echo "nyx:/export/oracle /mnt/oracle  nfs  rw,bg,rsize=32768,wsize=32768  0 0" >> /etc/fstab
+echo "192.168.168.1:/Volumes/hext01/install/oracle /mnt/oracle  nfs  rw,bg,rsize=32768,wsize=32768  0 0" >> /etc/fstab
 mount /mnt/oracle
 
 echo "Red Hat Enterprise Linux Server release 6.7 (Santiago)" >>/etc/redhat-release

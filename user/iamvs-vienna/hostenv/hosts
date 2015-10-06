@@ -2,16 +2,16 @@
 ::1                                         localhost6 localhost6.localdomain6
 
 # hostname
-192.168.168.250                iamvs.agoracon.at    iamvs
+192.168.168.250                iam7.agoracon.at    iam7
 
 # end user URL
-192.168.168.250            sso.iamvs.agoracon.at
-192.168.168.250            idm.iamvs.agoracon.at
-192.168.168.250         idmrep.iamvs.agoracon.at
-192.168.168.250         oamadm.iamvs.agoracon.at
-192.168.168.250         oimadm.iamvs.agoracon.at
-192.168.168.250    idminternal.iamvs.agoracon.at
-192.168.168.250           ldap.iamvs.agoracon.at
-192.168.168.250          oradb.iamvs.agoracon.at
+192.168.168.250            sso.iam7.agoracon.at
+192.168.168.250            idm.iam7.agoracon.at
+192.168.168.250         idmrep.iam7.agoracon.at
+192.168.168.250         oamadm.iam7.agoracon.at
+192.168.168.250         oimadm.iam7.agoracon.at
+192.168.168.250    idminternal.iam7.agoracon.at
+192.168.168.250           ldap.iam7.agoracon.at
+192.168.168.250          oradb.iam7.agoracon.at
 
-192.168.1.16                 nyx.vie.agoracon.at     nyx
+192.168.1.16                nyx.vie.agoracon.at     nyx
