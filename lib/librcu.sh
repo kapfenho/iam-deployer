@@ -13,7 +13,7 @@ rcu_identity() {
     -silent \
     -createRepository \
     -databaseType ORACLE \
-    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -connectString ${dbs_dbhost}:${dbs_port}:${iam_sid} \
     -dbUser sys \
     -dbRole sysdba \
     -useSamePasswordForAllSchemaUsers true \
@@ -37,7 +37,7 @@ rcu_drop_identity() {
     -silent \
     -dropRepository \
     -databaseType ORACLE \
-    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -connectString ${dbs_dbhost}:${dbs_port}:${iam_sid} \
     -dbUser sys \
     -dbRole sysdba \
     -schemaPrefix ${iam_oim_prefix} \
@@ -60,7 +60,7 @@ rcu_access() {
     -silent \
     -createRepository \
     -databaseType ORACLE \
-    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -connectString ${dbs_dbhost}:${dbs_port}:${iam_sid} \
     -dbUser sys \
     -dbRole sysdba \
     -useSamePasswordForAllSchemaUsers true \
@@ -84,14 +84,14 @@ rcu_drop_access() {
     -silent \
     -dropRepository \
     -databaseType ORACLE \
-    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -connectString ${dbs_dbhost}:${dbs_port}:${iam_sid} \
     -dbUser sys \
     -dbRole sysdba \
     -schemaPrefix ${iam_oam_prefix} \
     -component MDS \
     -component IAU \
     -component OPSS \
-    -component OAM > /dev/null \
+    -component OAM \
     <<EOF
 ${iam_dba_pass}
 EOF
@@ -108,13 +108,13 @@ rcu_bi_publisher() {
     -silent \
     -createRepository \
     -databaseType ORACLE \
-    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -connectString ${dbs_dbhost}:${dbs_port}:${iam_sid} \
     -dbUser sys \
     -dbRole sysdba \
     -useSamePasswordForAllSchemaUsers true \
     -schemaPrefix ${iam_bip_prefix} \
     -component MDS  \
-    -component BIPLATFORM > /dev/null \
+    -component BIPLATFORM \
     <<EOF
 ${iam_dba_pass}
 ${iam_bip_schema_pass}
@@ -130,12 +130,12 @@ rcu_drop_bi_publisher() {
     -silent \
     -dropRepository \
     -databaseType ORACLE \
-    -connectString ${dbs_dbhost}:1521:${iam_sid} \
+    -connectString ${dbs_dbhost}:${dbs_port}:${iam_sid} \
     -dbUser sys \
     -dbRole sysdba \
     -schemaPrefix ${iam_bip_prefix} \
     -component MDS  \
-    -component BIPLATFORM > /dev/null \
+    -component BIPLATFORM \
     <<EOF
 ${iam_dba_pass}
 EOF

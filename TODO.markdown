@@ -1,0 +1,4 @@
+- create solution for user-config/env/prov.sh
+- deploy ssh keys for access between hosts
+- merge branch of OIA
+- merge branch of wls persistent store

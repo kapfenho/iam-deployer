@@ -68,7 +68,7 @@ deploy_on_all() {
   log "Deployment: executing step ${1}..."
   for h in ${provhosts[@]}
   do
-    ssh ${h} -- /vagrant/user-config/env/prov.sh ${1}
+    ssh ${h} -- ${DEPLOYER}/user-config/env/prov.sh ${1}
   done
   log "Deployment: step ${1} completed"
 }

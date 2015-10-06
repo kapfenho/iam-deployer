@@ -31,6 +31,10 @@ export DO_ACC DO_IDM DO_BIP
 # -------------------------------------------------------
 echo
 
+# default value
+
+${dbs_port:=1521}
+
 if [ ${#} -gt 0 -a "${1}" == "-d" ]
 then
   log "*** Dropping schemas ***"
