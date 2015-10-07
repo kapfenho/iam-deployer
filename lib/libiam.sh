@@ -54,23 +54,27 @@ EOS
 #+ param 1: step name
 #
 deploy() {
-  log "Deployment: executing step ${1}..."
   (
     cd ${iam_lcm}/provisioning/bin
     ./runIAMDeployment.sh -responseFile ${DEPLOYER}/user-config/iam/provisioning.rsp \
       -ignoreSysPrereqs true \
       -target ${1}
   )
-  log "Deployment: step ${1} completed"
 }
 
 deploy_on_all() {
-  log "Deployment: executing step ${1}..."
+  
+  log "Deployment step ${1} +++ starting on localhost..."
+  deploy ${1}
+  log "Deployment step ${1} +++ completed on localhost"
+
   for h in ${provhosts[@]}
   do
+    log "Deployment step ${1} +++ starting on ${h}..."
     ssh ${h} -- ${DEPLOYER}/user-config/env/prov.sh ${1}
+    log "Deployment step ${1} +++ completed on ${h}"
   done
-  log "Deployment: step ${1} completed"
+  log "Deployment step ${1} completed"
 }
 
 # post install task: patching of OPSS database instances

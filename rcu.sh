@@ -42,18 +42,18 @@ then
     log "  press RETURN to continue or Ctrl-C to stop"
     read cont
   fi
-  do_idm && rcu_drop_identity
-  do_acc && rcu_drop_access
-  do_bip && rcu_drop_bi_publisher
+  do_idm && rcu_drop_identity     | strings
+  do_acc && rcu_drop_access       | strings
+  do_bip && rcu_drop_bi_publisher | strings
 else
   log "*** Creating schemas ***"
   if [[ -t 1 ]]; then
     log "  press RETURN to continue or Ctrl-C to stop"
     read cont
   fi
-  do_idm && rcu_identity
-  do_acc && rcu_access
-  do_bip && rcu_bi_publisher
+  do_idm && rcu_identity          | strings
+  do_acc && rcu_access            | strings
+  do_bip && rcu_bi_publisher      | strings
 fi
 
 log "*** Schema actions finished. ***"

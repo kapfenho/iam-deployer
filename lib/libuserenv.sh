@@ -1,21 +1,11 @@
-#!/bin/bash -x
+#  libuserenv.sh
 #
 #  copy user environment settings
+#  ------------------------------
 #
 
-src=${DEPLOYER}/lib/templates/hostenv
-nodesrc=${DEPLOYER}/lib/templates/nodemanager
-env=${iam_hostenv}/env
-bin=${iam_hostenv}/bin
-lib=${iam_hostenv}/lib
-crd=${iam_hostenv}/.creds
-
-_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
-    _top=$(echo ${iam_top}     | sed -e 's/[\/&]/\\&/g')
-    _log=$(echo ${iam_log}     | sed -e 's/[\/&]/\\&/g')
-# set -o errexit nounset
-
-cp_nodemanager() {
+_cp_nodemanager()
+{
   local _d=${iam_top}/config/nodemanager/$(hostname -f)/
   local _nm=nodemanager.properties
   [ -a ${_d}/${_nm}.orig ] && return
@@ -28,7 +18,9 @@ cp_nodemanager() {
   sed -i "s/_IAMTOP_/${_top}/"      ${_d}/startNodeManagerWrapper.sh ${_d}/${_nm}
   sed -i "s/_IAMLOG_/${_log}/"      ${_d}/${_nm}
 }
-cp_oim() {
+
+_cp_oim()
+{
   [ "${idmhost}" != "yes" ] && return
 
   cp ${src}/bin/*identity*          ${bin}/
@@ -46,9 +38,13 @@ cp_oim() {
   sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
   sed -i "s/_DOMAIN_/${IDMPROV_IDENTITY_DOMAIN}/" ${env}/*
-  cp_nodemanager
+  echo "start-identity" >>${startall}
+  echo "stop-identity"  >>${stopall}
+  _cp_nodemanager
 }
-cp_oam() {
+
+_cp_oam()
+{
   [ "${acchost}" != "yes" ] && return
 
   cp ${src}/bin/*access*            ${bin}/
@@ -63,9 +59,13 @@ cp_oam() {
   sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
   sed -i "s/_DOMAIN_/${IDMPROV_ACCESS_DOMAIN}/" ${env}/*
-  cp_nodemanager
+  echo "start-access" >>${startall}
+  echo "stop-access"  >>${stopall}
+  _cp_nodemanager
 }
-cp_oud() {
+
+_cp_oud()
+{
   [ "${oudhost}" != "yes" ] && return
 
   cp ${src}/bin/*dir*               ${bin}/
@@ -76,7 +76,9 @@ cp_oud() {
   sed -i "s/_IAMLOG_/${_log}/"      ${env}/*
   sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
 }
-cp_web() {
+
+_cp_web()
+{
   [ "${webhost}" != "yes" ] && return
 
   cp ${src}/bin/*webtier*           ${bin}/
@@ -91,31 +93,65 @@ cp_web() {
   sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
 }
 
-set -x
+# create host specific start-all and stop-all scripts
+#
+_create_startall()
+{
+  fo=$(mktemp "orderXXXXXXXX")
+  startall=~/bin/start-all
+  stopall=~/bin/stop-all
 
-mkdir -p ${env} ${bin} ${lib} ${crd}
-ln -sf ${env} ~/.env
-ln -sf ${bin} ~/bin
-ln -sf ${lib} ~/lib
-ln -sf ${crd} ~/.cred
+  [ "${oudhost}" == "yes" ] && echo "dir"         >>${fo}
+  [ "${idmhost}" == "yes" -o "${acchost}" == "yes" ] && \
+                               echo "nodemanager" >>${fo}
+  [ "${acchost}" == "yes" ] && echo "access"      >>${fo}
+  [ "${idmhost}" == "yes" ] && echo "identity"    >>${fo}
+  [ "${webhost}" == "yes" ] && echo "webtier"     >>${fo}
 
-cp  ${src}/bin/iam*                 ${bin}/
-cp  ${src}/env/common.env           ${env}/
-cat ${src}/env/bash_profile       > ${HOME}/.bash_profile
-sed -i "s/_HOSTENV_/${_hostenv}/"   ${HOME}/.bash_profile
+  echo "#!/bin/bash" > ${startall}
+  cat ${fo} | while read l ; do
+    echo "start-${l}" >>${startall}
+  done
 
-cp_oim
-cp_oam
-cp_oud
-cp_web
+  echo "#!/bin/bash" > ${stopall}
+  tac ${fo} | while read l ; do
+    echo "stop-${l}" >>${stopall}
+  done
 
-# Case "$(hostname -s)" in
-#   dwptoim[34]    ) cp_oim ; cp_oam ; cp_oud ; cp_web ;;
-#   dwp[tp]oim[12] ) cp_oim ;;
-#   dwp[tp]oam[12] ) cp_oam ;;
-#   dwp[tp]oud[12] ) cp_oud ;;
-#   dwp[tp]idw[12] ) cp_web ;;
-# Esac
+  chmod 0755 ${startall} ${stopall}
+  rm -f ${fo}
+}
 
-# set +x
+
+init_userenv()
+{
+  src=${DEPLOYER}/lib/templates/hostenv
+  nodesrc=${DEPLOYER}/lib/templates/nodemanager
+  env=${iam_hostenv}/env
+  bin=${iam_hostenv}/bin
+  lib=${iam_hostenv}/lib
+  crd=${iam_hostenv}/.creds
+  
+  _hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
+      _top=$(echo ${iam_top}     | sed -e 's/[\/&]/\\&/g')
+      _log=$(echo ${iam_log}     | sed -e 's/[\/&]/\\&/g')
+  
+  mkdir -p ${env} ${bin} ${lib} ${crd}
+  ln -sf ${env} ~/.env
+  ln -sf ${bin} ~/bin
+  ln -sf ${lib} ~/lib
+  ln -sf ${crd} ~/.cred
+  
+  cp  ${src}/bin/iam*                 ${bin}/
+  cp  ${src}/env/common.env           ${env}/
+  cat ${src}/env/bash_profile       > ${HOME}/.bash_profile
+  sed -i "s/_HOSTENV_/${_hostenv}/"   ${HOME}/.bash_profile
+
+  _create_startall
+
+  _cp_oim
+  _cp_oam
+  _cp_oud
+  _cp_web
+}
 

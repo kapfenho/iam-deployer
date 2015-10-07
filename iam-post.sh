@@ -114,9 +114,13 @@ log ""
 #  copy environment files and source common env
 #
 if ! [ -a ${iam_hostenv}/env ] ; then
-  ${DEPLOYER}/libexec/init-userenv.sh
+  log "Creating user environment..."
+  source ${DEPLOYER}/lib/libuserenv.sh
+  init_userenv
+  log "...user environment created"
 fi
 
+log "Sourcing common..."
 . ~/.env/common.env
 
 #  ----------------------------------------------------------------------
@@ -124,6 +128,7 @@ fi
 #
 if [ "${oudhost}" == "yes" ] ; then
   (
+    log "Creating tools connection config for OUD"
     . ${HOSTENV}/env/dir.env
     echo -n ${oudPwd} > ${HOSTENV}/.creds/oudadmin
     cp -b ${HOSTENV}/env/tools.properties ${INST_HOME}/config/
@@ -134,9 +139,11 @@ fi
 #  deploy standard lib acStdLib for wlst
 #
 if [ "${acchost}" == "yes" ] ; then
+  log "Copy WLST standard lib to access manager WebLogic..."
   cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/access/wlserver_10.3/common/wlst
 fi
 if [ "${idmhost}" == "yes" ] ; then
+  log "Copy WLST standard lib to identity manager WebLogic..."
   cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/identity/wlserver_10.3/common/wlst
 fi
 
@@ -189,6 +196,7 @@ exit()
 EOF
   fi
 
+  log ""
   log "Access Domain: creating keyfiles for domain..."
 
   if ! [ -a ${HOSTENV}/.creds/${IDMPROV_ACCESS_DOMAIN}.key ] ; then
@@ -200,6 +208,7 @@ exit()
 EOF
   fi
 
+  log ""
   log "Access Domain: configuring access domain..."
 
   ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop \
@@ -233,6 +242,7 @@ exit()
 EOF
   fi
 
+  log ""
   log "Identity Domain: creating keyfiles for domain..."
 
   if ! [ -a ${HOSTENV}/.creds/${IDMPROV_IDENTITY_DOMAIN}.key ] ; then
@@ -244,6 +254,7 @@ exit()
 EOF
   fi
 
+  log ""
   log "Identity Domain: configuring domain..."
 
   ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop \
