@@ -15,8 +15,8 @@ EOS
 
 #  deloy life cycle management (deployment wizard)
 #
-deploy_lcm() {
-
+deploy_lcm()
+{
   if ! [ -a ${iam_lcm}/provisioning ] ; then
     log "Deploying LCM..."
 
@@ -53,7 +53,8 @@ EOS
 #  deploy step within life cycle manager wizard
 #+ param 1: step name
 #
-deploy() {
+deploy()
+{
   (
     cd ${iam_lcm}/provisioning/bin
     ./runIAMDeployment.sh -responseFile ${DEPLOYER}/user-config/iam/provisioning.rsp \
@@ -62,8 +63,8 @@ deploy() {
   )
 }
 
-deploy_on_all() {
-  
+deploy_on_all()
+{
   log "Deployment step ${1} +++ starting on localhost..."
   deploy ${1}
   log "Deployment step ${1} +++ completed on localhost"
@@ -98,4 +99,25 @@ patch_opss() {
     -logDir ${_log}
 
 }
+
+#  remove installation directories populated by LCM
+#  if $iam_remove_lcm is set to "yes" also remove all LCM dirs
+#  Always returms 0
+#
+remove_files()
+{
+  echo "/bin/rm -Rf ${iam_top}/products/* \
+         ${iam_top}/config/* \
+         ${iam_services}/* \
+         ${iam_top}/*.lck \
+         ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
+         ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
+         ${iam_top}/lcm/lcmhome/provisioning/logs/"
+
+  if [ "${iam_remove_lcm}" == "yes" ] ; then
+    echo "rm -Rf ${iam_top}/lcm/* \
+           ${iam_top}/etc/*"
+  fi
+}
+
 

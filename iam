@@ -1,0 +1,56 @@
+#!/bin/bash -x
+
+#set -o errexit nounset
+
+. ${DEPLOYER}/lib/user-config.sh
+. ${DEPLOYER}/lib/libcommon2.sh
+. ${DEPLOYER}/lib/libiam.sh
+. ${DEPLOYER}/lib/libjdk.sh
+. ${DEPLOYER}/lib/librcu.sh
+#. ${DEPLOYER}/lib/libiamhelp.sh
+
+# export JAVA_HOME=${s_runjdk}
+# export      PATH=${JAVA_HOME}/bin:${PATH}
+# export RCU_LOG_LOCATION=/tmp 
+
+umask ${iam_user_umask}
+
+# main program -----------------------------
+#
+# no prarameters?
+if [[ $# -lt 1 ]] ; then
+  help
+  exit 0
+fi
+# command stated?
+if [[ $# -gt 1 ]] ; then
+  cmd=${1}
+  shift
+fi
+
+while getopts D:H:O:a:t:h FLAG; do
+  case $FLAG in
+    D)  opt_wlsdom=$OPTARG   ;;
+    H)  opt_host=$OPTARG     ;;
+    O)  opt_oh=$OPTARG       ;;
+    a)  opt_action=$OPTARG   ;;
+    t)  opt_target=$OPTARG   ;;
+    h)  opt_help=yes         ;;
+  esac
+done
+
+echo "Input dump:"
+echo "command: ${cmd}"
+#echo "${!opt*}"
+#for p in ${!opt*} ; do
+#  echo "${p}:   $(eval echo ${p})"
+#done
+
+# create oraInventory pointer
+#create_orainvptr
+
+# deploy life cycle managment
+#deploy_lcm
+
+
+exit 0
