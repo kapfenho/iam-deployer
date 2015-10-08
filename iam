@@ -55,7 +55,6 @@ iam_prov ()
     done
 
     # use urandom
-    # ./iam identity -a jdk7fix -t domain_home -H host
     #iam weblogic -a jdk7fix -t ${iam_top}/products/${wls_path}/jdk6
     iam identity -a jdk7fix -t ${iam_top}/products/identity/jdk6
     iam access -a jdk7fix -t ${iam_top}/products/access/jdk6
@@ -64,22 +63,21 @@ iam_prov ()
     # deployment and instance creation with lifecycle management
     for step in preconfigure configure configure-secondary postconfigure startup validate
     do
-      deploy_on_all $step
+        deploy_on_all $step
     done
 }
 
 #  deploy standard lib acStdLib for wlst
 wlst_copy_libs ()
 {
-#
-if [ "${acchost}" == "yes" ] ; then
-  log "Copy WLST standard lib to access manager WebLogic..."
-  cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/access/wlserver_10.3/common/wlst
-fi
-if [ "${idmhost}" == "yes" ] ; then
-  log "Copy WLST standard lib to identity manager WebLogic..."
-  cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/identity/wlserver_10.3/common/wlst
-fi
+    if [ "${acchost}" == "yes" ] ; then
+        log "Copy WLST standard lib to access manager WebLogic..."
+        cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/access/wlserver_10.3/common/wlst
+    fi
+    if [ "${idmhost}" == "yes" ] ; then
+        log "Copy WLST standard lib to identity manager WebLogic..."
+        cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/identity/wlserver_10.3/common/wlst
+    fi
 }
 
 postinst ()
@@ -95,7 +93,7 @@ postinst ()
             echo "postinst access"
             postinst_webtier
             ;;
-   esac
+    esac
 }
 
 postinst_webtier ()
@@ -118,7 +116,6 @@ case ${cmd} in
     orainv)
         if [[ -n ${opt_H} && -z ${opt_h} ]];
         then
-            echo "oracle inventory actions.."
             create_orainvptr
         else
             help_orainv 
@@ -128,7 +125,6 @@ case ${cmd} in
     lcm)
         if [[ ${opt_h} != yes ]];
         then
-            echo "install lcm.."
             deploy_lcm
         else
             help_lcm
@@ -138,7 +134,6 @@ case ${cmd} in
     prov)
         if [[ ${opt_h} != yes ]];
         then
-            echo "install IAM binaries.."
             iam_prov
         else
             help_prov
@@ -187,11 +182,9 @@ case ${cmd} in
     weblogic)
         if [[ ${opt_a} == jdk7fix && -n ${opt_t} ]]; 
         then
-            echo "weblogic jdk7fix actions.."
             jdk_patch_config ${opt_t}
         elif [[ ${opt_a} == wlstlibs && -n ${opt_t} ]]; 
         then
-            echo "weblogic wlstlibs actions.."
             wlst_copy_libs
         else
             help_weblogic
@@ -201,21 +194,17 @@ case ${cmd} in
     identity)
         if [[ ${opt_a} == jdk7fix && -n ${opt_t} && -n ${opt_H} ]];
         then
-            echo "identity jdk7fix actions.."
             jdk_patch_config ${opt_t}
         elif [[ ${opt_a} == psa && -z ${opt_t} && -z ${opt_H} ]];
         then
-            echo "identity psa actions.."
             # WARNING: function not implemented
             run_psa identity
         elif [[ ${opt_a} == postinstall && -z ${opt_t} && -z ${opt_H} ]];
         then
-            echo "identity postinstall actions.."
             # WARNING: function not implemented
             postinst identity
         elif [[ ${opt_a} == movelogs && -n ${opt_t} && -z ${opt_H} ]];
         then
-            echo "identity movelogs actions.."
             # WARNING: function not implemented
             move_logs identity
         else
@@ -226,21 +215,17 @@ case ${cmd} in
     access)
         if [[ ${opt_a} == jdk7fix && -n ${opt_t} && -n ${opt_H} ]];
         then
-            echo "access jdk7fix actions.."
             jdk_patch_config ${opt_t}
         elif [[ ${opt_a} == psa && -z ${opt_t} && -z ${opt_H} ]];
         then
-            echo "access psa actions.."
             # WARNING: function not implemented
             run_psa identity
         elif [[ ${opt_a} == postinstall && -z ${opt_t} && -z ${opt_H} ]];
         then
-            echo "access postinstall actions.."
             # WARNING: function not implemented
             postinst access
         elif [[ ${opt_a} == movelogs && -n ${opt_t} && -z ${opt_H} ]];
         then
-            echo "access movelogs actions.."
             # WARNING: function not implemented
             move_logs access
         else
@@ -251,17 +236,14 @@ case ${cmd} in
     analytics)
         if [[ ${opt_a} == unpack && -n ${opt_t} ]];
         then
-            echo "analytics unpack actions.."
             # WARNING: function not implemented
             analytics_unpack
         elif [[ ${opt_a} == patch && -n ${opt_t} ]];
         then
-            echo "analytics patch actions.."
             # WARNING: function not implemented
             analytics_patch
         elif [[ ${opt_a} == domprov && -n ${opt_t} ]];
         then
-            echo "analytics domprov actions.."
             # WARNING: function not implemented
             analytics_domprov
         else
@@ -272,12 +254,10 @@ case ${cmd} in
     webtier)
         if [[ ${opt_a} == postinstall && -z ${opt_t} && -z ${opt_H} ]];
         then
-            echo "webtier postinstall actions.."
             # WARNING: function not implemented
             postinst webtier
         elif [[ ${opt_a} == movelogs && -n ${opt_t} && -z ${opt_H} ]];
         then
-            echo "webtier movelogs actions.."
             # WARNING: function not implemented
             move_logs webtier
         else
