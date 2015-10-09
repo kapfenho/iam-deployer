@@ -27,6 +27,7 @@ iamhelp() {
        ls -l /proc/$(pgrep 'webconfig')/exe --version
 "
   echo
+  exit $ERROR_SYNTAX_ERROR
 }
 
 # ---------------------------------------------------
@@ -42,6 +43,7 @@ help_orainv() {
     install group:       ${iam_orainv_grp}
 
 "
+  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_lcm() {
@@ -54,7 +56,8 @@ help_lcm() {
     LCM Binaries:        ${iam_lcm}
     LCM instance config: ${iam_lcmhome}
 
-"
+  "
+  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_prov() {
@@ -63,7 +66,8 @@ help_prov() {
 
   Execute all LCM provisioning steps on all hosts
 
-"
+  "
+  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_userenv() {
@@ -79,7 +83,8 @@ help_userenv() {
          profile: modify bash user profile
     -H   hostname: execute on remote host
 
-"
+  "
+  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_keyfile() {
@@ -102,7 +107,8 @@ help_keyfile() {
       ${iam_hostenv}/.cred/hostname.{key,user}
       ${iam_hostenv}/.cred/domain.{key,user}
 
-"
+  "
+  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_jdk() {
@@ -124,7 +130,9 @@ help_jdk() {
      oracle_home/jdk/jdk6     original JDK
      oracle_home/jdk6         link to new JDK
 
-"
+  "
+  exit $ERROR_SYNTAX_ERROR
+
 }
 # ---------------------------------------------------
 help_rcd() {
@@ -142,7 +150,9 @@ help_rcd() {
          webtier
          oud
 
-"
+  "
+  exit $ERROR_SYNTAX_ERROR
+
 }
 # ---------------------------------------------------
 help_weblogic() {
@@ -158,7 +168,8 @@ help_weblogic() {
     -H   hostname: execute on remote host
     -t   target wlserver path
 
-"
+  "
+  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_identity() {
@@ -177,7 +188,8 @@ help_identity() {
     -H   hostname: execute on remote host
     -t   target wlserver path
 
-"
+  "
+  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_access() {
@@ -196,7 +208,8 @@ help_access() {
     -H   hostname: execute on remote host
     -t   target wlserver path
 
-"
+  "
+  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_analytics() {
@@ -215,7 +228,8 @@ help_analytics() {
     -H   hostname: execute on remote host
     -t   target wlserver path
 
-"
+  "
+  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_webtier() {
@@ -232,6 +246,7 @@ help_webtier() {
     -H   hostname: execute on remote host
     -t   target wlserver path
 
-"
+  "
+  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------

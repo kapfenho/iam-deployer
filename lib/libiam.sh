@@ -1,5 +1,29 @@
 #  iam deploy and config functions
 
+wlst_acc_nm_keys="nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
+port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
+storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
+y
+exit()
+"
+wlst_acc_keys="connect(username="${domaUser}", password="${domaPwd}", url=domUrl)
+storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm="false")
+y
+exit()
+"
+wlst_idm_nm_keys="nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
+port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
+storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
+y
+exit()
+"
+wlst_idm_keys="connect(username="${domiUser}", password="${domiPwd}", url=domUrl)
+storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm="false")
+y
+exit()
+"
+
+
 #  create ssh-keypair for host access
 #  - param 1: path of shared directory for common key
 #
@@ -248,24 +272,16 @@ create_domain_keyfiles()
     log "Access Domain: creating keyfiles for domain..."
 
     if ! [ -a ${iam_hostenv}/.creds/${iam_domain_acc}.key ] ; then
-      ${_wlst} -loadProperties ${iam_hostenv}/env/access.prop <<-EOF
-connect(username="${domaUser}", password="${domaPwd}", url=domUrl)
-storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm="false")
-y
-exit()
-EOF
+      echo "${wlst_acc_keys}" | \
+        ${_wlst} -loadProperties ${iam_hostenv}/env/access.prop 
     fi
   elif [ "${_domain}" == "identity" ];
   then
     log "Identity Domain: creating keyfiles for domain..."
 
     if ! [ -a ${iam_hostenv}/.creds/${iam_domain_oim}.key ] ; then
-      ${_wlst} -loadProperties ${iam_hostenv}/env/identity.prop <<-EOF
-      connect(username="${domiUser}", password="${domiPwd}", url=domUrl)
-      storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm="false")
-      y
-      exit()
-      EOF
+      echo "${wlst_idm_keys}" | \
+        ${_wlst} -loadProperties ${iam_hostenv}/env/identity.prop
     fi
   fi
 }
@@ -289,24 +305,14 @@ create_nm_keyfiles()
   log "Identity Domain: creating nodemanager keyfiles..."
 
   if ! [ -a ${iam_hostenv}/.creds/nm.key ] ; then
-    ${_wlst} -loadProperties ${iam_hostenv}/env/identity.prop <<-EOF
-    nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
-    port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
-    storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
-    y
-    exit()
-    EOF
+    echo "${wlst_idm_nm_keys}" | \
+      ${_wlst} -loadProperties ${iam_hostenv}/env/identity.prop
     log "Access Domain: creating nodemanager keyfiles..."
   fi
 
   if ! [ -a ${iam_hostenv}/.creds/nm.key ] ; then
-    ${_wlst} -loadProperties ${iam_hostenv}/env/access.prop <<-EOF
-    nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
-    port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
-    storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
-    y
-    exit()
-    EOF
+    echo "${wlst_acc_nm_keys}" | \
+      ${_wlst} -loadProperties ${iam_hostenv}/env/access.prop
   fi
 }
 

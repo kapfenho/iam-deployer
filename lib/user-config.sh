@@ -3,12 +3,14 @@
 #  load the iam provisioning variables and assign them to the 
 #  variables used in the script
 #
-
 iam_config_rsp=${DEPLOYER}/user-config/iam/provisioning.rsp
 lcm_config_rsp=${DEPLOYER}/user-config/lcm/lcm_install.rsp
-grep -v -Ee '{' ${iam_config_rsp} | eval
-. ${DEPLOYER}/user-config/iam.config
 
+getvar() {
+  eval $(grep ${1} ${iam_config_rsp})
+}
+
+. ${DEPLOYER}/user-config/iam.config
 
 #  there are three categories of config values
 #
@@ -29,7 +31,7 @@ grep -v -Ee '{' ${iam_config_rsp} | eval
 : ${iam_oam_schema_pass:=${iam_pwd}}
 :        ${iam_dba_pass:=${iam_pwd}}
   
-:              ${nmUser:=${NODEMANAGER_NAME}}
+getvar NODEMANAGER_NAME ;  : ${nmUser:=${NODEMANAGER_NAME}}
 :               ${nmPwd:=${iam_pwd}}
 :            ${domaUser:=${WLSADMIN_NAME}}
 :             ${domaPwd:=${iam_pwd}}
@@ -54,7 +56,7 @@ grep -v -Ee '{' ${iam_config_rsp} | eval
 :         ${iam_hostenv:=${iam_top}/home}
                  iam_lcm=$(grep "ORACLE_HOME=" ${lcm_config_rsp} | cut -d= -f2)
             iam_services=${INSTALL_LOCALCONFIG_DIR}
-  
+
 :      ${iam_orainv_ptr:=${iam_top}/etc/oraInst.loc}
 :          ${iam_orainv:=${iam_top}/etc/oraInventory}
 :      ${iam_orainv_grp:="oinstall"}
@@ -71,7 +73,6 @@ grep -v -Ee '{' ${iam_config_rsp} | eval
 
 #    ${iam_oam_prefix:=${OIM_DB_SCHEMAPREFIX}}
 #    ${iam_bip_prefix:=${OIM_DB_SCHEMAPREFIX}}
-
 iam_domain_oim=${IDMPROV_PRODUCT_IDENTITY_DOMAIN}
 iam_domain_acc=${IDMPROV_ACCESS_DOMAIN}
 #                TOPOLOGY_BASIC_HOST=iam7.agoracon.at

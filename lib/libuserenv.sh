@@ -6,7 +6,7 @@
 
 _cp_nodemanager()
 {
-  local _dir=${iam_top}/config/nodemanager/${_host}
+  local _dir=${iam_top}/config/nodemanager/$(hostname -f)
   local _prop=nodemanager.properties
   local _start=startNodeManagerWrapper.sh
 
@@ -28,6 +28,7 @@ _cp_nodemanager()
 
 _cp_oim()
 {
+  set -x
   # already done?
   [ -f ${env}/idm.env ] && return $WARNING_DONE
 

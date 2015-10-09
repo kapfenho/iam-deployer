@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -o errexit nounset
-
 if [ -z ${DEPLOYER} ] ; then
   error "ERROR: Environment variable DEPLOYER is not set"
   exit 80
@@ -26,12 +24,11 @@ umask ${iam_user_umask}
 # no prarameters?
 # exit with error code 2: 
 # https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html
-if [ "$#" -lt 1 ] ; then
+if [ $# -lt 1 ] ; then
   iamhelp
-  exit 2
 fi
 # command stated?
-if [ "$#" -ge 1 ] ; then
+if [ $# -ge 1 ] ; then
   cmd=${1}
   shift
 fi
@@ -50,8 +47,18 @@ while getopts D:H:O:a:t:h FLAG; do
       ;;
     h)  opt_h=yes       
       ;;
+    \?) #unrecognized option - show help
+      echo -e \\n"Option -${BOLD}$OPTARG${NORM} not allowed."
+      iamhelp
+      #If you just want to display a simple error message instead of the full
+      #help, remove the 2 lines above and uncomment the 2 lines below.
+      #echo -e "Use ${BOLD}$SCRIPT -h${NORM} to see the help documentation."\\n
+      #exit 2
+      ;;
   esac
 done
+
+set -o errexit nounset
 
 #  deploy standard lib acStdLib for wlst
 wlst_copy_libs ()
@@ -128,10 +135,10 @@ case ${cmd} in
     fi
     ;;
   userenv)
-    if [ "${opt_a}" == "env" && -z "${opt_H}" ];
+    if [ "${opt_a}" == "env" -a -z "${opt_H}" ] ;
     then
       init_userenv
-    elif [ "${opt_a}" == "profile" && -n "${opt_H}" ];
+    elif [ "${opt_a}" == "profile" -a -n "${opt_H}" ];
     then
       remote_extend_bash_profile_host ${opt_H}
     else
