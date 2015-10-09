@@ -112,7 +112,7 @@ postinst_webtier ()
 case ${cmd} in
     help)
         iamhelp
-        ;;
+       ;;
     orainv)
         if [[ -n ${opt_H} && -z ${opt_h} ]];
         then

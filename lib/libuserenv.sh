@@ -6,12 +6,11 @@
 
 _cp_nodemanager()
 {
-  local _host=$(hostname -f)
   local _dir=${iam_top}/config/nodemanager/${_host}
   local _prop=nodemanager.properties
   local _start=startNodeManagerWrapper.sh
 
-  [ -f ${_dir}/${_prop}.orig ] && return 1
+  [ -f ${_dir}/${_prop}.orig ] && return $WARNING_DONE
 
   # properties
   mv ${_dir}/${_prop} ${_dir}/${_prop}.orig
@@ -22,16 +21,15 @@ _cp_nodemanager()
   cp -b ${nodesrc}/${_start} ${_dir}/
   chmod 0755 ${_dir}/${_start}
 
-  sed -i "s/_HOST_/$(_host)/" ${_dir}/${_start} ${_dir}/${_prop}
-  sed -i "s/_IAMTOP_/${iam_top}/"      ${_dir}/${_start} ${_dir}/${_prop}
-  sed -i "s/_IAMLOG_/${iam_log}/"      ${_dir}/${_prop}
+  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${_dir}/${_start} ${_dir}/${_prop}
+  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${_dir}/${_start} ${_dir}/${_prop}
+  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${_dir}/${_prop}
 }
 
 _cp_oim()
 {
-  [ "${idmhost}" != "yes" ] && return
   # already done?
-  [ -f ${env}/idm.env ] && return 1
+  [ -f ${env}/idm.env ] && return $WARNING_DONE
 
   cp ${src}/bin/*identity*          ${bin}/
   cp ${src}/bin/*nodemanager*       ${bin}/
@@ -40,101 +38,75 @@ _cp_oim()
   cp ${src}/env/identity.prop       ${env}/
   cp ${src}/env/imint.prop          ${env}/
   cp ${src}/lib/deploy.py           ${lib}/
-  sed -i "s/_HOSTENV_/${iam_hostenv}/" ${env}/*
-  sed -i "s/_IAMTOP_/${iam_top}/"      ${env}/*
-  sed -i "s/_IAMTOP_/${iam_top}/"      ${bin}/*
-  sed -i "s/_IAMLOG_/${_log}/"      ${env}/*
-  sed -i "s/_IAMLOG_/${_log}/"      ${bin}/*
-  sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
-  sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
-  sed -i "s/_DOMAIN_/${IDMPROV_IDENTITY_DOMAIN}/" ${env}/*
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/" ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${bin}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${env}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${bin}/*
+  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${env}/*
+  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${bin}/*
+  sed -i "s/__DOMAIN_NAME__/${iam_domain_oim}/" ${env}/*
   _cp_nodemanager
 }
 
-_cp_oam()
+_cp_acc()
 {
-  [ "${acchost}" != "yes" ] && return
   # already done?
-  [ -f ${env}/acc.env ] && return 1
+  [ -f ${env}/acc.env ] && return $WARNING_DONE
 
   cp ${src}/bin/*access*            ${bin}/
   cp ${src}/bin/*nodemanager*       ${bin}/
   cp ${src}/env/acc.env             ${env}/
   cp ${src}/env/access.prop         ${env}/
-  sed -i "s/_HOSTENV_/${iam_hostenv}/" ${env}/*
-  sed -i "s/_IAMTOP_/${iam_top}/"      ${env}/*
-  sed -i "s/_IAMTOP_/${iam_top}/"      ${bin}/*
-  sed -i "s/_IAMLOG_/${_log}/"      ${env}/*
-  sed -i "s/_IAMLOG_/${_log}/"      ${bin}/*
-  sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
-  sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
-  sed -i "s/_DOMAIN_/${IDMPROV_ACCESS_DOMAIN}/" ${env}/*
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/" ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${bin}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${env}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${bin}/*
+  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${env}/*
+  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${bin}/*
+  sed -i "s/__DOMAIN_NAME__/${iam_domain_acc}/" ${env}/*
   _cp_nodemanager
 }
 
 _cp_oud()
 {
-  [ "${oudhost}" != "yes" ] && return
   # already done?
-  [ -f ${env}/dir.env ] && return 1
+  [ -f ${env}/dir.env ] && return $WARNING_DONE
 
   cp ${src}/bin/*dir*               ${bin}/
   cp ${src}/env/dir.env             ${env}/
   cp ${src}/env/tools.properties    ${env}/
-  sed -i "s/_HOSTENV_/${iam_hostenv}/" ${env}/*
-  sed -i "s/_IAMTOP_/${iam_top}/"      ${env}/*
-  sed -i "s/_IAMLOG_/${_log}/"      ${env}/*
-  sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/" ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${env}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${env}/*
+  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${env}/*
+  echo -n ${oudPwd} > ${crd}/oudadmin
 }
 
 _cp_web()
 {
-  [ "${webhost}" != "yes" ] && return
   # already done?
-  [ -f ${env}/web.env ] && return 1
+  [ -f ${env}/web.env ] && return $WARNING_DONE
 
   cp ${src}/bin/*webtier*           ${bin}/
   cp ${src}/env/web.env             ${env}/
-  sed -i "s/_HOSTENV_/${iam_hostenv}/" ${env}/*
-  sed -i "s/_HOSTENV_/${iam_hostenv}/" ${bin}/*
-  sed -i "s/_IAMTOP_/${iam_top}/"      ${env}/*
-  sed -i "s/_IAMTOP_/${iam_top}/"      ${bin}/*
-  sed -i "s/_IAMLOG_/${_log}/"      ${env}/*
-  sed -i "s/_IAMLOG_/${_log}/"      ${bin}/*
-  sed -i "s/_HOST_/$(hostname -f)/" ${env}/*
-  sed -i "s/_HOST_/$(hostname -f)/" ${bin}/*
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/" ${env}/*
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/" ${bin}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${bin}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${env}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${bin}/*
+  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${env}/*
+  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${bin}/*
 }
 
-# # create host specific start-all and stop-all scripts
-# #
-# _create_startall()
-# {
-#   fo=$(mktemp "orderXXXXXXXX")
-#   startall=~/bin/start-all
-#   stopall=~/bin/stop-all
-# 
-#   [ "${oudhost}" == "yes" ] && echo "dir"         >>${fo}
-#   [ "${idmhost}" == "yes" -o "${acchost}" == "yes" ] && \
-#                                echo "nodemanager" >>${fo}
-#   [ "${acchost}" == "yes" ] && echo "access"      >>${fo}
-#   [ "${idmhost}" == "yes" ] && echo "identity"    >>${fo}
-#   [ "${webhost}" == "yes" ] && echo "webtier"     >>${fo}
-# 
-#   echo "#!/bin/bash" > ${startall}
-#   cat ${fo} | while read l ; do
-#     echo "start-${l}" >>${startall}
-#   done
-# 
-#   echo "#!/bin/bash" > ${stopall}
-#   tac ${fo} | while read l ; do
-#     echo "stop-${l}" >>${stopall}
-#   done
-# 
-#   chmod 0755 ${startall} ${stopall}
-#   rm -f ${fo}
-# }
-
-
+#  ------------------------------------------------
+#  provisioning of user host environment
+#  there shall be a common directory on shared storage
+#  where envs for all products (selected in iam.config)
+#  will be written to - called only once per installation
+#
 init_userenv()
 {
       src=${DEPLOYER}/lib/templates/hostenv
@@ -144,27 +116,59 @@ init_userenv()
   lib=${iam_hostenv}/lib
   crd=${iam_hostenv}/.creds
 
-  
-  _hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
-      _top=$(echo ${iam_top}     | sed -e 's/[\/&]/\\&/g')
-      _log=$(echo ${iam_log}     | sed -e 's/[\/&]/\\&/g')
+  [[ -d ${env} ]] && return $WARNING_DONE
+ 
+  # these variables will be used in sed command and must
+  # be escaped before
+  _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
+      _iam_top=$(echo ${iam_top}     | sed -e 's/[\/&]/\\&/g')
+      _iam_log=$(echo ${iam_log}     | sed -e 's/[\/&]/\\&/g')
+  # also used but scaping not necessary:
+  # iam_domain_oim, iam_domain_acc
   
   mkdir -p ${env} ${bin} ${lib} ${crd}
+  
+  cp  ${src}/bin/iam*                 ${bin}/
+  cp  ${src}/env/common.env           ${env}/
+
+  # _create_startall
+
+  do_idm && _cp_oim
+  do_acc && _cp_acc
+  do_oud && _cp_oud
+  do_web && _cp_web
+}
+
+#  ---------------------------------------------------
+#  add sourcing of common.env (shared folder) on host
+#
+extend_bash_profile_on_host()
+{
+    _host=${1}
+      src=${DEPLOYER}/lib/templates/hostenv
+  env=${iam_hostenv}/env
+  bin=${iam_hostenv}/bin
+  lib=${iam_hostenv}/lib
+  crd=${iam_hostenv}/.creds
+
+  # this variable will be used in sed command and must be escaped
+  _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
+
   [ -L ${sc_env} ] || ln -sf ${env} ${sc_env}
   [ -L ${sc_env} ] || ln -sf ${bin} ${sc_bin}
   [ -L ${sc_env} ] || ln -sf ${lib} ${sc_lib}
   [ -L ${sc_env} ] || ln -sf ${crd} ${sc_crd}
-  
-  cp  ${src}/bin/iam*                 ${bin}/
-  cp  ${src}/env/common.env           ${env}/
-  cat ${src}/env/bash_profile       > ${HOME}/.bash_profile
-  sed -i "s/_HOSTENV_/${iam_hostenv}/"   ${HOME}/.bash_profile
 
-  _create_startall
+  # add the tools.property file to oud instance dir
+  for d in ${iam_services}/instances/* ; do
+    if [ -d ${d}/OUD ] ; then
+      cp -b ${iam_hostenv}/env/tools.properties ${d}/OUD/config/
+    fi
+  done
 
-  _cp_oim
-  _cp_oam
-  _cp_oud
-  _cp_web
+  # add sourcing to profile
+  cat ${src}/env/bash_profile  >${HOME}/.bash_profile
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/" ${HOME}/.bash_profile
 }
+
 

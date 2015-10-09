@@ -19,6 +19,12 @@ iamhelp() {
     access    modify access domain   # psa, jdk7fix, movelogs, postinstall
     analytics modify analytics domain
     webtier   modify webtier instance # movelogs, postinstall
+
+    TODO: modify start-all and stop-all scripts ***
+
+    TODO: action keyfiles: we must teh JDK version of the
+            running weblogic process:
+       ls -l /proc/$(pgrep 'webconfig')/exe --version
 "
   echo
 }
@@ -63,6 +69,8 @@ help_prov() {
 help_userenv() {
   echo "
   Syntax: ${0} userenv -a {env|profile} [-H host]
+    ${0} userenv -a env
+    ${0} userenv -a profile -H host
 
   Create user environment (bin,etc,lib,cred)
   Parameter:

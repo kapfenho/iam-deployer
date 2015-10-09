@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# dir=_IAMTOP_/config/nodemanage/_HOST_
+# dir=__IAM_TOP__/config/nodemanage/__HOSTNAME__
 
 # nohup ${dir}/startNodemanager.sh >${log} 2>&1 &
 
-WLS_HOME=_IAMTOP_/products/identity/wlserver_10.3
-NM_HOME=_IAMTOP_/config/nodemanager/_HOST_
-LOG=_IAMLOG_/nodemanager/nodemanager.log
+WLS_HOME=__IAM_TOP__/products/identity/wlserver_10.3
+NM_HOME=__IAM_TOP__/config/nodemanager/__HOSTNAME__
+LOG=__IAM_LOG__/nodemanager/nodemanager.log
 
 JAVA_OPTIONS="-DNodeManagerHome=${NM_HOME} ${JAVA_OPTIONS}"
 #JAVA_OPTIONS="-Dweblogic.security.SSL.enableJSSE=true ${JAVA_OPTIONS}"

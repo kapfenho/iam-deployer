@@ -53,6 +53,7 @@ grep -v -Ee '{' ${iam_config_rsp} | eval
 :         ${iam_lcmhome:=${INSTALL_LCMHOME_DIR}}
 :         ${iam_hostenv:=${iam_top}/home}
                  iam_lcm=$(grep "ORACLE_HOME=" ${lcm_config_rsp} | cut -d= -f2)
+            iam_services=${INSTALL_LOCALCONFIG_DIR}
   
 :      ${iam_orainv_ptr:=${iam_top}/etc/oraInst.loc}
 :          ${iam_orainv:=${iam_top}/etc/oraInventory}
@@ -71,11 +72,9 @@ grep -v -Ee '{' ${iam_config_rsp} | eval
 #    ${iam_oam_prefix:=${OIM_DB_SCHEMAPREFIX}}
 #    ${iam_bip_prefix:=${OIM_DB_SCHEMAPREFIX}}
 
+iam_domain_oim=${IDMPROV_PRODUCT_IDENTITY_DOMAIN}
+iam_domain_acc=${IDMPROV_ACCESS_DOMAIN}
 #                TOPOLOGY_BASIC_HOST=iam7.agoracon.at
-#                INSTALL_LCMHOME_DIR=/l/ora/lcm/lcmhome
-#            INSTALL_LOCALCONFIG_DIR=/l/ora/services
-#    IDMPROV_PRODUCT_IDENTITY_DOMAIN=iam_iam7
-#              IDMPROV_ACCESS_DOMAIN=IAMAccessDomain
 # IDMPROV_OIMDOMAIN_ADMINSERVER_PORT=7001
 #                   IDMPROV_OIM_PORT=8005
 #                   IDMPROV_OHS_PORT=7777

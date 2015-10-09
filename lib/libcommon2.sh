@@ -1,5 +1,11 @@
 # common functions
 
+# general return codes of functions
+#
+WARNING_DONE=2
+ERROR_FILE_NOT_FOUND=80
+
+
 log() {
   if [[ -t 1 ]]; then
     printf "%b>>>%b %b%s%b\n" "\x1b[1m\x1b[32m" "\x1b[0m" \
@@ -27,35 +33,3 @@ warning() {
   fi
 }
 
-do_idm() {
-  local _ret
-  case "${DO_IDM}" in
-    YES|yes|1)
-      _ret=0;;
-    *)
-      _ret=1;;
-  esac
-  return $_ret
-}
-
-do_acc() {
-  local _ret
-  case "${DO_ACC}" in
-    YES|yes|1)
-      _ret=0;;
-    *)
-      _ret=1;;
-  esac
-  return $_ret
-}
-
-do_bip() {
-  local _ret
-  case "${DO_BIP}" in
-    YES|yes|1)
-      _ret=0;;
-    *)
-      _ret=1;;
-  esac
-  return $_ret
-}

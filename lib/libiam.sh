@@ -1,5 +1,58 @@
 #  iam deploy and config functions
 
+#  helper funcitons for product selection
+#
+do_idm() {
+  local _ret
+  case "${DO_IDM}" in
+    YES|yes|1)
+      _ret=0;;
+    *)
+      _ret=1;;
+  esac
+  return $_ret
+}
+do_acc() {
+  local _ret
+  case "${DO_ACC}" in
+    YES|yes|1)
+      _ret=0;;
+    *)
+      _ret=1;;
+  esac
+  return $_ret
+}
+do_bip() {
+  local _ret
+  case "${DO_BIP}" in
+    YES|yes|1)
+      _ret=0;;
+    *)
+      _ret=1;;
+  esac
+  return $_ret
+}
+do_web() {
+  local _ret
+  case "${DO_WEB}" in
+    YES|yes|1)
+      _ret=0;;
+    *)
+      _ret=1;;
+  esac
+  return $_ret
+}
+do_oud() {
+  local _ret
+  case "${DO_OUD}" in
+    YES|yes|1)
+      _ret=0;;
+    *)
+      _ret=1;;
+  esac
+  return $_ret
+}
+
 #  create oracle inventory pointer
 #
 create_orainvptr()
