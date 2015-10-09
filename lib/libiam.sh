@@ -1,5 +1,51 @@
 #  iam deploy and config functions
 
+#  create ssh-keypair for host access
+#  - param 1: path of shared directory for common key
+#
+gen_ssh_keypair()
+{
+  local _dest=${1}/id_rsa
+  if [[ -a ${_dest} ]] ; then
+    return WARN_DONE
+  else
+    ssh-keygen -t rsa -b 4096 -C "iam-deployer insecure key" \
+      -N "" -f ${_dest}
+  fi
+}
+
+#  copy the keypair to the standard locations and trust the same key
+#  because all hosts will use the very same one during initialization
+#  - param 1: path of shared directory with common key
+#
+deploy_ssh_keypair()
+{
+  newk=${1}/id_rsa
+  destk=~/.ssh/id_rsa
+  authk=~/.ssh/authorized_keys
+
+  # check if there is already a key present
+  if [[ -a ${destk} ]] ; then
+    if [[ "$(cat ${destk} | shasum)" == "$(cat ${newk} | shasum)" ]] ; then
+      # the common key is already there
+      return $WARN_DONE
+    else
+      # an unkown key is there - stop and complain!
+      return $ERR_FILE_EXISTS
+    fi
+  fi
+
+  # standard setting in ssh...
+  mkdir -p ~/.ssh && chmod 0700 ~/.ssh
+  cp ${newk}     ${destk}
+  cp ${newk}.pub ${destk}.pub
+
+  [[ -a ${authk} ]] && cp -p ${authk} ${authk}-$(date +"%Y%m%d-%H%M%S")
+  cat ${destk}.pub >> ${authk}
+  chmod 0600 ${destk}
+  chmod 0644 ${destk}.pub ${authk}
+}
+
 #  helper funcitons for product selection
 #
 do_idm() {
