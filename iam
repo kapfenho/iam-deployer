@@ -1,6 +1,11 @@
 #!/bin/bash
 
-#set -o errexit nounset
+set -o errexit nounset
+
+if [ -z ${DEPLOYER} ] ; then
+  error "ERROR: Environment variable DEPLOYER is not set"
+  exit 80
+fi
 
 . ${DEPLOYER}/lib/user-config.sh
 . ${DEPLOYER}/lib/libcommon2.sh
@@ -8,6 +13,7 @@
 . ${DEPLOYER}/lib/libjdk.sh
 . ${DEPLOYER}/lib/librcu.sh
 . ${DEPLOYER}/lib/libiamhelp.sh
+. ${DEPLOYER}/lib/libuserenv.sh
 
 # export JAVA_HOME=${s_runjdk}
 # export      PATH=${JAVA_HOME}/bin:${PATH}
@@ -18,253 +24,237 @@ umask ${iam_user_umask}
 # main program -----------------------------
 #
 # no prarameters?
-# exit with error code 2: https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html
-if [[ $# -lt 1 ]] ; then
-    iamhelp
-    exit 2
+# exit with error code 2: 
+# https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html
+if [ "$#" -lt 1 ] ; then
+  iamhelp
+  exit 2
 fi
 # command stated?
-if [[ $# -ge 1 ]] ; then
-    cmd=${1}
-    shift
+if [ "$#" -ge 1 ] ; then
+  cmd=${1}
+  shift
 fi
 
 while getopts D:H:O:a:t:h FLAG; do
-    case $FLAG in
-        D)  opt_D=$OPTARG   
-            ;;
-        H)  opt_H=$OPTARG   
-            ;;
-        O)  opt_O=$OPTARG   
-            ;;
-        a)  opt_a=$OPTARG   
-            ;;
-        t)  opt_t=$OPTARG   
-            ;;
-        h)  opt_h=yes       
-            ;;
-    esac
+  case $FLAG in
+    D)  opt_D=$OPTARG   
+      ;;
+    H)  opt_H=$OPTARG   
+      ;;
+    O)  opt_O=$OPTARG   
+      ;;
+    a)  opt_a=$OPTARG   
+      ;;
+    t)  opt_t=$OPTARG   
+      ;;
+    h)  opt_h=yes       
+      ;;
+  esac
 done
-
-iam_prov ()
-{
-    # deployment and instance creation with lifecycle management
-    for step in preverify install
-    do
-        deploy_on_all $step
-    done
-
-    # use urandom
-    #iam weblogic -a jdk7fix -t ${iam_top}/products/${wls_path}/jdk6
-    iam identity -a jdk7fix -t ${iam_top}/products/identity/jdk6
-    iam access -a jdk7fix -t ${iam_top}/products/access/jdk6
-
-
-    # deployment and instance creation with lifecycle management
-    for step in preconfigure configure configure-secondary postconfigure startup validate
-    do
-        deploy_on_all $step
-    done
-}
 
 #  deploy standard lib acStdLib for wlst
 wlst_copy_libs ()
 {
-    if [ "${acchost}" == "yes" ] ; then
-        log "Copy WLST standard lib to access manager WebLogic..."
-        cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/access/wlserver_10.3/common/wlst
-    fi
-    if [ "${idmhost}" == "yes" ] ; then
-        log "Copy WLST standard lib to identity manager WebLogic..."
-        cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/identity/wlserver_10.3/common/wlst
-    fi
+  if [ "${acchost}" == "yes" ] ; then
+    log "Copy WLST standard lib to access manager WebLogic..."
+    cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/access/wlserver_10.3/common/wlst
+  fi
+  if [ "${idmhost}" == "yes" ] ; then
+    log "Copy WLST standard lib to identity manager WebLogic..."
+    cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/identity/wlserver_10.3/common/wlst
+  fi
 }
+
 
 postinst ()
 {
-    case $1 in
-        identity)
-            echo "postinst identity"
-            ;;
-        access)
-            echo "postinst access"
-            ;;
-        webtier)
-            echo "postinst access"
-            postinst_webtier
-            ;;
-    esac
+  case $1 in
+    identity)
+      echo "postinst identity"
+      ;;
+    access)
+      echo "postinst access"
+      ;;
+    webtier)
+      echo "postinst access"
+      postinst_webtier
+      ;;
+  esac
 }
 
 postinst_webtier ()
 {
-    log "Webgate: fix installation bug"
+  log "Webgate: fix installation bug"
 
-    _webg=${iam_top}/products/web/webgate/webgate/ohs/config
+  _webg=${iam_top}/products/web/webgate/webgate/ohs/config
 
-    if [ -a ${_webg}/oblog_config_wg.xml -a ! -a ${_webg}/oblog_config.xml ] ; then
-        cp ${_webg}/oblog_config_wg.xml ${_webg}/oblog_config.xml
-    fi
-    log "Webgate: done"
+  if [ -a ${_webg}/oblog_config_wg.xml -a ! -a ${_webg}/oblog_config.xml ] ; then
+    cp ${_webg}/oblog_config_wg.xml ${_webg}/oblog_config.xml
+  fi
+  log "Webgate: done"
 
 }
 
 case ${cmd} in
-    help)
-        iamhelp
-       ;;
-    orainv)
-        if [[ -n ${opt_H} && -z ${opt_h} ]];
-        then
-            create_orainvptr
-        else
-            help_orainv 
-            exit 2
-        fi
-        ;;
-    lcm)
-        if [[ ${opt_h} != yes ]];
-        then
-            deploy_lcm
-        else
-            help_lcm
-            exit 2
-        fi
-        ;;
-    prov)
-        if [[ ${opt_h} != yes ]];
-        then
-            iam_prov
-        else
-            help_prov
-            exit 2
-        fi
-        ;;
-    userenv)
-        if [[ ${opt_a} == env || ${opt_a} == profile ]];
-        then
-            echo "deploy user environment.."
-        else
-            help_userenv
-            exit 2
-        fi
-        ;;
-    keyfile)
-        if [[ ${opt_t} == domain && -n ${opt_D} && -z ${opt_H} ]]; 
-        then
-            echo "deploy keyfiles for DOMAIN.."
-        elif [[ ${opt_t} == nodemanager && -z ${opt_D} && -n ${opt_H} ]];
-        then
-            echo "deploy keyfiles for NODEMANAGER.."
-        else
-            help_keyfile
-            exit 2
-        fi
-        ;;
-    jdk)
-        if [[ -n ${opt_H} && -n ${opt_O} ]];
-        then
-            echo "deploy jdk7.."
-        else
-            help_jdk
-            exit 2
-        fi
-        ;;
-    rcd)
-        if [[ -n ${opt_H} && -n ${opt_t} ]];
-        then
-            echo "deploy rc.d scripts.."
-        else
-            help_rcd
-            exit 2
-        fi
-        ;;
-    weblogic)
-        if [[ ${opt_a} == jdk7fix && -n ${opt_t} ]]; 
-        then
-            jdk_patch_config ${opt_t}
-        elif [[ ${opt_a} == wlstlibs && -n ${opt_t} ]]; 
-        then
-            wlst_copy_libs
-        else
-            help_weblogic
-            exit 2
-        fi
-        ;;
-    identity)
-        if [[ ${opt_a} == jdk7fix && -n ${opt_t} && -n ${opt_H} ]];
-        then
-            jdk_patch_config ${opt_t}
-        elif [[ ${opt_a} == psa && -z ${opt_t} && -z ${opt_H} ]];
-        then
-            # WARNING: function not implemented
-            run_psa identity
-        elif [[ ${opt_a} == postinstall && -z ${opt_t} && -z ${opt_H} ]];
-        then
-            # WARNING: function not implemented
-            postinst identity
-        elif [[ ${opt_a} == movelogs && -n ${opt_t} && -z ${opt_H} ]];
-        then
-            # WARNING: function not implemented
-            move_logs identity
-        else
-            help_identity
-            exit 2
-        fi
-        ;;
-    access)
-        if [[ ${opt_a} == jdk7fix && -n ${opt_t} && -n ${opt_H} ]];
-        then
-            jdk_patch_config ${opt_t}
-        elif [[ ${opt_a} == psa && -z ${opt_t} && -z ${opt_H} ]];
-        then
-            # WARNING: function not implemented
-            run_psa identity
-        elif [[ ${opt_a} == postinstall && -z ${opt_t} && -z ${opt_H} ]];
-        then
-            # WARNING: function not implemented
-            postinst access
-        elif [[ ${opt_a} == movelogs && -n ${opt_t} && -z ${opt_H} ]];
-        then
-            # WARNING: function not implemented
-            move_logs access
-        else
-            help_access
-            exit 2
-        fi
-        ;;
-    analytics)
-        if [[ ${opt_a} == unpack && -n ${opt_t} ]];
-        then
-            # WARNING: function not implemented
-            analytics_unpack
-        elif [[ ${opt_a} == patch && -n ${opt_t} ]];
-        then
-            # WARNING: function not implemented
-            analytics_patch
-        elif [[ ${opt_a} == domprov && -n ${opt_t} ]];
-        then
-            # WARNING: function not implemented
-            analytics_domprov
-        else
-            help_analytics
-            exit 2
-        fi
-        ;;
-    webtier)
-        if [[ ${opt_a} == postinstall && -z ${opt_t} && -z ${opt_H} ]];
-        then
-            # WARNING: function not implemented
-            postinst webtier
-        elif [[ ${opt_a} == movelogs && -n ${opt_t} && -z ${opt_H} ]];
-        then
-            # WARNING: function not implemented
-            move_logs webtier
-        else
-            help_webtier
-            exit 2
-        fi
-        ;;
+  help)
+    iamhelp
+    ;;
+  orainv)
+    if [ -n "${opt_H}" && -z "${opt_h}" ];
+    then
+      create_orainvptr
+    else
+      help_orainv 
+      exit 2
+    fi
+    ;;
+  lcm)
+    if [ "${opt_h}" != "yes" ];
+    then
+      deploy_lcm
+    else
+      help_lcm
+      exit 2
+    fi
+    ;;
+  prov)
+    if [ "${opt_h}" != "yes" ];
+    then
+      iam_prov
+    else
+      help_prov
+      exit 2
+    fi
+    ;;
+  userenv)
+    if [ "${opt_a}" == "env" && -z "${opt_H}" ];
+    then
+      init_userenv
+    elif [ "${opt_a}" == "profile" && -n "${opt_H}" ];
+    then
+      remote_extend_bash_profile_host ${opt_H}
+    else
+      help_userenv
+      exit 2
+    fi
+    ;;
+  keyfile)
+    if [ "${opt_t}" == "domain" && -n "${opt_D}" && -z "${opt_H}" ]; 
+    then
+      create_domain_keyfiles ${opt_D}
+    elif [ "${opt_t}" == "nodemanager" && -n "${opt_D}" && -n "${opt_H}" ];
+    then
+      remote_create_nm_keyfiles ${opt_H} ${opt_D}
+    else
+      help_keyfile
+      exit 2
+    fi
+    ;;
+  jdk)
+    if [ -n "${opt_H}" && -n "${opt_O}" ];
+    then
+      echo "deploy jdk7.."
+    else
+      help_jdk
+      exit 2
+    fi
+    ;;
+  rcd)
+    if [ -n "${opt_H}" && -n "${opt_t}" ];
+    then
+      echo "deploy rc.d scripts.."
+    else
+      help_rcd
+      exit 2
+    fi
+    ;;
+  weblogic)
+    if [[ ${opt_a} == jdk7fix && -n ${opt_t} ]]; 
+    then
+      jdk_patch_config ${opt_t}
+    elif [[ ${opt_a} == wlstlibs && -n ${opt_t} ]]; 
+    then
+      wlst_copy_libs
+    else
+      help_weblogic
+      exit 2
+    fi
+    ;;
+  identity)
+    if [[ ${opt_a} == jdk7fix && -n ${opt_t} && -n ${opt_H} ]];
+    then
+      jdk_patch_config ${opt_t}
+    elif [[ ${opt_a} == psa && -z ${opt_t} && -z ${opt_H} ]];
+    then
+      # WARNING: function not implemented
+      run_psa identity
+    elif [[ ${opt_a} == postinstall && -z ${opt_t} && -z ${opt_H} ]];
+    then
+      # WARNING: function not implemented
+      postinst identity
+    elif [[ ${opt_a} == movelogs && -n ${opt_t} && -z ${opt_H} ]];
+    then
+      # WARNING: function not implemented
+      move_logs identity
+    else
+      help_identity
+      exit 2
+    fi
+    ;;
+  access)
+    if [[ ${opt_a} == jdk7fix && -n ${opt_t} && -n ${opt_H} ]];
+    then
+      jdk_patch_config ${opt_t}
+    elif [[ ${opt_a} == psa && -z ${opt_t} && -z ${opt_H} ]];
+    then
+      # WARNING: function not implemented
+      run_psa identity
+    elif [[ ${opt_a} == postinstall && -z ${opt_t} && -z ${opt_H} ]];
+    then
+      # WARNING: function not implemented
+      postinst access
+    elif [[ ${opt_a} == movelogs && -n ${opt_t} && -z ${opt_H} ]];
+    then
+      # WARNING: function not implemented
+      move_logs access
+    else
+      help_access
+      exit 2
+    fi
+    ;;
+  analytics)
+    if [[ ${opt_a} == unpack && -n ${opt_t} ]];
+    then
+      # WARNING: function not implemented
+      analytics_unpack
+    elif [[ ${opt_a} == patch && -n ${opt_t} ]];
+    then
+      # WARNING: function not implemented
+      analytics_patch
+    elif [[ ${opt_a} == domprov && -n ${opt_t} ]];
+    then
+      # WARNING: function not implemented
+      analytics_domprov
+    else
+      help_analytics
+      exit 2
+    fi
+    ;;
+  webtier)
+    if [[ ${opt_a} == postinstall && -z ${opt_t} && -z ${opt_H} ]];
+    then
+      # WARNING: function not implemented
+      postinst webtier
+    elif [[ ${opt_a} == movelogs && -n ${opt_t} && -z ${opt_H} ]];
+    then
+      # WARNING: function not implemented
+      move_logs webtier
+    else
+      help_webtier
+      exit 2
+    fi
+    ;;
 esac
 
 exit 0

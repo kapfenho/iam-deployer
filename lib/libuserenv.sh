@@ -130,6 +130,7 @@ init_userenv()
   
   cp  ${src}/bin/iam*                 ${bin}/
   cp  ${src}/env/common.env           ${env}/
+  sed -i "s/__DEPLOYER__/${deployer_path}/" ${env}/common.env
 
   # _create_startall
 
@@ -144,7 +145,6 @@ init_userenv()
 #
 extend_bash_profile_on_host()
 {
-    _host=${1}
       src=${DEPLOYER}/lib/templates/hostenv
   env=${iam_hostenv}/env
   bin=${iam_hostenv}/bin
@@ -168,7 +168,17 @@ extend_bash_profile_on_host()
 
   # add sourcing to profile
   cat ${src}/env/bash_profile  >${HOME}/.bash_profile
-  sed -i "s/__HOSTENV__/${_iam_hostenv}/" ${HOME}/.bash_profile
+  sed -i "s/__HOSTENV__/${DEPLOYER}/" ${HOME}/.bash_profile
 }
 
+#  add sourcing of common.env (shared folder) on host
+remote_extend_bash_profile()
+{
+  _host=${1}
+  _cmd="source ${DEPLOYER}/lib/user-config.sh; "
+  _cmd+="source ${DEPLOYER}/lib/libuserenv.sh; "
+  _cmd+="extend_bash_profile_on_host"
+  
+  ssh ${_host} -- ${_cmd} 
+}
 
