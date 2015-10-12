@@ -22,9 +22,12 @@ iamhelp() {
 
     TODO: modify start-all and stop-all scripts ***
 
-    TODO: action keyfiles: we must teh JDK version of the
-            running weblogic process:
-       ls -l /proc/$(pgrep 'webconfig')/exe --version
+    TODO: 
+          keyfile:
+              - start corrent wlst instance for each domain!
+          movelogs:
+              - change oud and ohs instance names 
+                from static to dynamic
 "
   echo
   exit $ERROR_SYNTAX_ERROR
@@ -90,7 +93,7 @@ help_userenv() {
 help_keyfile() {
   echo "
   Syntax: ${0} keyfile -t {nodemanger|domain} [-H host] [-D domain]
-    ${0} keyfile -t nodemanager -H host
+    ${0} keyfile -t nodemanager -H host -D domain_name
     ${0} keyfile -t domain -D domain_name
 
   Create access keyfiles
@@ -158,6 +161,8 @@ help_rcd() {
 help_weblogic() {
   echo "
   Syntax: ${0} weblogic -a { jdk7fix | wlstlibs } -t target_path [-H host] 
+    ${0} weblogic -a jdk7fix -t domain_home -H host
+    ${0} weblogic -a wlstlibs -H host
 
   Modify or extend WebLogic installation
 
@@ -178,7 +183,8 @@ help_identity() {
     ${0} identity -a jdk7fix -t domain_home -H host
     ${0} identity -a psa
     ${0} identity -a postinstall  # TODO: what to to do?
-    ${0} identity -a movelogs -t domain_home
+    ${0} access -a movelogs -t target_name -H host
+
 
   Changes, fixes and user modifications for installed Idenity Manager instance
 
@@ -198,7 +204,8 @@ help_access() {
     ${0} access -a jdk7fix -t domain_home -H host
     ${0} access -a psa
     ${0} access -a postinstall  # TODO: what to to do?
-    ${0} access -a movelogs -t domain_home
+    ${0} access -a movelogs -H host
+
 
   Changes, fixes and user modifications for installed Access Manager instance
 
@@ -232,21 +239,41 @@ help_analytics() {
   exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
+help_directory() {
+  echo "
+  Syntax: ${0} directory -a { postinstall | harden } [-H host]
+    ${0} directory -a postinstall
+    ${0} directory -a harden
+    ${0} directory -a movelogs -H host
+
+  Changes, fixes and user modifications for installed OUD instance
+
+  Parameter:
+    -a   action to perform
+         postinstall  # fix OUD Global ACIs
+         harden       # Harden OUD connection settings (e.g. turn on TLS)
+         movelogs     # Move OUD logfiles to common location
+
+  "
+  exit $ERROR_SYNTAX_ERROR
+}
+# ---------------------------------------------------
 help_webtier() {
   echo "
   Syntax: ${0} webtier -a { postinstall | movelogs } -t target_path [-H host] 
     ${0} webtier -a postinstall  # TODO: what to to do?
-    ${0} webtier -a movelogs -t domain_home
+    ${0} webtier -a movelogs -t domain_home -H host
 
   Changes, fixes and user modifications for installed WebTier instance
 
   Parameter:
     -a   action to perform
+         movelogs     # Move Webtier logfiles to common location
          ...
     -H   hostname: execute on remote host
     -t   target wlserver path
 
   "
   exit $ERROR_SYNTAX_ERROR
-}
+} 
 # ---------------------------------------------------

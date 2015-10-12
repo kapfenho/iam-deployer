@@ -172,14 +172,13 @@ extend_bash_profile_on_host()
   sed -i "s/__HOSTENV__/${DEPLOYER}/" ${HOME}/.bash_profile
 }
 
-#  add sourcing of common.env (shared folder) on host
-remote_extend_bash_profile()
-{
-  _host=${1}
-  _cmd="source ${DEPLOYER}/lib/user-config.sh; "
-  _cmd+="source ${DEPLOYER}/lib/libuserenv.sh; "
-  _cmd+="extend_bash_profile_on_host"
-  
-  ssh ${_host} -- ${_cmd} 
-}
-
+# #  add sourcing of common.env (shared folder) on host
+# remote_extend_bash_profile()
+# {
+#   _host=${1}
+#   _cmd="source ${DEPLOYER}/lib/user-config.sh; "
+#   _cmd+="source ${DEPLOYER}/lib/libuserenv.sh; "
+#   _cmd+="extend_bash_profile_on_host"
+#   
+#   ssh ${_host} -- ${_cmd} 
+# }
