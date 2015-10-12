@@ -90,3 +90,36 @@ jdk_deploy() {
   fi
 }
 
+#  JDK7 upgrade 
+#
+upgrade_jdk()
+{
+  local _oh=${1}
+
+  log "Upgrading to JDK7 - part 1"
+  local dest=${iam_top}/products/${_oh}
+  # when oracle_home dir does not exists: skip
+  [ -a ${dest} ] || continue
+  # when new jdk already exists: skip
+  if [ -a ${dest}/jdk/current ] ; then
+    warning "Skipping - found JDK in ${dest}"
+    continue
+  fi
+  log "upgrading JDK in product dir ${dest}"
+  mkdir -p ${dest}/jdk
+  tar xzf ${s_jdk} -C ${dest}/jdk
+  log "Creating soft link..."
+  ln -s ${dest}/jdk/${jdkname} ${dest}/jdk/current
+  log "Patching JDK...."
+  jdk_patch_config ${dest}/jdk/${jdkname}
+  log "Finished JDK upgrade part 1 in ${dest}"
+
+  # move jdk6
+  # skip if already done
+  [ -h ${dest}/jdk6 ] && continue
+  log "We will move and replace JDK6 in ${dest}"
+  mv ${dest}/jdk6 ${dest}/jdk/
+  ln -s ${dest}/jdk/${jdkname} ${dest}/jdk6
+  log "JDK6 moved - done"
+}
+

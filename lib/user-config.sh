@@ -3,6 +3,7 @@
 #  load the iam provisioning variables and assign them to the 
 #  variables used in the script
 #
+export DEPLOYER=/home/fmwuser/iam-deployer
 iam_config_rsp=${DEPLOYER}/user-config/iam/provisioning.rsp
 lcm_config_rsp=${DEPLOYER}/user-config/lcm/lcm_install.rsp
 
@@ -61,10 +62,10 @@ getvar() {
                                       :     ${iam_orainv:=${iam_top}/etc/oraInventory}
                                       : ${iam_orainv_grp:="oinstall"}
                                         
-                                      :         ${sc_env:="~/.env"}
-                                      :         ${sc_bin:="~/bin"}
-                                      :         ${sc_lib:="~/lib"}
-                                      :         ${sc_crd:="~/.cred"}
+                                      :         ${sc_env:="${HOME}/.env"}
+                                      :         ${sc_bin:="${HOME}/bin"}
+                                      :         ${sc_lib:="${HOME}/lib"}
+                                      :         ${sc_crd:="${HOME}/.cred"}
       
     getvar OIM_SINGLE_DB_HOST     ;   :     ${dbs_dbhost:=${OIM_SINGLE_DB_HOST}}
     getvar OIM_SINGLE_DB_PORT     ;   :       ${dbs_port:=${OIM_SINGLE_DB_PORT}}

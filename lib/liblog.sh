@@ -32,45 +32,48 @@ _mvlog()
 
 #  --------------------------------------------------------------------------
 #  public function - entry point
-#  control flags: idmhost, acchost, webhost, oudhost
+#  control flags: idm, acc, web, oud
 #
 move_logs()
 {
+  local _product=${1}
   oudins=oud1
   ohsins=ohs1
 
   dst=${iam_log}
-  idmdom=${IDMPROV_IDENTITY_DOMAIN}
-  accdom=${IDMPROV_ACCESS_DOMAIN}
+  idmdom=${iam_domain_oim}
+  accdom=${iam_domain_acc}
   
   if [ -z ${idmdom} ] ; then
     error "Env variable IDMPROV_IDENTITY_DOMAIN not defined"
     exit 81
   fi
   
-  if [ "${idmhost}" == "yes" ] ; then
-    mkdir -p ${dst}/nodemanager
-    _mvlog ${iam_top}/config/domains/${idmdom}/servers/AdminServer/logs           ${dst}/${idmdom}/AdminServer
-    _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_soa1/logs            ${dst}/${idmdom}/wls_soa1
-    _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_soa2/logs            ${dst}/${idmdom}/wls_soa2
-    _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_oim1/logs            ${dst}/${idmdom}/wls_oim1
-    _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_oim2/logs            ${dst}/${idmdom}/wls_oim2
-  fi
-  if [ "${acchost}" == "yes" ] ; then
-    mkdir -p ${dst}/nodemanager
-    _mvlog ${iam_top}/config/domains/${accdom}/servers/AdminServer/logs           ${dst}/${accdom}/AdminServer
-    _mvlog ${iam_top}/services/domains/${accdom}/servers/wls_oam1/logs            ${dst}/${accdom}/wls_oam1
-    _mvlog ${iam_top}/services/domains/${accdom}/servers/wls_oam2/logs            ${dst}/${accdom}/wls_oam2
-  fi
-  if [ "${oudhost}" == "yes" ] ; then
-    mkdir -p ${dst}/${oudins}
-    _mvlog ${iam_top}/services/instances/${oudins}/OUD/logs                       ${dst}/${oudins}/logs
-  fi
-  if [ "${webhost}" == "yes" ] ; then
-    mkdir -p ${dst}/${ohsins}
-    _mvlog ${iam_top}/services/instances/${ohsins}/auditlogs                      ${dst}/${ohsins}/auditlogs
-    _mvlog ${iam_top}/services/instances/${ohsins}/diagnostics/logs/OHS/${ohsins} ${dst}/${ohsins}/logs
-    _mvlog ${iam_top}/services/instances/${ohsins}/diagnostics/logs/OPMN/opmn     ${dst}/${ohsins}/opmn
-  fi
+  case ${_product} in
+    idm)
+      mkdir -p ${dst}/nodemanager
+      _mvlog ${iam_top}/config/domains/${idmdom}/servers/AdminServer/logs           ${dst}/${idmdom}/AdminServer
+      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_soa1/logs            ${dst}/${idmdom}/wls_soa1
+      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_soa2/logs            ${dst}/${idmdom}/wls_soa2
+      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_oim1/logs            ${dst}/${idmdom}/wls_oim1
+      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_oim2/logs            ${dst}/${idmdom}/wls_oim2
+      ;;
+    acc)
+      mkdir -p ${dst}/nodemanager
+      _mvlog ${iam_top}/config/domains/${accdom}/servers/AdminServer/logs           ${dst}/${accdom}/AdminServer
+      _mvlog ${iam_top}/services/domains/${accdom}/servers/wls_oam1/logs            ${dst}/${accdom}/wls_oam1
+      _mvlog ${iam_top}/services/domains/${accdom}/servers/wls_oam2/logs            ${dst}/${accdom}/wls_oam2
+      ;;
+    dir)
+      mkdir -p ${dst}/${oudins}
+      _mvlog ${iam_top}/services/instances/${oudins}/OUD/logs                       ${dst}/${oudins}/logs
+      ;;
+    web)
+      mkdir -p ${dst}/${ohsins}
+      _mvlog ${iam_top}/services/instances/${ohsins}/auditlogs                      ${dst}/${ohsins}/auditlogs
+      _mvlog ${iam_top}/services/instances/${ohsins}/diagnostics/logs/OHS/${ohsins} ${dst}/${ohsins}/logs
+      _mvlog ${iam_top}/services/instances/${ohsins}/diagnostics/logs/OPMN/opmn     ${dst}/${ohsins}/opmn
+      ;;
+  esac
 }
 

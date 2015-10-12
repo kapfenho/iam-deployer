@@ -306,17 +306,17 @@ create_domain_keyfiles()
 #
 create_nm_keyfiles()
 {
-  _domain=${1}
+  local _domain=${1}
   # check java version
-  _p=$(pgrep -f ${_domain}/servers/AdminServer)
+  local _p=$(pgrep -f ${_domain}/servers/AdminServer)
   ${_p} -version 2>&1|grep -q "1.6"
   
   if [ "$?" == "0" ];
   then
-    _java_home=${iam_top}/products/${_domain}/jdk/jdk6
-    _wlst="JAVA_HOME=${_java_home} ${WL_HOME}/common/bin/wlst.sh"
+    local _java_home=${iam_top}/products/${_domain}/jdk/jdk6
+    local _wlst="JAVA_HOME=${_java_home} ${WL_HOME}/common/bin/wlst.sh"
   else
-    _wlst=${WL_HOME}/common/bin/wlst.sh
+    local _wlst=${WL_HOME}/common/bin/wlst.sh
   fi
 
   log "Identity Domain: creating nodemanager keyfiles..."
@@ -333,21 +333,23 @@ create_nm_keyfiles()
   fi
 }
 
-remote_create_nm_keyfiles()
-{
-  _host=${1}
-  _domain=${2}
-  if [ "${_domain}" == identity ];
-  then
-    _cmd="idm; "
-  else
-    _cmd="acc; "
-  fi
-  _cmd+="source ${DEPLOYER}/lib/libiam.sh; "
-  _cmd+="create_nm_keyfiles ${_domain}"
-  
-  ssh ${_host} -- ${_cmd} 
-}
+# # execute create_nm_keyfiles on remote host
+# #
+# remote_create_nm_keyfiles()
+# {
+#   local _host=${1}
+#   local _domain=${2}
+#   if [ "${_domain}" == identity ];
+#   then
+#     local _cmd="idm; "
+#   else
+#     local _cmd="acc; "
+#   fi
+#   _cmd+="source ${DEPLOYER}/lib/libiam.sh; "
+#   _cmd+="create_nm_keyfiles ${_domain}"
+#   
+#   ssh ${_host} -- ${_cmd} 
+# }
 
 #  remove installation directories populated by LCM
 #  if $iam_remove_lcm is set to "yes" also remove all LCM dirs
@@ -369,4 +371,103 @@ remove_files()
     fi
 }
 
+#  JDK7 upgrade 
+#
+upgrade_jdk()
+{
+  local _oh=${1}
 
+  log "Upgrading to JDK7 - part 1"
+  local dest=${iam_top}/products/${_oh}
+  # when oracle_home dir does not exists: skip
+  [ -a ${dest} ] || continue
+  # when new jdk already exists: skip
+  if [ -a ${dest}/jdk/current ] ; then
+    warning "Skipping - found JDK in ${dest}"
+    continue
+  fi
+  log "upgrading JDK in product dir ${dest}"
+  mkdir -p ${dest}/jdk
+  tar xzf ${s_jdk} -C ${dest}/jdk
+  log "Creating soft link..."
+  ln -s ${dest}/jdk/${jdkname} ${dest}/jdk/current
+  log "Patching JDK...."
+  jdk_patch_config ${dest}/jdk/${jdkname}
+  log "Finished JDK upgrade part 1 in ${dest}"
+
+  # move jdk6
+  # skip if already done
+  [ -h ${dest}/jdk6 ] && continue
+  log "We will move and replace JDK6 in ${dest}"
+  mv ${dest}/jdk6 ${dest}/jdk/
+  ln -s ${dest}/jdk/${jdkname} ${dest}/jdk6
+  log "JDK6 moved - done"
+}
+
+
+# run Oracle patch set assistant
+# input: product name
+# 
+run_psa()
+{
+  local _product=${1}
+  log "running PSA (Patch Set Assistant) for ${_product}..."
+
+  ${ORACLE_HOME}/bin/psa \
+    -response ${DEPLOYER}/user-config/iam/psa_${_product}.rsp \
+    -logLevel WARNING \
+    -logDir /tmp
+}
+
+# post installation configurations for IAM products
+# input: domain name
+# 
+postinst()
+{
+  local _target=${1}
+
+
+  case ${_target} in
+    identity)
+      log ""
+      log "Identity Domain: configuring domain..."
+
+      ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop \
+        ${DEPLOYER}/lib/identity/idm-config.py
+      log "Identity Domain: configuration steps done."
+      ;;
+    access)
+      log ""
+      log "Access Domain: configuring access domain..."
+
+      ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop \
+        ${DEPLOYER}/lib/access/oam-config.py
+
+      log "Access Domain: configuration steps done"
+      ;;
+    webtier)
+      log "Webgate: fix installation bug"
+
+      _webg=${iam_top}/products/web/webgate/webgate/ohs/config
+
+      if [ -a ${_webg}/oblog_config_wg.xml -a ! -a ${_webg}/oblog_config.xml ] ; then
+        cp ${_webg}/oblog_config_wg.xml ${_webg}/oblog_config.xml
+      fi
+      log "Webgate: done"
+      ;;
+  esac
+
+
+}
+
+# # execute upgrade_jdk on remote host
+# #
+# remote_upgrade_jdk()
+# {
+#   local _host=${1}
+#   local _oh=${2}
+#   _cmd+="source ${DEPLOYER}/lib/libiam.sh; "
+#   _cmd+="upgrade_jdk ${_oh}"
+# 
+#   ssh ${_host} -- ${_cmd} 
+# }
