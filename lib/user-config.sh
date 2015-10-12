@@ -55,7 +55,7 @@ getvar() {
         getvar INSTALL_LCMHOME_DIR ;  :  ${iam_lcmhome:=${INSTALL_LCMHOME_DIR}}
                                       :  ${iam_hostenv:=${iam_top}/home}
                      iam_lcm=$(grep "ORACLE_HOME=" ${lcm_config_rsp} | cut -d= -f2)
-    getvar INSTALL_LOCALCONFIG_DIR ;  : ${iam_services:=${INSTALL_LOCALCONFIG_DIR}}
+    getvar INSTALL_LOCALCONFIG_DIR ;       iam_services=${INSTALL_LOCALCONFIG_DIR}
     
                                       : ${iam_orainv_ptr:=${iam_top}/etc/oraInst.loc}
                                       :     ${iam_orainv:=${iam_top}/etc/oraInventory}
@@ -71,8 +71,8 @@ getvar() {
     getvar OIM_DB_SERVICENAME     ;   :        ${iam_sid:=${OIM_DB_SERVICENAME}}
     getvar OIM_DB_SCHEMAPREFIX    ;   : ${iam_oim_prefix:=${OIM_DB_SCHEMAPREFIX}}
 
-getvar IDMPROV_PRODUCT_IDENTITY_DOMAIN ;   : ${iam_domain_oim:=${IDMPROV_PRODUCT_IDENTITY_DOMAIN}}
-          getvar IDMPROV_ACCESS_DOMAIN ;   : ${iam_domain_acc:=${IDMPROV_ACCESS_DOMAIN}}
+getvar IDMPROV_PRODUCT_IDENTITY_DOMAIN ;   iam_domain_oim=${IDMPROV_PRODUCT_IDENTITY_DOMAIN}
+          getvar IDMPROV_ACCESS_DOMAIN ;   iam_domain_acc=${IDMPROV_ACCESS_DOMAIN}
 
 #    ${iam_oam_prefix:=${OIM_DB_SCHEMAPREFIX}}
 #    ${iam_bip_prefix:=${OIM_DB_SCHEMAPREFIX}}
