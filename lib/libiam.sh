@@ -70,6 +70,23 @@ deploy_ssh_keypair()
   chmod 0644 ${destk}.pub ${authk}
 }
 
+
+# quietly add list of hosts (passed as parameters) to ${HOME}/.ssh/known_hosts 
+# file after this function is run, a list of known hosts will be prepared for 
+# the current user@localhost.
+#
+# WARNING: this function is potentialy dangerous, because it adds a list of 
+# known hosts without any checks from the administrator.
+# 
+add_known_hosts()
+{
+  for host in ${@};
+  do
+    echo "adding ${host} to ${HOME}/.ssh/known_hosts file."
+    ssh fmwuser@${host} -o "StrictHostKeyChecking no"
+  done
+}
+
 #  helper funcitons for product selection
 #
 do_idm() {
