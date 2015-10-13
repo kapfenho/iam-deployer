@@ -1,0 +1,18 @@
+154c154
+<   PRODUCTION_MODE=""
+---
+>   PRODUCTION_MODE="true"
+178c178,179
+<     JAVA_VM=-jrockit
+---
+>     # JAVA_VM=-jrockit
+>     JAVA_VM=-server
+205c206,207
+<     JAVA_VM=-jrockit
+---
+>     # JAVA_VM=-jrockit
+>     JAVA_VM=-server
+218c220
+<     JAVA_VM=-client
+---
+>     # JAVA_VM=-client
