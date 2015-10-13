@@ -333,24 +333,6 @@ create_nm_keyfiles()
   fi
 }
 
-# # execute create_nm_keyfiles on remote host
-# #
-# remote_create_nm_keyfiles()
-# {
-#   local _host=${1}
-#   local _domain=${2}
-#   if [ "${_domain}" == identity ];
-#   then
-#     local _cmd="idm; "
-#   else
-#     local _cmd="acc; "
-#   fi
-#   _cmd+="source ${DEPLOYER}/lib/libiam.sh; "
-#   _cmd+="create_nm_keyfiles ${_domain}"
-#   
-#   ssh ${_host} -- ${_cmd} 
-# }
-
 #  remove installation directories populated by LCM
 #  if $iam_remove_lcm is set to "yes" also remove all LCM dirs
 #  Always returms 0
@@ -369,39 +351,6 @@ remove_files()
         echo "rm -Rf ${iam_top}/lcm/* \
             ${iam_top}/etc/*"
     fi
-}
-
-#  JDK7 upgrade 
-#
-upgrade_jdk()
-{
-  local _oh=${1}
-
-  log "Upgrading to JDK7 - part 1"
-  local dest=${iam_top}/products/${_oh}
-  # when oracle_home dir does not exists: skip
-  [ -a ${dest} ] || continue
-  # when new jdk already exists: skip
-  if [ -a ${dest}/jdk/current ] ; then
-    warning "Skipping - found JDK in ${dest}"
-    continue
-  fi
-  log "upgrading JDK in product dir ${dest}"
-  mkdir -p ${dest}/jdk
-  tar xzf ${s_jdk} -C ${dest}/jdk
-  log "Creating soft link..."
-  ln -s ${dest}/jdk/${jdkname} ${dest}/jdk/current
-  log "Patching JDK...."
-  jdk_patch_config ${dest}/jdk/${jdkname}
-  log "Finished JDK upgrade part 1 in ${dest}"
-
-  # move jdk6
-  # skip if already done
-  [ -h ${dest}/jdk6 ] && continue
-  log "We will move and replace JDK6 in ${dest}"
-  mv ${dest}/jdk6 ${dest}/jdk/
-  ln -s ${dest}/jdk/${jdkname} ${dest}/jdk6
-  log "JDK6 moved - done"
 }
 
 
@@ -459,15 +408,3 @@ postinst()
 
 
 }
-
-# # execute upgrade_jdk on remote host
-# #
-# remote_upgrade_jdk()
-# {
-#   local _host=${1}
-#   local _oh=${2}
-#   _cmd+="source ${DEPLOYER}/lib/libiam.sh; "
-#   _cmd+="upgrade_jdk ${_oh}"
-# 
-#   ssh ${_host} -- ${_cmd} 
-# }
