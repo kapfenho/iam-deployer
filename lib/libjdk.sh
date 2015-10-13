@@ -123,3 +123,4 @@ upgrade_jdk()
   log "JDK6 moved - done"
 }
 
+
