@@ -1,4 +1,0 @@
-trustKeystore=/opt/fmw/config/keystores/apptrust.jks
-idKeystore=/opt/fmw/config/keystores/appident.jks
-keyAlias=iam0
-oudPort=1636
