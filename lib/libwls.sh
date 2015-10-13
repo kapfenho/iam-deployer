@@ -64,13 +64,18 @@ EOF
 #  deploy standard lib acStdLib for wlst
 wlst_copy_libs ()
 {
+  if [ "${1}" == "" ] ; then
+    error "ERROR: Parameter missing"
+    exit 0
+  fi
+
+  local _target=${1}
   if [ do_acc ] ; then
     log "Copy WLST standard lib to access manager WebLogic..."
-    cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/access/wlserver_10.3/common/wlst
+    cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/${_target}/wlserver_10.3/common/wlst
   fi
   if [ do_idm ] ; then
     log "Copy WLST standard lib to identity manager WebLogic..."
-    cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/identity/wlserver_10.3/common/wlst
+    cp -f ${DEPLOYER}/lib/wlst/common/* ${iam_top}/products/${_target}/wlserver_10.3/common/wlst
   fi
 }
-
