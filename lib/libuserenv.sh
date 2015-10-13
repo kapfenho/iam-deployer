@@ -124,6 +124,7 @@ init_userenv()
   _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
       _iam_top=$(echo ${iam_top}     | sed -e 's/[\/&]/\\&/g')
       _iam_log=$(echo ${iam_log}     | sed -e 's/[\/&]/\\&/g')
+  _deployer_path=$(echo ${DEPLOYER} | sed -e 's/[\/&]/\\&/g')
   # also used but scaping not necessary:
   # iam_domain_oim, iam_domain_acc
   
@@ -131,7 +132,7 @@ init_userenv()
   
   cp  ${src}/bin/iam*                 ${bin}/
   cp  ${src}/env/common.env           ${env}/
-  sed -i "s/__DEPLOYER__/${deployer_path}/" ${env}/common.env
+  sed -i "s/__DEPLOYER__/${_deployer_path}/" ${env}/common.env
 
   # _create_startall
 
@@ -156,9 +157,9 @@ extend_bash_profile_on_host()
   _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
 
   [ -L ${sc_env} ] || ln -sf ${env} ${sc_env}
-  [ -L ${sc_env} ] || ln -sf ${bin} ${sc_bin}
-  [ -L ${sc_env} ] || ln -sf ${lib} ${sc_lib}
-  [ -L ${sc_env} ] || ln -sf ${crd} ${sc_crd}
+  [ -L ${sc_bin} ] || ln -sf ${bin} ${sc_bin}
+  [ -L ${sc_lib} ] || ln -sf ${lib} ${sc_lib}
+  [ -L ${sc_crd} ] || ln -sf ${crd} ${sc_crd}
 
   # add the tools.property file to oud instance dir
   for d in ${iam_services}/instances/* ; do
@@ -169,7 +170,7 @@ extend_bash_profile_on_host()
 
   # add sourcing to profile
   cat ${src}/env/bash_profile  >${HOME}/.bash_profile
-  sed -i "s/__HOSTENV__/${DEPLOYER}/" ${HOME}/.bash_profile
+  sed -i -e "s/__HOSTENV__/${_iam_hostenv}/g" ${HOME}/.bash_profile
 }
 
 # #  add sourcing of common.env (shared folder) on host
