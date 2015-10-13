@@ -97,7 +97,6 @@ case ${cmd} in
       init_userenv
     elif [ "${opt_a}" == "profile" -a -n "${opt_H}" ];
     then
-      #remote_extend_bash_profile_host ${opt_H}
       remote_exec ${opt_H} libuserenv noenv extend_bash_profile_on_host
     else
       help_userenv
@@ -110,7 +109,6 @@ case ${cmd} in
       create_domain_keyfiles ${opt_D}
     elif [ "${opt_t}" == "nodemanager" -a -n "${opt_D}" -a -n "${opt_H}" ];
     then
-      #remote_create_nm_keyfiles ${opt_H} ${opt_D}
       remote_exec ${opt_H} libiam noenv create_nm_keyfiles ${opt_D}
     else
       help_keyfile
@@ -120,7 +118,6 @@ case ${cmd} in
   jdk)
     if [ -n "${opt_H}" -a -n "${opt_O}" ];
     then
-      #remote_upgrade_jdk ${opt_H} ${opt_O}
       remote_exec ${opt_H} libjdk noenv upgrade_jdk ${opt_O}
     else
       help_jdk
@@ -139,9 +136,7 @@ case ${cmd} in
   weblogic)
     if [ "${opt_a}" == "jdk7fix" -a -n "${opt_t}" ]; 
     then
-      echo "patch wls domain.."
-      # ATTENTION: this function is probably not needed
-      #patch_wls_domain ${opt_t}
+      remote_exec ${opt_H} libpatchwls noenv patch_wls_bin ${opt_t}
     elif [ "${opt_a}" == "wlstlibs" -a -n "${opt_t}" ]; 
     then
       remote_exec ${opt_H} libwls noenv wlst_copy_libs ${opt_t}
