@@ -161,8 +161,8 @@ help_rcd() {
 help_weblogic() {
   echo "
   Syntax: ${0} weblogic -a { jdk7fix | wlstlibs } -t target_path [-H host] 
-    ${0} weblogic -a jdk7fix -t domain_home -H host
-    ${0} weblogic -a wlstlibs -H host
+    ${0} weblogic -a jdk7fix -t product_name -H host
+    ${0} weblogic -a wlstlibs -t product_name -H host
 
   Modify or extend WebLogic installation
 
@@ -172,6 +172,7 @@ help_weblogic() {
          wlstlibs    add libs to wlst common directory
     -H   hostname: execute on remote host
     -t   target wlserver path
+         target_name: (identity|access)
 
   "
   exit $ERROR_SYNTAX_ERROR
@@ -182,7 +183,7 @@ help_identity() {
   Syntax: ${0} identity -a { jdk7fix | psa | postinstall | movelogs } -t target_path [-H host] 
     ${0} identity -a jdk7fix -t domain_home -H host
     ${0} identity -a psa
-    ${0} identity -a postinstall  # TODO: what to to do?
+    ${0} identity -a postinstall
     ${0} access -a movelogs -t target_name -H host
 
 
@@ -190,7 +191,11 @@ help_identity() {
 
   Parameter:
     -a   action to perform
-         ...
+         jdk7fix      # fix java parameters in commEnv.sh
+         psa          # run Patch Set assitant for OIM
+         postinstall  # Access Domain postinstall configuration
+         movelogs     # Move Identity Domain logfiles to common location
+         
     -H   hostname: execute on remote host
     -t   target wlserver path
 
@@ -211,7 +216,11 @@ help_access() {
 
   Parameter:
     -a   action to perform
-         ...
+         jdk7fix      # fix java parameters in commEnv.sh
+         psa          # run Patch Set assitant for OAM
+         postinstall  # Access Domain postinstall configuration
+         movelogs     # Move Access Domain logfiles to common location
+         
     -H   hostname: execute on remote host
     -t   target wlserver path
 
@@ -268,8 +277,9 @@ help_webtier() {
 
   Parameter:
     -a   action to perform
+         postinstall  # Fix Webgate installation bug (oblog_config.xml)
          movelogs     # Move Webtier logfiles to common location
-         ...
+
     -H   hostname: execute on remote host
     -t   target wlserver path
 
