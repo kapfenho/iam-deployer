@@ -34,6 +34,10 @@ warning() {
   fi
 }
 
+# execute function on remote host
+# syntax:
+#   remote_exec $hostname $additional_lib $env $func_name $func_params
+#
 remote_exec()
 {
   local _host=${1}
@@ -42,14 +46,14 @@ remote_exec()
   local _funcname=${4}
   local _params=""
   
-  local _cmd=""
-  if [ "${_env}" == "noenv" ];
+  local _cmd="source ~/.bash_profile ;"
+  if [ ! "${_env}" == "noenv" ];
   then
-    _env=""
+    _cmd+=" ${_env};"
   fi
-  local _cmd+=" ${_env}"
-  _cmd+=" source ${DEPLOYER}/lib/user-config.sh;"
-  _cmd+=" source ${DEPLOYER}/lib/${_libfile}.sh;"
+  _cmd+=" source ${DEPLOYER}/lib/user-config.sh ;"
+  _cmd+=" source ${DEPLOYER}/lib/libcommon2.sh ;"
+  _cmd+=" source ${DEPLOYER}/lib/${_libfile}.sh ;"
   _cmd+=" ${_funcname}"
   for p in ${@:5};
   do
@@ -58,5 +62,8 @@ remote_exec()
 
   # execute command on remote host
   echo "ssh ${_host} -- ${_cmd}" 
+  set -x
   ssh ${_host} -- ${_cmd} 
+  set +x
 }
+
