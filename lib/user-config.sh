@@ -3,7 +3,7 @@
 #  load the iam provisioning variables and assign them to the 
 #  variables used in the script
 #
-export DEPLOYER=/home/fmwuser/iam-deployer
+export DEPLOYER=/vagrant
 iam_config_rsp=${DEPLOYER}/user-config/iam/provisioning.rsp
 lcm_config_rsp=${DEPLOYER}/user-config/lcm/lcm_install.rsp
 
