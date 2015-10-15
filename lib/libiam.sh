@@ -1,13 +1,13 @@
 #  iam deploy and config functions
 
-wlst_acc_nm_keys="nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
+wlst_nm_keys="nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
 port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
 storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
 y
 exit()
 "
-wlst_acc_keys="connect(username="${domaUser}", password="${domaPwd}", url=domUrl)
-storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm="false")
+wlst_acc_keys="connect(username='${domaUser}', password='${domaPwd}', url=domUrl)
+storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm='false')
 y
 exit()
 "
@@ -17,8 +17,8 @@ storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
 y
 exit()
 "
-wlst_idm_keys="connect(username="${domiUser}", password="${domiPwd}", url=domUrl)
-storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm="false")
+wlst_idm_keys="connect(username='${domiUser}', password='${domiPwd}',url=domUrl)
+storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm='false')
 y
 exit()
 "
@@ -272,34 +272,42 @@ patch_opss() {
 create_domain_keyfiles()
 {
   _domain=${1}
+  _wlst=""
 
   # check java version
-  _p=$(pgrep -f ${_domain}/servers/AdminServer)
-  ${_p} -version 2>&1|grep -q "1.6"
-  
-  if [ "$?" == "0" ];
+  local _p=$(pgrep -fl AdminServer)
+  if [[ ${_p} == *"jdk6"* ]];
   then
+    echo JAVA
     _java_home=${iam_top}/products/${_domain}/jdk/jdk6
-    _wlst="JAVA_HOME=${_java_home} ${WL_HOME}/common/bin/wlst.sh"
-  else
-    _wlst=${WL_HOME}/common/bin/wlst.sh
+    _wlst+="JAVA_HOME=${_java_home}"
   fi
 
+  # create identity domain key files
+  if [ "${_domain}" == "identity" ];
+  then
+    log "Identity Domain: creating keyfiles for domain..."
+
+    source ~/.env/idm.env
+    _wlst+=" ${WL_HOME}/common/bin/wlst.sh"
+
+    if ! [ -a ${iam_hostenv}/.creds/${iam_domain_oim}.key ] ; then
+      echo "${wlst_idm_keys}" | \
+      ${_wlst} -loadProperties ${iam_hostenv}/env/identity.prop
+    fi
+  fi
+
+  # create access domain key files
   if [ "${_domain}" == "access" ];
   then
     log "Access Domain: creating keyfiles for domain..."
 
+    source ~/.env/acc.env
+    _wlst+=${WL_HOME}/common/bin/wlst.sh
+
     if ! [ -a ${iam_hostenv}/.creds/${iam_domain_acc}.key ] ; then
       echo "${wlst_acc_keys}" | \
         ${_wlst} -loadProperties ${iam_hostenv}/env/access.prop 
-    fi
-  elif [ "${_domain}" == "identity" ];
-  then
-    log "Identity Domain: creating keyfiles for domain..."
-
-    if ! [ -a ${iam_hostenv}/.creds/${iam_domain_oim}.key ] ; then
-      echo "${wlst_idm_keys}" | \
-        ${_wlst} -loadProperties ${iam_hostenv}/env/identity.prop
     fi
   fi
 }
@@ -307,30 +315,37 @@ create_domain_keyfiles()
 #
 create_nm_keyfiles()
 {
-  local _domain=${1}
-  # check java version
-  local _p=$(pgrep -f ${_domain}/servers/AdminServer)
-  ${_p} -version 2>&1|grep -q "1.6"
-  
-  if [ "$?" == "0" ];
-  then
-    local _java_home=${iam_top}/products/${_domain}/jdk/jdk6
-    local _wlst="JAVA_HOME=${_java_home} ${WL_HOME}/common/bin/wlst.sh"
-  else
-    local _wlst=${WL_HOME}/common/bin/wlst.sh
-  fi
+  local _target=${1}
+  local _wlst=""
 
-  log "Identity Domain: creating nodemanager keyfiles..."
+  case ${_target} in
+    identity)
+      source ~/.env/idm.env
+      ;;
+    access)
+      source ~/.env/acc.env
+      ;;
+    *)
+      return ERR_FILE_NOT_FOUND
+      ;;
+  esac
+
+  # check java version
+  # dirname $(dirname $(readlink /proc/$(pgrep -f AdminServer)/exe))
+  local _p="/proc/$(pgrep -f AdminServer)/exe"
+  local _jh=$(dirname $(dirname $(readlink ${_p})))
+  
+  _jv=$(${_p} -version 2>&1)
+  if [[ ${_jv} =~ "1\.6" ]];
+  then
+    export JAVA_HOME=${_jh}
+    export PATH=${JAVA_HOME}/bin:${PATH}
+  fi
 
   if ! [ -a ${iam_hostenv}/.creds/nm.key ] ; then
     echo "${wlst_idm_nm_keys}" | \
-      ${_wlst} -loadProperties ${iam_hostenv}/env/identity.prop
-    log "Access Domain: creating nodemanager keyfiles..."
-  fi
-
-  if ! [ -a ${iam_hostenv}/.creds/nm.key ] ; then
-    echo "${wlst_acc_nm_keys}" | \
-      ${_wlst} -loadProperties ${iam_hostenv}/env/access.prop
+    ${WL_HOME}/common/bin/wlst.sh -loadProperties \
+    ${iam_hostenv}/env/${_target}.prop
   fi
 }
 
@@ -340,18 +355,18 @@ create_nm_keyfiles()
 #
 remove_files()
 {
-    echo "/bin/rm -Rf ${iam_top}/products/* \
-        ${iam_top}/config/* \
-        ${iam_services}/* \
-        ${iam_top}/*.lck \
-        ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
-        ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
-        ${iam_top}/lcm/lcmhome/provisioning/logs/"
+  echo "/bin/rm -Rf ${iam_top}/products/* \
+    ${iam_top}/config/* \
+    ${iam_services}/* \
+    ${iam_top}/*.lck \
+    ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
+    ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
+    ${iam_top}/lcm/lcmhome/provisioning/logs/"
 
-    if [ "${iam_remove_lcm}" == "yes" ] ; then
-        echo "rm -Rf ${iam_top}/lcm/* \
-            ${iam_top}/etc/*"
-    fi
+  if [ "${iam_remove_lcm}" == "yes" ] ; then
+    echo "rm -Rf ${iam_top}/lcm/* \
+      ${iam_top}/etc/*"
+  fi
 }
 
 
@@ -376,12 +391,12 @@ postinst()
 {
   local _target=${1}
 
-
   case ${_target} in
     identity)
       log ""
       log "Identity Domain: configuring domain..."
 
+      source ~/.env/idm.env
       ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop \
         ${DEPLOYER}/lib/identity/idm-config.py
       log "Identity Domain: configuration steps done."
@@ -390,6 +405,7 @@ postinst()
       log ""
       log "Access Domain: configuring access domain..."
 
+      source ~/.env/acc.env
       ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop \
         ${DEPLOYER}/lib/access/oam-config.py
 
@@ -398,6 +414,7 @@ postinst()
     webtier)
       log "Webgate: fix installation bug"
 
+      source ~/.env/web.env
       _webg=${iam_top}/products/web/webgate/webgate/ohs/config
 
       if [ -a ${_webg}/oblog_config_wg.xml -a ! -a ${_webg}/oblog_config.xml ] ; then
