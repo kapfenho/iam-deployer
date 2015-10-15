@@ -8,7 +8,7 @@ _mvlog()
 {
   local src=${1}
   local dst=${2}
-  if [ ! -a ${src} ] ; then
+  if [ ! -d ${src} ] ; then
     return
   fi
   # check if already done
