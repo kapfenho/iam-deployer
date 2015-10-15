@@ -64,6 +64,22 @@ case ${cmd} in
   help)
     iamhelp
     ;;
+  ssh-keys)
+    if [ -n "${opt_a}" -a -n ${opt_t} -a -z "${opt_H}" ];
+    then
+      gen_ssh_keypair ${opt_t}
+    elif [ -n "${opt_a}" -a -n "${opt_t}" -a -n "${opt_H}" ]
+    then
+      remote_exec ${opt_H} libiam noenv deploy_ssh_keypair ${opt_t}
+    elif [ -n "${opt_a}" -a -z "${opt_t}" -a -n "${opt_H}" ]
+    then
+      add_known_hosts ${opt_H}
+    else
+      help_ssh_keys
+      exit 2
+    fi
+
+    ;;
   orainv)
     if [ -n "${opt_H}" -a -z "${opt_h}" ];
     then
@@ -155,7 +171,7 @@ case ${cmd} in
     elif [ "${opt_a}" == "postinstall" -a -z "${opt_t}" -a -z "${opt_H}" ];
     then
       postinst identity
-    elif [ "${opt_a}" == "movelogs" -a -z "${opt_H}" ];
+    elif [ "${opt_a}" == "movelogs" -a -n "${opt_H}" -a -z "${opt_t}" ];
     then
       remote_exec ${opt_H} liblog idm move_logs idm
     else
