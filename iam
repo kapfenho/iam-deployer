@@ -150,7 +150,7 @@ case ${cmd} in
     fi
     ;;
   weblogic)
-    if [ "${opt_a}" == "jdk7fix" -a -n "${opt_t}" ]; 
+    if [ "${opt_a}" == "jdk7fix" -a -n "${opt_t}" -a -n "${opt_H}" ]; 
     then
       remote_exec ${opt_H} libpatchwls noenv patch_wls_bin ${opt_t}
     elif [ "${opt_a}" == "wlstlibs" -a -n "${opt_t}" ]; 
@@ -167,7 +167,7 @@ case ${cmd} in
       remote_exec ${opt_H} libpatchwls idm patch_wls_domain ${opt_t}
     elif [ "${opt_a}" == "psa" -a -z "${opt_t}" -a -z "${opt_H}" ];
     then
-      idm; run_psa identity
+      source ~/.env/idm.env; run_psa identity
     elif [ "${opt_a}" == "postinstall" -a -z "${opt_t}" -a -z "${opt_H}" ];
     then
       postinst identity
