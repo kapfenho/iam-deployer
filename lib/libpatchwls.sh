@@ -15,10 +15,10 @@ patch_wls_bin()
   local _src=${DEPLOYER}/lib/weblogic
 
   # wl_home
-  if grep -e 'PRODUCTION_MODE="true"' ${iam_top}/${_p}/wlserver_10.3/common/bin/commEnv.sh >/dev/null ; then
+  if grep -e 'PRODUCTION_MODE="true"' ${iam_top}/products/${_p}/wlserver_10.3/common/bin/commEnv.sh >/dev/null ; then
     log "WL_HOME already patch, nothing to do"
   else
-    patch -b ${iam_top}/${_p}/common/bin/commEnv.sh <${_src}/weblogic/commEnv.sh.patch
+    patch -b ${iam_top}/products/${_p}/wlserver_10.3/common/bin/commEnv.sh <${_src}/commEnv.sh.patch
     log "WL_HOME patched: ${iam_top}/${_p}"
   fi
 }
