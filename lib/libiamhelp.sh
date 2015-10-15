@@ -7,6 +7,7 @@ iamhelp() {
   
   Commands:   parameter -h for command help
     help      show this help
+    ssh-keys  generate and deploy ssh keypair
     orainv    create central oracle inventory pointer
     lcm       install LCM
     prov      provision with LCM
@@ -32,7 +33,27 @@ iamhelp() {
   echo
   exit $ERROR_SYNTAX_ERROR
 }
+# ---------------------------------------------------
+help_ssh_keys() {
+  echo "
+  Syntax: ${0} ssh-keys -a {generate|deploy|add} [-t key_dest] [-H host]
+    ${0} ssh-keys -a generate -t key_dest
+    ${0} ssh-keys -a deploy -t key_dest -H hostname
+    ${0} ssh-keys -a add -H hostname
 
+  Generate and deploy ssh-key pair
+  Parameter:
+    -a   action to perform
+         generate:    generate ssh keys
+         deploy:      deploy ssh keys to remote host
+         add:         add remote host to known_hosts for this machine
+    -t   target location
+         key_dest     ssh common key destination
+    -H   hostname:    host which to add to known_hosts file
+
+  "
+  exit $ERROR_SYNTAX_ERROR
+}
 # ---------------------------------------------------
 help_orainv() {
   echo "
@@ -180,11 +201,11 @@ help_weblogic() {
 # ---------------------------------------------------
 help_identity() {
   echo "
-  Syntax: ${0} identity -a { jdk7fix | psa | postinstall | movelogs } -t target_path [-H host] 
+  Syntax: ${0} identity -a { jdk7fix | psa | postinstall | movelogs } [-t target_path] [-H host] 
     ${0} identity -a jdk7fix -t domain_home -H host
     ${0} identity -a psa
     ${0} identity -a postinstall
-    ${0} access -a movelogs -t target_name -H host
+    ${0} identity -a movelogs -H host
 
 
   Changes, fixes and user modifications for installed Idenity Manager instance
@@ -205,7 +226,7 @@ help_identity() {
 # ---------------------------------------------------
 help_access() {
   echo "
-  Syntax: ${0} access -a { jdk7fix | psa | postinstall | movelogs } -t target_path [-H host] 
+  Syntax: ${0} access -a { jdk7fix | psa | postinstall | movelogs } [-t target_path] [-H host] 
     ${0} access -a jdk7fix -t domain_home -H host
     ${0} access -a psa
     ${0} access -a postinstall  # TODO: what to to do?
