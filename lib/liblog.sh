@@ -8,26 +8,26 @@ _mvlog()
 {
   local src=${1}
   local dst=${2}
-  if [ ! -d ${src} ] ; then
+  if [[ ! -a ${src} ]] ; then
     return
   fi
-  # check if already done
-  if [ -h ${src} ] ; then
-    warning "Already moved log dir ${src}"
-  else
-    mkdir -p "${dst}"
-    # delete destination file if exsiting
-    for f in ${dst}/* ; do
-      rm -Rf "${f}"
-    done
-    # move all files to new destination
-    for f in ${src}/* ; do
-      mv "${f}" ${dst}/
-    done
-    # replace old location with soft link
-    rm -Rf   ${src}
-    ln -sf   ${dst} ${src}
-  fi
+#  # check if already done
+#  if [ -h ${src} ] ; then
+#    warning "Already moved log dir ${src}"
+#  else
+#    mkdir -p "${dst}"
+#    # delete destination file if exsiting
+#    for f in ${dst}/* ; do
+#      rm -Rf "${f}"
+#    done
+#    # move all files to new destination
+#    for f in ${src}/* ; do
+#      mv "${f}" ${dst}/
+#    done
+#    # replace old location with soft link
+#    rm -Rf   ${src}
+#    ln -sf   ${dst} ${src}
+#  fi
 }
 
 #  --------------------------------------------------------------------------
