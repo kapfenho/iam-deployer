@@ -83,7 +83,8 @@ add_known_hosts()
   for host in ${@};
   do
     echo "adding ${host} to ${HOME}/.ssh/known_hosts file."
-    ssh fmwuser@${host} -o "StrictHostKeyChecking no"
+    ssh-keyscan -t rsa ${host} >> ${HOME}/.ssh/known_hosts
+    #ssh fmwuser@${host} -o "StrictHostKeyChecking no"
   done
 }
 
