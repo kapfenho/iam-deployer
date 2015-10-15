@@ -28,7 +28,6 @@ _cp_nodemanager()
 
 _cp_oim()
 {
-  set -x
   # already done?
   [ -f ${env}/idm.env ] && return $WARNING_DONE
 
