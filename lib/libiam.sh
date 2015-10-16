@@ -11,12 +11,6 @@ storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm='false')
 y
 exit()
 "
-wlst_idm_nm_keys="nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
-port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
-storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
-y
-exit()
-"
 wlst_idm_keys="connect(username='${domiUser}', password='${domiPwd}',url=domUrl)
 storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm='false')
 y
@@ -271,48 +265,45 @@ patch_opss() {
 #
 create_domain_keyfiles()
 {
-  _domain=${1}
-  _wlst=""
+  local _target=${1}
+
+  case ${_target} in
+    identity)
+      source ~/.env/idm.env
+      _wlst_domain_keys=${wlst_idm_keys}
+      ;;
+    access)
+      source ~/.env/acc.env
+      _wlst_domain_keys=${wlst_acc_keys}
+      ;;
+    *)
+      return ERR_FILE_NOT_FOUND
+      ;;
+  esac
 
   # check java version
-  local _p=$(pgrep -fl AdminServer)
-  if [[ ${_p} == *"jdk6"* ]];
+  # dirname $(dirname $(readlink /proc/$(pgrep -f AdminServer)/exe))
+  local _p="/proc/$(pgrep -f AdminServer)/exe"
+  local _jh=$(dirname $(dirname $(readlink ${_p})))
+  
+  _jv=$(${_p} -version 2>&1)
+  if [[ ${_jv} =~ "1\.6" ]];
   then
-    echo JAVA
-    _java_home=${iam_top}/products/${_domain}/jdk/jdk6
-    _wlst+="JAVA_HOME=${_java_home}"
+    export JAVA_HOME=${_jh}
+    export PATH=${JAVA_HOME}/bin:${PATH}
   fi
 
-  # create identity domain key files
-  if [ "${_domain}" == "identity" ];
-  then
-    log "Identity Domain: creating keyfiles for domain..."
+  log "Creating Domain keyfiles for domain..."
 
-    source ~/.env/idm.env
-    _wlst+=" ${WL_HOME}/common/bin/wlst.sh"
-
-    if ! [ -a ${iam_hostenv}/.creds/${iam_domain_oim}.key ] ; then
-      echo "${wlst_idm_keys}" | \
-      ${_wlst} -loadProperties ${iam_hostenv}/env/identity.prop
-    fi
-  fi
-
-  # create access domain key files
-  if [ "${_domain}" == "access" ];
-  then
-    log "Access Domain: creating keyfiles for domain..."
-
-    source ~/.env/acc.env
-    _wlst+=${WL_HOME}/common/bin/wlst.sh
-
-    if ! [ -a ${iam_hostenv}/.creds/${iam_domain_acc}.key ] ; then
-      echo "${wlst_acc_keys}" | \
-        ${_wlst} -loadProperties ${iam_hostenv}/env/access.prop 
-    fi
+  if ! [ -a ${iam_hostenv}/.creds/${iam_domain_oim}.key ] ; then
+    echo "${_wlst_domain_keys}" | \
+      ${WL_HOME}/common/bin/wlst.sh -loadProperties \
+      ${iam_hostenv}/env/${_target}.prop
   fi
 }
 # create nodemanager keyfiles
 #
+
 create_nm_keyfiles()
 {
   local _target=${1}
@@ -334,7 +325,7 @@ create_nm_keyfiles()
   # dirname $(dirname $(readlink /proc/$(pgrep -f AdminServer)/exe))
   local _p="/proc/$(pgrep -f AdminServer)/exe"
   local _jh=$(dirname $(dirname $(readlink ${_p})))
-  
+
   _jv=$(${_p} -version 2>&1)
   if [[ ${_jv} =~ "1\.6" ]];
   then
@@ -342,10 +333,12 @@ create_nm_keyfiles()
     export PATH=${JAVA_HOME}/bin:${PATH}
   fi
 
+  log "Creating Nodemanager keyfiles for domain..."
+
   if ! [ -a ${iam_hostenv}/.creds/nm.key ] ; then
-    echo "${wlst_idm_nm_keys}" | \
-    ${WL_HOME}/common/bin/wlst.sh -loadProperties \
-    ${iam_hostenv}/env/${_target}.prop
+    echo "${wlst_nm_keys}" | \
+      ${WL_HOME}/common/bin/wlst.sh -loadProperties \
+      ${iam_hostenv}/env/${_target}.prop
   fi
 }
 
