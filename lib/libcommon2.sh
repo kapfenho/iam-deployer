@@ -46,13 +46,11 @@ remote_exec()
   local _funcname=${4}
   local _params=""
   
-  local _cmd="source ~/.bash_profile ;"
+  local _cmd="source ${DEPLOYER}/lib/remote.env ;"
   if [ ! "${_env}" == "noenv" ];
   then
     _cmd+=" ${_env};"
   fi
-  _cmd+=" source ${DEPLOYER}/lib/user-config.sh ;"
-  _cmd+=" source ${DEPLOYER}/lib/libcommon2.sh ;"
   _cmd+=" source ${DEPLOYER}/lib/${_libfile}.sh ;"
   _cmd+=" ${_funcname}"
   for p in ${@:5};
@@ -62,8 +60,6 @@ remote_exec()
 
   # execute command on remote host
   echo "ssh ${_host} -- ${_cmd}" 
-  set -x
   ssh ${_host} -- ${_cmd} 
-  set +x
 }
 
