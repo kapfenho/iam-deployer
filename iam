@@ -189,7 +189,7 @@ case ${cmd} in
     elif [ "${opt_a}" == "postinstall" -a -z "${opt_t}" -a -z "${opt_H}" ];
     then
       postinst access
-    elif [ "${opt_a}" == "movelogs" -a -z "${opt_H}" ];
+    elif [ "${opt_a}" == "movelogs" -a -n "${opt_H}" -a -z "${opt_t}" ];
     then
       remote_exec ${opt_H} liblog acc move_logs acc
     else
@@ -234,9 +234,9 @@ case ${cmd} in
     if [ "${opt_a}" == "postinstall" -a -z "${opt_t}" -a -z "${opt_H}" ];
     then
       postinst webtier
-    elif [ "${opt_a}" == "movelogs" -a -n "${opt_t}" -a -z "${opt_H}" ];
+    elif [ "${opt_a}" == "movelogs" -a -n "${opt_H}" -a -z "${opt_t}" ];
     then
-      move_logs webtier
+      remote_exec ${opt_H} liblog idm move_logs web
     else
       help_webtier
       exit 2
