@@ -113,8 +113,8 @@ help_userenv() {
 # ---------------------------------------------------
 help_keyfile() {
   echo "
-  Syntax: ${0} keyfile -t {nodemanger|domain} [-H host] [-D domain]
-    ${0} keyfile -t nodemanager -H host -D domain_name
+  Syntax: ${0} keyfile -t {nodemanger|domain} [-D domain] [-H host]
+    ${0} keyfile -t nodemanager -D domain_name -H host 
     ${0} keyfile -t domain -D domain_name
 
   Create access keyfiles
@@ -138,6 +138,7 @@ help_keyfile() {
 help_jdk() {
   echo "
   Syntax: ${0} jdk -H host -O oracle_home
+  Syntax Example: ${0} jdk -H iam.agoracon.at -O identity
 
   Upgrade existing JDK (from JDK6 to JDK7)
 
@@ -292,7 +293,7 @@ help_webtier() {
   echo "
   Syntax: ${0} webtier -a { postinstall | movelogs } -t target_path [-H host] 
     ${0} webtier -a postinstall  # TODO: what to to do?
-    ${0} webtier -a movelogs -t domain_home -H host
+    ${0} webtier -a movelogs -H host
 
   Changes, fixes and user modifications for installed WebTier instance
 
