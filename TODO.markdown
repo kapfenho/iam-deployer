@@ -1,9 +1,8 @@
 TODO
 ====
 
-- .env/common.env    -> DEPLOYER
+- replace domain name in iam-monitor
 - search again for usage of "vagrant" in path
-- stop on error (test)
 - lib/liblogs -> [ ] -> [[ ]]
 - pwd in psa_identity
 
