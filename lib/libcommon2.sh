@@ -59,7 +59,7 @@ remote_exec()
   done
 
   # execute command on remote host
-  echo "ssh ${_host} -- ${_cmd}" 
+  #echo "ssh ${_host} -- ${_cmd}" 
   ssh ${_host} -- ${_cmd} 
 }
 

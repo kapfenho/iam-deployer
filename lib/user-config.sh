@@ -54,7 +54,7 @@ getvar() {
      
                 getvar IL_APP_BASE ;  :      ${iam_top:=${IL_APP_BASE}}
         getvar INSTALL_LCMHOME_DIR ;  :  ${iam_lcmhome:=${INSTALL_LCMHOME_DIR}}
-                                      :  ${iam_hostenv:=${iam_top}/home}
+                                      :  ${iam_hostenv:=${iam_top}/etc/home}
                      iam_lcm=$(grep "ORACLE_HOME=" ${lcm_config_rsp} | cut -d= -f2)
     getvar INSTALL_LOCALCONFIG_DIR ;       iam_services=${INSTALL_LOCALCONFIG_DIR}
     

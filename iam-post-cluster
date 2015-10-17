@@ -1,0 +1,70 @@
+#!/bin/bash
+#
+#  VWFS Post installation steps
+#
+#  Prerequisites:
+#  - there should be ssh-key communication available
+#    on hosts on which the deployment should be performed
+#
+
+#  Hosts are:
+#    OIM:  oim1  oim2
+#    WEB:  web1  web2
+#
+
+#  we need common.env to be able to execute iam tool locally
+# 
+export DEPLOYER
+export PATH=${DEPLOYER}:${PATH}
+source ${DEPLOYER}/lib/user-config.sh
+
+#  create host environment for remote execution
+#
+create_hostenv()
+{
+  _remotenv_path=${1}
+
+  chmod 0775 ${_remotenv_path}
+
+  echo "source ~/.bash_profile"                 >  ${_remotenv_path}
+  echo "source ${DEPLOYER}/lib/user-config.sh"  >> ${_remotenv_path}
+  echo "source ${DEPLOYER}/lib/libcommon2.sh"   >> ${_remotenv_path}
+}
+
+create_hostenv ${iam_top}/etc/remote.env
+
+# deploy user environment
+iam userenv -a env
+iam userenv -a profile -H oim1
+iam userenv -a profile -H oim2
+iam userenv -a profile -H web1
+iam userenv -a profile -H web2
+
+# copy weblogic libraries
+iam weblogic -a wlstlibs -t identity -H oim1
+
+# upgrade jdk
+iam jdk -O identity -H oim1
+
+# identity domain PSA run
+iam identity -a psa
+
+# identity domain nodemanager and domain keyfiles
+iam keyfile -t nodemanager -D identity -H oim1
+iam keyfile -t domain -D identity
+
+# identity domain post-install steps
+iam identity -a postinstall
+iam identity -a movelogs -H oim1
+iam identity -a movelogs -H oim2
+iam identity -a jdk7fix -t identity -H oim1
+iam identity -a jdk7fix -t identity -H oim2
+
+# patch weblogic java environment
+iam weblogic -a jdk7fix -t identity -H oim1
+
+# webgate installation bug fix
+iam webtier -a postinstall
+iam webtier -a movelogs -H web1
+iam webtier -a movelogs -H web2
+

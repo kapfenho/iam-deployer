@@ -167,10 +167,10 @@ case ${cmd} in
       remote_exec ${opt_H} libpatchwls idm patch_wls_domain ${opt_t}
     elif [ "${opt_a}" == "psa" -a -z "${opt_t}" -a -z "${opt_H}" ];
     then
-      source ~/.env/idm.env; run_psa identity
+      . ~/.env/common.env; . ~/.env/idm.env; run_psa identity
     elif [ "${opt_a}" == "postinstall" -a -z "${opt_t}" -a -z "${opt_H}" ];
     then
-      postinst identity
+     . ~/.env/common.env; . ~/.env/idm.env; postinst identity
     elif [ "${opt_a}" == "movelogs" -a -n "${opt_H}" -a -z "${opt_t}" ];
     then
       remote_exec ${opt_H} liblog idm move_logs idm
@@ -185,10 +185,10 @@ case ${cmd} in
       remote_exec ${opt_H} libpatchwls acc patch_wls_domain ${opt_t}
     elif [ "${opt_a}" == "psa" -a -z "${opt_t}" -a -z "${opt_H}" ];
     then
-      acc; run_psa access
+      . ~/.env/common.env; . ~/.env/acc.env; run_psa access
     elif [ "${opt_a}" == "postinstall" -a -z "${opt_t}" -a -z "${opt_H}" ];
     then
-      postinst access
+      . ~/.env/common.env; . ~/.env/acc.env; postinst access
     elif [ "${opt_a}" == "movelogs" -a -n "${opt_H}" -a -z "${opt_t}" ];
     then
       remote_exec ${opt_H} liblog acc move_logs acc

@@ -371,6 +371,8 @@ run_psa()
   local _product=${1}
   log "running PSA (Patch Set Assistant) for ${_product}..."
 
+  echo "PSA:"
+  echo "${ORACLE_HOME}"
   ${ORACLE_HOME}/bin/psa \
     -response ${DEPLOYER}/user-config/iam/psa_${_product}.rsp \
     -logLevel WARNING \
