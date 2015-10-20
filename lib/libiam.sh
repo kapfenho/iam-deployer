@@ -271,11 +271,6 @@ patch_opss() {
 }
 
 
-wlst_idm_keys="connect(username='${domiUser}', password='${domiPwd}',url=domUrl)
-storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm='false')
-y
-exit()
-"
 
 # create domain keyfiles
 #
@@ -283,7 +278,9 @@ identity_keyfile()
 {
   local _domain=${1}
 
-  if ! [ -a ${iam_hostenv}/.creds/${_domain}.key ] ; then
+  if [ -a ${opt_o}.key ] ; then
+    log "Domain keyfiles skipped"
+  else
 
     log "Creating Domain keyfiles for domain..."
 
@@ -298,13 +295,20 @@ identity_keyfile()
       export PATH=${JAVA_HOME}/bin:${PATH}
     fi
 
-    echo "${wlst_idm_keys}" | \
-      ${WL_HOME}/common/bin/wlst.sh -loadProperties \
-      ${iam_hostenv}/env/identity.prop
+    local _wlst=""
+    _wlst+="connect(username='${opt_u}',"
+    _wlst+="        password='${opt_p}',"
+    _wlst+="        domUrl)\n"
+    _wlst+="storeUserConfig(userConfigFile='${dom_o}.usr',"
+    _wlst+="                userKeyFile='${dom_o}.key',"
+    _wlst+="                nm='false')\n"
+    _wlst+="y\n"
+    _wlst+="exit()\n"
+
+    echo "${_wlst}" | ${WL_HOME}/common/bin/wlst.sh \
+                       -loadProperties ${iam_hostenv}/env/identity.prop
     log "Finished creating domain keyfiles"
 
-  else
-    log "Domain keyfiles skipped"
   fi
 }
 # create nodemanager keyfiles

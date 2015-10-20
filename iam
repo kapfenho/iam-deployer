@@ -39,7 +39,7 @@ if [ $# -ge 1 ] ; then
   shift
 fi
 
-while getopts D:H:O:a:t:h FLAG; do
+while getopts D:H:O:a:t:u:p:o:h FLAG; do
   case $FLAG in
     D)  opt_D=$OPTARG   
       ;;
@@ -50,6 +50,12 @@ while getopts D:H:O:a:t:h FLAG; do
     a)  opt_a=$OPTARG   
       ;;
     t)  opt_t=$OPTARG   
+      ;;
+    u)  opt_u=$OPTARG   
+      ;;
+    p)  opt_p=$OPTARG   
+      ;;
+    o)  opt_o=$OPTARG   
       ;;
     h)  opt_h=yes       
       ;;
@@ -190,15 +196,18 @@ else
       load_userenv common
       load_userenv idm
 
-      if   [ "${opt_a}" == "jdk7fix"     -a -n "${opt_t}" ] ; then
+      if   [ "${opt_a}" == "jdk7fix"     -a -z "${opt_h}" ] ; then
         patch_wls_domain ${opt_t}
-      elif [ "${opt_a}" == "psa"         -a -z "${opt_t}" ] ; then
+      elif [ "${opt_a}" == "psa"         -a -z "${opt_h}" ] ; then
         run_psa identity
-      elif [ "${opt_a}" == "keyfile"     -a -z "${opt_t}" ] ; then
-        identity_keyfile
-      elif [ "${opt_a}" == "postinstall" -a -z "${opt_t}" ] ; then
+      elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" ] ; then
+        ${opt_u:=${domiUser}}
+        ${opt_p:=${domiPwd}}
+        ${opt_o:="${iam_hostenv}/.creds/${iam_domain_oim}"}
+        create_keyfile 
+      elif [ "${opt_a}" == "postinstall" -a -z "${opt_h}" ] ; then
         postinst identity
-      elif [ "${opt_a}" == "movelogs"    -a -z "${opt_t}" ] ; then
+      elif [ "${opt_a}" == "movelogs"    -a -z "${opt_h}" ] ; then
         move_logs idm
       else
         help_identity

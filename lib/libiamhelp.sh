@@ -205,6 +205,7 @@ help_identity() {
   Syntax: ${0} identity -a { jdk7fix | psa | postinstall | movelogs } [-t target_path] [-H host] 
     ${0} identity -a jdk7fix -t domain_home -H host
     ${0} identity -a psa
+    ${0} identity -a keyfile [-u user] [-p pwd] [-o output]
     ${0} identity -a postinstall
     ${0} identity -a movelogs -H host
 
@@ -215,11 +216,15 @@ help_identity() {
     -a   action to perform
          jdk7fix      # fix java parameters in commEnv.sh
          psa          # run Patch Set assitant for OIM
+         keyfile      # create domain keyfiles for defined user
          postinstall  # Access Domain postinstall configuration
          movelogs     # Move Identity Domain logfiles to common location
          
     -H   hostname: execute on remote host
     -t   target wlserver path
+    -u   user to create keyfile for
+    -p   password of user
+    -o   directory to write the keyfiles to
 
   "
   exit $ERROR_SYNTAX_ERROR
