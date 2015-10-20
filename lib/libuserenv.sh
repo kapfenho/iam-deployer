@@ -111,19 +111,19 @@ init_userenv()
 {
       src=${DEPLOYER}/lib/templates/hostenv
   nodesrc=${DEPLOYER}/lib/templates/nodemanager
-  env=${iam_hostenv}/env
-  bin=${iam_hostenv}/bin
-  lib=${iam_hostenv}/lib
-  crd=${iam_hostenv}/.creds
+      env=${iam_hostenv}/env
+      bin=${iam_hostenv}/bin
+      lib=${iam_hostenv}/lib
+      crd=${iam_hostenv}/.creds
 
   [[ -d ${env} ]] && return $WARNING_DONE
  
   # these variables will be used in sed command and must
   # be escaped before
-  _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
-      _iam_top=$(echo ${iam_top}     | sed -e 's/[\/&]/\\&/g')
-      _iam_log=$(echo ${iam_log}     | sed -e 's/[\/&]/\\&/g')
-  _deployer_path=$(echo ${DEPLOYER} | sed -e 's/[\/&]/\\&/g')
+    _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
+        _iam_top=$(echo ${iam_top}     | sed -e 's/[\/&]/\\&/g')
+        _iam_log=$(echo ${iam_log}     | sed -e 's/[\/&]/\\&/g')
+  _deployer_path=$(echo ${DEPLOYER}    | sed -e 's/[\/&]/\\&/g')
   # also used but scaping not necessary:
   # iam_domain_oim, iam_domain_acc
   
@@ -146,7 +146,7 @@ init_userenv()
 #
 extend_bash_profile_on_host()
 {
-      src=${DEPLOYER}/lib/templates/hostenv
+  src=${DEPLOYER}/lib/templates/hostenv
   env=${iam_hostenv}/env
   bin=${iam_hostenv}/bin
   lib=${iam_hostenv}/lib

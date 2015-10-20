@@ -1,9 +1,15 @@
 #!/bin/bash
 
+if ! shopt -q login_shell ; then
+  source /etc/profile
+fi
+
 if [ -z ${DEPLOYER} ] ; then
-  error "ERROR: Environment variable DEPLOYER is not set"
+  echo "ERROR: Environment variable DEPLOYER is not set"
   exit 80
 fi
+
+echo "CALL: $*"
 
 . ${DEPLOYER}/lib/user-config.sh
 . ${DEPLOYER}/lib/libcommon2.sh
@@ -13,21 +19,21 @@ fi
 . ${DEPLOYER}/lib/libiamhelp.sh
 . ${DEPLOYER}/lib/libuserenv.sh
 
-# export JAVA_HOME=${s_runjdk}
-# export      PATH=${JAVA_HOME}/bin:${PATH}
-# export RCU_LOG_LOCATION=/tmp 
-
 umask ${iam_user_umask}
 
-# main program -----------------------------
+#  main program -----------------------------
 #
-# no prarameters?
-# exit with error code 2: 
-# https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html
+#  no prarameters:  exit with error code 2
+#  https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html
+#
 if [ $# -lt 1 ] ; then
   iamhelp
 fi
-# command stated?
+
+#  remember original parameters for host calls
+orig_params="${@}"
+
+#  command stated?
 if [ $# -ge 1 ] ; then
   cmd=${1}
   shift
@@ -58,193 +64,212 @@ while getopts D:H:O:a:t:h FLAG; do
   esac
 done
 
-set -o errexit nounset
+#set -o errexit nounset
+set -o errexit
 
-case ${cmd} in
-  help)
-    iamhelp
-    ;;
-  ssh-keys)
-    if [ -n "${opt_a}" -a -n ${opt_t} -a -z "${opt_H}" ];
-    then
-      gen_ssh_keypair ${opt_t}
-    elif [ -n "${opt_a}" -a -n "${opt_t}" -a -n "${opt_H}" ]
-    then
-      remote_exec ${opt_H} libiam noenv deploy_ssh_keypair ${opt_t}
-    elif [ -n "${opt_a}" -a -z "${opt_t}" -a -n "${opt_H}" ]
-    then
-      add_known_hosts ${opt_H}
-    else
-      help_ssh_keys
-      exit 2
-    fi
+#  convert a remote host call to a recursive call
+#
+if [ -n "${opt_H}" ] ; then
+  #  remove remote host flag from parameters for recursive call
+  ssh ${opt_H} -- DEPLOYER=${DEPLOYER} ${DEPLOYER}/iam \
+    $(echo "${orig_params}" | sed -E -e 's/-H [a-zA-Z0-9\-]+//')
 
-    ;;
-  orainv)
-    if [ -n "${opt_H}" -a -z "${opt_h}" ];
-    then
-      create_orainvptr
-    else
-      help_orainv 
-      exit 2
-    fi
-    ;;
-  lcm)
-    if [ "${opt_h}" != "yes" ];
-    then
-      deploy_lcm
-    else
-      help_lcm
-      exit 2
-    fi
-    ;;
-  prov)
-    if [ "${opt_h}" != "yes" ];
-    then
-      iam_prov
-    else
-      help_prov
-      exit 2
-    fi
-    ;;
-  userenv)
-    if [ "${opt_a}" == "env" -a -z "${opt_H}" ] ;
-    then
-      init_userenv
-    elif [ "${opt_a}" == "profile" -a -n "${opt_H}" ];
-    then
-      remote_exec ${opt_H} libuserenv noenv extend_bash_profile_on_host
-    else
-      help_userenv
-      exit 2
-    fi
-    ;;
-  keyfile)
-    if [ "${opt_t}" == "domain" -a -n "${opt_D}" -a -z "${opt_H}" ]; 
-    then
-      create_domain_keyfiles ${opt_D}
-    elif [ "${opt_t}" == "nodemanager" -a -n "${opt_D}" -a -n "${opt_H}" ];
-    then
-      remote_exec ${opt_H} libiam noenv create_nm_keyfiles ${opt_D}
-    else
-      help_keyfile
-      exit 2
-    fi
-    ;;
-  jdk)
-    if [ -n "${opt_H}" -a -n "${opt_O}" ];
-    then
-      remote_exec ${opt_H} libjdk noenv upgrade_jdk ${opt_O}
-    else
-      help_jdk
-      exit 2
-    fi
-    ;;
-  rcd)
-    if [ -n "${opt_H}" -a -n "${opt_t}" ];
-    then
-      echo "deploy rc.d scripts.."
-    else
-      help_rcd
-      exit 2
-    fi
-    ;;
-  weblogic)
-    if [ "${opt_a}" == "jdk7fix" -a -n "${opt_t}" -a -n "${opt_H}" ]; 
-    then
-      remote_exec ${opt_H} libpatchwls noenv patch_wls_bin ${opt_t}
-    elif [ "${opt_a}" == "wlstlibs" -a -n "${opt_t}" ]; 
-    then
-      remote_exec ${opt_H} libwls noenv wlst_copy_libs ${opt_t}
-    else
-      help_weblogic
-      exit 2
-    fi
-    ;;
-  identity)
-    if [ "${opt_a}" == "jdk7fix" -a -n "${opt_t}" -a -n "${opt_H}" ];
-    then
-      remote_exec ${opt_H} libpatchwls idm patch_wls_domain ${opt_t}
-    elif [ "${opt_a}" == "psa" -a -z "${opt_t}" -a -z "${opt_H}" ];
-    then
-      . ~/.env/common.env; . ~/.env/idm.env; run_psa identity
-    elif [ "${opt_a}" == "postinstall" -a -z "${opt_t}" -a -z "${opt_H}" ];
-    then
-     . ~/.env/common.env; . ~/.env/idm.env; postinst identity
-    elif [ "${opt_a}" == "movelogs" -a -n "${opt_H}" -a -z "${opt_t}" ];
-    then
-      remote_exec ${opt_H} liblog idm move_logs idm
-    else
-      help_identity
-      exit 2
-    fi
-    ;;
-  access)
-    if [ "${opt_a}" == "jdk7fix2" -a -n "${opt_t}" -a -n "${opt_H}" ];
-    then
-      remote_exec ${opt_H} libpatchwls acc patch_wls_domain ${opt_t}
-    elif [ "${opt_a}" == "psa" -a -z "${opt_t}" -a -z "${opt_H}" ];
-    then
-      . ~/.env/common.env; . ~/.env/acc.env; run_psa access
-    elif [ "${opt_a}" == "postinstall" -a -z "${opt_t}" -a -z "${opt_H}" ];
-    then
-      . ~/.env/common.env; . ~/.env/acc.env; postinst access
-    elif [ "${opt_a}" == "movelogs" -a -n "${opt_H}" -a -z "${opt_t}" ];
-    then
-      remote_exec ${opt_H} liblog acc move_logs acc
-    else
-      help_access
-      exit 2
-    fi
-    ;;
-  analytics)
-    if [ "${opt_a}" == "unpack" -a -n "${opt_t}" ];
-    then
-      # WARNING: function not implemented
-      analytics_unpack
-    elif [ "${opt_a}" == "patch" -a -n "${opt_t}" ];
-    then
-      # WARNING: function not implemented
-      analytics_patch
-    elif [ "${opt_a}" == "domprov" -a -n "${opt_t}" ];
-    then
-      # WARNING: function not implemented
-      analytics_domprov
-    else
-      help_analytics
-      exit 2
-    fi
-    ;;
-  directory)
-    if [ "${opt_a}" == "postinstall" ];
-    then
-      patch_oud_post_inst
-    elif [ "${opt_a}" == "harden" ];
-    then
-      apply_oud_tls_settings
-    elif [ "${opt_a}" == "movelogs" ];
-    then
-      move_logs dir
-    else
-      help_directory
-      exit 2
-    fi
-    ;;
-  webtier)
-    if [ "${opt_a}" == "postinstall" -a -z "${opt_t}" -a -z "${opt_H}" ];
-    then
-      postinst webtier
-    elif [ "${opt_a}" == "movelogs" -a -n "${opt_H}" -a -z "${opt_t}" ];
-    then
-      remote_exec ${opt_H} liblog idm move_logs web
-    else
-      help_webtier
-      exit 2
-    fi
-    ;;
-  *) #unrecognized option - show help
+else
+
+  case ${cmd} in
+
+    help)
       iamhelp
-    ;;
-esac
+      ;;
+
+    # ssh-keys)
+    #   if [ -n "${opt_a}" -a -n ${opt_t} -a -z "${opt_H}" ];
+    #   then
+    #     gen_ssh_keypair ${opt_t}
+    #   elif [ -n "${opt_a}" -a -n "${opt_t}" -a -n "${opt_H}" ]
+    #   then
+    #     remote_exec ${opt_H} libiam noenv deploy_ssh_keypair ${opt_t}
+    #   elif [ -n "${opt_a}" -a -z "${opt_t}" -a -n "${opt_H}" ]
+    #   then
+    #     add_known_hosts ${opt_H}
+    #   else
+    #     help_ssh_keys
+    #     exit 2
+    #   fi
+  
+    #   ;;
+  
+    orainv)
+      if [ "${opt_h}" != "yes" ] ; then
+        create_orainvptr
+      else
+        help_orainv 
+        exit 2
+      fi
+      ;;
+  
+    lcm)
+      if [ "${opt_h}" != "yes" ] ; then
+        deploy_lcm
+      else
+        help_lcm
+        exit 2
+      fi
+      ;;
+  
+    prov)
+      if [ "${opt_h}" != "yes" ] ; then
+        iam_prov
+      else
+        help_prov
+        exit 2
+      fi
+      ;;
+  
+    userenv)
+      if   [ "${opt_a}" == "env"     ] ; then
+        init_userenv
+      elif [ "${opt_a}" == "profile" ] ; then
+        extend_bash_profile_on_host
+      else
+        help_userenv
+        exit 2
+      fi
+      ;;
+  
+    keyfile)
+      load_userenv common
+      [[ "${opt_D}" == "identity" ]] && load_userenv idm
+      [[ "${opt_D}" == "access"   ]] && load_userenv idm
+
+      if   [ "${opt_t}" == "domain"      -a -n "${opt_D}" ] ; then
+        load_userenv common
+        create_domain_keyfiles ${opt_D}
+      elif [ "${opt_t}" == "nodemanager" -a -n "${opt_D}" ] ; then
+        load_userenv common
+        create_nm_keyfiles     ${opt_D}
+      else
+        help_keyfile
+        exit 2
+      fi
+      ;;
+  
+    jdk)
+      if   [ -n "${opt_O}" ] ; then
+        upgrade_jdk ${opt_O}
+      else
+        help_jdk
+        exit 2
+      fi
+      ;;
+  
+    rcd)
+      if   [ -n "${opt_t}" ] ; then
+        # TODO: implement runlevel scripts
+        echo "deploy rc.d scripts.."
+      else
+        help_rcd
+        exit 2
+      fi
+      ;;
+      
+    weblogic)
+      load_userenv common
+
+      if   [ "${opt_a}" == "jdk7fix"     -a -n "${opt_t}" ] ; then
+        patch_wls_bin  ${opt_t}
+      elif [ "${opt_a}" == "wlstlibs"    -a -n "${opt_t}" ] ; then
+        wlst_copy_libs ${opt_t}
+      else
+        help_weblogic
+        exit 2
+      fi
+      ;;
+  
+    identity)
+      load_userenv common
+      load_userenv idm
+
+      if   [ "${opt_a}" == "jdk7fix"     -a -n "${opt_t}" ] ; then
+        patch_wls_domain ${opt_t}
+      elif [ "${opt_a}" == "psa"         -a -z "${opt_t}" ] ; then
+        run_psa identity
+      elif [ "${opt_a}" == "keyfile"     -a -z "${opt_t}" ] ; then
+        identity_keyfile
+      elif [ "${opt_a}" == "postinstall" -a -z "${opt_t}" ] ; then
+        postinst identity
+      elif [ "${opt_a}" == "movelogs"    -a -z "${opt_t}" ] ; then
+        move_logs idm
+      else
+        help_identity
+        exit 2
+      fi
+      ;;
+  
+    access)
+      load_userenv common
+      load_userenv acc
+
+      if   [ "${opt_a}" == "jdk7fix2"    -a -n "${opt_t}" ] ; then
+        patch_wls_domain ${opt_t}
+      elif [ "${opt_a}" == "psa"         -a -z "${opt_t}" ] ; then
+        run_psa access
+      elif [ "${opt_a}" == "postinstall" -a -z "${opt_t}" ] ; then
+        postinst access
+      elif [ "${opt_a}" == "movelogs"    -a -z "${opt_t}" ] ; then
+        move_logs acc
+      else
+        help_access
+        exit 2
+      fi
+      ;;
+  
+    analytics)
+      if   [ "${opt_a}" == "unpack"      -a -n "${opt_t}" ] ; then
+        # WARNING: function not implemented
+        analytics_unpack
+      elif [ "${opt_a}" == "patch"       -a -n "${opt_t}" ] ; then
+        # WARNING: function not implemented
+        analytics_patch
+      elif [ "${opt_a}" == "domprov"     -a -n "${opt_t}" ] ; then
+        # WARNING: function not implemented
+        analytics_domprov
+      else
+        help_analytics
+        exit 2
+      fi
+      ;;
+  
+    directory)
+      if   [ "${opt_a}" == "postinstall" ] ; then
+        patch_oud_post_inst
+      elif [ "${opt_a}" == "harden"      ] ; then
+        apply_oud_tls_settings
+      elif [ "${opt_a}" == "movelogs"    ] ; then
+        move_logs dir
+      else
+        help_directory
+        exit 2
+      fi
+      ;;
+
+    webtier)
+
+      if   [ "${opt_a}" == "postinstall" -a -z "${opt_t}" ] ; then
+        postinst webtier
+      elif [ "${opt_a}" == "movelogs"    -a -z "${opt_t}" ] ; then
+        move_logs web
+      else
+        help_webtier
+        exit 2
+      fi
+      ;;
+
+    *) #unrecognized option - show help
+        iamhelp
+      ;;
+  esac
+
+fi
 
 exit 0

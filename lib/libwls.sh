@@ -62,22 +62,19 @@ EOF
 }
 
 #  deploy standard lib acStdLib for wlst
+#  param1: product namem (identity,access)
+#
 wlst_copy_libs ()
 {
-  if [ "${1}" == "" ] ; then
-    error "ERROR: Parameter missing"
-    exit 0
-  fi
-
   local _target=${1}
-  if [ do_acc ] ; then
-    log "Copy WLST standard lib to access manager WebLogic..."
-    cp -f ${DEPLOYER}/lib/weblogic/wlst/common/* \
-          ${iam_top}/products/${_target}/wlserver_10.3/common/wlst
-  fi
-  if [ do_idm ] ; then
-    log "Copy WLST standard lib to identity manager WebLogic..."
-    cp -f ${DEPLOYER}/lib/weblogic/wlst/common/* \
-          ${iam_top}/products/${_target}/wlserver_10.3/common/wlst
+  local _dest=${iam_top}/products/${_target}/wlserver_10.3/common/wlst
+
+  if [[ -d ${_dest} ]] ; then
+    cp -f ${DEPLOYER}/lib/weblogic/wlst/common/* ${_dest}/
+    log "WLST standard lib copied to ${_target} WebLogic"
+  else
+    error "Could not find directory ${_dest}"
+    exit $ERROR_FILE_NOT_FOUND
   fi
 }
+

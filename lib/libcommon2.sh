@@ -1,7 +1,7 @@
 # common functions
 
 # general return codes of functions
-#
+# 
 WARNING_DONE=2
 ERROR_FILE_NOT_FOUND=80
 ERROR_SYNTAX_ERROR=81
@@ -49,7 +49,7 @@ remote_exec()
   local _cmd="source ${DEPLOYER}/lib/remote.env ;"
   if [ ! "${_env}" == "noenv" ];
   then
-    _cmd+=" ${_env};"
+    _cmd+=" ${_env} ;"
   fi
   _cmd+=" source ${DEPLOYER}/lib/${_libfile}.sh ;"
   _cmd+=" ${_funcname}"
@@ -59,7 +59,6 @@ remote_exec()
   done
 
   # execute command on remote host
-  #echo "ssh ${_host} -- ${_cmd}" 
   ssh ${_host} -- ${_cmd} 
 }
 

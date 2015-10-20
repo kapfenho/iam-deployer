@@ -11,12 +11,21 @@ storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm='false')
 y
 exit()
 "
-wlst_idm_keys="connect(username='${domiUser}', password='${domiPwd}',url=domUrl)
-storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm='false')
-y
-exit()
-"
 
+
+#  load user env file {common,idm,acc} - if not there 
+#  exit with error
+#
+load_userenv()
+{
+  local _f=~/.env/${1}.env
+  if [[ -a ${_f} ]] ; then
+    source ${_f}
+  else
+    error "User env file ${_f} not existing. Please run task userenv before!"
+    exit $ERROR_FILE_NOT_FOUND
+  fi
+}
 
 #  create ssh-keypair for host access
 #  - param 1: path of shared directory for common key
@@ -261,44 +270,41 @@ patch_opss() {
 
 }
 
+
+wlst_idm_keys="connect(username='${domiUser}', password='${domiPwd}',url=domUrl)
+storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm='false')
+y
+exit()
+"
+
 # create domain keyfiles
 #
-create_domain_keyfiles()
+identity_keyfile()
 {
-  local _target=${1}
+  local _domain=${1}
 
-  case ${_target} in
-    identity)
-      source ~/.env/idm.env
-      _wlst_domain_keys=${wlst_idm_keys}
-      ;;
-    access)
-      source ~/.env/acc.env
-      _wlst_domain_keys=${wlst_acc_keys}
-      ;;
-    *)
-      return ERR_FILE_NOT_FOUND
-      ;;
-  esac
+  if ! [ -a ${iam_hostenv}/.creds/${_domain}.key ] ; then
 
-  # check java version
-  # dirname $(dirname $(readlink /proc/$(pgrep -f AdminServer)/exe))
-  local _p="/proc/$(pgrep -f AdminServer)/exe"
-  local _jh=$(dirname $(dirname $(readlink ${_p})))
-  
-  _jv=$(${_p} -version 2>&1)
-  if [[ ${_jv} =~ "1\.6" ]];
-  then
-    export JAVA_HOME=${_jh}
-    export PATH=${JAVA_HOME}/bin:${PATH}
-  fi
+    log "Creating Domain keyfiles for domain..."
 
-  log "Creating Domain keyfiles for domain..."
+    # check java version
+    local _p="/proc/$(pgrep -f -e ${_domain}.*AdminServer)/exe"
+    local _jh=$(dirname $(dirname $(readlink ${_p})))
 
-  if ! [ -a ${iam_hostenv}/.creds/${iam_domain_oim}.key ] ; then
-    echo "${_wlst_domain_keys}" | \
+    _jv=$(${_p} -version 2>&1)
+
+    if [[ ${_jv} =~ "1\.6" ]] ; then
+      export JAVA_HOME=${_jh}
+      export PATH=${JAVA_HOME}/bin:${PATH}
+    fi
+
+    echo "${wlst_idm_keys}" | \
       ${WL_HOME}/common/bin/wlst.sh -loadProperties \
-      ${iam_hostenv}/env/${_target}.prop
+      ${iam_hostenv}/env/identity.prop
+    log "Finished creating domain keyfiles"
+
+  else
+    log "Domain keyfiles skipped"
   fi
 }
 # create nodemanager keyfiles
