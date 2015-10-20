@@ -1,11 +1,5 @@
 #  iam deploy and config functions
 
-wlst_nm_keys="nmConnect(username='${nmUser}', password='${nmPwd}',host=hostname,
-port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
-storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
-y
-exit()
-"
 wlst_acc_keys="connect(username='${domaUser}', password='${domaPwd}', url=domUrl)
 storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm='false')
 y
@@ -270,87 +264,142 @@ patch_opss() {
 
 }
 
-
-
-# create domain keyfiles
+#  check what jdk the process with id uses, if it uses jdk6
+#  change our environment to use the same one
+#    param1: pid
 #
-identity_keyfile()
+use_jdk_of_proc() {
+  local _pid=${1}
+  local _prog="/proc/${_pid}/exe"
+  local _jhome=$(dirname $(dirname $(readlink ${_prog})))
+
+  # version output goes to stderr
+  if [[ "$(${_prog} -version 2>&1)" =~ "1\.6" ]] ; then
+    # running process uses jdk6, we need to use the same one
+    export JAVA_HOME=${_jhome}
+    export PATH=${JAVA_HOME}/bin:${PATH}
+  fi
+}
+
+
+#  create domain keyfiles for user ----------------------------------
+#  parameters are used from opt_ variables:
+#    $opt_u: username
+#    $opt_p: password
+#    $opt_w: domain properties file
+# 
+create_domain_keyfile()
 {
-  local _domain=${1}
+  local  _domUC=$(grep   "domUC=" ${opt_w} | cut -d= -f3)
+  local _domain=$(grep "domName=" ${opt_w} | cut -d= -f3)
 
-  if [ -a ${opt_o}.key ] ; then
-    log "Domain keyfiles skipped"
+  # check if userfile already exists
+  if [ -a ${_domUC} ] ; then
+    log "Domain keyfile creation skipped"
   else
+    # set the jdk env of running process
+    # TODO: check if found
+    use_jdk_of_proc $(pgrep -f -e "${_domain}.*AdminServer")
 
-    log "Creating Domain keyfiles for domain..."
-
-    # check java version
-    local _p="/proc/$(pgrep -f -e ${_domain}.*AdminServer)/exe"
-    local _jh=$(dirname $(dirname $(readlink ${_p})))
-
-    _jv=$(${_p} -version 2>&1)
-
-    if [[ ${_jv} =~ "1\.6" ]] ; then
-      export JAVA_HOME=${_jh}
-      export PATH=${JAVA_HOME}/bin:${PATH}
-    fi
+    log "Creating Domain keyfiles for domain ${_domain}..."
 
     local _wlst=""
     _wlst+="connect(username='${opt_u}',"
     _wlst+="        password='${opt_p}',"
-    _wlst+="        domUrl)\n"
-    _wlst+="storeUserConfig(userConfigFile='${dom_o}.usr',"
-    _wlst+="                userKeyFile='${dom_o}.key',"
+    _wlst+="        url=domUrl)\n"
+    _wlst+="storeUserConfig(userConfigFile=domUC,"
+    _wlst+="                userKeyFile=domUK,"
     _wlst+="                nm='false')\n"
     _wlst+="y\n"
     _wlst+="exit()\n"
 
-    echo "${_wlst}" | ${WL_HOME}/common/bin/wlst.sh \
-                       -loadProperties ${iam_hostenv}/env/identity.prop
+    echo "${_wlst}" | ${WL_HOME}/common/bin/wlst.sh -loadProperties ${opt_w}
+
     log "Finished creating domain keyfiles"
 
   fi
 }
-# create nodemanager keyfiles
+
+#  create nodemanager keyfiles for user -----------------------------
+#  
 #
-
-create_nm_keyfiles()
+create_nodemanager_keyfile()
 {
-  local _target=${1}
-  local _wlst=""
+  local _nmUC=$(grep  "nmUC=" ${opt_w} | cut -d= -f3)
 
-  case ${_target} in
-    identity)
-      source ~/.env/idm.env
-      ;;
-    access)
-      source ~/.env/acc.env
-      ;;
-    *)
-      return ERR_FILE_NOT_FOUND
-      ;;
-  esac
+  # check if file already exists
+  if [ -a ${_nmUC} ] ; then
+    log "Nodemanager keyfile creation skipped"
+  else
+    # set the jdk env of running process
+    # TODO: check if found
+    use_jdk_of_proc $(pgrep -f -e "nodemanager")
 
-  # check java version
-  # dirname $(dirname $(readlink /proc/$(pgrep -f AdminServer)/exe))
-  local _p="/proc/$(pgrep -f AdminServer)/exe"
-  local _jh=$(dirname $(dirname $(readlink ${_p})))
+    log "Creating nodemanager keyfiles..."
 
-  _jv=$(${_p} -version 2>&1)
-  if [[ ${_jv} =~ "1\.6" ]];
-  then
-    export JAVA_HOME=${_jh}
-    export PATH=${JAVA_HOME}/bin:${PATH}
-  fi
+wlst_nm_keys="nmConnect(username='${nmUser}',
+password='${nmPwd}',host=hostname,
+port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
+storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
+y
+exit()
+"
+    local _wlst=""
+    _wlst+="nmConnect(username='${opt_u}',"
+    _wlst+="          password='${opt_p}',"
+    _wlst+="          host=hostname,"
+    _wlst+="          port=nmPort,"
+    _wlst+="          domainName=domName,"
+    _wlst+="          domainDir=domDir,"
+    _wlst+="          nmType='ssl')\n"
+    _wlst+="storeUserConfig(userConfigFile=nmUC,"
+    _wlst+="                userKeyFile=nmUK,"
+    _wlst+="                nm='true')\n"
+    _wlst+="y\n"
+    _wlst+="exit()\n"
 
-  log "Creating Nodemanager keyfiles for domain..."
+    echo "${_wlst}" | ${WL_HOME}/common/bin/wlst.sh -loadProperties ${opt_w}
 
-  if ! [ -a ${iam_hostenv}/.creds/nm.key ] ; then
-    echo "${wlst_nm_keys}" | \
-      ${WL_HOME}/common/bin/wlst.sh -loadProperties \
-      ${iam_hostenv}/env/${_target}.prop
+    log "Finished creating domain keyfiles"
+
   fi
 }
+#{
+#  local _target=${1}
+#  local _wlst=""
+#
+#  case ${_target} in
+#    identity)
+#      source ~/.env/idm.env
+#      ;;
+#    access)
+#      source ~/.env/acc.env
+#      ;;
+#    *)
+#      return ERR_FILE_NOT_FOUND
+#      ;;
+#  esac
+#
+#  # check java version
+#  # dirname $(dirname $(readlink /proc/$(pgrep -f AdminServer)/exe))
+#  local _p="/proc/$(pgrep -f AdminServer)/exe"
+#  local _jh=$(dirname $(dirname $(readlink ${_p})))
+#
+#  _jv=$(${_p} -version 2>&1)
+#  if [[ ${_jv} =~ "1\.6" ]];
+#  then
+#    export JAVA_HOME=${_jh}
+#    export PATH=${JAVA_HOME}/bin:${PATH}
+#  fi
+#
+#  log "Creating Nodemanager keyfiles for domain..."
+#
+#  if ! [ -a ${iam_hostenv}/.creds/nm.key ] ; then
+#    echo "${wlst_nm_keys}" | \
+#      ${WL_HOME}/common/bin/wlst.sh -loadProperties \
+#      ${iam_hostenv}/env/${_target}.prop
+#  fi
+#}
 
 #  remove installation directories populated by LCM
 #  if $iam_remove_lcm is set to "yes" also remove all LCM dirs

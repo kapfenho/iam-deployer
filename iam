@@ -55,7 +55,7 @@ while getopts D:H:O:a:t:u:p:o:h FLAG; do
       ;;
     p)  opt_p=$OPTARG   
       ;;
-    o)  opt_o=$OPTARG   
+    o)  opt_w=$OPTARG   
       ;;
     h)  opt_h=yes       
       ;;
@@ -203,8 +203,12 @@ else
       elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" ] ; then
         ${opt_u:=${domiUser}}
         ${opt_p:=${domiPwd}}
-        ${opt_o:="${iam_hostenv}/.creds/${iam_domain_oim}"}
-        create_keyfile 
+        ${opt_w:="${iam_hostenv}/env/identity.prop"}
+        if [[ ! -a ${opt_w} ]] ;  then
+          error "Domain property file not found. Please run userenv!"
+          exit $ERROR_FILE_NOT_FOUND
+        fi
+        create_domain_keyfile 
       elif [ "${opt_a}" == "postinstall" -a -z "${opt_h}" ] ; then
         postinst identity
       elif [ "${opt_a}" == "movelogs"    -a -z "${opt_h}" ] ; then
