@@ -1,47 +1,65 @@
-#!/bin/sh
+#!/bin/bash
 #
-# show stats of our favourite java processes, check out man of
-# ps for infos...      horst.kapfenberger@agoracon.at (c) 2014
+#  show stats of our favourite java processes, check out man of
+#  ps for infos...      horst.kapfenberger@agoracon.at (c) 2014
 #
 
+header="--headers"
 PS_FORMAT="%cpu,class,state,cputime,nice,sgi_p,nlwp,wchan:20,%mem:8,rss:8,sz:8,size:9,pid"
 export PS_FORMAT
 
-get_pid() {
-  local __rvar=${1}
-  local p_dom=${2}
-  local ret=""
+#  
+get_pid()
+{
+  # local _rvar=${1}  # return value reference
+  local  _dom=${1}  # domain name to search for
+  local  _srv=${2}  # wls server  to search for
+  local _proc="\/domains\/${_dom}"
 
-  if [ $# -gt 2 ] ; then
-    p_srv=${3}
-    ret=$(pgrep -f "weblogic.Name=${p_srv}.*\/domains\/${p_dom}")
-  else
-    ret=$(pgrep -f "\/domains\/${p_dom}")
-  fi
+  [[ ${#} -gt 1 ]] && _proc="weblogic.Name=${_srv}.*${_proc}"
 
-  if [[ "${__rvar}" ]]; then
-      eval ${__rvar}="'${ret}'"
-  else
-      echo "${ret}"
+  echo "$(pgrep -f "${_proc}" 2>/dev/null)"
+}
+
+metrics_for_pid()
+{
+  local _t=$(get_pid ${1} ${2})
+  if [ -n "${_t}" ] ; then
+    printf "%s%12s:%s\n" "$(ps ${header} -p ${_t})" ${1} ${2}
+    header="--no-headers"
   fi
 }
 
-get_pid pa1 access_test   AdminServer
-get_pid pa2 access_test   wls_oam1
-get_pid pi1 identity_test AdminServer
-get_pid pi2 identity_test wls_soa1
-get_pid pi3 identity_test wls_oim1
+# access domain
+#
+if [ -a ~/.env/acc.env ] ; then
+  . ~/.env/acc.env
+  metrics_for_pid ${DOMAIN} AdminServer
+  metrics_for_pid ${DOMAIN} wls_oam1
+  # [ ${#pa1} -gt 1 ] && echo "$(ps --headers    -p ${pa1})    access:AdminServer"
+  # [ ${#pa2} -gt 1 ] && echo "$(ps --no-headers -p ${pa2})    access:wls_oam1"
+fi
 
-pd1=$(pgrep -f DirectoryServer)
+# identity domain
+#
+if [ -a ~/.env/idm.env ] ; then
+  . ~/.env/idm.env
+  metrics_for_pid ${DOMAIN} AdminServer
+  metrics_for_pid ${DOMAIN} wls_soa1
+  metrics_for_pid ${DOMAIN} wls_oim1
+  # [ ${#pi1} -gt 1 ] && echo "$(ps --headers    -p ${pi1})  identity:AdminServer"
+  # [ ${#pi2} -gt 1 ] && echo "$(ps --no-headers -p ${pi2})  identity:wls_soa1"
+  # [ ${#pi3} -gt 1 ] && echo "$(ps --no-headers -p ${pi3})  identity:wls_oim1"      
+fi
 
-[ ${#pa1} -gt 1 ] && echo "$(ps --headers    -p ${pa1})    access:AdminServer"
-[ ${#pa2} -gt 1 ] && echo "$(ps --no-headers -p ${pa2})    access:wls_oam1"
+# directory server
+#
+if [ -a ~/.env/dir.env ] ; then
+  pd1=$(pgrep -f DirectoryServer)
+  [ ${#pd1} -gt 1 ] && echo "$(ps --headers    -p ${pd1})       oud:oud1"      
+fi
 
-[ ${#pi1} -gt 1 ] && echo "$(ps --headers    -p ${pi1})  identity:AdminServer"
-[ ${#pi2} -gt 1 ] && echo "$(ps --no-headers -p ${pi2})  identity:wls_soa1"
-[ ${#pi3} -gt 1 ] && echo "$(ps --no-headers -p ${pi3})  identity:wls_oim1"      
-
-[ ${#pd1} -gt 1 ] && echo "$(ps --headers    -p ${pd1})       oud:oud1"      
+echo ""
 
 exit 0
 

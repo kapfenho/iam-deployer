@@ -79,7 +79,7 @@ jdk_deploy() {
     [ -a ${1} ] || mkdir -p ${1}
     unzip -nq ${3} -d ${1}
 
-    [ -n ${6} ] && jdk_create_softlink
+    [ -n "${6}" ] && jdk_create_softlink
     [ "${4}" == "true" ] && jdk_patch_config ${jdir}
     jdk_deploy_cacerts ${5}
 

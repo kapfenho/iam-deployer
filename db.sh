@@ -46,7 +46,7 @@ echo "DB_SERVICENAME:  ${DB_SERVICENAME}"
 echo "ORACLE_SID:      ${ORACLE_SID}"
 echo "---------------------------------------"
 
-if [ "$#" -gt 0 ] ; then
+if [ $# -gt 0 ] ; then
   echo "Press Ctrl-C to cancel or ENTER to continue: "
   read cont_now
 fi
