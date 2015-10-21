@@ -88,7 +88,7 @@ getvar IDMPROV_ACCESS_DOMAIN
      iam_domain_oim=${IDMPROV_PRODUCT_IDENTITY_DOMAIN}
      iam_domain_acc=${IDMPROV_ACCESS_DOMAIN}
 
-iam_lcm=$(grep "ORACLE_HOME=" ${lcm_config_rsp} | cut -d= -f3)
+iam_lcm=$(grep "ORACLE_HOME=" ${lcm_config_rsp} | cut -d= -f2)
 
 
 #    ${iam_oam_prefix:=${OIM_DB_SCHEMAPREFIX}}

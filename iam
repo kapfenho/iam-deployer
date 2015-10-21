@@ -1,13 +1,10 @@
-#!/bin/bash
+#!/bin/bash -x
 
 if ! shopt -q login_shell ; then
   source /etc/profile
 fi
 
-if [ -z ${DEPLOYER} ] ; then
-  echo "ERROR: Environment variable DEPLOYER is not set"
-  exit 80
-fi
+: ${DEPLOYER:?}
 
 echo "CALL: $*"
 
@@ -21,56 +18,39 @@ echo "CALL: $*"
 
 umask ${iam_user_umask}
 
-#  main program -----------------------------
+#  main program -----------------------------------------------------
 #
-#  no prarameters:  exit with error code 2
-#  https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html
-#
-if [ $# -lt 1 ] ; then
-  iamhelp
-fi
-
 #  remember original parameters for host calls
 orig_params="${@}"
 
-#  command stated?
-if [ $# -ge 1 ] ; then
-  cmd=${1}
+if   [ $# -lt 1 ] ; then
+  iamhelp       # not enough params
+elif [ $# -ge 1 ] ; then
+  cmd=${1}      # command entered
   shift
 fi
 
-while getopts D:H:O:a:t:u:p:o:h FLAG; do
-  case $FLAG in
-    D)  opt_D=$OPTARG   
-      ;;
-    H)  opt_H=$OPTARG   
-      ;;
-    O)  opt_O=$OPTARG   
-      ;;
-    a)  opt_a=$OPTARG   
-      ;;
-    t)  opt_t=$OPTARG   
-      ;;
-    u)  opt_u=$OPTARG   
-      ;;
-    p)  opt_p=$OPTARG   
-      ;;
-    o)  opt_w=$OPTARG   
-      ;;
-    h)  opt_h=yes       
-      ;;
-    \?) #unrecognized option - show help
-      echo -e \\n"Option -${BOLD}$OPTARG${NORM} not allowed."
+while getopts D:H:O:P:a:s:nt:u:p:w:h FLAG; do
+  case ${FLAG} in
+    D)  opt_D=${OPTARG} ;;
+    H)  opt_H=${OPTARG} ;;
+    O)  opt_O=${OPTARG} ;;
+    P)  opt_P=${OPTARG} ;;
+    a)  opt_a=${OPTARG} ;;
+    s)  opt_s=${OPTARG} ;;
+    n)  opt_n=yes       ;;
+    t)  opt_t=${OPTARG} ;;
+    u)  opt_u=${OPTARG} ;;
+    p)  opt_p=${OPTARG} ;;
+    w)  opt_w=${OPTARG} ;;
+    h)  opt_h=yes     ;;
+    \?) # unrecognized option - show help
+      echo -e \\n"Option -${BOLD}${OPTARG}${NORM} not allowed."
       iamhelp
-      #If you just want to display a simple error message instead of the full
-      #help, remove the 2 lines above and uncomment the 2 lines below.
-      #echo -e "Use ${BOLD}$SCRIPT -h${NORM} to see the help documentation."\\n
-      #exit 2
       ;;
   esac
 done
 
-#set -o errexit nounset
 set -o errexit
 
 #  convert a remote host call to a recursive call
@@ -79,7 +59,6 @@ if [ -n "${opt_H}" ] ; then
   #  remove remote host flag from parameters for recursive call
   ssh ${opt_H} -- DEPLOYER=${DEPLOYER} ${DEPLOYER}/iam \
     $(echo "${orig_params}" | sed -E -e 's/-H [a-zA-Z0-9\-]+//')
-
 else
 
   case ${cmd} in
@@ -88,29 +67,34 @@ else
       iamhelp
       ;;
 
-    # ssh-keys)
-    #   if [ -n "${opt_a}" -a -n ${opt_t} -a -z "${opt_H}" ];
-    #   then
-    #     gen_ssh_keypair ${opt_t}
-    #   elif [ -n "${opt_a}" -a -n "${opt_t}" -a -n "${opt_H}" ]
-    #   then
-    #     remote_exec ${opt_H} libiam noenv deploy_ssh_keypair ${opt_t}
-    #   elif [ -n "${opt_a}" -a -z "${opt_t}" -a -n "${opt_H}" ]
-    #   then
-    #     add_known_hosts ${opt_H}
-    #   else
-    #     help_ssh_keys
-    #     exit 2
-    #   fi
+    ssh-key)
+      if   [ -n "${opt_a}" -a "${opt_a}" == "generate" ] ; then
+        gen_ssh_keypair ${opt_t}
+      elif [ -n "${opt_a}" -a "${opt_a}" == "deploy"   ] ; then
+        deploy_ssh_keypair \
+          ${opt_s:-${DEPLOYER}/lib/templates/hostenv/ssh}
+      elif [ -n "${opt_a}" -a "${opt_a}" == "add"      ] ; then
+        add_known_hosts
+      else
+        help_ssh_keys
+        exit $ERROR_SYNTAX_ERROR
+      fi
+
+      if   [ -z "${opt_h}" ] ; then
+        copy_ssh_key
+      else
+        help_ssh_key
+        exit $ERROR_SYNTAX_ERROR
+      fi
   
-    #   ;;
+      ;;
   
     orainv)
       if [ "${opt_h}" != "yes" ] ; then
         create_orainvptr
       else
         help_orainv 
-        exit 2
+        exit $ERROR_SYNTAX_ERROR
       fi
       ;;
   
@@ -119,7 +103,7 @@ else
         deploy_lcm
       else
         help_lcm
-        exit 2
+        exit $ERROR_SYNTAX_ERROR
       fi
       ;;
   
@@ -128,7 +112,7 @@ else
         iam_prov
       else
         help_prov
-        exit 2
+        exit $ERROR_SYNTAX_ERROR
       fi
       ;;
   
@@ -139,7 +123,7 @@ else
         extend_bash_profile_on_host
       else
         help_userenv
-        exit 2
+        exit $ERROR_SYNTAX_ERROR
       fi
       ;;
   
@@ -156,16 +140,20 @@ else
         create_nm_keyfiles     ${opt_D}
       else
         help_keyfile
-        exit 2
+        exit $ERROR_SYNTAX_ERROR
       fi
       ;;
   
     jdk)
-      if   [ -n "${opt_O}" ] ; then
-        upgrade_jdk ${opt_O}
+      if   [ -n "${opt_O}" -a -z "${opt_h}" ] ; then
+        if [ -n "${opt_P}" -a "${opt_P}" == "2" ] ; then
+          upgrade_jdk2 ${opt_O}
+        else
+          upgrade_jdk1 ${opt_O}
+        fi
       else
         help_jdk
-        exit 2
+        exit $ERROR_SYNTAX_ERROR
       fi
       ;;
   
@@ -175,20 +163,20 @@ else
         echo "deploy rc.d scripts.."
       else
         help_rcd
-        exit 2
+        exit $ERROR_SYNTAX_ERROR
       fi
       ;;
       
     weblogic)
       load_userenv common
 
-      if   [ "${opt_a}" == "jdk7fix"     -a -n "${opt_t}" ] ; then
+      if   [ "${opt_a}" == "jdk7fix"  -a -n "${opt_t}" -a -z "${opt_h}" ] ; then
         patch_wls_bin  ${opt_t}
-      elif [ "${opt_a}" == "wlstlibs"    -a -n "${opt_t}" ] ; then
+      elif [ "${opt_a}" == "wlstlibs" -a -n "${opt_t}" -a -z "${opt_h}" ] ; then
         wlst_copy_libs ${opt_t}
       else
         help_weblogic
-        exit 2
+        exit $ERROR_SYNTAX_ERROR
       fi
       ;;
   
@@ -200,22 +188,33 @@ else
         patch_wls_domain ${opt_t}
       elif [ "${opt_a}" == "psa"         -a -z "${opt_h}" ] ; then
         run_psa identity
-      elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" ] ; then
-        ${opt_u:=${domiUser}}
-        ${opt_p:=${domiPwd}}
-        ${opt_w:="${iam_hostenv}/env/identity.prop"}
+      elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -z "${opt_n}" ] ; then
+        # domain keyfile
+        : ${opt_u:=${domiUser}}
+        : ${opt_p:=${domiPwd}}
+        : ${opt_w:="${iam_hostenv}/env/identity.prop"}
         if [[ ! -a ${opt_w} ]] ;  then
           error "Domain property file not found. Please run userenv!"
           exit $ERROR_FILE_NOT_FOUND
         fi
         create_domain_keyfile 
-      elif [ "${opt_a}" == "postinstall" -a -z "${opt_h}" ] ; then
-        postinst identity
+      elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -n "${opt_n}" ] ; then
+        # nodemanager keyfile
+        : ${opt_u:=${nmUser}}
+        : ${opt_p:=${nmPwd}}
+        : ${opt_w:="${iam_hostenv}/env/identity.prop"}
+        if [[ ! -a ${opt_w} ]] ;  then
+          error "Domain property file not found. Please run userenv!"
+          exit $ERROR_FILE_NOT_FOUND
+        fi
+        create_nodemanager_keyfile 
+      elif [ "${opt_a}" == "config"      -a -z "${opt_h}" ] ; then
+        config_identity
       elif [ "${opt_a}" == "movelogs"    -a -z "${opt_h}" ] ; then
         move_logs idm
       else
         help_identity
-        exit 2
+        exit $ERROR_SYNTAX_ERROR
       fi
       ;;
   
@@ -223,46 +222,64 @@ else
       load_userenv common
       load_userenv acc
 
-      if   [ "${opt_a}" == "jdk7fix2"    -a -n "${opt_t}" ] ; then
+      if   [ "${opt_a}" == "jdk7fix2"    -a -z "${opt_h}" ] ; then
         patch_wls_domain ${opt_t}
-      elif [ "${opt_a}" == "psa"         -a -z "${opt_t}" ] ; then
+      elif [ "${opt_a}" == "psa"         -a -z "${opt_h}" ] ; then
         run_psa access
-      elif [ "${opt_a}" == "postinstall" -a -z "${opt_t}" ] ; then
-        postinst access
-      elif [ "${opt_a}" == "movelogs"    -a -z "${opt_t}" ] ; then
+      elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -z "${opt_n}" ] ; then
+        ${opt_u:=${domaUser}}
+        ${opt_p:=${domaPwd}}
+        ${opt_w:="${iam_hostenv}/env/access.prop"}
+        if [[ ! -a ${opt_w} ]] ;  then
+          error "Domain property file not found. Please run userenv!"
+          exit $ERROR_FILE_NOT_FOUND
+        fi
+        create_domain_keyfile 
+      elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -n "${opt_n}" ] ; then
+        ${opt_u:=${nmUser}}
+        ${opt_p:=${nmPwd}}
+        ${opt_w:="${iam_hostenv}/env/access.prop"}
+        if [[ ! -a ${opt_w} ]] ;  then
+          error "Domain property file not found. Please run userenv!"
+          exit $ERROR_FILE_NOT_FOUND
+        fi
+        create_nodemanager_keyfile 
+      elif [ "${opt_a}" == "config"      -a -z "${opt_h}" ] ; then
+        config_access
+      elif [ "${opt_a}" == "movelogs"    -a -z "${opt_h}" ] ; then
         move_logs acc
       else
         help_access
-        exit 2
+        exit $ERROR_SYNTAX_ERROR
       fi
       ;;
   
     analytics)
-      if   [ "${opt_a}" == "unpack"      -a -n "${opt_t}" ] ; then
+      if   [ "${opt_a}" == "unpack"      -a -z "${opt_h}" ] ; then
         # WARNING: function not implemented
         analytics_unpack
-      elif [ "${opt_a}" == "patch"       -a -n "${opt_t}" ] ; then
+      elif [ "${opt_a}" == "patch"       -a -z "${opt_h}" ] ; then
         # WARNING: function not implemented
         analytics_patch
-      elif [ "${opt_a}" == "domprov"     -a -n "${opt_t}" ] ; then
+      elif [ "${opt_a}" == "domprov"     -a -z "${opt_h}" ] ; then
         # WARNING: function not implemented
         analytics_domprov
       else
         help_analytics
-        exit 2
+        exit $ERROR_SYNTAX_ERROR
       fi
       ;;
   
     directory)
-      if   [ "${opt_a}" == "postinstall" ] ; then
+      if   [ "${opt_a}" == "postinstall" -a -z "${opt_h}" ] ; then
         patch_oud_post_inst
-      elif [ "${opt_a}" == "harden"      ] ; then
+      elif [ "${opt_a}" == "harden"      -a -z "${opt_h}" ] ; then
         apply_oud_tls_settings
-      elif [ "${opt_a}" == "movelogs"    ] ; then
+      elif [ "${opt_a}" == "movelogs"    -a -z "${opt_h}" ] ; then
         move_logs dir
       else
         help_directory
-        exit 2
+        exit $ERROR_SYNTAX_ERROR
       fi
       ;;
 
@@ -274,11 +291,11 @@ else
         move_logs web
       else
         help_webtier
-        exit 2
+        exit $ERROR_SYNTAX_ERROR
       fi
       ;;
 
-    *) #unrecognized option - show help
+    *) # unrecognized option - show help
         iamhelp
       ;;
   esac

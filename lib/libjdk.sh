@@ -90,9 +90,10 @@ jdk_deploy() {
   fi
 }
 
-#  JDK7 upgrade 
+#  JDK7 upgrade - part 1 --------------------------------------------
+#  this can be done while original processes are still running
 #
-upgrade_jdk()
+upgrade_jdk1()
 {
   local _oh=${1}
 
@@ -113,6 +114,17 @@ upgrade_jdk()
   log "Patching JDK...."
   jdk_patch_config ${dest}/jdk/${jdkname}
   log "Finished JDK upgrade part 1 in ${dest}"
+}
+
+#  JDK7 upgrade - part 2 --------------------------------------------
+#  this shall be executed when procs are down
+#
+upgrade_jdk2()
+{
+  local _oh=${1}
+
+  log "Upgrading to JDK7 - part 2"
+  local dest=${iam_top}/products/${_oh}
 
   # move jdk6
   # skip if already done

@@ -1,11 +1,5 @@
-#  iam deploy and config functions
-
-wlst_acc_keys="connect(username='${domaUser}', password='${domaPwd}', url=domUrl)
-storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm='false')
-y
-exit()
-"
-
+#  iam deploy and config functions ---------------------------------
+#  source it
 
 #  load user env file {common,idm,acc} - if not there 
 #  exit with error
@@ -41,9 +35,10 @@ gen_ssh_keypair()
 #
 deploy_ssh_keypair()
 {
-  newk=${1}/id_rsa
-  destk=~/.ssh/id_rsa
-  authk=~/.ssh/authorized_keys
+  local newk=${1}/id_rsa
+  local destk=~/.ssh/id_rsa
+  local authk=~/.ssh/authorized_keys
+  local known=~/.ssh/known_hosts
 
   # check if there is already a key present
   if [[ -a ${destk} ]] ; then
@@ -61,10 +56,13 @@ deploy_ssh_keypair()
   cp ${newk}     ${destk}
   cp ${newk}.pub ${destk}.pub
 
+  # include localhost in known_hosts and authorized_keys
   [[ -a ${authk} ]] && cp -p ${authk} ${authk}-$(date +"%Y%m%d-%H%M%S")
+  [[ -a ${known} ]] && cp -p ${known} ${known}-$(date +"%Y%m%d-%H%M%S")
+  echo "localhost $(cat /etc/ssh/ssh_host_rsa_key.pub)" >> ${known}
   cat ${destk}.pub >> ${authk}
-  chmod 0600 ${destk}
-  chmod 0644 ${destk}.pub ${authk}
+  chmod 0600 ${known} ${destk}
+  chmod 0644 ${authk} ${destk}.pub
 }
 
 
@@ -231,10 +229,6 @@ iam_prov ()
   do_acc && jdk_patch_config ${iam_top}/products/access/jdk6
   do_oud && jdk_patch_config ${iam_top}/products/dir/jdk6
   do_web && jdk_patch_config ${iam_top}/products/web/jdk6
-  #for p in access dir identity web
-  #do
-  #    do_${p} && jdk_patch_config ${iam_top}/products/${p}/jdk6
-  #done
 
   for step in preconfigure configure configure-secondary postconfigure startup validate
   do
@@ -274,7 +268,7 @@ use_jdk_of_proc() {
   local _jhome=$(dirname $(dirname $(readlink ${_prog})))
 
   # version output goes to stderr
-  if [[ "$(${_prog} -version 2>&1)" =~ "1\.6" ]] ; then
+  if ${_prog} -version 2>&1 | grep -q -e '1\.6' ; then
     # running process uses jdk6, we need to use the same one
     export JAVA_HOME=${_jhome}
     export PATH=${JAVA_HOME}/bin:${PATH}
@@ -290,8 +284,8 @@ use_jdk_of_proc() {
 # 
 create_domain_keyfile()
 {
-  local  _domUC=$(grep   "domUC=" ${opt_w} | cut -d= -f3)
-  local _domain=$(grep "domName=" ${opt_w} | cut -d= -f3)
+  local  _domUC=$(grep   "domUC=" ${opt_w} | cut -d= -f2)
+  local _domain=$(grep "domName=" ${opt_w} | cut -d= -f2)
 
   # check if userfile already exists
   if [ -a ${_domUC} ] ; then
@@ -299,19 +293,15 @@ create_domain_keyfile()
   else
     # set the jdk env of running process
     # TODO: check if found
-    use_jdk_of_proc $(pgrep -f -e "${_domain}.*AdminServer")
+    use_jdk_of_proc $(pgrep -f "Dweblogic\.Name=AdminServer.*${_domain}")
 
     log "Creating Domain keyfiles for domain ${_domain}..."
 
-    local _wlst=""
-    _wlst+="connect(username='${opt_u}',"
-    _wlst+="        password='${opt_p}',"
-    _wlst+="        url=domUrl)\n"
-    _wlst+="storeUserConfig(userConfigFile=domUC,"
-    _wlst+="                userKeyFile=domUK,"
-    _wlst+="                nm='false')\n"
-    _wlst+="y\n"
-    _wlst+="exit()\n"
+    local _wlst="connect(username='${opt_u}',password='${opt_p}',url=domUrl)
+storeUserConfig(userConfigFile=domUC,userKeyFile=domUK,nm='false')
+y
+exit()
+"
 
     echo "${_wlst}" | ${WL_HOME}/common/bin/wlst.sh -loadProperties ${opt_w}
 
@@ -321,11 +311,14 @@ create_domain_keyfile()
 }
 
 #  create nodemanager keyfiles for user -----------------------------
-#  
+#  parameters are used from opt_ variables:
+#    $opt_u: username
+#    $opt_p: password
+#    $opt_w: domain properties file
 #
 create_nodemanager_keyfile()
 {
-  local _nmUC=$(grep  "nmUC=" ${opt_w} | cut -d= -f3)
+  local _nmUC=$(grep  "nmUC=" ${opt_w} | cut -d= -f2)
 
   # check if file already exists
   if [ -a ${_nmUC} ] ; then
@@ -333,77 +326,25 @@ create_nodemanager_keyfile()
   else
     # set the jdk env of running process
     # TODO: check if found
-    use_jdk_of_proc $(pgrep -f -e "nodemanager")
+    use_jdk_of_proc $(pgrep -f "DListenPort=5556")
 
     log "Creating nodemanager keyfiles..."
 
-wlst_nm_keys="nmConnect(username='${nmUser}',
-password='${nmPwd}',host=hostname,
-port=nmPort, domainName=domName, domainDir=domDir, nmType='ssl')
+    local _wlst="nmConnect(username='${opt_u}',password='${opt_p}',host=hostname,port=nmPort,domainName=domName,domainDir=domDir,nmType='ssl')
 storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
 y
 exit()
 "
-    local _wlst=""
-    _wlst+="nmConnect(username='${opt_u}',"
-    _wlst+="          password='${opt_p}',"
-    _wlst+="          host=hostname,"
-    _wlst+="          port=nmPort,"
-    _wlst+="          domainName=domName,"
-    _wlst+="          domainDir=domDir,"
-    _wlst+="          nmType='ssl')\n"
-    _wlst+="storeUserConfig(userConfigFile=nmUC,"
-    _wlst+="                userKeyFile=nmUK,"
-    _wlst+="                nm='true')\n"
-    _wlst+="y\n"
-    _wlst+="exit()\n"
-
-    echo "${_wlst}" | ${WL_HOME}/common/bin/wlst.sh -loadProperties ${opt_w}
+    echo "${_wlst}" |=
 
     log "Finished creating domain keyfiles"
 
   fi
 }
-#{
-#  local _target=${1}
-#  local _wlst=""
-#
-#  case ${_target} in
-#    identity)
-#      source ~/.env/idm.env
-#      ;;
-#    access)
-#      source ~/.env/acc.env
-#      ;;
-#    *)
-#      return ERR_FILE_NOT_FOUND
-#      ;;
-#  esac
-#
-#  # check java version
-#  # dirname $(dirname $(readlink /proc/$(pgrep -f AdminServer)/exe))
-#  local _p="/proc/$(pgrep -f AdminServer)/exe"
-#  local _jh=$(dirname $(dirname $(readlink ${_p})))
-#
-#  _jv=$(${_p} -version 2>&1)
-#  if [[ ${_jv} =~ "1\.6" ]];
-#  then
-#    export JAVA_HOME=${_jh}
-#    export PATH=${JAVA_HOME}/bin:${PATH}
-#  fi
-#
-#  log "Creating Nodemanager keyfiles for domain..."
-#
-#  if ! [ -a ${iam_hostenv}/.creds/nm.key ] ; then
-#    echo "${wlst_nm_keys}" | \
-#      ${WL_HOME}/common/bin/wlst.sh -loadProperties \
-#      ${iam_hostenv}/env/${_target}.prop
-#  fi
-#}
 
-#  remove installation directories populated by LCM
+#  remove installation directories populated by LCM  ----------------
 #  if $iam_remove_lcm is set to "yes" also remove all LCM dirs
-#  Always returms 0
+#  Always returns 0
 #
 remove_files()
 {
@@ -422,8 +363,8 @@ remove_files()
 }
 
 
-# run Oracle patch set assistant
-# input: product name
+#  run Oracle patch set assistant
+#  param1: product name
 # 
 run_psa()
 {
@@ -438,45 +379,195 @@ run_psa()
     -logDir /tmp
 }
 
-# post installation configurations for IAM products
-# input: domain name
+#  apply custom config to domain ------------------------------------
+#
+config_identity()
+{
+  log ""
+  log "Identity Domain: configuring domain..."
+
+  ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop \
+    ${DEPLOYER}/lib/identity/idm-config.py
+
+  log "Identity Domain: configuration steps done."
+}
+
+#  apply custom config to domain ------------------------------------
+#
+config_access()
+{
+  log ""
+  log "Access Domain: configuring access domain..."
+
+  source ~/.env/acc.env
+  ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop \
+    ${DEPLOYER}/lib/access/oam-config.py
+
+  log "Access Domain: configuration steps done"
+}
+
+#  fix bug shipped with release
 # 
-postinst()
+config_webtier()
+{
+  log "Webgate: fix installation bug"
+
+  _webg=${iam_top}/products/web/webgate/webgate/ohs/config
+
+  if [ -a ${_webg}/oblog_config_wg.xml -a ! -a ${_webg}/oblog_config.xml ] ; then
+    cp ${_webg}/oblog_config_wg.xml ${_webg}/oblog_config.xml
+  fi
+  log "Webgate: done"
+}
+
+#  deploy standard lib acStdLib for wlst ----------------------------
+#  param1: product namem (identity,access)
+#
+wlst_copy_libs ()
 {
   local _target=${1}
+  local _dest=${iam_top}/products/${_target}/wlserver_10.3/common/wlst
 
-  case ${_target} in
-    identity)
-      log ""
-      log "Identity Domain: configuring domain..."
+  if [[ -d ${_dest} ]] ; then
+    cp -f ${DEPLOYER}/lib/weblogic/wlst/common/* ${_dest}/
+    log "WLST standard lib copied to ${_target} WebLogic"
+  else
+    error "Could not find directory ${_dest}"
+    exit $ERROR_FILE_NOT_FOUND
+  fi
+}
 
-      source ~/.env/idm.env
-      ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop \
-        ${DEPLOYER}/lib/identity/idm-config.py
-      log "Identity Domain: configuration steps done."
+# the patches correct bugs of the default configuration:  -----------
+#   * several concurrent jvm memory options are stated
+#   * jvm runs in client mode (dev and prod mode)
+#   * jvm options are not jdk7 compatible
+#
+patch_wls_bin()
+{
+  if [ "${1}" == "" ] ; then
+    error "ERROR: Parameter missing"
+    exit 0
+  fi
+  
+  local _p=${1}
+  local _src=${DEPLOYER}/lib/weblogic
+
+  # wl_home
+  if grep -e 'PRODUCTION_MODE="true"' ${iam_top}/products/${_p}/wlserver_10.3/common/bin/commEnv.sh >/dev/null ; then
+    log "WL_HOME already patch, nothing to do"
+  else
+    patch -b ${iam_top}/products/${_p}/wlserver_10.3/common/bin/commEnv.sh <${_src}/commEnv.sh.patch
+    log "WL_HOME patched: ${iam_top}/${_p}"
+  fi
+}
+
+patch_wls_domain()
+{
+  if [ "${1}" == "" ] ; then
+    error "ERROR: Parameter missing"
+    exit 0
+  fi
+
+  local _domain=${1}
+  local _src=${DEPLOYER}/lib/${_domain}
+
+  # admin domain
+  if ! [ -a ${ADMIN_HOME}/bin/setCustDomainEnv.sh ]; then
+    cp ${_src}/domain/setCustDomainEnv.sh ${ADMIN_HOME}/bin/
+  fi
+
+  if ! grep setCustDomainEnv ${ADMIN_HOME}/bin/setDomainEnv.sh >/dev/null 2>&1 ; then
+    patch -b ${ADMIN_HOME}/bin/setDomainEnv.sh <${_src}//domain/setDomainEnv.sh.patch
+    log "ADMIN_HOME patched: ${ADMIN_HOME}"
+  fi
+
+  # local domain
+  if ! [ -a ${WRK_HOME}/bin/setCustDomainEnv.sh ]; then
+    cp ${_src}/domain/setCustDomainEnv.sh ${WRK_HOME}/bin/
+  fi
+
+  if ! grep setCustDomainEnv ${WRK_HOME}/bin/setDomainEnv.sh >/dev/null 2>&1 ; then
+    patch -b ${WRK_HOME}/bin/setDomainEnv.sh <${_src}/domain/setDomainEnv.sh.patch
+    log "WRK_HOME patched: ${WRK_HOME}"
+  fi
+}
+
+# create log area and link locations.  this script shall be run on each machine
+#
+
+#  -------------------------------------------------------------------------
+#  private function - called by move_logs()
+#
+_mvlog()
+{
+  local src=${1}
+  local dst=${2}
+  if [[ ! -a ${src} ]] ; then
+    return
+  fi
+  # check if already done
+  if [ -h ${src} ] ; then
+    warning "Already moved log dir ${src}"
+  else
+    mkdir -p "${dst}"
+    # delete destination file if exsiting
+    for f in ${dst}/* ; do
+      rm -Rf "${f}"
+    done
+    # move all files to new destination
+    for f in ${src}/* ; do
+      mv "${f}" ${dst}/
+    done
+    # replace old location with soft link
+    rm -Rf   ${src}
+    ln -sf   ${dst} ${src}
+  fi
+}
+
+#  --------------------------------------------------------------------------
+#  public function - entry point
+#  control flags: idm, acc, web, oud
+#
+move_logs()
+{
+  local _product=${1}
+  oudins=oud1
+  ohsins=ohs1
+
+  dst=${iam_log}
+  idmdom=${iam_domain_oim}
+  accdom=${iam_domain_acc}
+  
+  if [ -z ${idmdom} ] ; then
+    error "Env variable IDMPROV_IDENTITY_DOMAIN not defined"
+    exit 81
+  fi
+  
+  case ${_product} in
+    idm)
+      mkdir -p ${dst}/nodemanager
+      _mvlog ${iam_top}/config/domains/${idmdom}/servers/AdminServer/logs           ${dst}/${idmdom}/AdminServer
+      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_soa1/logs            ${dst}/${idmdom}/wls_soa1
+      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_soa2/logs            ${dst}/${idmdom}/wls_soa2
+      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_oim1/logs            ${dst}/${idmdom}/wls_oim1
+      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_oim2/logs            ${dst}/${idmdom}/wls_oim2
       ;;
-    access)
-      log ""
-      log "Access Domain: configuring access domain..."
-
-      source ~/.env/acc.env
-      ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop \
-        ${DEPLOYER}/lib/access/oam-config.py
-
-      log "Access Domain: configuration steps done"
+    acc)
+      mkdir -p ${dst}/nodemanager
+      _mvlog ${iam_top}/config/domains/${accdom}/servers/AdminServer/logs           ${dst}/${accdom}/AdminServer
+      _mvlog ${iam_top}/services/domains/${accdom}/servers/wls_oam1/logs            ${dst}/${accdom}/wls_oam1
+      _mvlog ${iam_top}/services/domains/${accdom}/servers/wls_oam2/logs            ${dst}/${accdom}/wls_oam2
       ;;
-    webtier)
-      log "Webgate: fix installation bug"
-
-      source ~/.env/web.env
-      _webg=${iam_top}/products/web/webgate/webgate/ohs/config
-
-      if [ -a ${_webg}/oblog_config_wg.xml -a ! -a ${_webg}/oblog_config.xml ] ; then
-        cp ${_webg}/oblog_config_wg.xml ${_webg}/oblog_config.xml
-      fi
-      log "Webgate: done"
+    dir)
+      mkdir -p ${dst}/${oudins}
+      _mvlog ${iam_top}/services/instances/${oudins}/OUD/logs                       ${dst}/${oudins}/logs
+      ;;
+    web)
+      mkdir -p ${dst}/${ohsins}
+      _mvlog ${iam_top}/services/instances/${ohsins}/auditlogs                      ${dst}/${ohsins}/auditlogs
+      _mvlog ${iam_top}/services/instances/${ohsins}/diagnostics/logs/OHS/${ohsins} ${dst}/${ohsins}/logs
+      _mvlog ${iam_top}/services/instances/${ohsins}/diagnostics/logs/OPMN/opmn     ${dst}/${ohsins}/opmn
       ;;
   esac
-
-
 }
+

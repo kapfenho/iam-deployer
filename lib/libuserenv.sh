@@ -10,7 +10,7 @@ _cp_nodemanager()
   local _prop=nodemanager.properties
   local _start=startNodeManagerWrapper.sh
 
-  [ -f ${_dir}/${_prop}.orig ] && return $WARNING_DONE
+  [ -f ${_dir}/${_prop}.orig ] && return
 
   # properties
   mv ${_dir}/${_prop} ${_dir}/${_prop}.orig
@@ -29,7 +29,7 @@ _cp_nodemanager()
 _cp_oim()
 {
   # already done?
-  [ -f ${env}/idm.env ] && return $WARNING_DONE
+  [ -f ${env}/idm.env ] && return
 
   cp ${src}/bin/*identity*          ${bin}/
   cp ${src}/bin/*nodemanager*       ${bin}/
@@ -52,7 +52,7 @@ _cp_oim()
 _cp_acc()
 {
   # already done?
-  [ -f ${env}/acc.env ] && return $WARNING_DONE
+  [ -f ${env}/acc.env ] && return
 
   cp ${src}/bin/*access*            ${bin}/
   cp ${src}/bin/*nodemanager*       ${bin}/
@@ -72,7 +72,7 @@ _cp_acc()
 _cp_oud()
 {
   # already done?
-  [ -f ${env}/dir.env ] && return $WARNING_DONE
+  [ -f ${env}/dir.env ] && return
 
   cp ${src}/bin/*dir*               ${bin}/
   cp ${src}/env/dir.env             ${env}/
@@ -87,7 +87,7 @@ _cp_oud()
 _cp_web()
 {
   # already done?
-  [ -f ${env}/web.env ] && return $WARNING_DONE
+  [ -f ${env}/web.env ] && return
 
   cp ${src}/bin/*webtier*           ${bin}/
   cp ${src}/env/web.env             ${env}/
@@ -116,7 +116,7 @@ init_userenv()
       lib=${iam_hostenv}/lib
       crd=${iam_hostenv}/.creds
 
-  [[ -d ${env} ]] && return $WARNING_DONE
+  [[ -d ${env} ]] && return 0
  
   # these variables will be used in sed command and must
   # be escaped before
