@@ -1,6 +1,19 @@
-#!/bin/sh
-start-dir
-start-nodemanager
-start-access
-start-identity
-start-webtier
+#!/bin/bash
+#
+#  start services along rependencies. default behaviour is to stop on 
+#  any startup error. Set env variable to "yes" to continue.
+#
+
+: ${CONTINUE_ON_ERROR:="no"}
+
+for c in start-nodemanager \
+         start-dir \
+         start-access \
+         start-identity \
+         start-webtier ; do
+  if type ${c} >/dev/null 2>&1 ; then
+    echo ">> starting ${c}"
+    ${c} || [[ "${CONTINUE_ON_ERROR}" == "yes" ]] || exit 1
+  fi
+done
+

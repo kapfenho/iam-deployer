@@ -1,6 +1,17 @@
-#!/bin/sh
-stop-identity
-stop-access
-stop-webtier
-stop-nodemanager
-stop-dir
+#!/bin/bash
+#
+#  start services along rependencies. default behaviour is to stop on 
+#  any startup error. Set env variable to "yes" to continue.
+#
+
+for c in stop-identity \
+         stop-access \
+         stop-webtier \
+         stop-dir \
+         stop-nodemanager ; do
+  if type ${c} >/dev/null 2>&1 ; then
+    echo ">> stopping ${c}"
+    ${c} || true
+  fi
+done
+
