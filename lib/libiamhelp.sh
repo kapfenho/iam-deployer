@@ -10,6 +10,7 @@ iamhelp() {
     ssh-key   generate and deploy ssh keypair
     orainv    create central oracle inventory pointer
     lcm       install LCM
+    rcu       create database schemas with RCU
     prov      provision with LCM
     userenv   create userenv on host
     jdk       upgrade existing jdk
@@ -78,6 +79,30 @@ help_lcm() {
   Configuration:
     LCM Binaries:        ${iam_lcm}
     LCM instance config: ${iam_lcmhome}
+
+  "
+  exit $ERROR_SYNTAX_ERROR
+}
+#----------------------------------------------------
+help_rcu()
+{
+  echo "
+  Syntax: ${0} rcu -a {create|remove} -t product_name
+
+    ./iam rcu -a create -t product_name
+    ./iam rcu -a remove -t product_name
+  
+  Create database schemas for IAM products with RCU
+
+  Parameter:
+    -a  action to perform 
+        create  create Database schema
+        remove  remove Database schema
+        
+    -t  target product
+        identity  create schema for Identity Manager
+        access    create schema for Access Manager
+        bip       create schema for BI Publisher
 
   "
   exit $ERROR_SYNTAX_ERROR
@@ -308,3 +333,20 @@ help_webtier() {
   exit $ERROR_SYNTAX_ERROR
 } 
 # ---------------------------------------------------
+help_remove() {
+  echo "
+  Syntax: ${0} remove [-d] [-l] [-A] 
+
+    ${0} remove [-d -L]
+    ${0} remove [-d -l] -A
+
+  Remove IAM installation (with or without LCM, Database and remote hosts)
+
+  Parameter:
+    -d   include database (default is no)
+    -l   include LCM (default is no)
+    -A   remove on all hosts (default is no)
+  "
+  exit $ERROR_SYNTAX_ERROR
+} 
+# ---------------------------------------------------# ---------------------------------------------------

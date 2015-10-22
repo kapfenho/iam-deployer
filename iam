@@ -30,7 +30,7 @@ elif [ $# -ge 1 ] ; then
   shift
 fi
 
-while getopts D:H:O:P:a:s:nt:u:p:w:h FLAG; do
+while getopts D:H:O:P:a:s:nt:u:p:w:LdAh FLAG; do
   case ${FLAG} in
     D)  opt_D=${OPTARG} ;;
     H)  opt_H=${OPTARG} ;;
@@ -43,6 +43,9 @@ while getopts D:H:O:P:a:s:nt:u:p:w:h FLAG; do
     u)  opt_u=${OPTARG} ;;
     p)  opt_p=${OPTARG} ;;
     w)  opt_w=${OPTARG} ;;
+    L)  opt_L=L ;;
+    d)  opt_d=d ;;
+    A)  opt_A=yes ;;
     h)  opt_h=yes     ;;
     \?) # unrecognized option - show help
       echo -e \\n"Option -${BOLD}${OPTARG}${NORM} not allowed."
@@ -57,6 +60,7 @@ set -o errexit
 #
 if [ -n "${opt_H}" ] ; then
   #  remove remote host flag from parameters for recursive call
+  echo "remote exec"
   ssh ${opt_H} -- DEPLOYER=${DEPLOYER} ${DEPLOYER}/iam \
     $(echo "${orig_params}" | sed -E -e 's/-H [a-zA-Z0-9\-]+//')
 else
@@ -107,6 +111,29 @@ else
       fi
       ;;
   
+    rcu)
+      if [ "${opt_a}" == "create" -a -n "${opt_t}" ]
+      then
+        log "*** Creating schemas ***"
+        if [[ -t 1 ]]; then
+          log "  press RETURN to continue or Ctrl-C to stop"
+          read cont
+        fi
+        rcu_${opt_t} | strings 
+      elif [ "${opt_a}" == "remove" -a -n "${opt_t}" ]
+      then
+        log "*** Dropping schemas ***"
+        if [[ -t 1 ]]; then
+          log "  press RETURN to continue or Ctrl-C to stop"
+          read cont
+        fi
+        rcu_drop_${opt_t} | strings
+      else
+        help_rcu
+        exit $ERROR_SYNTAX_ERROR
+      fi
+
+      ;;
     prov)
       if [ "${opt_h}" != "yes" ] ; then
         iam_prov
@@ -115,7 +142,7 @@ else
         exit $ERROR_SYNTAX_ERROR
       fi
       ;;
-  
+
     userenv)
       if   [ "${opt_a}" == "env"     ] ; then
         init_userenv
@@ -126,7 +153,7 @@ else
         exit $ERROR_SYNTAX_ERROR
       fi
       ;;
-  
+
     keyfile)
       load_userenv common
       [[ "${opt_D}" == "identity" ]] && load_userenv idm
@@ -143,7 +170,7 @@ else
         exit $ERROR_SYNTAX_ERROR
       fi
       ;;
-  
+
     jdk)
       if   [ -n "${opt_O}" -a -z "${opt_h}" ] ; then
         if [ -n "${opt_P}" -a "${opt_P}" == "2" ] ; then
@@ -156,7 +183,7 @@ else
         exit $ERROR_SYNTAX_ERROR
       fi
       ;;
-  
+
     rcd)
       if   [ -n "${opt_t}" ] ; then
         # TODO: implement runlevel scripts
@@ -166,7 +193,7 @@ else
         exit $ERROR_SYNTAX_ERROR
       fi
       ;;
-      
+
     weblogic)
       load_userenv common
 
@@ -179,7 +206,7 @@ else
         exit $ERROR_SYNTAX_ERROR
       fi
       ;;
-  
+
     identity)
       load_userenv common
       load_userenv idm
@@ -217,7 +244,7 @@ else
         exit $ERROR_SYNTAX_ERROR
       fi
       ;;
-  
+
     access)
       load_userenv common
       load_userenv acc
@@ -253,7 +280,7 @@ else
         exit $ERROR_SYNTAX_ERROR
       fi
       ;;
-  
+
     analytics)
       if   [ "${opt_a}" == "unpack"      -a -z "${opt_h}" ] ; then
         # WARNING: function not implemented
@@ -269,7 +296,7 @@ else
         exit $ERROR_SYNTAX_ERROR
       fi
       ;;
-  
+
     directory)
       if   [ "${opt_a}" == "postinstall" -a -z "${opt_h}" ] ; then
         patch_oud_post_inst
@@ -295,8 +322,24 @@ else
       fi
       ;;
 
+    remove)
+      if [ -n "${opt_A}" ];
+      then
+        for _host in ${provhosts[@]};
+        do
+          ${0} remove -${opt_L} -${opt_d} -H ${_host}
+        done
+      elif [ -n "${opt_L}" ] || [ -n "${opt_d}" ];
+      then
+        remove_iam ${opt_L} ${opt_d}
+      else
+        help_remove
+        exit $ERROR_SYNTAX_ERROR
+      fi
+      ;;
+
     *) # unrecognized option - show help
-        iamhelp
+      iamhelp
       ;;
   esac
 

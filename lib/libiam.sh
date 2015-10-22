@@ -313,20 +313,48 @@ exit()
 #
 remove_files()
 {
-  echo "/bin/rm -Rf ${iam_top}/products/* \
+    rm -Rf ${iam_top}/products/* \
     ${iam_top}/config/* \
     ${iam_services}/* \
     ${iam_top}/*.lck \
     ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
     ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
-    ${iam_top}/lcm/lcmhome/provisioning/logs/"
-
-  if [ "${iam_remove_lcm}" == "yes" ] ; then
-    echo "rm -Rf ${iam_top}/lcm/* \
-      ${iam_top}/etc/*"
-  fi
+    ${iam_top}/lcm/lcmhome/provisioning/logs/
 }
 
+remove_iam()
+{
+  params="${@}"
+
+  for param in ${params[@]};
+  do
+    case ${param} in
+      L)
+        opt_incl_lcm=yes
+        ;;
+      d)
+        opt_remove_db=yes
+        ;;
+      *)
+        exit $ERROR_FILE_NOT_FOUND
+        ;;
+    esac
+  done
+
+  remove_files
+
+  if [ -n "${opt_incl_lcm}" ] ; then
+    rm -Rf ${iam_top}/lcm/* \
+      ${iam_top}/etc/*
+  fi
+
+  if [ -n "${opt_remove_db}" ] ; then
+    source ${DEPLOYER}/lib/librcu.sh
+    exists_product identity && rcu_drop_identity     | strings
+    exists_product access   && rcu_drop_access       | strings
+    exists_product bip      && rcu_drop_bi_publisher | strings
+  fi
+}
 
 #  run Oracle patch set assistant
 #  param1: product name
@@ -412,7 +440,7 @@ patch_wls_bin()
     error "ERROR: Parameter missing"
     exit 0
   fi
-  
+
   local _p=${1}
   local _src=${DEPLOYER}/lib/weblogic
 
@@ -501,12 +529,12 @@ move_logs()
   dst=${iam_log}
   idmdom=${iam_domain_oim}
   accdom=${iam_domain_acc}
-  
+
   if [ -z ${idmdom} ] ; then
     error "Env variable IDMPROV_IDENTITY_DOMAIN not defined"
     exit 81
   fi
-  
+
   case ${_product} in
     idm)
       mkdir -p ${dst}/nodemanager
