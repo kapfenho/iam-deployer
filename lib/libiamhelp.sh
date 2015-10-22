@@ -335,16 +335,15 @@ help_webtier() {
 # ---------------------------------------------------
 help_remove() {
   echo "
-  Syntax: ${0} remove [-d] [-l] [-A] 
+  Syntax: ${0} remove [-d] [-L] [-A] 
 
-    ${0} remove [-d -L]
-    ${0} remove [-d -l] -A
+    ${0} remove [-L]
+    ${0} remove [-L] -A
 
   Remove IAM installation (with or without LCM, Database and remote hosts)
 
   Parameter:
-    -d   include database (default is no)
-    -l   include LCM (default is no)
+    -L   include LCM (default is no)
     -A   remove on all hosts (default is no)
   "
   exit $ERROR_SYNTAX_ERROR

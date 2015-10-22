@@ -43,8 +43,7 @@ while getopts D:H:O:P:a:s:nt:u:p:w:LdAh FLAG; do
     u)  opt_u=${OPTARG} ;;
     p)  opt_p=${OPTARG} ;;
     w)  opt_w=${OPTARG} ;;
-    L)  opt_L=L ;;
-    d)  opt_d=d ;;
+    L)  opt_L=yes ;;
     A)  opt_A=yes ;;
     h)  opt_h=yes     ;;
     \?) # unrecognized option - show help
@@ -327,11 +326,12 @@ else
       then
         for _host in ${provhosts[@]};
         do
-          ${0} remove -${opt_L} -${opt_d} -H ${_host}
+          echo "${0} remove -${opt_L} -H ${_host}"
+          ${0} remove -${opt_L} -H ${_host}
         done
-      elif [ -n "${opt_L}" ] || [ -n "${opt_d}" ];
+      elif [ -n "${opt_L}" ];
       then
-        remove_iam ${opt_L} ${opt_d}
+        remove_iam ${opt_L}
       else
         help_remove
         exit $ERROR_SYNTAX_ERROR

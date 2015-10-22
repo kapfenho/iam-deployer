@@ -326,33 +326,13 @@ remove_iam()
 {
   params="${@}"
 
-  for param in ${params[@]};
-  do
-    case ${param} in
-      L)
-        opt_incl_lcm=yes
-        ;;
-      d)
-        opt_remove_db=yes
-        ;;
-      *)
-        exit $ERROR_FILE_NOT_FOUND
-        ;;
-    esac
-  done
-
+  opt_incl_lcm=${1}
+  
   remove_files
 
   if [ -n "${opt_incl_lcm}" ] ; then
     rm -Rf ${iam_top}/lcm/* \
       ${iam_top}/etc/*
-  fi
-
-  if [ -n "${opt_remove_db}" ] ; then
-    source ${DEPLOYER}/lib/librcu.sh
-    exists_product identity && rcu_drop_identity     | strings
-    exists_product access   && rcu_drop_access       | strings
-    exists_product bip      && rcu_drop_bi_publisher | strings
   fi
 }
 
