@@ -21,11 +21,7 @@ iamhelp() {
     webtier   modify webtier instance (movelogs, postinstall)
     remove    remove installation
 
-    TODO: modify start-all and stop-all scripts ***
-
     TODO: 
-          keyfile:
-              - start corrent wlst instance for each domain!
           movelogs:
               - change oud and ohs instance names 
                 from static to dynamic

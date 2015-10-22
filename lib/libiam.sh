@@ -84,56 +84,21 @@ add_known_hosts()
 }
 
 #  helper funcitons for product selection
+#  vendor products: identity, access, web, directory
+#  user products:   bip
+#  in case products directory not found exit run
 #
-do_idm() {
-  local _ret
-  case "${DO_IDM}" in
-    YES|yes|1)
-      _ret=0;;
-    *)
-      _ret=1;;
-  esac
-  return $_ret
-}
-do_acc() {
-  local _ret
-  case "${DO_ACC}" in
-    YES|yes|1)
-      _ret=0;;
-    *)
-      _ret=1;;
-  esac
-  return $_ret
-}
-do_bip() {
-  local _ret
-  case "${DO_BIP}" in
-    YES|yes|1)
-      _ret=0;;
-    *)
-      _ret=1;;
-  esac
-  return $_ret
-}
-do_web() {
-  local _ret
-  case "${DO_WEB}" in
-    YES|yes|1)
-      _ret=0;;
-    *)
-      _ret=1;;
-  esac
-  return $_ret
-}
-do_oud() {
-  local _ret
-  case "${DO_OUD}" in
-    YES|yes|1)
-      _ret=0;;
-    *)
-      _ret=1;;
-  esac
-  return $_ret
+exists_product()
+{
+  local _prod=${1}
+
+  [[ -a ${iam_top}/products          ]] || \
+    exit   $ERROR_FILE_NOT_FOUND
+
+  [[ -a ${iam_top}/products/${_prod} ]] || \
+    return $ERROR_FILE_NOT_FOUND
+
+  return 0
 }
 
 #  create oracle inventory pointer
@@ -399,7 +364,6 @@ config_access()
   log ""
   log "Access Domain: configuring access domain..."
 
-  source ~/.env/acc.env
   ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop \
     ${DEPLOYER}/lib/access/oam-config.py
 

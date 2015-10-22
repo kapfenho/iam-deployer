@@ -1,12 +1,12 @@
-#!/bin/bash -x
+#!/bin/bash
 
 if ! shopt -q login_shell ; then
   source /etc/profile
 fi
 
-: ${DEPLOYER:?}
+#echo "CALL: $*"
 
-echo "CALL: $*"
+: ${DEPLOYER:="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"}
 
 . ${DEPLOYER}/lib/user-config.sh
 . ${DEPLOYER}/lib/libcommon2.sh
@@ -211,7 +211,7 @@ else
       elif [ "${opt_a}" == "config"      -a -z "${opt_h}" ] ; then
         config_identity
       elif [ "${opt_a}" == "movelogs"    -a -z "${opt_h}" ] ; then
-        move_logs idm
+        move_logs identity
       else
         help_identity
         exit $ERROR_SYNTAX_ERROR
@@ -247,7 +247,7 @@ else
       elif [ "${opt_a}" == "config"      -a -z "${opt_h}" ] ; then
         config_access
       elif [ "${opt_a}" == "movelogs"    -a -z "${opt_h}" ] ; then
-        move_logs acc
+        move_logs access
       else
         help_access
         exit $ERROR_SYNTAX_ERROR
@@ -288,7 +288,7 @@ else
       if   [ "${opt_a}" == "postinstall" -a -z "${opt_t}" ] ; then
         postinst webtier
       elif [ "${opt_a}" == "movelogs"    -a -z "${opt_t}" ] ; then
-        move_logs web
+        move_logs webtier
       else
         help_webtier
         exit $ERROR_SYNTAX_ERROR

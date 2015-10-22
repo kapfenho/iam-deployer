@@ -37,43 +37,36 @@ _mvlog()
 move_logs()
 {
   local _product=${1}
-  oudins=oud1
-  ohsins=ohs1
-
   dst=${iam_log}
-  idmdom=${iam_domain_oim}
-  accdom=${iam_domain_acc}
-  
-  if [ -z ${idmdom} ] ; then
-    error "Env variable IDMPROV_IDENTITY_DOMAIN not defined"
-    exit 81
-  fi
   
   case ${_product} in
-    idm)
+    identity)
       mkdir -p ${dst}/nodemanager
-      _mvlog ${iam_top}/config/domains/${idmdom}/servers/AdminServer/logs           ${dst}/${idmdom}/AdminServer
-      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_soa1/logs            ${dst}/${idmdom}/wls_soa1
-      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_soa2/logs            ${dst}/${idmdom}/wls_soa2
-      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_oim1/logs            ${dst}/${idmdom}/wls_oim1
-      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_oim2/logs            ${dst}/${idmdom}/wls_oim2
+      _mvlog ${iam_top}/config/domains/${iam_domain_oim}/servers/AdminServer/logs       ${dst}/${iam_domain_oim}/AdminServer
+      _mvlog ${iam_services}/domains/${iam_domain_oim}/servers/wls_soa1/logs            ${dst}/${iam_domain_oim}/wls_soa1
+      _mvlog ${iam_services}/domains/${iam_domain_oim}/servers/wls_soa2/logs            ${dst}/${iam_domain_oim}/wls_soa2
+      _mvlog ${iam_services}/domains/${iam_domain_oim}/servers/wls_oim1/logs            ${dst}/${iam_domain_oim}/wls_oim1
+      _mvlog ${iam_services}/domains/${iam_domain_oim}/servers/wls_oim2/logs            ${dst}/${iam_domain_oim}/wls_oim2
       ;;
-    acc)
+    access)
       mkdir -p ${dst}/nodemanager
-      _mvlog ${iam_top}/config/domains/${accdom}/servers/AdminServer/logs           ${dst}/${accdom}/AdminServer
-      _mvlog ${iam_top}/services/domains/${accdom}/servers/wls_oam1/logs            ${dst}/${accdom}/wls_oam1
-      _mvlog ${iam_top}/services/domains/${accdom}/servers/wls_oam2/logs            ${dst}/${accdom}/wls_oam2
+      _mvlog ${iam_top}/config/domains/${iam_domain_acc}/servers/AdminServer/logs       ${dst}/${iam_domain_acc}/AdminServer
+      _mvlog ${iam_services}/domains/${iam_domain_acc}/servers/wls_oam1/logs            ${dst}/${iam_domain_acc}/wls_oam1
+      _mvlog ${iam_services}/domains/${iam_domain_acc}/servers/wls_oam2/logs            ${dst}/${iam_domain_acc}/wls_oam2
       ;;
     dir)
-      mkdir -p ${dst}/${oudins}
-      _mvlog ${iam_top}/services/instances/${oudins}/OUD/logs                       ${dst}/${oudins}/logs
+      mkdir -p ${dst}/${iam_instance_oud}
+      _mvlog ${iam_services}/instances/${iam_instance_oud}/OUD/logs                     ${dst}/${iam_instance_oud}/logs
       ;;
-    web)
-      mkdir -p ${dst}/${ohsins}
-      _mvlog ${iam_top}/services/instances/${ohsins}/auditlogs                      ${dst}/${ohsins}/auditlogs
-      _mvlog ${iam_top}/services/instances/${ohsins}/diagnostics/logs/OHS/${ohsins} ${dst}/${ohsins}/logs
-      _mvlog ${iam_top}/services/instances/${ohsins}/diagnostics/logs/OPMN/opmn     ${dst}/${ohsins}/opmn
+    webtier)
+      mkdir -p ${dst}/${iam_instance_ohs}
+      _mvlog ${iam_services}/instances/${iam_instance_ohs}/auditlogs                    ${dst}/${iam_instance_ohs}/auditlogs
+      _mvlog ${iam_services}/instances/${iam_instance_ohs}/diagnostics/logs/OHS/${iam_instance_ohs} ${dst}/${iam_instance_ohs}/logs
+      _mvlog ${iam_services}/instances/${iam_instance_ohs}/diagnostics/logs/OPMN/opmn   ${dst}/${iam_instance_ohs}/opmn
       ;;
+    \*)
+      error "Move logs: product unkown"
+      exit $ERROR_FILE_NOT_FOUND
   esac
 }
 

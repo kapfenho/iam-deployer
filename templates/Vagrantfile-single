@@ -1,0 +1,117 @@
+# ´Oracle Identity and Access Management
+#
+
+VAGRANTFILE_API_VERSION = "2"
+
+app_name       = "iam7.agoracon.at"
+app_ip         = "192.168.168.250"
+app_box        = "centos66min"
+app_box_url    = "https://agoracon.at/boxes/centos66min.box"
+#app_box_sha    = "bce6a99728ceaeb017f475ee734f676390cf8c49b6aed721a3247c204daa507f"
+
+$frontend_ip = "192.168.168.250"
+$hostfile = "# ...cant touch this
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1                                         localhost6 localhost6.localdomain6
+192.168.168.250               iam7.agoracon.at        iam7
+192.168.168.250         oradb.iam7.agoracon.at
+#{$frontend_ip}   idminternal.iam7.agoracon.at
+#{$frontend_ip}           sso.iam7.agoracon.at
+192.168.168.1                           images
+"
+
+$images = "images:/Volumes/hext01/install/oracle /mnt/oracle nfs rw,bg,rsize=32768,wsize=32768 0 0\n"
+# $exports, $fstab = "", "#{$images}"
+# [ '/l/ora/config',
+#   '/l/ora/products',
+#   '/l/ora/lcm',
+#   '/l/ora/etc' ].each do |d|
+#   $exports << "#{d} 192.168.168.0/24(rw,async,no_subtree_check)\n"
+#   $fstab   << "oim1:#{d} #{d} nfs rw,async 0 0\n"
+# end
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.provision "hosts-file", type: "shell" do |s|
+    s.inline = "echo '#{$hostfile}' > /etc/hosts"
+  end
+
+  config.vm.provision "root", type: "shell" do |s|
+    s.inline ="/vagrant/user-config/env/root-script.sh"
+  end
+
+  config.vm.provision "nfs", type: "shell" do |s|
+    s.inline = "echo '#{$images}' >>/etc/fstab;
+      mount /mnt/oracle"
+  end
+
+  config.vm.provision "vbox", type: "shell" do |s|
+    s.inline = "/mnt/oracle/vbox5/VBoxLinuxAdditions.run"
+  end
+
+  # config.vm.provision "ssh-key", type: "shell" do |s|
+  #   s.inline = "su - fmwuser -c 'mkdir -p ~/.ssh;
+  #     chmod 0700 ~/.ssh; 
+  #     cp /vagrant/user-config/hostenv/ssh/* ~/.ssh/; 
+  #     chmod 0644 ~/.ssh/*; 
+  #     chmod 0600 ~/.ssh/id_rsa'"
+  # end
+
+  config.vm.define :app, primary: true do |app|
+    app.vm.box          = app_box
+    app.vm.hostname     = app_name
+    app.vm.box_url      = app_box_url
+    app.vm.boot_timeout = 120
+    app.ssh.username    = 'vagrant'
+
+    app.vm.network :private_network, ip: app_ip
+    app.vm.provider :virtualbox do |v|
+      v.name   = app_name
+      v.cpus   = 4
+      v.memory = 12288
+    end
+
+  end
+
+  {
+    # database installation
+    "database"  =>  "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/db.sh  | /usr/bin/tee /tmp/prov-dbs.log'",
+    # create database schemas for iam
+    "rcu"       =>  "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/rcu.sh  | /usr/bin/tee /tmp/prov-rcu.log'",
+    # lcm: install software and configure
+    "iam"       =>  "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam.sh | /usr/bin/tee /tmp/prov-iam.log'",
+  
+    # create userenv
+    "userenv"   =>  "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam userenv -a env && DEPLOYER=/vagrant /vagrant/iam userenv -a profile'",
+    # copy wlst standard libs
+    "wlstlibs"  =>  "su - fmwuser -c '/vagrant/iam weblogic -a wlstlibs -t identity'",
+    # create user keyfiles for identity domain
+    "idmkey"    =>  "su - fmwuser -c '/vagrant/iam identity -a keyfile -u weblogic -p Montag11'",
+    # create user keyfiles for nodemanager
+    "idmkeynm"  =>  "su - fmwuser -c '/vagrant/iam identity -a keyfile -u admin -p Montag11 -n'",
+  
+    # upgrade to jdk7 - part 1
+    "jdk-part1" =>  "su - fmwuser -c '/vagrant/iam jdk -O identity -P 1'",
+    # stop all services
+    "stop-all"  =>  "su - fmwuser -c 'stop-webtier ; stop-identity ; stop-nodemanager'",
+    # upgrade to jdk7 - part 2
+    "jdk-part2" =>  "su - fmwuser -c '/vagrant/iam jdk -O identity -P 2'",
+  
+    # necessary fix for using jdk7 - wl_server
+    "jdk7fix-wlserver"  =>  "su - fmwuser -c '/vagrant/iam weblogic -a jdk7fix -t identity'",
+    # necessary fix for using jdk7 - identity domain
+    "jdk7fix-identity"  =>  "su - fmwuser -c '/vagrant/iam identity -a jdk7fix -t identity'",
+    # patch set assistant - opss schema upgrade
+    "psa-identity"      =>  "su - fmwuser -c '/vagrant/iam identity -a psa'",
+    # move logfiles und log locations
+    "movelogs-identity" =>  "su - fmwuser -c '/vagrant/iam identity -a movelogs'"
+
+  }.each do |k,v| # generate provisioning step
+    config.vm.provision k, type: "shell" do |s|
+      s.inline = v
+    end
+  end
+
+end
+
+# vi: set ft=ruby :

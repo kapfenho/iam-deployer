@@ -4,7 +4,7 @@
 # 
 WARNING_DONE=2
 ERROR_FILE_NOT_FOUND=80
-h=81
+ERROR_SYNTAX_ERROR=81
 
 
 log() {
@@ -33,32 +33,3 @@ warning() {
     printf "*** %s\n" "$1" >&2
   fi
 }
-
-# execute function on remote host
-# syntax:
-#   remote_exec $hostname $additional_lib $env $func_name $func_params
-#
-remote_exec()
-{
-  local _host=${1}
-  local _libfile=${2}
-  local _env=${3}
-  local _funcname=${4}
-  local _params=""
-  
-  local _cmd="source ${DEPLOYER}/lib/remote.env ;"
-  if [ ! "${_env}" == "noenv" ];
-  then
-    _cmd+=" ${_env} ;"
-  fi
-  _cmd+=" source ${DEPLOYER}/lib/${_libfile}.sh ;"
-  _cmd+=" ${_funcname}"
-  for p in ${@:5};
-  do
-    _cmd+=" ${p}"
-  done
-
-  # execute command on remote host
-  ssh ${_host} -- ${_cmd} 
-}
-
