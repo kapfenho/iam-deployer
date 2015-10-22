@@ -30,7 +30,7 @@ elif [ $# -ge 1 ] ; then
   shift
 fi
 
-while getopts D:H:O:P:a:s:nt:u:p:w:LdAh FLAG; do
+while getopts D:H:O:P:a:s:nt:u:p:w:LAh FLAG; do
   case ${FLAG} in
     D)  opt_D=${OPTARG} ;;
     H)  opt_H=${OPTARG} ;;
@@ -59,7 +59,6 @@ set -o errexit
 #
 if [ -n "${opt_H}" ] ; then
   #  remove remote host flag from parameters for recursive call
-  echo "remote exec"
   ssh ${opt_H} -- DEPLOYER=${DEPLOYER} ${DEPLOYER}/iam \
     $(echo "${orig_params}" | sed -E -e 's/-H [a-zA-Z0-9\-]+//')
 else
