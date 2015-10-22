@@ -307,28 +307,21 @@ exit()
   fi
 }
 
-#  remove installation directories populated by LCM  ----------------
+#  remove installation directories populated by LCM
 #  if $iam_remove_lcm is set to "yes" also remove all LCM dirs
 #  Always returns 0
 #
-remove_files()
+remove_iam()
 {
-    rm -Rf ${iam_top}/products/* \
+  opt_incl_lcm=${1}
+
+  rm -Rf ${iam_top}/products/* \
     ${iam_top}/config/* \
     ${iam_services}/* \
     ${iam_top}/*.lck \
     ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
     ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
     ${iam_top}/lcm/lcmhome/provisioning/logs/
-}
-
-remove_iam()
-{
-  params="${@}"
-
-  opt_incl_lcm=${1}
-  
-  remove_files
 
   if [ -n "${opt_incl_lcm}" ] ; then
     rm -Rf ${iam_top}/lcm/* \
