@@ -76,7 +76,7 @@ create_database
 config_database_for_iam
 
 set_db_autostart
-rcd_add oracle ${_DIR}/sys/redhat/rc.d/oracle
+rcd_add oracle ${_DIR}/lib/templates/rcd-sysv/oracle
 set +o errexit
 rcd_service oracle stop
 set -o errexit
