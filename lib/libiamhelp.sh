@@ -282,15 +282,23 @@ help_access() {
 # ---------------------------------------------------
 help_analytics() {
   echo "
-  Syntax: ${0} analytics -a { install|patch|jdbcpwd|domprov|oimintegrate } 
+  Syntax: ${0} analytics -a { domcreate | explode | appconfig | wlsdeploy
+                            | oimintegrate | domconfig } 
                          -t target_path [-H host] 
+
+    ${0} analytics -a domcreate -H host
+    ${0} analytics -a explode   -H host
+    ${0} analytics -a appconfig     -t explode_path -H host
+    ${0} analytics -a wlsdeploy     -t explode_path -H host
+    ${0} analytics -a oimintegrate  -t explode_path -H host
+    ${0} analytics -a domconfig     -t explode_path -H host
 
   Changes, fixes and user modifications for installed Identity Analytics
   instance
 
   Parameter:
     -a   action to perform
-         createdom    create weblogic domain, managed servers and nodemanager
+         domcreate    create weblogic domain, managed servers and nodemanager
          explode      unpack OOB Identity Analytics archive
          appconfig    patch OIA with prepared diff patch
          wlsdeploy    configure weblogic domain for OIA

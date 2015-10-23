@@ -385,6 +385,102 @@ config_webtier()
   log "Webgate: done"
 }
 
+# create weblogic domain for OIA including:
+# nodemanager, boot properties, datasources, managed server
+# 
+oia_wls_domcreate()
+{
+  local _wls_dom_template=${WL_HOME}/common/templates/domains/wls.jar
+  local _create_domain_wlst=${DEPLOYER}/lib/weblogic/wlst/create_oia_domain.py
+  local _default_prop=${DEPLOYER}/user-config/oia/default.properties
+  local _user_prop=${IDM_PROP}
+
+  JAVA_OPTIONS="${JAVA_OPTIONS} -Xmx2048m -Xms2048m -Djava.net.preferIPv4Stack=true"
+
+  CLASSPATH="${CLASSPATH}${CLASSPATHSEP}${FMWLAUNCH_CLASSPATH}${CLASSPATHSEP}"
+  CLASSPATH+="${DERBY_CLASSPATH}${CLASSPATHSEP}${DERBY_TOOLS}${CLASSPATHSEP}"
+  CLASSPATH+="${POINTBASE_CLASSPATH}${CLASSPATHSEP}${POINTBASE_TOOLS}"
+  JVM_ARGS="-Dprod.props.file='${WL_HOME}'/.product.properties \
+    ${WLST_PROPERTIES} ${JVM_D64} \
+    -Xms256m \
+    -Xmx1024m \
+    -XX:PermSize=128m \
+    -Dweblogic.management.confirmKeyfileCreation=true \
+    ${CONFIG_JVM_ARGS}"
+
+  source ${WL_HOME}/server/bin/setWLSEnv.sh
+  eval '"${JAVA_HOME}/bin/java"' ${JVM_ARGS} weblogic.WLST \
+    -skipWLSModuleScanning ${_create_domain_wlst} \
+    ${_wls_dom_template} \
+    ${_default_prop} \
+    ${_user_prop} \
+    ${oiaWlUser} \
+    ${oiaWlPwd}
+}
+
+# unpack OIA instance
+#
+oia_explode()
+{
+  # conflicting libs
+  c_libs[0]=jrf-api.jar
+  c_libs[1]=stax-1.2.0.jar
+  c_libs[2]=stax-api-1.0.1.jar
+  c_libs[3]=tools.jar
+  c_libs[4]=ucp.jar
+  c_libs[5]=xfire-all-1.2.5.jar
+
+
+  if [ -a "${MW_HOME}" ]
+  then
+    unzip -q ${s_oia}/app-archive/${oia_name} -d ${RBACX_HOME}
+
+    mv ${RBACX_HOME}/sample/* ${RBACX_HOME}
+    rm -rf ${RBACX_HOME}/sample
+
+    mkdir ${RBACX_HOME}/{_rbacx_orig,rbacx}
+    cp ${RBACX_HOME}/rbacx.war ${RBACX_HOME}/_rbacx_orig
+    cd ${RBACX_HOME}/rbacx ; jar -xf ../rbacx.war ; rm ../rbacx.war
+
+    # copy libraries needed by OIA
+    cp ${s_oia}/ext/*.jar ${RBACX_HOME}/rbacx/WEB-INF/lib/
+
+    # Remove conflicting libs
+    #
+    for lib in ${c_libs[@]}; do
+      rm ${RBACX_HOME}/rbacx/WEB-INF/lib/${lib}
+    done
+    echo "Done unpacking OIA."
+    echo ""
+  else
+    log "Analytics: ${MW_HOME} does not exist. Please install WLS first."
+  fi
+}
+
+# Apply rbacx configurations by patching the OOTB rbacx instance
+# with the changes from a preconfigured rbacx instance
+# 
+# deployment type:
+# 0 - single instance
+# 1 - clustered
+#
+oia_appconfig()
+{
+  deployment_type=${1}
+
+  cd ${RBACX_HOME}
+  if [[ ${deployment_type} -eq 0 ]]
+  then
+    echo "Patching RBACX_HOME for single instance deployment.."
+    patch -p1 --silent < ${DEPLOYER}/user-config/oia/rbacx_single.patch
+  elif [[ ${deployment_type} -eq 1 ]]
+  then
+    echo "Patching RBACX_HOME for cluster deployment.."
+    patch -p1 --silent < ${DEPLOYER}/user-config/oia/rbacx_cluster.patch
+  fi
+  echo "Done patching RBACX_HOME."
+  echo ""
+}
 
 # install weblogic server
 #
@@ -394,7 +490,7 @@ weblogic_install()
 
   if ! [ -a "${iam_top}/products/${_product_home}/wlserver_10.3" ] ; then
     echo "Installing Weblogic Server..."
-    java -d64 -jar ${s_wls}/wls_generic.jar \
+    java -d64 -jar ${s_wls} \
       -mode=silent \
       -silent_xml=${DEPLOYER}/user-config/wls/wls_install.xml
   else

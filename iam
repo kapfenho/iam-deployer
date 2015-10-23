@@ -270,12 +270,14 @@ else
       ;;
 
     analytics)
-      if   [ "${opt_a}" == "unpack"      -a -z "${opt_h}" ] ; then
+      load_userenv common
+      load_userenv oia
+
+      if   [ "${opt_a}" == "domcreate"  -a -z "${opt_h}" ] ; then
+        oia_wls_domcreate
+      elif [ "${opt_a}" == "explode"       -a -z "${opt_h}" ] ; then
         # WARNING: function not implemented
-        analytics_unpack
-      elif [ "${opt_a}" == "patch"       -a -z "${opt_h}" ] ; then
-        # WARNING: function not implemented
-        analytics_patch
+        oia_explode
       elif [ "${opt_a}" == "domprov"     -a -z "${opt_h}" ] ; then
         # WARNING: function not implemented
         analytics_domprov
