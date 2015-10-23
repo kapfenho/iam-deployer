@@ -137,7 +137,7 @@ help_userenv() {
 # ---------------------------------------------------
 help_jdk() {
   echo "
-  ${s_jdk} true false  Syntax: ${0} jdk -a {install|upgrade} -H host -O oracle_home [-P part]
+  Syntax: ${0} jdk -a {install|upgrade} -H host -O oracle_home [-P part]
     ${0} jdk -a install -H iam.agoracon.at -O analytics
     ${0} jdk -a upgrade -H iam.agoracon.at -O identity -P 1
 
@@ -308,7 +308,7 @@ help_analytics() {
     -H   hostname: execute on remote host
     -P   patch instance
          single   patch for single instance
-         master   patch for cluster
+         cluster  patch for cluster
 
   "
   exit $ERROR_SYNTAX_ERROR
