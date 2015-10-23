@@ -153,12 +153,16 @@ else
       ;;
 
     jdk)
-      if   [ -n "${opt_O}" -a -z "${opt_h}" ] ; then
+      if   [ "${opt_a}" == "upgrade" -a -z "${opt_h}" ] ; then
         if [ -n "${opt_P}" -a "${opt_P}" == "2" ] ; then
           upgrade_jdk2 ${opt_O}
         else
           upgrade_jdk1 ${opt_O}
         fi
+      elif [ "${opt_a}" == "install" -a -z "${opt_h}" ];
+        then
+            mkdir -p ${iam_top}/products/${opt_O}
+            upgrade_jdk1 ${opt_O}
       else
         help_jdk
         exit $ERROR_SYNTAX_ERROR
@@ -182,6 +186,9 @@ else
         patch_wls_bin  ${opt_t}
       elif [ "${opt_a}" == "wlstlibs" -a -n "${opt_t}" -a -z "${opt_h}" ] ; then
         wlst_copy_libs ${opt_t}
+      elif [ "${opt_a}" == "install" -a -n "${opt_t}" -a -z "${opt_h}" ];
+      then
+          weblogic_install ${opt_t}
       else
         help_weblogic
         exit $ERROR_SYNTAX_ERROR
@@ -192,11 +199,11 @@ else
       load_userenv common
       load_userenv idm
 
-      if   [ "${opt_a}" == "jdk7fix"     -a -z "${opt_h}" ] ; then
+      if   [ "${opt_a}" == "jdk7fix"  -a -z "${opt_h}" ] ; then
         patch_wls_domain ${opt_t}
-      elif [ "${opt_a}" == "psa"         -a -z "${opt_h}" ] ; then
+      elif [ "${opt_a}" == "psa"      -a -z "${opt_h}" ] ; then
         run_psa identity
-      elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -z "${opt_n}" ] ; then
+      elif [ "${opt_a}" == "keyfile"  -a -z "${opt_h}" -a -z "${opt_n}" ] ; then
         # domain keyfile
         : ${opt_u:=${domiUser}}
         : ${opt_p:=${domiPwd}}

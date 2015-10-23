@@ -385,6 +385,23 @@ config_webtier()
   log "Webgate: done"
 }
 
+
+# install weblogic server
+#
+weblogic_install()
+{
+  local _product_home=${1}
+
+  if ! [ -a "${iam_top}/products/${_product_home}/wlserver_10.3" ] ; then
+    echo "Installing Weblogic Server..."
+    java -d64 -jar ${s_wls}/wls_generic.jar \
+      -mode=silent \
+      -silent_xml=${DEPLOYER}/user-config/wls/wls_install.xml
+  else
+    echo "Skipped: Weblogic server installation"
+  fi
+}
+
 #  deploy standard lib acStdLib for wlst ----------------------------
 #  param1: product namem (identity,access)
 #

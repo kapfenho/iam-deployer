@@ -127,8 +127,8 @@ help_userenv() {
   Create user environment (bin,etc,lib,cred)
   Parameter:
     -a   action to perform
-         env:         create all files
-         profile:     modify bash user profile
+         env          create all files
+         profile      modify bash user profile
     -H   hostname execute on remote host
 
   "
@@ -137,18 +137,23 @@ help_userenv() {
 # ---------------------------------------------------
 help_jdk() {
   echo "
-  Syntax: ${0} jdk -H host -O oracle_home
-  Syntax Example: ${0} jdk -H iam.agoracon.at -O identity -P 1
+  ${s_jdk} true false  Syntax: ${0} jdk -a {install|upgrade} -H host -O oracle_home [-P part]
+    ${0} jdk -a install -H iam.agoracon.at -O analytics
+    ${0} jdk -a upgrade -H iam.agoracon.at -O identity -P 1
 
   Upgrade existing JDK (from JDK6 to JDK7)
 
   Parameter:
-    -H host       hostname: execute on host
-    -O home       oracle_home to upgrade:
-                    identity | accesss
-    -P part       part 1 or 2
-                    1     can be done with original processes up
-                    2     shall be done with no processes running
+    -a  action to perform
+        install     install JDK7
+        upgrade     upgrade to JDK7
+            
+    -H  host        hostname: execute on host
+    -O  home        oracle_home to install|upgrade:
+                       identity | accesss | analytics
+    -P  part        part 1 or 2
+                       1     can be done with original processes up
+                       2     shall be done with no processes running
                     
    Before exection:
      oracle_home/jdk6         shipped JDK
@@ -186,9 +191,10 @@ help_rcd() {
 # ---------------------------------------------------
 help_weblogic() {
   echo "
-  Syntax: ${0} weblogic -a { jdk7fix | wlstlibs } -t target_path [-H host] 
+  Syntax: ${0} weblogic -a { install | jdk7fix | wlstlibs } -t target_path [-H host] 
     ${0} weblogic -a jdk7fix -t product_name -H host
     ${0} weblogic -a wlstlibs -t product_name -H host
+    ${0} weblogic -a install -t product_name -H host
 
   Modify or extend WebLogic installation
 
@@ -196,9 +202,10 @@ help_weblogic() {
     -a   action to perform
          jdk7fix     fix java parameters in commEnv.sh
          wlstlibs    add libs to wlst common directory
+         install  install weblogic software
     -H   hostname: execute on remote host
     -t   target wlserver path
-         target_name: (identity|access)
+         target_name: (identity|access|analytics)
 
   "
   exit $ERROR_SYNTAX_ERROR
@@ -275,17 +282,21 @@ help_access() {
 # ---------------------------------------------------
 help_analytics() {
   echo "
-  Syntax: ${0} analytics -a { ... } -t target_path [-H host] 
+  Syntax: ${0} analytics -a { install|patch|jdbcpwd|domprov|oimintegrate } 
+                         -t target_path [-H host] 
 
   Changes, fixes and user modifications for installed Identity Analytics
   instance
 
   Parameter:
     -a   action to perform
-         unpack       unpack OOB Identity Analytics archive
-         patch        patch OIA with prepared diff patch
-         domprov      install and configure weblogic domain for OIA
+         createdom    create weblogic domain, managed servers and nodemanager
+         explode      unpack OOB Identity Analytics archive
+         appconfig    patch OIA with prepared diff patch
+         wlsdeploy    configure weblogic domain for OIA
                       and deploy OIA application to weblogic domain
+         oimintegrate integrate OIM and OIA products
+         domconfig    configure wls domain # setDomainEnv.sh
 
     -H   hostname: execute on remote host
     -t   target wlserver path
