@@ -327,8 +327,6 @@ help_webtier() {
          movelogs     # Move Webtier logfiles to common location
 
     -H   hostname: execute on remote host
-    -t   target wlserver path
-
   "
   exit $ERROR_SYNTAX_ERROR
 } 
