@@ -152,23 +152,6 @@ else
       fi
       ;;
 
-    keyfile)
-      load_userenv common
-      [[ "${opt_D}" == "identity" ]] && load_userenv idm
-      [[ "${opt_D}" == "access"   ]] && load_userenv idm
-
-      if   [ "${opt_t}" == "domain"      -a -n "${opt_D}" ] ; then
-        load_userenv common
-        create_domain_keyfiles ${opt_D}
-      elif [ "${opt_t}" == "nodemanager" -a -n "${opt_D}" ] ; then
-        load_userenv common
-        create_nm_keyfiles     ${opt_D}
-      else
-        help_keyfile
-        exit $ERROR_SYNTAX_ERROR
-      fi
-      ;;
-
     jdk)
       if   [ -n "${opt_O}" -a -z "${opt_h}" ] ; then
         if [ -n "${opt_P}" -a "${opt_P}" == "2" ] ; then
@@ -247,7 +230,7 @@ else
       load_userenv common
       load_userenv acc
 
-      if   [ "${opt_a}" == "jdk7fix2"    -a -z "${opt_h}" ] ; then
+      if   [ "${opt_a}" == "jdk7fix"    -a -z "${opt_h}" ] ; then
         patch_wls_domain ${opt_t}
       elif [ "${opt_a}" == "psa"         -a -z "${opt_h}" ] ; then
         run_psa access
