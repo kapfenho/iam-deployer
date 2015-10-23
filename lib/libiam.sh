@@ -388,8 +388,23 @@ config_webtier()
 # create weblogic domain for OIA including:
 # nodemanager, boot properties, datasources, managed server
 # 
-oia_wls_domcreate()
+oia_wlst_exec()
 {
+  # create domain or deploy OIA application
+  local _operation=${1}
+
+  case ${_operation} in
+    wlstdom)
+      local _start_wlst=${DEPLOYER}/lib/weblogic/wlst/create_oia_domain.py
+      ;;
+    oia)
+      local _start_wlst=${DEPLOYER}/lib/weblogic/wlst/deploy_oia_app.py
+        ;;
+      *)
+        exit $ERROR_FILE_NOT_FOUND
+        ;;
+    esac
+
   local _wls_dom_template=${WL_HOME}/common/templates/domains/wls.jar
   local _create_domain_wlst=${DEPLOYER}/lib/weblogic/wlst/create_oia_domain.py
   local _default_prop=${DEPLOYER}/user-config/oia/default.properties
@@ -410,7 +425,7 @@ oia_wls_domcreate()
 
   source ${WL_HOME}/server/bin/setWLSEnv.sh
   eval '"${JAVA_HOME}/bin/java"' ${JVM_ARGS} weblogic.WLST \
-    -skipWLSModuleScanning ${_create_domain_wlst} \
+    -skipWLSModuleScanning ${_start_wlst} \
     ${_wls_dom_template} \
     ${_default_prop} \
     ${_user_prop} \
@@ -469,17 +484,68 @@ oia_appconfig()
   deployment_type=${1}
 
   cd ${RBACX_HOME}
-  if [[ ${deployment_type} -eq 0 ]]
+  if [ "${deployment_type}" == "single" ]
   then
     echo "Patching RBACX_HOME for single instance deployment.."
     patch -p1 --silent < ${DEPLOYER}/user-config/oia/rbacx_single.patch
-  elif [[ ${deployment_type} -eq 1 ]]
+  elif [ "${deployment_type}" == "cluster" ]
   then
     echo "Patching RBACX_HOME for cluster deployment.."
     patch -p1 --silent < ${DEPLOYER}/user-config/oia/rbacx_cluster.patch
   fi
   echo "Done patching RBACX_HOME."
   echo ""
+}
+# OIM-OIA integration steps
+#
+oia_oim_integrate()
+{
+  # oim server libs
+  oim_lib[0]=xlCrypto.jar
+  oim_lib[1]=wlXLSecurityProviders.jar
+  oim_lib[2]=xlAuthentication.jar
+  oim_lib[3]=xlLogger.jar
+  
+  # design console libs
+  dc_lib[0]=xlAPI.jar
+  dc_lib[1]=xlCache.jar
+  dc_lib[2]=xlDataObjectBeans.jar
+  dc_lib[3]=xlDataObjects.jar
+  dc_lib[4]=xlUtils.jar
+  dc_lib[5]=xlVO.jar
+  dc_lib[6]=oimclient.jar
+  dc_lib[7]=iam-platform-utils.jar
+
+  local _oia_lib=${RBACX_HOME}/rbacx/WEB-INF/lib
+
+  # copy OIM designconsole and server libraries to OIA
+  for lib in ${oim_lib[@]}; do
+    cp ${OIM_MW_HOME}/iam/server/lib/${lib} ${_oia_lib}
+  done
+
+  for lib in ${dc_lib[@]}; do
+    cp ${OIM_MW_HOME}/iam/designconsole/lib/${lib} ${_oia_lib}
+  done
+
+  cp ${OIM_MW_HOME}/oracle_common/modules/oracle.jrf_11.1.1/jrf-api.jar ${_oia_lib}
+
+  cp ${OIM_WL_HOME}/server/lib/wlfullclient.jar ${_oia_lib}
+
+  # copy designconsole config to OIA
+  cp -R ${OIM_MW_HOME}/iam/designconsole/config ${RBACX_HOME}/xellerate
+
+  # patching workflow configurations
+  cd ${RBACX_HOME}
+  patch -p1 --silent < ${DEPLOYER}/user-config/oia/rbacx_workflow.patch
+}
+
+# configure OIA weblogic domain
+# 
+oia_domconfig()
+{
+  # setDomainEnv.sh patch
+  cd ${DOMAIN_HOME}/bin
+  patch -p0 < ${DEPLOYER}/user-config/oia/oia_setdomenv.patch
 }
 
 # install weblogic server

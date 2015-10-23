@@ -269,67 +269,71 @@ else
       fi
       ;;
 
-    analytics)
+  analytics)
       load_userenv common
       load_userenv oia
 
-      if   [ "${opt_a}" == "domcreate"  -a -z "${opt_h}" ] ; then
-        oia_wls_domcreate
+      if   [ "${opt_a}" == "domcreate"     -a -z "${opt_h}" ] ; then
+          oia_wlst_exec wlstdom
       elif [ "${opt_a}" == "explode"       -a -z "${opt_h}" ] ; then
-        # WARNING: function not implemented
-        oia_explode
-      elif [ "${opt_a}" == "domprov"     -a -z "${opt_h}" ] ; then
-        # WARNING: function not implemented
-        analytics_domprov
+          oia_explode
+      elif [ "${opt_a}" == "appconfig"     -a -z "${opt_h}" ] ; then
+          oia_appconfig ${opt_P}
+      elif [ "${opt_a}" == "wlsdeploy"     -a -z "${opt_h}" ] ; then
+          oia_wlst_exec oia
+      elif [ "${opt_a}" == "oimintegrate"  -a -z "${opt_h}" ] ; then
+          oia_oim_integrate
+      elif [ "${opt_a}" == "domconfig"     -a -z "${opt_h}" ] ; then
+          oia_domconfig
       else
-        help_analytics
-        exit $ERROR_SYNTAX_ERROR
+          help_analytics
+          exit $ERROR_SYNTAX_ERROR
       fi
       ;;
 
-    directory)
+  directory)
       if   [ "${opt_a}" == "postinstall" -a -z "${opt_h}" ] ; then
-        patch_oud_post_inst
+          patch_oud_post_inst
       elif [ "${opt_a}" == "harden"      -a -z "${opt_h}" ] ; then
-        apply_oud_tls_settings
+          apply_oud_tls_settings
       elif [ "${opt_a}" == "movelogs"    -a -z "${opt_h}" ] ; then
-        move_logs dir
+          move_logs dir
       else
-        help_directory
-        exit $ERROR_SYNTAX_ERROR
+          help_directory
+          exit $ERROR_SYNTAX_ERROR
       fi
       ;;
 
-    webtier)
+  webtier)
 
       if   [ "${opt_a}" == "postinstall" -a -z "${opt_t}" ] ; then
-        postinst webtier
+          postinst webtier
       elif [ "${opt_a}" == "movelogs"    -a -z "${opt_t}" ] ; then
-        move_logs webtier
+          move_logs webtier
       else
-        help_webtier
-        exit $ERROR_SYNTAX_ERROR
+          help_webtier
+          exit $ERROR_SYNTAX_ERROR
       fi
       ;;
 
-    remove)
+  remove)
       if [ -n "${opt_A}" ];
       then
-        for _host in ${provhosts[@]};
-        do
-          echo "${0} remove -${opt_L} -H ${_host}"
-          ${0} remove -${opt_L} -H ${_host}
-        done
+          for _host in ${provhosts[@]};
+          do
+              echo "${0} remove -${opt_L} -H ${_host}"
+              ${0} remove -${opt_L} -H ${_host}
+          done
       elif [ -n "${opt_L}" ];
       then
-        remove_iam ${opt_L}
+          remove_iam ${opt_L}
       else
-        help_remove
-        exit $ERROR_SYNTAX_ERROR
+          help_remove
+          exit $ERROR_SYNTAX_ERROR
       fi
       ;;
 
-    *) # unrecognized option - show help
+  *) # unrecognized option - show help
       iamhelp
       ;;
   esac

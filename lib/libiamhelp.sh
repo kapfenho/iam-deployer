@@ -284,14 +284,14 @@ help_analytics() {
   echo "
   Syntax: ${0} analytics -a { domcreate | explode | appconfig | wlsdeploy
                             | oimintegrate | domconfig } 
-                         -t target_path [-H host] 
+                         [-P single | cluster ] [-H host] 
 
     ${0} analytics -a domcreate -H host
-    ${0} analytics -a explode   -H host
-    ${0} analytics -a appconfig     -t explode_path -H host
-    ${0} analytics -a wlsdeploy     -t explode_path -H host
-    ${0} analytics -a oimintegrate  -t explode_path -H host
-    ${0} analytics -a domconfig     -t explode_path -H host
+    ${0} analytics -a explode -H host
+    ${0} analytics -a appconfig -P single -H host
+    ${0} analytics -a wlsdeploy -H host
+    ${0} analytics -a oimintegrate -H host
+    ${0} analytics -a domconfig -H host
 
   Changes, fixes and user modifications for installed Identity Analytics
   instance
@@ -301,13 +301,14 @@ help_analytics() {
          domcreate    create weblogic domain, managed servers and nodemanager
          explode      unpack OOB Identity Analytics archive
          appconfig    patch OIA with prepared diff patch
-         wlsdeploy    configure weblogic domain for OIA
-                      and deploy OIA application to weblogic domain
+         wlsdeploy    deploy OIA application to weblogic domain
          oimintegrate integrate OIM and OIA products
          domconfig    configure wls domain # setDomainEnv.sh
 
     -H   hostname: execute on remote host
-    -t   target wlserver path
+    -P   patch instance
+         single   patch for single instance
+         master   patch for cluster
 
   "
   exit $ERROR_SYNTAX_ERROR
