@@ -1,4 +1,4 @@
-#  Oracle Identity and Access Management
+#  Oracle Identity and Access Management - Cluster Version
 #
 
 VAGRANTFILE_API_VERSION = "2"
@@ -6,8 +6,7 @@ VAGRANTFILE_API_VERSION = "2"
 $frontend_ip = "192.168.1.242"
 $hostfile = "# ...cant touch this
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-192.168.168.250         oradb.iamvc.agoracon.at            oradb
+::1                                         localhost6 localhost6.localdomain6
 192.168.168.242          web1.iamvc.agoracon.at             web1
 192.168.168.243          web2.iamvc.agoracon.at             web2
 192.168.168.240          oim1.iamvc.agoracon.at             oim1
@@ -16,11 +15,12 @@ $hostfile = "# ...cant touch this
 #{$frontend_ip}        oimadm.iamvc.agoracon.at           oimadm
 #{$frontend_ip}        oiaadm.iamvc.agoracon.at           oiaadm
 #{$frontend_ip}           sso.iamvc.agoracon.at              sso
+192.168.168.170         oradb.iamvc.agoracon.at            oradb
 192.168.1.16              nyx.iamvc.agoracon.at              nyx
 "
 
 $images = "nyx:/export/oracle /mnt/oracle nfs rw,bg,rsize=32768,wsize=32768 0 0\n"
-$exports, $fstab = "", "\n#{$images}"
+$exports, $fstab = "", "#{$images}"
 [ '/l/ora/config',
   '/l/ora/products',
   '/l/ora/lcm',
@@ -41,20 +41,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     s.inline = "echo '#{$hostfile}' > /etc/hosts"
   end
 
-  config.vm.provision "nfs", type: "shell" do |s|
-    s.inline = "echo '#{$fstab}' >> /etc/fstab"
-  end
-
   config.vm.provision "root-actions", type: "shell" do |s|
     s.inline ="/vagrant/user-config/env/root-script.sh"
   end
 
+  config.vm.provision "nfs", type: "shell", preserve_order: true do |s|
+    s.inline = "echo '#{$fstab}' >> /etc/fstab; mount -a"
+  end
+
   config.vm.provision "ssh-key", type: "shell" do |s|
-    s.inline = "su - fmwuser -c 'mkdir -p ~/.ssh;
-      chmod 0700 ~/.ssh; 
-      cp /vagrant/user-config/hostenv/ssh/* ~/.ssh/; 
-      chmod 0644 ~/.ssh/*; 
-      chmod 0600 ~/.ssh/id_rsa'"
+    s.inline = "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam ssh-key -a deploy'"
   end
 
   # ----------------------------------------------------- identity server
@@ -68,15 +64,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.cpus     = 4
       vb.memory   = 8192
     end
-    m.vm.provision "nfs", type: "shell" do |s|
+
+    # let oim1 be the nfs server for the common file systems
+    m.vm.provision "nfs", type: "shell", preserve_order: true do |s|
       s.inline = "echo '#{$exports}' >>/etc/exports;
         echo '#{$images}' >>/etc/fstab;
-        mount /mnt/oracle"
+        mount /mnt/oracle;
+        /sbin/service nfs start && /sbin/chkconfig nfs on"
     end
-    m.vm.provision "nfs-start", type: "shell" do |s|
-      s.inline = "/sbin/service nfs start && /sbin/chkconfig nfs on"
-    end
-
   end
 
   config.vm.define :oim2 do |m|
@@ -103,8 +98,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.cpus     = 2
       vb.memory   = 4096
     end
-    m.vm.provision "load balancer simulation", type: "shell",
-      inline: "/vagrant/user-config/env/load-balancer.sh #{$frontend_ip}"
+    m.vm.provision "load balancer simulation", type: "shell" do |s|
+      s.inline = "/vagrant/user-config/env/load-balancer.sh #{$frontend_ip}"
+    end
   end
 
   config.vm.define :web2 do |m|
@@ -117,7 +113,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.cpus     = 2
       vb.memory   = 4096
     end
+
+    config.vm.provision "iam-prov", type: "shell" do |s|
+      s.inline = "sudo -u fmwuser -H ssh oim1 -- DEPLOYER=/vagrant /vagrant/user-config/worklist"
+    end
+
   end
+
+  #  # database installation
+  #  "database"  =>  "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/database | /usr/bin/tee /tmp/prov-dbs.log'",
+  #  # create database schemas for iam
+  #  "rcu"       =>  "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/rcu.sh   | /usr/bin/tee /tmp/prov-rcu.log'",
+  #  # lcm: install software and configure
+  #  "iam"       =>  "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam.sh   | /usr/bin/tee /tmp/prov-iam.log'",
+  
 
 end
 

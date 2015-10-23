@@ -30,22 +30,21 @@ elif [ $# -ge 1 ] ; then
   shift
 fi
 
-while getopts D:H:O:P:a:s:nt:u:p:w:LAh FLAG; do
+while getopts AH:LO:P:a:hnp:s:t:u:w: FLAG; do
   case ${FLAG} in
-    D)  opt_D=${OPTARG} ;;
-    H)  opt_H=${OPTARG} ;;
-    O)  opt_O=${OPTARG} ;;
-    P)  opt_P=${OPTARG} ;;
-    a)  opt_a=${OPTARG} ;;
-    s)  opt_s=${OPTARG} ;;
-    n)  opt_n=yes       ;;
-    t)  opt_t=${OPTARG} ;;
-    u)  opt_u=${OPTARG} ;;
-    p)  opt_p=${OPTARG} ;;
-    w)  opt_w=${OPTARG} ;;
-    L)  opt_L=yes ;;
-    A)  opt_A=yes ;;
-    h)  opt_h=yes     ;;
+    A)  opt_A=yes       ;;  # on all hosts
+    H)  opt_H=${OPTARG} ;;  # hostname where to run
+    L)  opt_L=yes       ;;  # include LCM product
+    O)  opt_O=${OPTARG} ;;  # Oracle home to upgrade
+    P)  opt_P=${OPTARG} ;;  # - part 1 or 2
+    a)  opt_a=${OPTARG} ;;  # action to perform
+    h)  opt_h=yes       ;;  # help
+    n)  opt_n=yes       ;;  # yes/no switch
+    p)  opt_p=${OPTARG} ;;  # password
+    s)  opt_s=${OPTARG} ;;  # source
+    t)  opt_t=${OPTARG} ;;  # target
+    u)  opt_u=${OPTARG} ;;  # username
+    w)  opt_w=${OPTARG} ;;  # wlst property file path
     \?) # unrecognized option - show help
       echo -e \\n"Option -${BOLD}${OPTARG}${NORM} not allowed."
       iamhelp
@@ -55,7 +54,7 @@ done
 
 set -o errexit
 
-#  convert a remote host call to a recursive call
+#  -H host: convert a remote host call to a recursive call
 #
 if [ -n "${opt_H}" ] ; then
   #  remove remote host flag from parameters for recursive call
@@ -66,7 +65,17 @@ else
   case ${cmd} in
 
     help)
-      iamhelp
+      # 'iam help identity' or 'iam help'
+      if [ $# -gt 1 ] ; then
+        if type ${2} >/dev/null 2>&1 ; then
+          eval "help_${2}"
+        else
+          echo "ERROR: unknown command"
+          exit $ERROR_SYNTAX_ERROR
+        fi
+      else
+        iamhelp
+      fi
       ;;
 
     ssh-key)
@@ -110,31 +119,21 @@ else
       ;;
   
     rcu)
-      if [ "${opt_a}" == "create" -a -n "${opt_t}" ]
-      then
+      if   [ "${opt_a}" == "create" -a -n "${opt_t}" ] ; then
         log "*** Creating schemas ***"
-        if [[ -t 1 ]]; then
-          log "  press RETURN to continue or Ctrl-C to stop"
-          read cont
-        fi
         rcu_${opt_t} | strings 
-      elif [ "${opt_a}" == "remove" -a -n "${opt_t}" ]
-      then
+      elif [ "${opt_a}" == "remove" -a -n "${opt_t}" ] ; then
         log "*** Dropping schemas ***"
-        if [[ -t 1 ]]; then
-          log "  press RETURN to continue or Ctrl-C to stop"
-          read cont
-        fi
         rcu_drop_${opt_t} | strings
       else
         help_rcu
         exit $ERROR_SYNTAX_ERROR
       fi
-
       ;;
+
     prov)
-      if [ "${opt_h}" != "yes" ] ; then
-        iam_prov
+      if [ -n "${opt_a}" -a "${opt_h}" != "yes" ] ; then
+        deploy_on_all ${opt_a}
       else
         help_prov
         exit $ERROR_SYNTAX_ERROR
@@ -153,11 +152,11 @@ else
       ;;
 
     jdk)
-      if   [ -n "${opt_O}" -a -z "${opt_h}" ] ; then
+      if   [ -n "${opt_t}" -a -z "${opt_h}" ] ; then
         if [ -n "${opt_P}" -a "${opt_P}" == "2" ] ; then
-          upgrade_jdk2 ${opt_O}
+          upgrade_jdk2 ${opt_t}
         else
-          upgrade_jdk1 ${opt_O}
+          upgrade_jdk1 ${opt_t}
         fi
       else
         help_jdk
@@ -176,7 +175,7 @@ else
       ;;
 
     weblogic)
-      load_userenv common
+      load_useredeploy_on_all ${opt_a}
 
       if   [ "${opt_a}" == "jdk7fix"  -a -n "${opt_t}" -a -z "${opt_h}" ] ; then
         patch_wls_bin  ${opt_t}
@@ -230,7 +229,7 @@ else
       load_userenv common
       load_userenv acc
 
-      if   [ "${opt_a}" == "jdk7fix"    -a -z "${opt_h}" ] ; then
+      if   [ "${opt_a}" == "jdk7fix"     -a -z "${opt_h}" ] ; then
         patch_wls_domain ${opt_t}
       elif [ "${opt_a}" == "psa"         -a -z "${opt_h}" ] ; then
         run_psa access
@@ -292,7 +291,6 @@ else
       ;;
 
     webtier)
-
       if   [ "${opt_a}" == "postinstall" -a -z "${opt_t}" ] ; then
         postinst webtier
       elif [ "${opt_a}" == "movelogs"    -a -z "${opt_t}" ] ; then
@@ -304,15 +302,12 @@ else
       ;;
 
     remove)
-      if [ -n "${opt_A}" ];
-      then
-        for _host in ${provhosts[@]};
-        do
+      if [ -n "${opt_A}" ] ; then
+        for _host in ${provhosts[@]} ; do
           echo "${0} remove -${opt_L} -H ${_host}"
           ${0} remove -${opt_L} -H ${_host}
         done
-      elif [ -n "${opt_L}" ];
-      then
+      elif [ -n "${opt_L}" ] ; then
         remove_iam ${opt_L}
       else
         help_remove

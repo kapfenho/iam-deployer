@@ -6,11 +6,12 @@ iamhelp() {
   Syntax: ${0} command [flags]
   
   Commands:   parameter -h for command help
+
     help      show this help
     ssh-key   generate and deploy ssh keypair
+    rcu       create database schemas with RCU
     orainv    create central oracle inventory pointer
     lcm       install LCM
-    rcu       create database schemas with RCU
     prov      provision with LCM
     userenv   create userenv on host
     jdk       upgrade existing jdk
@@ -22,10 +23,6 @@ iamhelp() {
     webtier   modify webtier instance (movelogs, postinstall)
     remove    remove installation
 
-    TODO: 
-          movelogs:
-              - change oud and ohs instance names 
-                from static to dynamic
 "
   echo
   exit $ERROR_SYNTAX_ERROR
@@ -33,11 +30,11 @@ iamhelp() {
 # ---------------------------------------------------
 help_ssh_key() {
   echo "
-  Syntax: ${0} ssh-keys -a {generate|deploy|add} [-t key_dest] [-H host]
+  Syntax: ${0} ssh-key -a {generate|deploy|add} [-t key_dest] [-H host]
 
-    ${0} ssh-keys -a generate -t key_dest
-    ${0} ssh-keys -a deploy -s source_dir -H hostname
-    ${0} ssh-keys -a add -H hostname
+    ${0} ssh-key -a generate -t key_dest
+    ${0} ssh-key -a deploy [-s source_dir] [-H hostname]
+    ${0} ssh-key -a add -H hostname
 
   Copy the common ssh keypair and authorized_keys file to the local 
   or specified host.
@@ -89,20 +86,20 @@ help_rcu()
   echo "
   Syntax: ${0} rcu -a {create|remove} -t product_name
 
-    ./iam rcu -a create -t product_name
-    ./iam rcu -a remove -t product_name
+    ${0} rcu -a create -t product_name
+    ${0} rcu -a remove -t product_name
   
   Create database schemas for IAM products with RCU
 
   Parameter:
-    -a  action to perform 
-        create  create Database schema
-        remove  remove Database schema
-        
-    -t  target product
-        identity  create schema for Identity Manager
-        access    create schema for Access Manager
-        bip       create schema for BI Publisher
+    -a   action to perform:
+         create       create Database schema
+         remove       remove Database schema
+         
+    -t   target product:
+         identity     create schema for Identity Manager
+         access       create schema for Access Manager
+         bip          create schema for BI Publisher
 
   "
   exit $ERROR_SYNTAX_ERROR
@@ -110,9 +107,14 @@ help_rcu()
 # ---------------------------------------------------
 help_prov() {
   echo "
-  Syntax: ${0} prov
+  Syntax: ${0} prov -a step
 
-  Execute all LCM provisioning steps on all hosts
+  Execute an LCM provisioning step on all hosts in the defined order.
+  
+  Parameter:
+    -a   step         provisioning step: {preverify|install|unblock|
+                         preconfigure|configure|configure-secondary|
+                         postconfigure|startup|validate}
 
   "
   exit $ERROR_SYNTAX_ERROR
@@ -122,14 +124,14 @@ help_userenv() {
   echo "
   Syntax: ${0} userenv -a {env|profile} [-H host]
     ${0} userenv -a env
-    ${0} userenv -a profile -H host
+    ${0} userenv -a profile [-H host]
 
   Create user environment (bin,etc,lib,cred)
   Parameter:
-    -a   action to perform
-         env:         create all files
-         profile:     modify bash user profile
-    -H   hostname execute on remote host
+    -a   action to perform:
+         env          create all files
+         profile      modify bash user profile
+    -H   hostname     execute on remote host
 
   "
   exit $ERROR_SYNTAX_ERROR
@@ -137,27 +139,28 @@ help_userenv() {
 # ---------------------------------------------------
 help_jdk() {
   echo "
-  Syntax: ${0} jdk -H host -O oracle_home
-  Syntax Example: ${0} jdk -H iam.agoracon.at -O identity -P 1
+  Syntax: ${0} jdk [-H host] -t product -P part
+    ${0} jdk -H iam.agoracon.at -t identity -P 1
 
-  Upgrade existing JDK (from JDK6 to JDK7)
+  Upgrade existing JDK (from JDK6 to JDK7). Takes place in two steps.
+  Extract new JDK with different path; then move/archive old JDK and 
+  sym link original path to JDK7 (used in products).
 
   Parameter:
-    -H host       hostname: execute on host
-    -O home       oracle_home to upgrade:
-                    identity | accesss
-    -P part       part 1 or 2
-                    1     can be done with original processes up
-                    2     shall be done with no processes running
+    -H   host       execute on host
+    -t   product    product with JDK to upgrade: {identity|access}
+    -P   number     part to execute: {1|2}
+                    1  can be done with original processes up
+                    2  shall be done with no processes running
                     
-   Before exection:
-     oracle_home/jdk6         shipped JDK
+  Before exection:
+    ORACLE_HOME/jdk6         shipped JDK
 
-   After execution:
-     oracle_home/jdk/current  link to new JDK
-     oracle_home/jdk/jdkXXXX  new JDK
-     oracle_home/jdk/jdk6     original JDK
-     oracle_home/jdk6         link to new JDK
+  After execution:
+    ORACLE_HOME/jdk/current  link to new JDK
+    ORACLE_HOME/jdk/jdkXXXX  new JDK
+    ORACLE_HOME/jdk/jdk6     original JDK
+    ORACLE_HOME/jdk6         link to new JDK
 
   "
   exit $ERROR_SYNTAX_ERROR
@@ -171,13 +174,9 @@ help_rcd() {
   Deploy rc.d runlevel scripts 
 
   Parameter:
-    -H   hostname: execute on host
-    -t   target component:
-         nodemanger
-         identity
-         access
-         webtier
-         oud
+    -H   host         execute on host
+    -t   target       service to create runlevel script for:
+                        {nodemanger|identity|access|webtier|oud}
 
   "
   exit $ERROR_SYNTAX_ERROR
@@ -186,19 +185,18 @@ help_rcd() {
 # ---------------------------------------------------
 help_weblogic() {
   echo "
-  Syntax: ${0} weblogic -a { jdk7fix | wlstlibs } -t target_path [-H host] 
-    ${0} weblogic -a jdk7fix -t product_name -H host
-    ${0} weblogic -a wlstlibs -t product_name -H host
+  Syntax: ${0} weblogic -a {jdk7fix|wlstlibs} -t product [-H host] 
+    ${0} weblogic -a jdk7fix  -t product -H host
+    ${0} weblogic -a wlstlibs -t product -H host
 
   Modify or extend WebLogic installation
 
   Parameter:
-    -a   action to perform
-         jdk7fix     fix java parameters in commEnv.sh
-         wlstlibs    add libs to wlst common directory
-    -H   hostname: execute on remote host
-    -t   target wlserver path
-         target_name: (identity|access)
+    -a   action       possible actions: {jdk7fix|wlstlibs}
+                      jdk7fix     fix java parameters in commEnv.sh
+                      wlstlibs    add libs to wlst common directory
+    -H   host         execute on host
+    -t   product      product name: {identity|access}
 
   "
   exit $ERROR_SYNTAX_ERROR
@@ -227,13 +225,13 @@ help_identity() {
          postinstall  access domain postinstall configuration
          movelogs     move identity domain logfiles to common location
 
-    -H   hostname     execute on remote host
+    -H   host         execute on remote host
     -t   target       wls server path
     -u   user         user to create keyfile for
     -p   password     password of user
     -w   path         path of WLST properties file to use
-                      default: ~/.env/identity.prop
-    -n                keyfile: create nodemanager keyfiles
+                        default: ~/.env/identity.prop
+    -n                keyfile: create nodemanager keyfile (without: domain)
 
   "
   exit $ERROR_SYNTAX_ERROR
@@ -287,7 +285,7 @@ help_analytics() {
          domprov      install and configure weblogic domain for OIA
                       and deploy OIA application to weblogic domain
 
-    -H   hostname: execute on remote host
+    -H   host         execute on remote host
     -t   target wlserver path
 
   "
@@ -338,7 +336,8 @@ help_remove() {
     ${0} remove [-L]
     ${0} remove [-L] -A
 
-  Remove IAM installation (with or without LCM, Database and remote hosts)
+  Remove IAM installation. Options to include LCM and to clean multiple
+  hosts.
 
   Parameter:
     -L   include LCM (default is no)
@@ -346,4 +345,4 @@ help_remove() {
   "
   exit $ERROR_SYNTAX_ERROR
 } 
-# ---------------------------------------------------# ---------------------------------------------------
+

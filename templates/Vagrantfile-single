@@ -75,11 +75,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   {
     # database installation
-    "database"  =>  "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/db.sh  | /usr/bin/tee /tmp/prov-dbs.log'",
+    "database"  =>  "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/database | /usr/bin/tee /tmp/prov-dbs.log'",
     # create database schemas for iam
-    "rcu"       =>  "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/rcu.sh  | /usr/bin/tee /tmp/prov-rcu.log'",
+    "rcu"       =>  "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/rcu.sh   | /usr/bin/tee /tmp/prov-rcu.log'",
     # lcm: install software and configure
-    "iam"       =>  "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam.sh | /usr/bin/tee /tmp/prov-iam.log'",
+    "iam"       =>  "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam.sh   | /usr/bin/tee /tmp/prov-iam.log'",
   
     # create userenv
     "userenv"   =>  "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam userenv -a env && DEPLOYER=/vagrant /vagrant/iam userenv -a profile'",

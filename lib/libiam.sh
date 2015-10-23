@@ -156,12 +156,16 @@ EOS
 #
 deploy()
 {
-  (
-    cd ${iam_lcm}/provisioning/bin
+  if [[ "${1}" == "unblock" ]] ; then
+    for d in ${iam_top}/products/* ; do
+      [[ -a ${d}/jdk6 ]] && jdk_patch_config ${d}/jdk6
+    done
+  else
+    pushd ${iam_lcm}/provisioning/bin
     ./runIAMDeployment.sh -responseFile ${DEPLOYER}/user-config/iam/provisioning.rsp \
       -ignoreSysPrereqs true \
       -target ${1}
-  )
+  fi
 }
 
 deploy_on_all()

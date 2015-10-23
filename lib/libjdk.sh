@@ -21,13 +21,15 @@ jdk_create_softlink() {
 jdk_patch_config() {
   local fp=${1}/jre/lib/security/java.security
   if [[ -a ${fp} ]] ; then
-    if sed -i.orig 's/securerandom\.source=file:\/dev\/urandom/securerandom\.source=file:\/dev\/\.\/urandom/g' ${fp} ; then
-      log "JDK performance patch urandom done for ${fp}"
-    else
-      error "Error while patching ${fp}"
+    # we check if this one is already patched
+    if grep -q -E -e '\/dev\/\.\/urandom' ${fp} ; then
+      # found unpatched file
+      if sed -i.orig 's/securerandom\.source=file:\/dev\/urandom/securerandom\.source=file:\/dev\/\.\/urandom/g' ${fp} ; then
+        log "JDK performance patch urandom done for ${fp}"
+      else
+        error "Error while patching ${fp}"
+      fi
     fi
-  else
-    warning "Could not find JDK file ${fp}"
   fi
 }
 
