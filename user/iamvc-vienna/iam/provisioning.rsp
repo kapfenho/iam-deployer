@@ -226,11 +226,11 @@ OIM_EMAIL_PASSWORD=
 #OIM DB Configuration
 OIM_DB_IS_RAC=false
 OIM_DB_IS_SINGLE=true
-OIM_SINGLE_DB_HOST=oradb.iamvc.agoracon.at
+OIM_SINGLE_DB_HOST=oradb11.vie.agoracon.at
 OIM_SINGLE_DB_PORT=1521
 OIM_DB_SCHEMAPREFIX=VCI
 OIM_DB_SCHEMAUSER=${provisioning.idmprov.oim-db.schema_prefix}_OIM
-OIM_DB_SERVICENAME=iam1
+OIM_DB_SERVICENAME=oradb11.vie.agoracon.at
 OIM_RAC_ONS_ADDRESS=${provisioning.idmprov.oim-db.rac.scanaddress}
 OIM_RAC_ONS_PORT=6200
 OIM_RAC_SCAN_ADDRESS=

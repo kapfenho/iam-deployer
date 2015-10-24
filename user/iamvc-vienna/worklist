@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 #
 #  VWFS Post installation steps
 #
@@ -20,6 +20,7 @@ source ${DEPLOYER}/lib/user-config.sh
 
 # install database
 # database
+iam orainv
 
 # rcu: create database schemas
 iam rcu -a create -t identity
@@ -39,7 +40,7 @@ for step in \
   startup \
   validate
 do
-  deploy_on_all $step
+  iam prov -a $step -A
 done
 
 # deploy user environment in shared location

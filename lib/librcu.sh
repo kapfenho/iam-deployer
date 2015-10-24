@@ -141,5 +141,56 @@ ${iam_dba_pass}
 EOF
 }
 
+run_rcu()
+{
+  local _mode=${1}
+  local _product=${2}
+  local _user_check=""
+  local _exists
+
+  case ${_product} in
+    identity)
+      _user_check="${iam_oim_prefix}_OIM" ;;
+    access)
+      _user_check="${iam_oam_prefix}_OAM" ;;
+    bip)
+      error "TODO: find db schema name"
+      _user_check="${iam_bip_prefix}_BIP" ;;
+    \*)
+      error "product not available in schema check!" ;;
+  esac
+
+  log "RCU: testing for user ${_user_check}"
+
+  ORACLE_HOME=${s_rcu_home}
+  LD_LIBRARY_PATH=${ORACLE_HOME}/lib
+  export ORACLE_HOME LD_LIBRARY_PATH
+  set -x
+  local _sqlout=$(mktemp /tmp/rcu-check-XXXXXXX)
+  sqlcmd="${ORACLE_HOME}/bin/sqlplus sys/${iam_dba_pass}@//${dbs_dbhost}:${dbs_port}/${iam_servicename} as sysdba"
+  # if echo "select 'EXISTS' from dba_users where username = '${_user_check}';" | ${sqlcmd} | grep -q EXISTS ; then
+  if echo "select 'EXISTS' from dba_users where username = '${_user_check}';" | ${sqlcmd} >${_sqlout} ; then
+    if grep -q 'EXISTS' ${_sqlout} ; then
+      log "found user ${_user_check} in database"
+      _exists=1
+    else
+      log "no user ${_user_check} found in database"
+      unset _exists
+    fi
+  else
+    error "Problem while connecting to database"
+  fi
+  rm -f ${_sqlout}
+  
+  if   [ "${_mode}" == "create" -a -z "${_exists}" ] ; then
+    log "running rcu tool"
+    rcu_${_product} | strings
+  elif [ "${_mode}" == "drop"   -a -n "${_exists}" ] ; then
+    rcu_drop_${_product} | strings
+  fi
+  unset ORACLE_HOME LD_LIBRARY_PATH
+  set +x
+}
+
 
 

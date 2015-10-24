@@ -4,7 +4,7 @@ if ! shopt -q login_shell ; then
   source /etc/profile
 fi
 
-#echo "CALL: $*"
+echo "$(hostname -s) CALL: $*"
 
 : ${DEPLOYER:="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"}
 
@@ -32,8 +32,8 @@ fi
 
 while getopts AH:LO:P:a:hnp:s:t:u:w: FLAG; do
   case ${FLAG} in
-    A)  opt_A=yes       ;;  # on all hosts
-    H)  opt_H=${OPTARG} ;;  # hostname where to run
+    A)  opt_A=yes       ;;  # execute on all hosts
+    H)  opt_H=${OPTARG} ;;  # execute on host stated
     L)  opt_L=yes       ;;  # include LCM product
     O)  opt_O=${OPTARG} ;;  # Oracle home to upgrade
     P)  opt_P=${OPTARG} ;;  # - part 1 or 2
@@ -52,14 +52,25 @@ while getopts AH:LO:P:a:hnp:s:t:u:w: FLAG; do
   esac
 done
 
-set -o errexit
+set -o errtrace
 
-#  -H host: convert a remote host call to a recursive call
-#
-if [ -n "${opt_H}" ] ; then
+
+if   [ -n "${opt_H}" ] ; then
+
+  #  -H host: convert a remote host call to a recursive call
   #  remove remote host flag from parameters for recursive call
   ssh ${opt_H} -- DEPLOYER=${DEPLOYER} ${DEPLOYER}/iam \
     $(echo "${orig_params}" | sed -E -e 's/-H [a-zA-Z0-9\-]+//')
+
+elif [ -n "${opt_A}" ] ; then
+
+  #  -A: execute on all hosts
+  #  execute on all hosts
+  for _host in ${provhosts[@]} ; do
+    ssh ${_host} -- DEPLOYER=${DEPLOYER} ${DEPLOYER}/iam \
+      $(echo "${orig_params}" | sed -E -e 's/-A//')
+  done
+
 else
 
   case ${cmd} in
@@ -91,12 +102,12 @@ else
         exit $ERROR_SYNTAX_ERROR
       fi
 
-      if   [ -z "${opt_h}" ] ; then
-        copy_ssh_key
-      else
-        help_ssh_key
-        exit $ERROR_SYNTAX_ERROR
-      fi
+      #if   [ -z "${opt_h}" ] ; then
+      #  copy_ssh_key
+      #else
+      #  help_ssh_key
+      #  exit $ERROR_SYNTAX_ERROR
+      #fi
   
       ;;
   
@@ -119,12 +130,8 @@ else
       ;;
   
     rcu)
-      if   [ "${opt_a}" == "create" -a -n "${opt_t}" ] ; then
-        log "*** Creating schemas ***"
-        rcu_${opt_t} | strings 
-      elif [ "${opt_a}" == "remove" -a -n "${opt_t}" ] ; then
-        log "*** Dropping schemas ***"
-        rcu_drop_${opt_t} | strings
+      if [ -n "${opt_t}" -a -n "${opt_a}" ] ; then
+        run_rcu ${opt_a} ${opt_t}
       else
         help_rcu
         exit $ERROR_SYNTAX_ERROR
@@ -133,7 +140,7 @@ else
 
     prov)
       if [ -n "${opt_a}" -a "${opt_h}" != "yes" ] ; then
-        deploy_on_all ${opt_a}
+        prov ${opt_a}
       else
         help_prov
         exit $ERROR_SYNTAX_ERROR
@@ -302,12 +309,7 @@ else
       ;;
 
     remove)
-      if [ -n "${opt_A}" ] ; then
-        for _host in ${provhosts[@]} ; do
-          echo "${0} remove -${opt_L} -H ${_host}"
-          ${0} remove -${opt_L} -H ${_host}
-        done
-      elif [ -n "${opt_L}" ] ; then
+      if   [ -n "${opt_L}" ] ; then
         remove_iam ${opt_L}
       else
         help_remove

@@ -29,6 +29,18 @@ gen_ssh_keypair()
   fi
 }
 
+# quietly add list of hosts (passed as parameters) to ${HOME}/.ssh/known_hosts 
+# file after this function is run, a list of known hosts will be prepared for 
+# the current user@localhost.
+# 
+add_known_hosts()
+{
+  for host in ${provhosts[@]} ; do
+    log "adding ${host} to known_hosts"
+    ssh-keyscan -t rsa ${host} >> ${HOME}/.ssh/known_hosts
+  done
+}
+
 #  copy the keypair to the standard locations and trust the same key
 #  because all hosts will use the very same one during initialization
 #  - param 1: path of shared directory with common key
@@ -41,15 +53,15 @@ deploy_ssh_keypair()
   local known=~/.ssh/known_hosts
 
   # check if there is already a key present
-  if [[ -a ${destk} ]] ; then
-    if [[ "$(cat ${destk} | shasum)" == "$(cat ${newk} | shasum)" ]] ; then
-      # the common key is already there
-      return $WARN_DONE
-    else
-      # an unkown key is there - stop and complain!
-      return $ERR_FILE_EXISTS
-    fi
-  fi
+  # if [[ -a ${destk} ]] ; then
+  #   if [[ "$(cat ${destk} | sha256sum)" == "$(cat ${newk} | sha256sum)" ]] ; then
+  #     # the common key is already there
+  #     return $WARN_DONE
+  #   else
+  #     # an unkown key is there - stop and complain!
+  #     return $ERR_FILE_EXISTS
+  #   fi
+  # fi
 
   # standard setting in ssh...
   mkdir -p ~/.ssh && chmod 0700 ~/.ssh
@@ -63,25 +75,10 @@ deploy_ssh_keypair()
   cat ${destk}.pub >> ${authk}
   chmod 0600 ${known} ${destk}
   chmod 0644 ${authk} ${destk}.pub
+
+  add_known_hosts
 }
 
-
-# quietly add list of hosts (passed as parameters) to ${HOME}/.ssh/known_hosts 
-# file after this function is run, a list of known hosts will be prepared for 
-# the current user@localhost.
-#
-# WARNING: this function is potentialy dangerous, because it adds a list of 
-# known hosts without any checks from the administrator.
-# 
-add_known_hosts()
-{
-  for host in ${@};
-  do
-    echo "adding ${host} to ${HOME}/.ssh/known_hosts file."
-    ssh-keyscan -t rsa ${host} >> ${HOME}/.ssh/known_hosts
-    #ssh fmwuser@${host} -o "StrictHostKeyChecking no"
-  done
-}
 
 #  helper funcitons for product selection
 #  vendor products: identity, access, web, directory
@@ -119,11 +116,17 @@ EOS
 deploy_lcm()
 {
   if ! [ -a ${iam_lcm}/provisioning ] ; then
+
+    [[ -n "${LD_LIBRARY_PATH}" ]] && LD_LIBRARY_PATH_OLD=${LD_LIBRARY_PATH}
+    ORACLE_HOME=
+    LD_LIBRARY_PATH=
+
+      
     log "Deploying LCM..."
 
     ${s_lcm}/Disk1/runInstaller -silent \
       -jreLoc ${s_runjre} \
-      -invPtrLoc ${orainst_loc} \
+      -invPtrLoc ${iam_orainv_ptr} \
       -response ${DEPLOYER}/user-config/lcm/lcm_install.rsp \
       -ignoreSysPrereqs \
       -nocheckForUpdates \
@@ -151,37 +154,46 @@ EOS
   fi
 }
 
-#  deploy step within life cycle manager wizard
+#  provision step within life cycle manager wizard
 #+ param 1: step name
 #
-deploy()
+prov()
 {
-  if [[ "${1}" == "unblock" ]] ; then
+  local _action=${1}
+
+  if [[ "${_action}" == "unblock" ]] ; then
     for d in ${iam_top}/products/* ; do
       [[ -a ${d}/jdk6 ]] && jdk_patch_config ${d}/jdk6
     done
   else
-    pushd ${iam_lcm}/provisioning/bin
-    ./runIAMDeployment.sh -responseFile ${DEPLOYER}/user-config/iam/provisioning.rsp \
+    pushd ${iam_lcm}/provisioning/bin >/dev/null
+    local _rsp=${DEPLOYER}/user-config/iam/provisioning.rsp
+
+    export JAVA_HOME=${s_runjdk}
+    export PATH=${JAVA_HOME}/bin:${PATH}
+
+    ./runIAMDeployment.sh -responseFile ${_rsp} \
       -ignoreSysPrereqs true \
-      -target ${1}
+      -target ${_action}
+
+    popd >/dev/null
   fi
 }
 
-deploy_on_all()
-{
-  log "Deployment step ${1} +++ starting on localhost..."
-  deploy ${1}
-  log "Deployment step ${1} +++ completed on localhost"
-
-  for h in ${provhosts[@]}
-  do
-    log "Deployment step ${1} +++ starting on ${h}..."
-    ssh ${h} -- ${DEPLOYER}/user-config/env/prov.sh ${1}
-    log "Deployment step ${1} +++ completed on ${h}"
-  done
-  log "Deployment step ${1} completed"
-}
+# prov_on_all()
+# {
+#   # log "Deployment step ${1} +++ starting on localhost..."
+#   # deploy ${1}
+#   # log "Deployment step ${1} +++ completed on localhost"
+# 
+#   for h in ${provhosts[@]}
+#   do
+#     log "Deployment step ${1} +++ starting on ${h}..."
+#     ssh ${h} -- ${DEPLOYER}/user-config/env/prov.sh ${1}
+#     log "Deployment step ${1} +++ completed on ${h}"
+#   done
+#   log "Deployment step ${1} completed"
+# }
 
 # deployment and instance creation with lifecycle management
 # in PS2 Release we also need to patch JDK with custom random pool
