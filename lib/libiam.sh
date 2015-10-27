@@ -536,7 +536,7 @@ oia_oim_integrate()
 
   # patching workflow configurations
   cd ${RBACX_HOME}
-  patch -p1 --silent < ${DEPLOYER}/user-config/oia/rbacx_workflow.patch
+  patch -p0 --silent < ${DEPLOYER}/user-config/oia/rbacx_workflow.patch
 }
 
 # configure OIA weblogic domain
