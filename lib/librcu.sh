@@ -180,12 +180,12 @@ run_rcu()
   else
     error "Problem while connecting to database"
   fi
-  rm -f ${_sqlout}
+  #rm -f ${_sqlout}
   
   if   [ "${_mode}" == "create" -a -z "${_exists}" ] ; then
     log "running rcu tool"
     rcu_${_product} | strings
-  elif [ "${_mode}" == "drop"   -a -n "${_exists}" ] ; then
+  elif [ "${_mode}" == "remove" -a -n "${_exists}" ] ; then
     rcu_drop_${_product} | strings
   fi
   unset ORACLE_HOME LD_LIBRARY_PATH
