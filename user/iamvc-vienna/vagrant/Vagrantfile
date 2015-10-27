@@ -15,7 +15,7 @@ $hostfile = "# ...cant touch this
 #{$frontend_ip}        oimadm.iamvc.agoracon.at           oimadm
 #{$frontend_ip}        oiaadm.iamvc.agoracon.at           oiaadm
 #{$frontend_ip}           sso.iamvc.agoracon.at              sso
-192.168.168.170           oradb.vie.agoracon.at            oradb
+192.168.168.170         oradb11.vie.agoracon.at          oradb11
 192.168.1.16              nyx.iamvc.agoracon.at              nyx
 "
 
@@ -114,11 +114,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.memory   = 4096
     end
 
-    # config.vm.provision "iam-prov", type: "shell" do |s|
-    #   s.inline = "sudo -u fmwuser -H ssh oim1 -- DEPLOYER=/vagrant /vagrant/user-config/worklist"
-    # end
-
   end
+
+  # config.vm.provision "iam-prov", type: "shell" do |s|
+  #   s.inline = "sudo -u fmwuser -H ssh oim1 -- DEPLOYER=/vagrant /vagrant/user-config/worklist"
+  # end
 
   #  # database installation
   #  "database"  =>  "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/database | /usr/bin/tee /tmp/prov-dbs.log'",
