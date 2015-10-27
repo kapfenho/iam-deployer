@@ -26,18 +26,18 @@
 
 # Domain Props                                                                                                                                                                   
 basePortNumber = 7301
-domainName=oia_iamv2
-nmDir=/l/ora/config/nodemanager/iamv2.agoracon.at
-domainsDirectory=/l/ora/services/domains
-logsDirectory=/l/ora/IAM/logs
-walletsDirectory=/l/ora/products/analytics/wallets
-jvmLocation=/l/ora/products/analytics/jdk
+domainName=__DOMAIN_NAME__
+nmDir=__IAM_TOP__/config/nodemanager/__HOSTNAME__
+domainsDirectory=__IAM_TOP__/services/domains
+logsDirectory=__IAM_TOP__/IAM/logs
+walletsDirectory=__IAM_TOP__/products/analytics/wallets
+jvmLocation=__IAM_TOP__/products/analytics/jdk
 JTATimeout = 3700
-userEnvHome = /l/ora/home
+userEnvHome = __IAM_TOP__/etc/home
 
 
 # Adminserver                                                                                                                                                            
-adminserver.listenAddress = iamv2.agoracon.at
+adminserver.listenAddress = __HOSTNAME__
 adminserver.relativeListenPort = 1
 adminserver.enableSSL = false
 adminserver.relativeSslListenPort = 2
@@ -53,7 +53,7 @@ cluster.1.clusterMessagingMode = unicast
 # Machine
 amountMachine = 1
 machine.1.name = oia_machine
-machine.1.listenerAddress = iamv2.agoracon.at
+machine.1.listenerAddress = __HOSTNAME__
 machine.1.nodemanagerPort = 5556
 
 
@@ -63,18 +63,18 @@ managedserver.1.addToCluster = oia_cluster
 managedserver.1.name = wls_oia1
 managedserver.1.machine = oia_machine
 managedserver.x.maxHeap = 1024m
-managedserver.x.listenerAddress = iamv2.agoracon.at
+managedserver.x.listenerAddress = __HOSTNAME__
 managedserver.x.sslEnabled = true
 managedserver.x.profileID = None
 managedserver.x.useNodeManager = true
 managedserver.x.additionalVMarguments =
-managedserver.x.BeaHome=/l/ora/products/analytics/wlserver_10.3
+managedserver.x.BeaHome=__IAM_TOP__/products/analytics/wlserver_10.3
 
 
 # Custom Deloyment
 amountDeployments = 1
 deployment.1.applicationname = rbacx
-deployment.1.sourcepath = /l/ora/products/analytics/oia/rbacx
+deployment.1.sourcepath = __IAM_TOP__/products/analytics/oia/rbacx
 deployment.1.targets = oia_cluster
 deployment.order = 100
 

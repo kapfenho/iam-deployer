@@ -60,7 +60,7 @@ _cp_oia()
   sed -i "s/__IAM_TOP__/${_iam_top}/"      ${env}/*
   sed -i "s/__IAM_LOG__/${_iam_log}/"      ${env}/*
   sed -i "s/__HOSTNAME__/$(hostname -f)/"  ${env}/*
-  sed -i "s/__DOMAIN_NAME__/${iam_domain_oim}/" ${env}/*
+  sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/" ${env}/*
 }
 
 _cp_acc()
