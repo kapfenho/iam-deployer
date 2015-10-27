@@ -495,6 +495,16 @@ oia_appconfig()
   fi
   echo "Done patching RBACX_HOME."
   echo ""
+
+  # Encrypt OIMJDBC Password
+  java -jar ${RBACX_HOME}/rbacx/WEB-INF/lib/vaau-commons-crypt.jar \
+    -encryptProperty \
+    -cipherKeyProperties ${RBACX_HOME}/conf/cipherKey.properties \
+    -propertyFile ${RBACX_HOME}/conf/oimjdbc.properties \
+    -propertyName oim.jdbc.password
+  echo "Encrypted OIM JDBC Password"
+
+
 }
 # OIM-OIA integration steps
 #
@@ -505,7 +515,7 @@ oia_oim_integrate()
   oim_lib[1]=wlXLSecurityProviders.jar
   oim_lib[2]=xlAuthentication.jar
   oim_lib[3]=xlLogger.jar
-  
+
   # design console libs
   dc_lib[0]=xlAPI.jar
   dc_lib[1]=xlCache.jar
