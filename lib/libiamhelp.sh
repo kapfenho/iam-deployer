@@ -287,11 +287,11 @@ help_analytics() {
                          [-P single | cluster ] [-H host] 
 
     ${0} analytics -a domcreate -H host
+    ${0} analytics -a domconfig -H host
     ${0} analytics -a explode -H host
     ${0} analytics -a appconfig -P single -H host
-    ${0} analytics -a wlsdeploy -H host
     ${0} analytics -a oimintegrate -H host
-    ${0} analytics -a domconfig -H host
+    ${0} analytics -a wlsdeploy -H host
 
   Changes, fixes and user modifications for installed Identity Analytics
   instance
@@ -299,11 +299,11 @@ help_analytics() {
   Parameter:
     -a   action to perform
          domcreate    create weblogic domain, managed servers and nodemanager
+         domconfig    configure wls domain # setDomainEnv.sh
          explode      unpack OOB Identity Analytics archive
          appconfig    patch OIA with prepared diff patch
-         wlsdeploy    deploy OIA application to weblogic domain
          oimintegrate integrate OIM and OIA products
-         domconfig    configure wls domain # setDomainEnv.sh
+         wlsdeploy    deploy OIA application to weblogic domain
 
     -H   hostname: execute on remote host
     -P   patch instance

@@ -300,7 +300,7 @@ storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
 y
 exit()
 "
-    echo "${_wlst}" |=
+    echo "${_wlst}" | ${WL_HOME}/common/bin/wlst.sh -loadProperties ${opt_w}
 
     log "Finished creating domain keyfiles"
 
