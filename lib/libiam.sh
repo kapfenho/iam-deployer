@@ -92,7 +92,7 @@ exists_product()
 {
   local _prod=${1}
 
-  [[ -a ${iam_top}/products          ]] || \
+  [[ -a ${iam_top}/products          ]] || \
     exit   $ERROR_FILE_NOT_FOUND
 
   [[ -a ${iam_top}/products/${_prod} ]] || \
