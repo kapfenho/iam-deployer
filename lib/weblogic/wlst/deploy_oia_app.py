@@ -15,5 +15,7 @@ if __name__== "main":
     print ''
 
     intialize()
-    startAndConnnectToAdminServer()
+    connect(adminUserName, adminPassword, connUri);
+    print 'Connected';
+    #startAndConnnectToAdminServer()
     deployAllApplications()

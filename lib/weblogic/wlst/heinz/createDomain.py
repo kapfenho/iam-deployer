@@ -55,6 +55,7 @@ def intialize():
         global adminPassword;
         global userConfigFile;
         global userKeyFile;
+        global connUri;
 
         # test arguments
         if len(sys.argv) != 6:
@@ -100,6 +101,8 @@ def intialize():
                         print 'JVM location property not defined - cancel creation !';
                         exit();
                 print 'JVM Location: ' + domainProps.getProperty('jvmLocation');
+        
+                connUri = 't3://'+domainProps.getProperty('adminserver.listenAddress')+':'+ str( int( int(domainProps.getProperty('basePortNumber'))+int(domainProps.getProperty('adminserver.relativeListenPort'))));
 
         except:
                 dumpStack()
