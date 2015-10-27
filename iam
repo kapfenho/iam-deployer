@@ -52,7 +52,7 @@ while getopts AH:LO:P:a:hnp:s:t:u:w: FLAG; do
   esac
 done
 
-set -o errtrace
+set -o errexit errtrace
 
 
 if   [ -n "${opt_H}" ] ; then
@@ -61,6 +61,7 @@ if   [ -n "${opt_H}" ] ; then
   #  remove remote host flag from parameters for recursive call
   ssh ${opt_H} -- DEPLOYER=${DEPLOYER} ${DEPLOYER}/iam \
     $(echo "${orig_params}" | sed -E -e 's/-H [a-zA-Z0-9\-]+//')
+  [[ $? ]] || exit
 
 elif [ -n "${opt_A}" ] ; then
 
@@ -69,6 +70,7 @@ elif [ -n "${opt_A}" ] ; then
   for _host in ${provhosts[@]} ; do
     ssh ${_host} -- DEPLOYER=${DEPLOYER} ${DEPLOYER}/iam \
       $(echo "${orig_params}" | sed -E -e 's/-A//')
+    [[ $? ]] || exit
   done
 
 else
@@ -182,7 +184,7 @@ else
       ;;
 
     weblogic)
-      load_useredeploy_on_all ${opt_a}
+      load_userenv common
 
       if   [ "${opt_a}" == "jdk7fix"  -a -n "${opt_t}" -a -z "${opt_h}" ] ; then
         patch_wls_bin  ${opt_t}
@@ -309,7 +311,7 @@ else
       ;;
 
     remove)
-      if   [ -n "${opt_L}" ] ; then
+      if [ -z "${opt_h}" ] ; then
         remove_iam ${opt_L}
       else
         help_remove

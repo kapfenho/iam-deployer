@@ -37,7 +37,8 @@ end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.provision "hosts-file", type: "shell" do |s| s.inline = "echo '#{$hostfile}' > /etc/hosts"
+  config.vm.provision "hosts-file", type: "shell" do |s|
+    s.inline = "echo '#{$hostfile}' > /etc/hosts"
   end
 
   config.vm.provision "root-actions", type: "shell" do |s|
@@ -113,9 +114,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.memory   = 4096
     end
 
-    config.vm.provision "iam-prov", type: "shell" do |s|
-      s.inline = "sudo -u fmwuser -H ssh oim1 -- DEPLOYER=/vagrant /vagrant/user-config/worklist"
-    end
+    # config.vm.provision "iam-prov", type: "shell" do |s|
+    #   s.inline = "sudo -u fmwuser -H ssh oim1 -- DEPLOYER=/vagrant /vagrant/user-config/worklist"
+    # end
 
   end
 

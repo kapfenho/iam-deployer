@@ -135,10 +135,11 @@ init_userenv()
 
   # _create_startall
 
-  do_idm && _cp_oim
-  do_acc && _cp_acc
-  do_oud && _cp_oud
-  do_web && _cp_web
+
+  _cp_oim
+  _cp_acc
+  _cp_oud
+  _cp_web
 }
 
 #  ---------------------------------------------------

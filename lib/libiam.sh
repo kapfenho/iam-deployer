@@ -166,6 +166,10 @@ prov()
       [[ -a ${d}/jdk6 ]] && jdk_patch_config ${d}/jdk6
     done
   else
+    if [ -f ${iam_lcmhome}/provisioning/logs/$(hostname -f)/runIAMDeployment-${_action}.log ] ; then
+      log "Provisioning step ${_action} already done"
+      return
+    fi
     pushd ${iam_lcm}/provisioning/bin >/dev/null
     local _rsp=${DEPLOYER}/user-config/iam/provisioning.rsp
 

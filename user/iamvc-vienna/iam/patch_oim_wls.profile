@@ -13,14 +13,14 @@ soa_port=8001
 operationsDB.user=VCI_OIM  ***
 OIM.DBPassword=Montag11     ***
 operationsDB.host=oradb.iamvc.agoracon.at
-operationsDB.serviceName=iam1
+operationsDB.serviceName=oradb11.vie.agoracon.at
 operationsDB.port=1521
 
 mdsDB.user=VCI_MDS         ***
 mdsDB.password=Montag11     ***
 mdsDB.host=oradb.iamvc.agoracon.at
 mdsDB.port=1521
-mdsDB.serviceName=iam1
+mdsDB.serviceName=oradb11.vie.agoracon.at
 
 oim_username=xelsysadm
 oim_password=Montag11

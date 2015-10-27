@@ -98,15 +98,15 @@ jdk_deploy() {
 upgrade_jdk1()
 {
   local _oh=${1}
-
+ 
   log "Upgrading to JDK7 - part 1"
   local dest=${iam_top}/products/${_oh}
   # when oracle_home dir does not exists: skip
-  [ -a ${dest} ] || continue
+  [ -a ${dest} ] || exit
   # when new jdk already exists: skip
   if [ -a ${dest}/jdk/current ] ; then
     warning "Skipping - found JDK in ${dest}"
-    continue
+    exit
   fi
   log "upgrading JDK in product dir ${dest}"
   mkdir -p ${dest}/jdk
@@ -130,7 +130,7 @@ upgrade_jdk2()
 
   # move jdk6
   # skip if already done
-  [ -h ${dest}/jdk6 ] && continue
+  [ -h ${dest}/jdk6 ] && return
   log "We will move and replace JDK6 in ${dest}"
   mv ${dest}/jdk6 ${dest}/jdk/
   ln -s ${dest}/jdk/${jdkname} ${dest}/jdk6
