@@ -532,6 +532,7 @@ oia_oim_integrate()
   cp ${OIM_WL_HOME}/server/lib/wlfullclient.jar ${_oia_lib}
 
   # copy designconsole config to OIA
+  mkdir -p ${RBACX_HOME}/xellerate
   cp -R ${OIM_MW_HOME}/iam/designconsole/config ${RBACX_HOME}/xellerate
 
   # patching workflow configurations
