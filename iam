@@ -4,7 +4,7 @@ if ! shopt -q login_shell ; then
   source /etc/profile
 fi
 
-echo "$(hostname -s) CALL: $*"
+echo "$(hostname -s) IAM >> $*"
 
 : ${DEPLOYER:="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"}
 
@@ -141,6 +141,7 @@ else
     lcmstep)
       if [ -n "${opt_a}" -a "${opt_h}" != "yes" ] ; then
         lcmstep ${opt_a}
+        echo "RET iam: ${?}"
       else
         help_lcmstep
         exit $ERROR_SYNTAX_ERROR
