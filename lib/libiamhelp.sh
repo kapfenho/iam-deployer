@@ -155,29 +155,35 @@ help_userenv() {
 
   Create user environment (bin,etc,lib,cred)
   Parameter:
-    -a   action to perform:
+    -a   action to perform
          env          create all files
          profile      modify bash user profile
-    -H   hostname     execute on remote host
+    -H   hostname execute on remote host
 
   "
 }
 # ---------------------------------------------------
 help_jdk() {
   echo "
-  Syntax: ${0} jdk [-H host] -t product -P part
-    ${0} jdk -H iam.agoracon.at -t identity -P 1
+  Syntax: ${0} jdk -a {install|upgrade} -H host -O oracle_home [-P part]
+    ${0} jdk -a install -H iam.agoracon.at -O analytics
+    ${0} jdk -a upgrade -H iam.agoracon.at -O identity -P 1
 
   Upgrade existing JDK (from JDK6 to JDK7). Takes place in two steps.
   Extract new JDK with different path; then move/archive old JDK and 
   sym link original path to JDK7 (used in products).
 
   Parameter:
-    -H   host       execute on host
-    -t   product    product with JDK to upgrade: {identity|access}
-    -P   number     part to execute: {1|2}
-                    1  can be done with original processes up
-                    2  shall be done with no processes running
+    -a  action to perform
+        install     install JDK7
+        upgrade     upgrade to JDK7
+            
+    -H  host        hostname: execute on host
+    -O  home        oracle_home to install|upgrade:
+                       identity | accesss | analytics
+    -P  part        part 1 or 2
+                       1     can be done with original processes up
+                       2     shall be done with no processes running
                     
   Before exection:
     ORACLE_HOME/jdk6         shipped JDK
@@ -207,18 +213,21 @@ help_rcd() {
 # ---------------------------------------------------
 help_weblogic() {
   echo "
-  Syntax: ${0} weblogic -a {jdk7fix|wlstlibs} -t product [-H host] 
-    ${0} weblogic -a jdk7fix  -t product -H host
-    ${0} weblogic -a wlstlibs -t product -H host
+  Syntax: ${0} weblogic -a { install | jdk7fix | wlstlibs } -t target_path [-H host] 
+    ${0} weblogic -a jdk7fix -t product_name -H host
+    ${0} weblogic -a wlstlibs -t product_name -H host
+    ${0} weblogic -a install -t product_name -H host
 
   Modify or extend WebLogic installation
 
   Parameter:
-    -a   action       possible actions: {jdk7fix|wlstlibs}
-                      jdk7fix     fix java parameters in commEnv.sh
-                      wlstlibs    add libs to wlst common directory
-    -H   host         execute on host
-    -t   product      product name: {identity|access}
+    -a   action to perform
+         jdk7fix     fix java parameters in commEnv.sh
+         wlstlibs    add libs to wlst common directory
+         install  install weblogic software
+    -H   hostname: execute on remote host
+    -t   target wlserver path
+         target_name: (identity|access|analytics)
 
   "
 }
@@ -226,7 +235,8 @@ help_weblogic() {
 help_identity() {
   echo "
   Syntax: ${0} identity -a {jdk7fix|psa|keyfile|postinstall|movelogs}
-                        [-t target_path] [-H host] 
+                        [-t target_path] [-H host] [-w wlst-prop-file] [-n] 
+                        [-u user] [-p pwd]
 
     ${0} identity -a jdk7fix -H host
     ${0} identity -a psa
@@ -260,11 +270,13 @@ help_identity() {
 help_access() {
   echo "
   Syntax: ${0} access -a {jdk7fix|psa|keyfile|movelogs}
-                      [-t target_path] [-H host] 
+                      [-t target_path] [-H host] [-w wlst-prop-file] [-n] 
+                      [-u user] [-p pwd]
+
 
     ${0} access -a jdk7fix -H host
     ${0} access -a psa
-    ${0} access -a keyfile -u user -p pwd [-w wlst-prop-file]
+    ${0} access -a keyfile -u user -p pwd [-w wlst-prop-file] [-n]
     ${0} access -a config
     ${0} access -a movelogs -H host
 
@@ -275,6 +287,7 @@ help_access() {
     -a   action to perform
          jdk7fix      fix java parameters in commEnv.sh
          psa          run Patch Set assitant for OAM
+         keyfile      create domain keyfiles for user
          config       apply custom domain config
          postinstall  Access Domain postinstall configuration
          movelogs     Move Access Domain logfiles to common location
@@ -292,20 +305,39 @@ help_access() {
 # ---------------------------------------------------
 help_analytics() {
   echo "
-  Syntax: ${0} analytics -a { ... } -t target_path [-H host] 
+  Syntax: ${0} analytics -a { domcreate | explode | appconfig | wlsdeploy
+                            | oimintegrate | domconfig } 
+                         [-P single | cluster ] [-H host] [-w wlst-prop-file] 
+                         [-u user] [-p pwd]
+
+
+    ${0} analytics -a domcreate -H host
+    ${0} analytics -a keyfile -u user -p pwd [-w wlst-prop-file]
+    ${0} analytics -a domconfig -H host
+    ${0} analytics -a explode -H host
+    ${0} analytics -a appconfig -P single -H host
+    ${0} analytics -a oimintegrate -H host
+    ${0} analytics -a wlsdeploy -H host
 
   Changes, fixes and user modifications for installed Identity Analytics
   instance
 
   Parameter:
     -a   action to perform
-         unpack       unpack OOB Identity Analytics archive
-         patch        patch OIA with prepared diff patch
-         domprov      install and configure weblogic domain for OIA
-                      and deploy OIA application to weblogic domain
+         domcreate    create weblogic domain, managed servers and nodemanager
+         keyfile      create nodemanager keyfiles for user
+         domconfig    configure wls domain # setDomainEnv.sh
+         explode      unpack OOB Identity Analytics archive
+         appconfig    patch OIA with prepared diff patch
+         oimintegrate integrate OIM and OIA products
+         wlsdeploy    deploy OIA application to weblogic domain
 
-    -H   host         execute on remote host
-    -t   target wlserver path
+    -H   hostname: execute on remote host
+    -P   patch instance
+         single   patch for single instance
+         cluster  patch for cluster
+    -w   path         path of WLST properties file to use
+                      default: ~/.env/analytics.prop
 
   "
 }

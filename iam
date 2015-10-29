@@ -110,7 +110,7 @@ else
         exit $ERROR_SYNTAX_ERROR
       fi
       ;;
-  
+
     orainv)
       if [ "${opt_h}" != "yes" ] ; then
         create_orainvptr
@@ -128,7 +128,7 @@ else
         exit $ERROR_SYNTAX_ERROR
       fi
       ;;
-  
+
     rcu)
       if [ -n "${opt_t}" -a -n "${opt_a}" ] ; then
         run_rcu ${opt_a} ${opt_t}
@@ -159,12 +159,16 @@ else
       ;;
 
     jdk)
-      if   [ -n "${opt_t}" -a -z "${opt_h}" ] ; then
+      if   [ "${opt_a}" == "upgrade" -a -z "${opt_h}" ] ; then
         if [ -n "${opt_P}" -a "${opt_P}" == "2" ] ; then
           upgrade_jdk2 ${opt_t}
         else
           upgrade_jdk1 ${opt_t}
         fi
+      elif [ "${opt_a}" == "install" -a -z "${opt_h}" ];
+      then
+        mkdir -p ${iam_top}/products/${opt_O}
+        upgrade_jdk1 ${opt_O}
       else
         help_jdk
         exit $ERROR_SYNTAX_ERROR
@@ -188,6 +192,9 @@ else
         patch_wls_bin  ${opt_t}
       elif [ "${opt_a}" == "wlstlibs" -a -n "${opt_t}" -a -z "${opt_h}" ] ; then
         wlst_copy_libs ${opt_t}
+      elif [ "${opt_a}" == "install" -a -n "${opt_t}" -a -z "${opt_h}" ];
+      then
+        weblogic_install ${opt_t}
       else
         help_weblogic
         exit $ERROR_SYNTAX_ERROR
@@ -202,7 +209,7 @@ else
         patch_wls_domain "identity"
       elif [ "${opt_a}" == "psa"         -a -z "${opt_h}" ] ; then
         run_psa identity
-      elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -z "${opt_n}" ] ; then
+      elif [ "${opt_a}" == "keyfile"  -a -z "${opt_h}" -a -z "${opt_n}" ] ; then
         # domain keyfile
         : ${opt_u:=${domiUser}}
         : ${opt_p:=${domiPwd}}
@@ -269,15 +276,31 @@ else
       ;;
 
     analytics)
-      if   [ "${opt_a}" == "unpack"      -a -z "${opt_h}" ] ; then
-        # WARNING: function not implemented
-        analytics_unpack
-      elif [ "${opt_a}" == "patch"       -a -z "${opt_h}" ] ; then
-        # WARNING: function not implemented
-        analytics_patch
-      elif [ "${opt_a}" == "domprov"     -a -z "${opt_h}" ] ; then
-        # WARNING: function not implemented
-        analytics_domprov
+      load_userenv common
+      load_userenv oia
+
+      if   [ "${opt_a}" == "domcreate"    -a -z "${opt_h}" ] ; then
+        oia_wlst_exec wlstdom
+      elif [ "${opt_a}" == "explode"      -a -z "${opt_h}" ] ; then
+        oia_explode
+      elif [ "${opt_a}" == "appconfig"    -a "${opt_P}" -a -z "${opt_h}" ] ; then
+        oia_appconfig ${opt_P}
+      elif [ "${opt_a}" == "wlsdeploy"    -a -z "${opt_h}" ] ; then
+        oia_wlst_exec oia
+      elif [ "${opt_a}" == "oimintegrate" -a -z "${opt_h}" ] ; then
+        oia_oim_integrate
+      elif [ "${opt_a}" == "domconfig"    -a -z "${opt_h}" ] ; then
+        oia_domconfig
+      elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" ] ; then
+        # nodemanager keyfile
+        : ${opt_u:=${nmUser}}
+        : ${opt_p:=${nmPwd}}
+        : ${opt_w:="${iam_hostenv}/env/analytics.prop"}
+        if [[ ! -a ${opt_w} ]] ;  then
+          error "Domain property file not found. Please run userenv!"
+          exit $ERROR_FILE_NOT_FOUND
+        fi
+        create_nodemanager_keyfile 
       else
         help_analytics
         exit $ERROR_SYNTAX_ERROR

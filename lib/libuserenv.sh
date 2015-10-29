@@ -49,6 +49,20 @@ _cp_oim()
   _cp_nodemanager
 }
 
+_cp_oia()
+{
+  # already done?
+  [ -f ${env}/oia.env ] && return
+
+  cp ${src}/env/oia.env             ${env}/
+  cp ${src}/env/analytics.prop       ${env}/
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/"  ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${env}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${env}/*
+  sed -i "s/__HOSTNAME__/$(hostname -f)/"  ${env}/*
+  sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/" ${env}/*
+}
+
 _cp_acc()
 {
   # already done?
@@ -135,11 +149,11 @@ init_userenv()
 
   # _create_startall
 
-
-  _cp_oim
-  _cp_acc
-  _cp_oud
-  _cp_web
+  exists_product identity && _cp_oim
+  exists_product access && _cp_acc
+  exists_product directory && _cp_oud
+  exists_product web && _cp_web
+  exists_product analytics && _cp_oia
 }
 
 #  ---------------------------------------------------

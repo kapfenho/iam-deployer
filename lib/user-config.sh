@@ -51,6 +51,8 @@ getvar OHS_INSTANCENAME
 :             ${domaPwd:=${iam_pwd}}
 :             ${domiPwd:=${iam_pwd}}
 :              ${oudPwd:=${iam_pwd}}
+:           ${oiaWlUser:="Weblogic"}
+:            ${oiaWlPwd:=${iam_pwd}}
 
 # short cuts: sym links to userenv
 :           ${sc_env:="${HOME}/.env"}

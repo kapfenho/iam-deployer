@@ -1,0 +1,248 @@
+diff -rupN oiaclean/conf/iam.properties oia/conf/iam.properties
+--- oiaclean/conf/iam.properties	2014-10-01 11:07:14.000000000 +0200
++++ oia/conf/iam.properties	2015-10-01 11:01:55.188170915 +0200
+@@ -21,21 +21,21 @@ com.vaau.rbacx.iam.import.roleUsersBatch
+ com.vaau.rbacx.iam.file.import.maxConcurrentImports=2
+ com.vaau.rbacx.iam.file.import.rowErrorsLimit=3
+ 
+-com.vaau.rbacx.iam.file.import.completeLocation=$RBACX_HOME/import/complete
+-com.vaau.rbacx.iam.file.import.schemaLocation=$RBACX_HOME/import/schema
+-com.vaau.rbacx.iam.file.import.dropLocation=$RBACX_HOME/import/in
+-com.vaau.rbacx.etl.import.dropLocation=$RBACX_HOME/import/etl/in
+-com.vaau.rbacx.etl.import.graphsLocation=$RBACX_HOME/import/etl/graphs
+-com.vaau.rbacx.etl.import.completeLocation=$RBACX_HOME/import/etl/complete
+-com.vaau.rbacx.etl.import.outputLocation=$RBACX_HOME/import/in
++com.vaau.rbacx.iam.file.import.completeLocation=/l/ora/products/analytics/oia/import/complete
++com.vaau.rbacx.iam.file.import.schemaLocation=/l/ora/products/analytics/oia/import/schema
++com.vaau.rbacx.iam.file.import.dropLocation=/l/ora/products/analytics/oia/import/in
++com.vaau.rbacx.etl.import.dropLocation=/l/ora/products/analytics/oia/import/etl/in
++com.vaau.rbacx.etl.import.graphsLocation=/l/ora/products/analytics/oia/import/etl/graphs
++com.vaau.rbacx.etl.import.completeLocation=/l/ora/products/analytics/oia/import/etl/complete
++com.vaau.rbacx.etl.import.outputLocation=/l/ora/products/analytics/oia/import/in
+ 
+ # FILE IAM Export parameters
+-com.vaau.rbacx.iam.file.export.dropLocation=$RBACX_HOME/export/etl/in
+-com.vaau.rbacx.iam.file.export.schemaLocation=$RBACX_HOME/export/schema
+-com.vaau.rbacx.etl.export.dropLocation=$RBACX_HOME/export/etl/in
+-com.vaau.rbacx.etl.export.graphsLocation=$RBACX_HOME/export/etl/graphs
+-com.vaau.rbacx.etl.export.completeLocation=$RBACX_HOME/export/etl/complete
+-com.vaau.rbacx.etl.export.outputLocation=$RBACX_HOME/export/out
++com.vaau.rbacx.iam.file.export.dropLocation=/l/ora/products/analytics/oia/export/etl/in
++com.vaau.rbacx.iam.file.export.schemaLocation=/l/ora/products/analytics/oia/export/schema
++com.vaau.rbacx.etl.export.dropLocation=/l/ora/products/analytics/oia/export/etl/in
++com.vaau.rbacx.etl.export.graphsLocation=/l/ora/products/analytics/oia/export/etl/graphs
++com.vaau.rbacx.etl.export.completeLocation=/l/ora/products/analytics/oia/export/etl/complete
++com.vaau.rbacx.etl.export.outputLocation=/l/ora/products/analytics/oia/export/out
+ 
+ 
+ # FILE BASED Account Import parameters
+diff -rupN oiaclean/conf/oimjdbc.properties oia/conf/oimjdbc.properties
+--- oiaclean/conf/oimjdbc.properties	2014-10-01 11:07:14.000000000 +0200
++++ oia/conf/oimjdbc.properties	2015-10-01 11:04:42.729181807 +0200
+@@ -13,15 +13,15 @@
+ 
+ 
+ # OIM user credentials
+-oim.jdbc.username=oimdbuser
++oim.jdbc.username=IAM1I_OIM
+ 
+ # For encrypting the password read the documentation and running of the
+ # vaau-commons-codec.2.0.jar utility
+ # uncomment either the oim.jdbc.password.encrypted or oim.jdbc.password
+ 
+ #oim.jdbc.password.encrypted=d83970156ba26d0095865ef757bf7731
+-#oim.jdbc.password=oimpassword
++oim.jdbc.password=Montag11
+ 
+ 
+-oim.jdbc.url=jdbc:oracle:thin:@$SERVER_NAME:$PORT:oim
++oim.jdbc.url = jdbc:oracle:thin:@oradb.iamv2.agoracon.at:1521/iam1
+ oim.jdbc.driverClassName=oracle.jdbc.OracleDriver
+diff -rupN oiaclean/rbacx/WEB-INF/application-context.xml oia/rbacx/WEB-INF/application-context.xml
+--- oiaclean/rbacx/WEB-INF/application-context.xml	2014-10-01 11:09:26.000000000 +0200
++++ oia/rbacx/WEB-INF/application-context.xml	2015-10-01 11:01:55.188170915 +0200
+@@ -338,7 +338,7 @@
+         <constructor-arg value="Prod-1-Cluster"/>
+ 
+         -->
+-        <constructor-arg index="0" value="Prod-1-Cluster"/>
++        <constructor-arg index="0" value="VWFS-Instance"/>
+         <!--
+             List all the ips of the Cluster members, to which multicast addresses will be bind.
+             If left commented, JGroups chooses the ips.
+diff -rupN oiaclean/rbacx/WEB-INF/classes/jasperreports.properties oia/rbacx/WEB-INF/classes/jasperreports.properties
+--- oiaclean/rbacx/WEB-INF/classes/jasperreports.properties	2014-10-01 11:09:30.000000000 +0200
++++ oia/rbacx/WEB-INF/classes/jasperreports.properties	2015-10-01 11:01:55.188170915 +0200
+@@ -1,2 +1,3 @@
+ net.sf.jasperreports.subreport.runner.factory=net.sf.jasperreports.engine.fill.JRContinuationSubreportRunnerFactory
+ net.sf.jasperreports.export.xls.max.rows.per.sheet=65534
++net.sf.jasperreports.compiler.classpath=/l/ora/products/analytics/oia/rbacx/WEB-INF/lib/jasperreports-2.0.5-javaflow.jar
+diff -rupN oiaclean/rbacx/WEB-INF/classes/oscache.properties oia/rbacx/WEB-INF/classes/oscache.properties
+--- oiaclean/rbacx/WEB-INF/classes/oscache.properties	2014-10-01 11:09:30.000000000 +0200
++++ oia/rbacx/WEB-INF/classes/oscache.properties	2015-10-01 11:01:55.189170915 +0200
+@@ -10,7 +10,7 @@ cache.blocking=true
+ # clustered environment. Then uncomment either "cache.cluster.multicast.ip"
+ # or "cache.cluster.properties", but do not uncomment both. 
+ #
+-#cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener,com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl
++cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener,com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl
+ 
+ # Uncomment the "cache.cluster.properties" property if your cache is binding
+ # to 127.0.0.1 and not to a network ip. Your cache must be listening on a
+@@ -18,6 +18,6 @@ cache.blocking=true
+ # running two SRM instances on two machines. Do not attempt to run both
+ # SRM instances on one machine because the multicast will not know to loopback.
+ #
+-#cache.cluster.multicast.ip=231.12.21.100
++cache.cluster.multicast.ip=231.12.21.100
+ #cache.cluster.properties=UDP(bind_addr=127.0.0.1;mcast_addr=231.12.21.100;mcast_port=45566;ip_ttl=32;mcast_send_buf_size=150000;mcast_recv_buf_size=80000):PING(timeout=2000;num_initial_members=3):MERGE2(min_interval=5000;max_interval=10000):FD_SOCK:VERIFY_SUSPECT(timeout=1500):pbcast.NAKACK(gc_lag=50;retransmit_timeout=300,600,1200,2400,4800;max_xmit_size=8192):UNICAST(timeout=300,600,1200,2400):pbcast.STABLE(desired_avg_gossip=20000):FRAG(frag_size=8096;down_thread=false;up_thread=false):pbcast.GMS(join_timeout=5000;join_retry_timeout=2000;shun=false;print_local_addr=true)
+-#cache.cluster.properties=UDP(mcast_addr=231.12.21.100;mcast_port=45566;ip_ttl=32;mcast_send_buf_size=150000;mcast_recv_buf_size=80000):PING(timeout=2000;num_initial_members=3):MERGE2(min_interval=5000;max_interval=10000):FD_SOCK:VERIFY_SUSPECT(timeout=1500):pbcast.NAKACK(gc_lag=50;retransmit_timeout=300,600,1200,2400,4800;max_xmit_size=8192):UNICAST(timeout=300,600,1200,2400):pbcast.STABLE(desired_avg_gossip=20000):FRAG(frag_size=8096;down_thread=false;up_thread=false):pbcast.GMS(join_timeout=5000;join_retry_timeout=2000;shun=false;print_local_addr=true);discard_incompatible_packets=true
+\ No newline at end of file
++#cache.cluster.properties=UDP(mcast_addr=231.12.21.100;mcast_port=45566;ip_ttl=32;mcast_send_buf_size=150000;mcast_recv_buf_size=80000):PING(timeout=2000;num_initial_members=3):MERGE2(min_interval=5000;max_interval=10000):FD_SOCK:VERIFY_SUSPECT(timeout=1500):pbcast.NAKACK(gc_lag=50;retransmit_timeout=300,600,1200,2400,4800;max_xmit_size=8192):UNICAST(timeout=300,600,1200,2400):pbcast.STABLE(desired_avg_gossip=20000):FRAG(frag_size=8096;down_thread=false;up_thread=false):pbcast.GMS(join_timeout=5000;join_retry_timeout=2000;shun=false;print_local_addr=true);discard_incompatible_packets=true
+diff -rupN oiaclean/rbacx/WEB-INF/conf-context.xml oia/rbacx/WEB-INF/conf-context.xml
+--- oiaclean/rbacx/WEB-INF/conf-context.xml	2014-10-01 11:09:26.000000000 +0200
++++ oia/rbacx/WEB-INF/conf-context.xml	2015-10-01 11:01:55.189170915 +0200
+@@ -9,14 +9,14 @@
+     <bean id="propertyFiles" class="java.util.ArrayList">
+         <constructor-arg>
+             <list>
+-                <value>file:${RBACX_HOME}/conf/jdbc.properties</value>
+-                <value>file:${RBACX_HOME}/conf/mail.properties</value>
+-                <value>file:${RBACX_HOME}/conf/ldap.properties</value>
+-                <value>file:${RBACX_HOME}/conf/iam.properties</value>
+-                <value>file:${RBACX_HOME}/conf/idc.properties</value>
+-                <value>file:${RBACX_HOME}/conf/ida.properties</value>
+-                <value>file:${RBACX_HOME}/conf/idw.properties</value>
+-                <value>file:${RBACX_HOME}/conf/oimjdbc.properties</value>
++                <!--value>file:/l/ora/products/analytics/oia/conf/jdbc.properties</value-->
++                <value>file:/l/ora/products/analytics/oia/conf/mail.properties</value>
++                <value>file:/l/ora/products/analytics/oia/conf/ldap.properties</value>
++                <value>file:/l/ora/products/analytics/oia/conf/iam.properties</value>
++                <value>file:/l/ora/products/analytics/oia/conf/idc.properties</value>
++                <value>file:/l/ora/products/analytics/oia/conf/ida.properties</value>
++                <value>file:/l/ora/products/analytics/oia/conf/idw.properties</value>
++                <value>file:/l/ora/products/analytics/oia/conf/oimjdbc.properties</value>
+             </list>
+         </constructor-arg>
+     </bean>
+diff -rupN oiaclean/rbacx/WEB-INF/dataaccess-context.xml oia/rbacx/WEB-INF/dataaccess-context.xml
+--- oiaclean/rbacx/WEB-INF/dataaccess-context.xml	2014-10-01 11:09:32.000000000 +0200
++++ oia/rbacx/WEB-INF/dataaccess-context.xml	2015-10-01 11:01:55.189170915 +0200
+@@ -56,7 +56,7 @@
+     </bean>
+ 
+ 
+-    <bean id="dataSource" parent="abstractDataSource">
++    <!--bean id="dataSource" parent="abstractDataSource">
+         <description>Default datasource that uses Oracle UCP as a pool implementation</description>
+         <property name="connectionFactoryClassName" value="${jdbc.driverClassName}"/>
+         <property name="URL" value="${jdbc.url}"/>
+@@ -76,6 +76,9 @@
+                 <property name="ignoreResourceNotFound" value="true"/>
+             </bean>
+         </property>
++    </bean-->
++    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
++          <property name="jndiName" value="jdbc/OIADataSource" /> 
+     </bean>
+ 
+ 
+diff -rupN oiaclean/rbacx/WEB-INF/etl-context.xml oia/rbacx/WEB-INF/etl-context.xml
+--- oiaclean/rbacx/WEB-INF/etl-context.xml	2014-10-01 11:09:26.000000000 +0200
++++ oia/rbacx/WEB-INF/etl-context.xml	2015-10-01 11:01:55.189170915 +0200
+@@ -3,7 +3,7 @@
+ <beans>
+     
+     <!-- The following bean definition depends on having cloverETL.jar in the classpath -->
+-    <!--bean id="etlManager" class="com.vaau.rbacx.etl.clover.ETLManagerImpl">
++    <bean id="etlManager" class="com.vaau.rbacx.etl.clover.ETLManagerImpl">
+         <property name="importDropLocation"><value>${com.vaau.rbacx.etl.import.dropLocation}</value></property>
+         <property name="importGraphsLocation"><value>${com.vaau.rbacx.etl.import.graphsLocation}</value></property>
+         <property name="importCompleteLocation"><value>${com.vaau.rbacx.etl.import.completeLocation}</value></property>
+@@ -13,6 +13,6 @@
+         <property name="exportCompleteLocation"><value>${com.vaau.rbacx.etl.export.completeLocation}</value></property>
+         <property name="exportOutputLocation"><value>${com.vaau.rbacx.etl.export.outputLocation}</value></property>
+         <property name="validateETLGraph"><value>${com.vaau.rbacx.etl.import.validateETLGraphFiles}</value></property>
+-    </bean-->
++    </bean>
+     
+-</beans>
+\ No newline at end of file
++</beans>
+diff -rupN oiaclean/rbacx/WEB-INF/iam-context.xml oia/rbacx/WEB-INF/iam-context.xml
+--- oiaclean/rbacx/WEB-INF/iam-context.xml	2014-10-01 11:09:26.000000000 +0200
++++ oia/rbacx/WEB-INF/iam-context.xml	2015-10-01 11:01:55.189170915 +0200
+@@ -266,7 +266,7 @@
+                   value="${com.vaau.rbacx.iam.file.import.sharedAttributesCompressionLevel}"/>
+         <property name="dataImporter" ref="rbacxDataImporter"/>
+         <!-- The following reference depends on the etlManager bean definition in etl-context.xml -->
+-        <!--property name="etlManager" ref="etlManager"/-->
++        <property name="etlManager" ref="etlManager"/>
+         <property name="commManager" ref="commManager"/>
+         <property name="checkTriggerFiles" value="false"/>
+         <property name="userManager" ref="globalUserManager"/>
+Binary files oiaclean/rbacx/WEB-INF/lib/cloverETL-1.8.1.jar and oia/rbacx/WEB-INF/lib/cloverETL-1.8.1.jar differ
+Binary files oiaclean/rbacx/WEB-INF/lib/jasper-jdt.jar and oia/rbacx/WEB-INF/lib/jasper-jdt.jar differ
+Binary files oiaclean/rbacx/WEB-INF/lib/jrf-api.jar and oia/rbacx/WEB-INF/lib/jrf-api.jar differ
+Binary files oiaclean/rbacx/WEB-INF/lib/jxl-2.5.9.jar and oia/rbacx/WEB-INF/lib/jxl-2.5.9.jar differ
+Binary files oiaclean/rbacx/WEB-INF/lib/ojdbc6.jar and oia/rbacx/WEB-INF/lib/ojdbc6.jar differ
+Binary files oiaclean/rbacx/WEB-INF/lib/stax-1.2.0.jar and oia/rbacx/WEB-INF/lib/stax-1.2.0.jar differ
+Binary files oiaclean/rbacx/WEB-INF/lib/stax-api-1.0.1.jar and oia/rbacx/WEB-INF/lib/stax-api-1.0.1.jar differ
+Binary files oiaclean/rbacx/WEB-INF/lib/tools.jar and oia/rbacx/WEB-INF/lib/tools.jar differ
+Binary files oiaclean/rbacx/WEB-INF/lib/ucp.jar and oia/rbacx/WEB-INF/lib/ucp.jar differ
+Binary files oiaclean/rbacx/WEB-INF/lib/wsdl4j.jar and oia/rbacx/WEB-INF/lib/wsdl4j.jar differ
+Binary files oiaclean/rbacx/WEB-INF/lib/xfire-all-1.2.5.jar and oia/rbacx/WEB-INF/lib/xfire-all-1.2.5.jar differ
+diff -rupN oiaclean/rbacx/WEB-INF/log4j.properties oia/rbacx/WEB-INF/log4j.properties
+--- oiaclean/rbacx/WEB-INF/log4j.properties	2014-10-01 11:09:26.000000000 +0200
++++ oia/rbacx/WEB-INF/log4j.properties	2015-10-01 11:01:55.189170915 +0200
+@@ -7,7 +7,7 @@ log4j.appender.console.layout.Conversion
+ 
+ #File Appender
+ log4j.appender.file=org.apache.log4j.DailyRollingFileAppender
+-log4j.appender.file.file=logs/rbacx.log
++log4j.appender.file.file=/l/ora/IAM/logs/oia_iamv2/rbacx.log
+ log4j.appender.file.layout=org.apache.log4j.PatternLayout
+ log4j.appender.file.layout.ConversionPattern=%d{ABSOLUTE} %-5p [%c{1}] %m%n
+ log4j.appender.file.ImmediateFlush=true
+diff -rupN oiaclean/rbacx/WEB-INF/scheduling-context.xml oia/rbacx/WEB-INF/scheduling-context.xml
+--- oiaclean/rbacx/WEB-INF/scheduling-context.xml	2014-10-01 11:09:26.000000000 +0200
++++ oia/rbacx/WEB-INF/scheduling-context.xml	2015-10-01 11:01:55.190170915 +0200
+@@ -142,8 +142,10 @@ by any member of the cluster-->
+                 <property name="dataSource" ref="dataSource"/>
+                 <property name="quartzProperties">
+                     <props>
+-                        <prop key="org.quartz.jobStore.driverDelegateClass">${jdbc.quartz.driverDelegateClass}</prop>
+-                        <prop key="org.quartz.jobStore.selectWithLockSQL">${jdbc.quartz.selectWithLockSQL}</prop>
++                        <!--prop key="org.quartz.jobStore.driverDelegateClass">${jdbc.quartz.driverDelegateClass}</prop-->
++                        <!--prop key="org.quartz.jobStore.selectWithLockSQL">${jdbc.quartz.selectWithLockSQL}</prop-->
++                        <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.oracle.weblogic.WebLogicOracleDelegate</prop>
++                        <prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ? FOR UPDATE</prop>
+                         <prop key="org.quartz.jobStore.isClustered">${jdbc.quartz.isClustered}</prop>
+                         <prop key="org.quartz.scheduler.instanceId">AUTO</prop>
+                         <prop key="org.quartz.scheduler.instanceName">SRM_DEFAULT_SCHEDULER</prop>
+diff -rupN oiaclean/rbacx/WEB-INF/weblogic.xml oia/rbacx/WEB-INF/weblogic.xml
+--- oiaclean/rbacx/WEB-INF/weblogic.xml	1970-01-01 01:00:00.000000000 +0100
++++ oia/rbacx/WEB-INF/weblogic.xml	2015-10-01 11:01:55.190170915 +0200
+@@ -0,0 +1,22 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app">
++  <container-descriptor>
++    <prefer-application-packages>
++      <package-name>javax.wsdl.*</package-name>
++      <package-name>com.ibm.wsdl.*</package-name>
++      <package-name>org.springframework.*</package-name>
++      <package-name>org.aspectj.*</package-name>
++      <package-name>org.jdom.*</package-name>
++      <package-name>org.codehaus.xfire.*</package-name>
++      <package-name>org.jaxen.*</package-name>
++      <package-name>org.apache.bcel.*</package-name>
++      <package-name>org.apache.commons.*</package-name>
++      <package-name>com.ctc.wstx.*</package-name>
++      <package-name>org.codehaus.stax2.*</package-name>
++      <package-name>org.openspml.*</package-name>
++      <package-name>org.quartz.*</package-name>
++    </prefer-application-packages>
++  </container-descriptor>
++</weblogic-web-app>
++
++
