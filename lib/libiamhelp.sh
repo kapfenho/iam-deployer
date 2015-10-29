@@ -228,7 +228,7 @@ help_identity() {
   Syntax: ${0} identity -a {jdk7fix|psa|keyfile|postinstall|movelogs}
                         [-t target_path] [-H host] 
 
-    ${0} identity -a jdk7fix -t domain_home -H host
+    ${0} identity -a jdk7fix -H host
     ${0} identity -a psa
     ${0} identity -a keyfile -u user -p pwd [-w wlst-prop-file] [-n]
     ${0} identity -a config
@@ -262,7 +262,7 @@ help_access() {
   Syntax: ${0} access -a {jdk7fix|psa|keyfile|movelogs}
                       [-t target_path] [-H host] 
 
-    ${0} access -a jdk7fix -t domain_home -H host
+    ${0} access -a jdk7fix -H host
     ${0} access -a psa
     ${0} access -a keyfile -u user -p pwd [-w wlst-prop-file]
     ${0} access -a config
