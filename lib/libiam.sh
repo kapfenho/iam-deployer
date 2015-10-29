@@ -157,7 +157,7 @@ EOS
 #  provision step within life cycle manager wizard
 #+ param 1: step name
 #
-prov()
+lcmstep()
 {
   local _action=${1}
 
@@ -202,24 +202,24 @@ prov()
 # deployment and instance creation with lifecycle management
 # in PS2 Release we also need to patch JDK with custom random pool
 #
-iam_prov ()
-{
-  for step in preverify install
-  do
-    deploy_on_all $step
-  done
-
-  # use urandom
-  do_idm && jdk_patch_config ${iam_top}/products/identity/jdk6
-  do_acc && jdk_patch_config ${iam_top}/products/access/jdk6
-  do_oud && jdk_patch_config ${iam_top}/products/dir/jdk6
-  do_web && jdk_patch_config ${iam_top}/products/web/jdk6
-
-  for step in preconfigure configure configure-secondary postconfigure startup validate
-  do
-    deploy_on_all $step
-  done
-}
+# iam_prov ()
+# {
+#   for step in preverify install
+#   do
+#     deploy_on_all $step
+#   done
+# 
+#   # use urandom
+#   do_idm && jdk_patch_config ${iam_top}/products/identity/jdk6
+#   do_acc && jdk_patch_config ${iam_top}/products/access/jdk6
+#   do_oud && jdk_patch_config ${iam_top}/products/dir/jdk6
+#   do_web && jdk_patch_config ${iam_top}/products/web/jdk6
+# 
+#   for step in preconfigure configure configure-secondary postconfigure startup validate
+#   do
+#     deploy_on_all $step
+#   done
+# }
 
 # post install task: patching of OPSS database instances
 #
