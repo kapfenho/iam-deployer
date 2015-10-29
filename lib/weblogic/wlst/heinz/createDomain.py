@@ -503,6 +503,22 @@ def startAndConnnectToAdminServer():
         storeUserConfig(userConfigFile , userKeyFile);
 
 
+def restartDomain():
+    print "Restarting domain"
+    shutdown()
+    startServer('AdminServer', domainProps.getProperty('domainName') , connUri, adminUserName, adminPassword, domainLocation,'true',60000,'false',jvmArgs='-XX:MaxPermSize=196m, -Xmx1024m');
+
+    print 'Connecting to the Admin Server ('+connUri+')';
+    connect(adminUserName, adminPassword, connUri);
+    print 'Connected';
+
+    amountOfServers = int(  domainProps.getProperty('amountManagedServer') );
+    i = 1;
+    print "Starting managed servers:";
+    while (i <= int(amountOfServers)) :
+        serverName = get_instance_property('managedserver',str(i),'name')
+        start(serverName)
+        i = i + 1
 
 ###################################################################
 # Shutdown adminserver
