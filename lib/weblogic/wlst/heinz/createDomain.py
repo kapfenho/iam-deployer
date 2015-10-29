@@ -92,10 +92,10 @@ def intialize():
 		# Files for generating secret key
 
 		#userConfigFile = File(sys.argv[3]).getParent()+'/'+domainProps.getProperty('domainName')+'.userconfig'
-		userConfigFile = userEnvHome + '/.creds' +'/'+domainProps.getProperty('domainName')+'.userconfig'
+		userConfigFile = userEnvHome + '/.creds' +'/'+domainProps.getProperty('domainName')+'.usr'
                 print userConfigFile
 		#userKeyFile = File(sys.argv[3]).getParent()+'/'+domainProps.getProperty('domainName')+'.userkey'
-		userKeyFile = userEnvHome + '/.creds' +'/'+domainProps.getProperty('domainName')+'.userkey'
+		userKeyFile = userEnvHome + '/.creds' +'/'+domainProps.getProperty('domainName')+'.key'
 	        print userKeyFile			
                 if len(domainProps.getProperty('jvmLocation')) == 0:
                         print 'JVM location property not defined - cancel creation !';
