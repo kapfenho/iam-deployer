@@ -201,7 +201,7 @@ else
       load_userenv idm
 
       if   [ "${opt_a}" == "jdk7fix"     -a -z "${opt_h}" ] ; then
-        patch_wls_domain ${opt_t}
+        patch_wls_domain "identity"
       elif [ "${opt_a}" == "psa"         -a -z "${opt_h}" ] ; then
         run_psa identity
       elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -z "${opt_n}" ] ; then
@@ -239,7 +239,7 @@ else
       load_userenv acc
 
       if   [ "${opt_a}" == "jdk7fix"     -a -z "${opt_h}" ] ; then
-        patch_wls_domain ${opt_t}
+        patch_wls_domain "access"
       elif [ "${opt_a}" == "psa"         -a -z "${opt_h}" ] ; then
         run_psa access
       elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -z "${opt_n}" ] ; then

@@ -450,11 +450,10 @@ patch_wls_domain()
 {
   if [ "${1}" == "" ] ; then
     error "ERROR: Parameter missing"
-    exit 0
+    exit $ERROR_SYNTAX_ERROR
   fi
 
-  local _domain=${1}
-  local _src=${DEPLOYER}/lib/${_domain}
+  local _src=${DEPLOYER}/lib/${1}
 
   # admin domain
   if ! [ -a ${ADMIN_HOME}/bin/setCustDomainEnv.sh ]; then
@@ -462,7 +461,7 @@ patch_wls_domain()
   fi
 
   if ! grep setCustDomainEnv ${ADMIN_HOME}/bin/setDomainEnv.sh >/dev/null 2>&1 ; then
-    patch -b ${ADMIN_HOME}/bin/setDomainEnv.sh <${_src}//domain/setDomainEnv.sh.patch
+    patch -b ${ADMIN_HOME}/bin/setDomainEnv.sh <${_src}/domain/setDomainEnv.sh.patch
     log "ADMIN_HOME patched: ${ADMIN_HOME}"
   fi
 
