@@ -285,6 +285,16 @@ else
         oia_oim_integrate
       elif [ "${opt_a}" == "domconfig"    -a -z "${opt_h}" ] ; then
         oia_domconfig
+      elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" ] ; then
+        # nodemanager keyfile
+        : ${opt_u:=${nmUser}}
+        : ${opt_p:=${nmPwd}}
+        : ${opt_w:="${iam_hostenv}/env/analytics.prop"}
+        if [[ ! -a ${opt_w} ]] ;  then
+          error "Domain property file not found. Please run userenv!"
+          exit $ERROR_FILE_NOT_FOUND
+        fi
+        create_nodemanager_keyfile 
       else
         help_analytics
         exit $ERROR_SYNTAX_ERROR

@@ -214,7 +214,8 @@ help_weblogic() {
 help_identity() {
   echo "
   Syntax: ${0} identity -a {jdk7fix|psa|keyfile|postinstall|movelogs}
-                        [-t target_path] [-H host] 
+                        [-t target_path] [-H host] [-w wlst-prop-file] [-n] 
+                        [-u user] [-p pwd]
 
     ${0} identity -a jdk7fix -t domain_home -H host
     ${0} identity -a psa
@@ -249,11 +250,13 @@ help_identity() {
 help_access() {
   echo "
   Syntax: ${0} access -a {jdk7fix|psa|keyfile|movelogs}
-                      [-t target_path] [-H host] 
+                      [-t target_path] [-H host] [-w wlst-prop-file] [-n] 
+                      [-u user] [-p pwd]
+
 
     ${0} access -a jdk7fix -t domain_home -H host
     ${0} access -a psa
-    ${0} access -a keyfile -u user -p pwd [-w wlst-prop-file]
+    ${0} access -a keyfile -u user -p pwd [-w wlst-prop-file] [-n]
     ${0} access -a config
     ${0} access -a movelogs -H host
 
@@ -264,6 +267,7 @@ help_access() {
     -a   action to perform
          jdk7fix      fix java parameters in commEnv.sh
          psa          run Patch Set assitant for OAM
+         keyfile      create domain keyfiles for user
          config       apply custom domain config
          postinstall  Access Domain postinstall configuration
          movelogs     Move Access Domain logfiles to common location
@@ -284,9 +288,12 @@ help_analytics() {
   echo "
   Syntax: ${0} analytics -a { domcreate | explode | appconfig | wlsdeploy
                             | oimintegrate | domconfig } 
-                         [-P single | cluster ] [-H host] 
+                         [-P single | cluster ] [-H host] [-w wlst-prop-file] 
+                         [-u user] [-p pwd]
+
 
     ${0} analytics -a domcreate -H host
+    ${0} analytics -a keyfile -u user -p pwd [-w wlst-prop-file]
     ${0} analytics -a domconfig -H host
     ${0} analytics -a explode -H host
     ${0} analytics -a appconfig -P single -H host
@@ -299,6 +306,7 @@ help_analytics() {
   Parameter:
     -a   action to perform
          domcreate    create weblogic domain, managed servers and nodemanager
+         keyfile      create nodemanager keyfiles for user
          domconfig    configure wls domain # setDomainEnv.sh
          explode      unpack OOB Identity Analytics archive
          appconfig    patch OIA with prepared diff patch
@@ -309,6 +317,8 @@ help_analytics() {
     -P   patch instance
          single   patch for single instance
          cluster  patch for cluster
+    -w   path         path of WLST properties file to use
+                      default: ~/.env/analytics.prop
 
   "
   exit $ERROR_SYNTAX_ERROR

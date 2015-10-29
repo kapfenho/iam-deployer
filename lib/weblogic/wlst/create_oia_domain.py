@@ -23,5 +23,3 @@ if __name__== "main":
     nmEnroll(domainLocation, domainProps.getProperty('nmDir'))
     setJTATimeout()
     createAllDatasources()
-    #deployAllApplications()
-    #shutdownAndExit()
