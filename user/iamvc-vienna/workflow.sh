@@ -14,11 +14,18 @@
 
 #  we need common.env to be able to execute iam tool locally
 # 
-set -o errtrace
+set -o errexit errtrace
 
 export DEPLOYER
 export PATH=${DEPLOYER}:${PATH}
 source ${DEPLOYER}/lib/user-config.sh
+
+for h in ${provhosts[@]}; do
+  if ! ping -q -w 1 ${h} >/dev/null 2>&1 ; then
+    echo "Postponing provisioning until host ${h} is available"
+    exit 0
+  fi
+done
 
 # install database
 # database
@@ -28,7 +35,7 @@ iam orainv
 iam rcu -a create -t identity
 
 # install lcm
-iam lcm
+iam lcminst
 
 # let's do the lcm...
 for step in \
@@ -42,7 +49,7 @@ for step in \
   startup \
   validate
 do
-  iam prov -a $step -A
+  iam lcmstep -a ${step}
 done
 
 # deploy user environment in shared location

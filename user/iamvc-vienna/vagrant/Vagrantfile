@@ -1,4 +1,5 @@
 #  Oracle Identity and Access Management - Cluster Version
+#  vi: set ft=ruby :
 #
 
 VAGRANTFILE_API_VERSION = "2"
@@ -98,7 +99,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.cpus     = 2
       vb.memory   = 4096
     end
-    m.vm.provision "load balancer simulation", type: "shell" do |s|
+    m.vm.provision "load balancer simulation", type: "shell", 
+      preserve_order: true do |s|
       s.inline = "/vagrant/user-config/env/load-balancer.sh #{$frontend_ip}"
     end
   end
@@ -116,18 +118,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   end
 
-  # config.vm.provision "iam-prov", type: "shell" do |s|
-  #   s.inline = "sudo -u fmwuser -H ssh oim1 -- DEPLOYER=/vagrant /vagrant/user-config/worklist"
-  # end
-
-  #  # database installation
-  #  "database"  =>  "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/database | /usr/bin/tee /tmp/prov-dbs.log'",
-  #  # create database schemas for iam
-  #  "rcu"       =>  "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/rcu.sh   | /usr/bin/tee /tmp/prov-rcu.log'",
-  #  # lcm: install software and configure
-  #  "iam"       =>  "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam.sh   | /usr/bin/tee /tmp/prov-iam.log'",
-  
+  config.vm.provision "iam-prov", type: "shell" do |s|
+    s.inline = "sudo -u fmwuser -H DEPLOYER=/vagrant /vagrant/iam provision"
+  end
 
 end
 
-#  vi: set ft=ruby :

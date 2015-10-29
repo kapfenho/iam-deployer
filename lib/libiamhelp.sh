@@ -4,15 +4,19 @@
 iamhelp() {
   echo "
   Syntax: ${0} command [flags]
-  
+ 
+  Setup IAM environments. Run individual actions or create workflow file 
+  from template, modify and run it.
+
   Commands:   parameter -h for command help
 
-    help      show this help
+    create    create workflow file from template
+    provision run workflow file
     ssh-key   generate and deploy ssh keypair
     rcu       create database schemas with RCU
     orainv    create central oracle inventory pointer
-    lcm       install LCM
-    prov      provision with LCM
+    lcminst   install LCM
+    lcmstep   execute LCM step
     userenv   create userenv on host
     jdk       upgrade existing jdk
     rcd       deploy runlevel scripts (root permissions with sudo necessary)
@@ -22,10 +26,38 @@ iamhelp() {
     analytics modify analytics domain
     webtier   modify webtier instance (movelogs, postinstall)
     remove    remove installation
+    help      show this help
 
 "
   echo
-  exit $ERROR_SYNTAX_ERROR
+}
+# ---------------------------------------------------
+help_create() {
+  echo "
+  Syntax: ${0} create [-T topology] [-f target_file]
+
+    ${0} create -T single  -f user-config/workflow
+    ${0} create -T cluster -f user-config/workflow
+
+  Create new workflow definition by template.
+
+  Parameter:
+    -T   topology     single, enterprise
+    -f   target_file  Output saved to file, default: user-config/workflow
+
+  "
+}
+# ---------------------------------------------------
+help_provision() {
+  echo "
+  Syntax: ${0} provision [-f workflow_file]
+
+  Run full provisioning defined in workflow file.
+
+  Parameter:
+    -f   workflow_file  Defaults: user-config/workflow
+
+  "
 }
 # ---------------------------------------------------
 help_ssh_key() {
@@ -49,7 +81,6 @@ help_ssh_key() {
     -H   hostname     host which to add to known_hosts file
 
   "
-  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_orainv() {
@@ -64,12 +95,11 @@ help_orainv() {
     install group:       ${iam_orainv_grp}
 
 "
-  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
-help_lcm() {
+help_lcminst() {
   echo "
-  Syntax: ${0} lcm
+  Syntax: ${0} lcminst
 
   Install LCM (Life Cycle Manager) software
 
@@ -78,7 +108,6 @@ help_lcm() {
     LCM instance config: ${iam_lcmhome}
 
   "
-  exit $ERROR_SYNTAX_ERROR
 }
 #----------------------------------------------------
 help_rcu()
@@ -102,12 +131,11 @@ help_rcu()
          bip          create schema for BI Publisher
 
   "
-  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
-help_prov() {
+help_lcmstep() {
   echo "
-  Syntax: ${0} prov -a step
+  Syntax: ${0} lcmstep -a step
 
   Execute an LCM provisioning step on all hosts in the defined order.
   
@@ -117,7 +145,6 @@ help_prov() {
                          postconfigure|startup|validate}
 
   "
-  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_userenv() {
@@ -134,7 +161,6 @@ help_userenv() {
     -H   hostname     execute on remote host
 
   "
-  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_jdk() {
@@ -163,8 +189,6 @@ help_jdk() {
     ORACLE_HOME/jdk6         link to new JDK
 
   "
-  exit $ERROR_SYNTAX_ERROR
-
 }
 # ---------------------------------------------------
 help_rcd() {
@@ -179,8 +203,6 @@ help_rcd() {
                         {nodemanger|identity|access|webtier|oud}
 
   "
-  exit $ERROR_SYNTAX_ERROR
-
 }
 # ---------------------------------------------------
 help_weblogic() {
@@ -199,7 +221,6 @@ help_weblogic() {
     -t   product      product name: {identity|access}
 
   "
-  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_identity() {
@@ -234,7 +255,6 @@ help_identity() {
     -n                keyfile: create nodemanager keyfile (without: domain)
 
   "
-  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_access() {
@@ -268,7 +288,6 @@ help_access() {
     -n                keyfile: create nodemanager keyfiles
 
   "
-  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_analytics() {
@@ -289,7 +308,6 @@ help_analytics() {
     -t   target wlserver path
 
   "
-  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_directory() {
@@ -308,7 +326,6 @@ help_directory() {
          movelogs     # Move OUD logfiles to common location
 
   "
-  exit $ERROR_SYNTAX_ERROR
 }
 # ---------------------------------------------------
 help_webtier() {
@@ -326,7 +343,6 @@ help_webtier() {
 
     -H   hostname: execute on remote host
   "
-  exit $ERROR_SYNTAX_ERROR
 } 
 # ---------------------------------------------------
 help_remove() {
@@ -343,6 +359,5 @@ help_remove() {
     -L   include LCM (default is no)
     -A   remove on all hosts (default is no)
   "
-  exit $ERROR_SYNTAX_ERROR
 } 
 

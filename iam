@@ -13,6 +13,7 @@ echo "$(hostname -s) CALL: $*"
 . ${DEPLOYER}/lib/libiam.sh
 . ${DEPLOYER}/lib/libjdk.sh
 . ${DEPLOYER}/lib/librcu.sh
+. ${DEPLOYER}/lib/libmovelog.sh
 . ${DEPLOYER}/lib/libiamhelp.sh
 . ${DEPLOYER}/lib/libuserenv.sh
 
@@ -43,6 +44,7 @@ while getopts AH:LO:P:a:hnp:s:t:u:w: FLAG; do
     p)  opt_p=${OPTARG} ;;  # password
     s)  opt_s=${OPTARG} ;;  # source
     t)  opt_t=${OPTARG} ;;  # target
+    t)  opt_f=${OPTARG} ;;  # file name
     u)  opt_u=${OPTARG} ;;  # username
     w)  opt_w=${OPTARG} ;;  # wlst property file path
     \?) # unrecognized option - show help
@@ -77,17 +79,21 @@ else
 
   case ${cmd} in
 
-    help)
-      # 'iam help identity' or 'iam help'
-      if [ $# -gt 1 ] ; then
-        if type ${2} >/dev/null 2>&1 ; then
-          eval "help_${2}"
-        else
-          echo "ERROR: unknown command"
-          exit $ERROR_SYNTAX_ERROR
-        fi
+    create)
+      if   [ -n "${opt_h}" ] ; then
+        help_create
+        exit $ERROR_SYNTAX_ERROR
       else
-        iamhelp
+        create ${opt_f:-${DEPLOYER}/user-config/workflow.sh}
+      fi
+      ;;
+
+    provision)
+      if   [ -n "${opt_h}" ] ; then
+        help_provision
+        exit $ERROR_SYNTAX_ERROR
+      else
+        exec ${opt_f:-${DEPLOYER}/user-config/workflow.sh}
       fi
       ;;
 
@@ -103,14 +109,6 @@ else
         help_ssh_keys
         exit $ERROR_SYNTAX_ERROR
       fi
-
-      #if   [ -z "${opt_h}" ] ; then
-      #  copy_ssh_key
-      #else
-      #  help_ssh_key
-      #  exit $ERROR_SYNTAX_ERROR
-      #fi
-  
       ;;
   
     orainv)
@@ -122,11 +120,11 @@ else
       fi
       ;;
   
-    lcm)
+    lcminst)
       if [ "${opt_h}" != "yes" ] ; then
         deploy_lcm
       else
-        help_lcm
+        help_lcminst
         exit $ERROR_SYNTAX_ERROR
       fi
       ;;
@@ -140,11 +138,11 @@ else
       fi
       ;;
 
-    prov)
+    lcmstep)
       if [ -n "${opt_a}" -a "${opt_h}" != "yes" ] ; then
-        prov ${opt_a}
+        lcmstep ${opt_a}
       else
-        help_prov
+        help_lcmstep
         exit $ERROR_SYNTAX_ERROR
       fi
       ;;
@@ -316,6 +314,20 @@ else
       else
         help_remove
         exit $ERROR_SYNTAX_ERROR
+      fi
+      ;;
+
+    help)
+      # 'iam help identity' or 'iam help'
+      if [ $# -gt 1 ] ; then
+        if type ${2} >/dev/null 2>&1 ; then
+          eval "help_${2}"
+        else
+          echo "ERROR: unknown command"
+          exit $ERROR_SYNTAX_ERROR
+        fi
+      else
+        iamhelp
       fi
       ;;
 
