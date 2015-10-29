@@ -49,7 +49,8 @@ for step in \
   startup \
   validate
 do
-  iam lcmstep -a ${step}
+  # execute step on all hosts
+  iam lcmstep -a ${step} -A
 done
 
 # deploy user environment in shared location

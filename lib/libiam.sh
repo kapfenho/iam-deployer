@@ -161,10 +161,12 @@ lcmstep()
 {
   local _action=${1}
 
-  if [[ "${_action}" == "unblock" ]] ; then
+  if [ "${_action}" == "unblock" ] ; then
+
     for d in ${iam_top}/products/* ; do
       [[ -a ${d}/jdk6 ]] && jdk_patch_config ${d}/jdk6
     done
+
   else
     if [ -f ${iam_lcmhome}/provisioning/logs/$(hostname -f)/runIAMDeployment-${_action}.log ] ; then
       log "Provisioning step ${_action} already done"
