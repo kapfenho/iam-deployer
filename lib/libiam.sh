@@ -6,7 +6,7 @@
 #
 load_userenv()
 {
-  local _f=~/.env/${1}.env
+  local _f=${iam_hostenv}/.env/${1}.env
   if [[ -a ${_f} ]] ; then
     source ${_f}
   else
