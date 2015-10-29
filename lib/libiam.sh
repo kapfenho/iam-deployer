@@ -170,17 +170,14 @@ lcmstep()
       log "Provisioning step ${_action} already done"
       return
     fi
-    pushd ${iam_lcm}/provisioning/bin >/dev/null
     local _rsp=${DEPLOYER}/user-config/iam/provisioning.rsp
 
     export JAVA_HOME=${s_runjdk}
     export PATH=${JAVA_HOME}/bin:${PATH}
 
-    ./runIAMDeployment.sh -responseFile ${_rsp} \
+    ${iam_lcm}/provisioning/bin/runIAMDeployment.sh -responseFile ${_rsp} \
       -ignoreSysPrereqs true \
       -target ${_action}
-
-    popd >/dev/null
   fi
 }
 
