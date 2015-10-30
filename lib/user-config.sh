@@ -53,6 +53,12 @@ getvar OHS_INSTANCENAME
 :              ${oudPwd:=${iam_pwd}}
 :           ${oiaWlUser:="Weblogic"}
 :            ${oiaWlPwd:=${iam_pwd}}
+:     ${domiAdminServer:="AdminServer"}
+:     ${domaAdminServer:="AdminServer"}
+:     ${domlAdminServer:="AdminServer"}
+: ${domiAdminHost:?"Admin server hostname of Identity Domain"}
+: ${domaAdminHost:?"Admin server hostname of Access Domain"}
+: ${domlAdminHost:?"Admin server hostname of Analytics Domain"}
 
 # short cuts: sym links to userenv
 :           ${sc_env:="${HOME}/.env"}
@@ -63,8 +69,8 @@ getvar OHS_INSTANCENAME
 # --------- user must not set this
             iam_top=${IL_APP_BASE}
         iam_lcmhome=${INSTALL_LCMHOME_DIR}
-        iam_hostenv=${iam_top}/etc/home
        iam_services=${INSTALL_LOCALCONFIG_DIR}
+        iam_hostenv=${iam_services}/config
      
              nmUser=${NODEMANAGER_NAME}
            domaUser=${WLSADMIN_NAME}

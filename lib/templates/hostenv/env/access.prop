@@ -1,11 +1,11 @@
-hostname=__HOSTNAME__
 nmPort=5556
 domName=__DOMAIN_NAME__
 admDir=__IAM_TOP__/config/domains/__DOMAIN_NAME__
 domDir=__IAM_TOP__/services/domains/__DOMAIN_NAME__
 domAdminPort=7001
-domUrl=t3://__HOSTNAME__:7001
+domUrl=t3://__ADMHOSTNAME__:7001
 domUC=__HOSTENV__/.creds/__DOMAIN_NAME__.usr
 domUK=__HOSTENV__/.creds/__DOMAIN_NAME__.key
 nmUC=__HOSTENV__/.creds/nm.usr
 nmUK=__HOSTENV__/.creds/nm.key
+domAdminServer=__OAMADMINSERVER__
