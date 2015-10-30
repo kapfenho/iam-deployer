@@ -62,7 +62,7 @@ if   [ -n "${opt_H}" ] ; then
   #  -H host: convert a remote host call to a recursive call
   #  remove remote host flag from parameters for recursive call
   ssh ${opt_H} -- DEPLOYER=${DEPLOYER} ${DEPLOYER}/iam \
-    $(echo "${orig_params}" | sed -E -e 's/-H [a-zA-Z0-9\-]+//')
+    $(echo "${orig_params}" | sed -E -e 's/-H [a-zA-Z0-9\-\.]+//')
   [[ $? ]] || exit
 
 elif [ -n "${opt_A}" ] ; then
@@ -282,16 +282,6 @@ else
 
       if   [ "${opt_a}" == "domcreate"    -a -z "${opt_h}" ] ; then
         oia_wlst_exec wlstdom
-      elif [ "${opt_a}" == "explode"      -a -z "${opt_h}" ] ; then
-        oia_explode
-      elif [ "${opt_a}" == "appconfig"    -a "${opt_P}" -a -z "${opt_h}" ] ; then
-        oia_appconfig ${opt_P}
-      elif [ "${opt_a}" == "wlsdeploy"    -a -z "${opt_h}" ] ; then
-        oia_wlst_exec oia
-      elif [ "${opt_a}" == "oimintegrate" -a -z "${opt_h}" ] ; then
-        oia_oim_integrate
-      elif [ "${opt_a}" == "domconfig"    -a -z "${opt_h}" ] ; then
-        oia_domconfig
       elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" ] ; then
         # nodemanager keyfile
         : ${opt_u:=${nmUser}}
@@ -302,6 +292,16 @@ else
           exit $ERROR_FILE_NOT_FOUND
         fi
         create_nodemanager_keyfile 
+      elif [ "${opt_a}" == "domconfig"    -a -z "${opt_h}" ] ; then
+        oia_domconfig
+      elif [ "${opt_a}" == "explode"      -a -z "${opt_h}" ] ; then
+        oia_explode
+      elif [ "${opt_a}" == "appconfig"    -a "${opt_P}" -a -z "${opt_h}" ] ; then
+        oia_appconfig ${opt_P}
+      elif [ "${opt_a}" == "oimintegrate" -a -z "${opt_h}" ] ; then
+        oia_oim_integrate
+      elif [ "${opt_a}" == "wlsdeploy"    -a -z "${opt_h}" ] ; then
+        oia_wlst_exec oia
       else
         help_analytics
         exit $ERROR_SYNTAX_ERROR
