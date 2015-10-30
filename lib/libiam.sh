@@ -314,7 +314,7 @@ create_nodemanager_keyfile()
 
     log "Creating nodemanager keyfiles..."
 
-    local _wlst="nmConnect(username='${opt_u}',password='${opt_p}',host=hostname,port=nmPort,domainName=domName,domainDir=domDir,nmType='ssl')
+    local _wlst="nmConnect(username='${opt_u}',password='${opt_p}',host=acGetFQDN(),port=nmPort,domainName=domName,domainDir=domDir,nmType='ssl')
 storeUserConfig(userConfigFile=nmUC,userKeyFile=nmUK,nm='true')
 y
 exit()
