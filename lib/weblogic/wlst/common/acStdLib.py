@@ -30,7 +30,12 @@
 import os
 import thread
 import time
+import socket
 
+# get FQDN from machine
+#
+def acGetFQDN():
+    return socket.getfqdn()
 
 # connect to domain with preloaded properties
 #
