@@ -294,6 +294,8 @@ else
         create_nodemanager_keyfile 
       elif [ "${opt_a}" == "domconfig"    -a -z "${opt_h}" ] ; then
         oia_domconfig
+      elif [ "${opt_a}" == "rdeploy"      -a "${opt_P}" -a -z "${opt_h}" ] ; then
+        oia_rdeploy ${opt_P}
       elif [ "${opt_a}" == "explode"      -a -z "${opt_h}" ] ; then
         oia_explode
       elif [ "${opt_a}" == "appconfig"    -a "${opt_P}" -a -z "${opt_h}" ] ; then

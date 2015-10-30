@@ -305,15 +305,17 @@ help_access() {
 # ---------------------------------------------------
 help_analytics() {
   echo "
-  Syntax: ${0} analytics -a { domcreate | explode | appconfig | wlsdeploy
-                            | oimintegrate | domconfig } 
-                         [-P single | cluster ] [-H host] [-w wlst-prop-file] 
-                         [-u user] [-p pwd]
+  Syntax: ${0} analytics -a {domcreate|explode|appconfig|wlsdeploy
+                            |oimintegrate|domconfig} 
+                         [-P single|cluster|pack|unpack] [-H host] [-w wlst-prop-file] 
+                         [-u user] [-p pwd] 
 
 
     ${0} analytics -a domcreate -H host
     ${0} analytics -a keyfile -u user -p pwd [-w wlst-prop-file]
     ${0} analytics -a domconfig -H host
+    ${0} analytics -a rdeploy -P pack
+    ${0} analytics -a rdeploy -P unpack -H host
     ${0} analytics -a explode -H host
     ${0} analytics -a appconfig -P single -H host
     ${0} analytics -a oimintegrate -H host
@@ -327,6 +329,7 @@ help_analytics() {
          domcreate    create weblogic domain, managed servers and nodemanager
          keyfile      create nodemanager keyfiles for user
          domconfig    configure wls domain # setDomainEnv.sh
+         rdeploy      deploy oia on remote machine
          explode      unpack OOB Identity Analytics archive
          appconfig    patch OIA with prepared diff patch
          oimintegrate integrate OIM and OIA products
@@ -336,8 +339,12 @@ help_analytics() {
     -P   patch instance
          single   patch for single instance
          cluster  patch for cluster
-    -w   path         path of WLST properties file to use
-                      default: ~/.env/analytics.prop
+         pack     package the OIA Managed server on current host
+                  (NOTE: when using this option, don't combine with -H)
+         unpack   unpackage the OIA Managed server on the remote machine
+                  (NOTE: when using this option, always combine with -H)
+    -w   path     path of WLST properties file to use
+                  default: ~/.env/analytics.prop
 
   "
 }
