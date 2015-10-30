@@ -3,7 +3,7 @@
 . ${HOSTENV}/env/acc.env
 
 ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop <<EOS
-nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=hostname,port=nmPort,domainName=domName,domainDir=domDir,nmType='ssl');
+nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=acGetFQDN(),port=nmPort,domainName=domName,domainDir=domDir,nmType='ssl');
 nmStart('wls_oam1');
 exit();
 EOS
