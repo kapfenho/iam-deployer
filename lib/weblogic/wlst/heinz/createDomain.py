@@ -26,6 +26,7 @@
 
 # ................  import ........................
 import sys
+import socket
 from java.util import Properties
 from java.io import FileInputStream
 from java.io import File
@@ -102,7 +103,7 @@ def intialize():
                         exit();
                 print 'JVM Location: ' + domainProps.getProperty('jvmLocation');
         
-                connUri = 't3://'+domainProps.getProperty('adminserver.listenAddress')+':'+ str( int( int(domainProps.getProperty('basePortNumber'))+int(domainProps.getProperty('adminserver.relativeListenPort'))));
+                connUri = 't3://'+socket.getfqdn()+':'+ str( int( int(domainProps.getProperty('basePortNumber'))+int(domainProps.getProperty('adminserver.relativeListenPort'))));
 
         except:
                 dumpStack()
@@ -227,7 +228,7 @@ def configureAdminServer():
         # Setting listen address/port
         cd('/Server/AdminServer')
 
-        set('ListenAddress',domainProps.getProperty('adminserver.listenAddress'))                                                                                                                                                            
+        set('ListenAddress',socket.getfqdn())                                                                                                                                                            
         set('ListenPort',int(int(domainProps.getProperty('basePortNumber'))+int(domainProps.getProperty('adminserver.relativeListenPort'))));
 
         # SSL Settings
@@ -490,7 +491,7 @@ def createCustomDomain():
 # Start adminserver and test connection
 ##################################################################
 def startAndConnnectToAdminServer():
-        connUri = 't3://'+domainProps.getProperty('adminserver.listenAddress')+':'+ str( int( int(domainProps.getProperty('basePortNumber'))+int(domainProps.getProperty('adminserver.relativeListenPort'))));
+        connUri = 't3://'+socket.getfqdn()+':'+ str( int( int(domainProps.getProperty('basePortNumber'))+int(domainProps.getProperty('adminserver.relativeListenPort'))));
         print 'Connection URI : ' + connUri;
         print 'Starting the Admin Server...';
         startServer('AdminServer', domainProps.getProperty('domainName') , connUri, adminUserName, adminPassword, domainLocation,'true',60000,'false',jvmArgs='-XX:MaxPermSize=196m, -Xmx1024m');
