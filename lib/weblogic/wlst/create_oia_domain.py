@@ -24,6 +24,7 @@ def enrollNm():
         nmDir = get_instance_property('machine', str(machine), 'nmDir')
         print ' Do enroll '+ domainLocation +'  -  '+ nmDir +' !\n'
         nmEnroll(domainLocation, nmDir)
+        machine = machine + 1
 
 # ================================================================
 #           Main Code Execution
