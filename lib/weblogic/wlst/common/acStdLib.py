@@ -30,7 +30,12 @@
 import os
 import thread
 import time
+import socket
 
+# get FQDN from machine
+#
+def acGetFQDN():
+    return socket.getfqdn()
 
 # connect to domain with preloaded properties
 #
@@ -40,7 +45,7 @@ def acConnect():
 # connect to nodemanager-domain with preloaded properties
 #
 def acNmConnect():
-    return nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=hostname,port=nmPort,domainName=domName,domainDir=admDir,nmType='ssl');
+    return nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=acGetFQDN(),port=nmPort,domainName=domName,domainDir=admDir,nmType='ssl');
 
 # print status of domain and its servers, etc.
 #

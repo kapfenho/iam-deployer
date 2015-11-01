@@ -54,12 +54,9 @@ do
 done
 
 # deploy user environment in shared location
-iam userenv -a env
+iam userenv -a env -A
 # on each host: load in user profile and create easy to reach shortcuts 
-iam userenv -a profile -H oim1
-iam userenv -a profile -H oim2
-iam userenv -a profile -H web1
-iam userenv -a profile -H web2
+iam userenv -a profile -A
 
 # copy weblogic libraries
 iam weblogic -a wlstlibs -t identity -H oim1

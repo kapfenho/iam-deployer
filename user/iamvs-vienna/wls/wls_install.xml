@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Silent installer option: -mode=silent -silent_xml=/home/me/silent.xml -->
+<domain-template-descriptor>
+  <input-fields>
+    <data-value name="BEAHOME" value="/l/ora/products/analytics"/>
+    <data-value name="USER_INSTALL_DIR" value="/l/ora/products/analytics"/>
+    <data-value name="INSTALL_NODE_MANAGER_SERVICE" value="yes"/>
+    <data-value name="COMPONENT_PATHS" value="WebLogic Server"/>
+  </input-fields>
+</domain-template-descriptor>

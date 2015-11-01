@@ -39,15 +39,34 @@ _cp_oim()
   cp ${src}/env/identity.prop       ${env}/
   cp ${src}/env/imint.prop          ${env}/
   cp ${src}/lib/deploy.py           ${lib}/
-  sed -i "s/__HOSTENV__/${_iam_hostenv}/" ${env}/*
-  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${env}/*
-  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${bin}/*
-  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${env}/*
-  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${bin}/*
-  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${env}/*
-  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${bin}/*
-  sed -i "s/__DOMAIN_NAME__/${iam_domain_oim}/" ${env}/*
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/"           ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"               ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"               ${bin}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"               ${env}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"               ${bin}/*
+  sed -i "s/__ADMHOSTNAME__/${domiAdminHost}/"      ${env}/*
+  sed -i "s/__OIMADMINSERVER__/${domiAdminServer}/" ${env}/*
+  # hostname should not be used any more
+  #sed -i "s/__HOSTNAME__/$(hostname -f)/"           ${env}/*
+  #sed -i "s/__HOSTNAME__/$(hostname -f)/"           ${bin}/*
+  sed -i "s/__DOMAIN_NAME__/${iam_domain_oim}/"     ${env}/*
   _cp_nodemanager
+}
+
+_cp_oia()
+{
+  # already done?
+  [ -f ${env}/oia.env ] && return
+
+  cp ${src}/env/oia.env             ${env}/
+  cp ${src}/env/analytics.prop       ${env}/
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/"           ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"               ${env}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"               ${env}/*
+  sed -i "s/__ADMHOSTNAME__/${domlAdminHost}/"      ${env}/*
+  sed -i "s/__OIAADMINSERVER__/${domlAdminServer}/" ${env}/*
+  #sed -i "s/__HOSTNAME__/$(hostname -f)/"  ${env}/*
+  sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/"     ${env}/*
 }
 
 _cp_acc()
@@ -59,14 +78,16 @@ _cp_acc()
   cp ${src}/bin/*nodemanager*       ${bin}/
   cp ${src}/env/acc.env             ${env}/
   cp ${src}/env/access.prop         ${env}/
-  sed -i "s/__HOSTENV__/${_iam_hostenv}/" ${env}/*
-  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${env}/*
-  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${bin}/*
-  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${env}/*
-  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${bin}/*
-  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${env}/*
-  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${bin}/*
-  sed -i "s/__DOMAIN_NAME__/${iam_domain_acc}/" ${env}/*
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/"           ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"               ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"               ${bin}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"               ${env}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"               ${bin}/*
+  sed -i "s/__ADMHOSTNAME__/${domaAdminHost}/"      ${env}/*
+  sed -i "s/__OAMADMINSERVER__/${domaAdminServer}/" ${env}/*
+  #sed -i "s/__HOSTNAME__/$(hostname -f)/"           ${env}/*
+  #sed -i "s/__HOSTNAME__/$(hostname -f)/"           ${bin}/*
+  sed -i "s/__DOMAIN_NAME__/${iam_domain_acc}/"     ${env}/*
   _cp_nodemanager
 }
 
@@ -136,11 +157,11 @@ init_userenv()
 
   # _create_startall
 
-
-  _cp_oim
-  _cp_acc
-  _cp_oud
-  _cp_web
+  exists_product identity && _cp_oim
+  exists_product access && _cp_acc
+  exists_product directory && _cp_oud
+  exists_product web && _cp_web
+  exists_product analytics && _cp_oia
 }
 
 #  ---------------------------------------------------
