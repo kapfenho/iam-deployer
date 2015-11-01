@@ -64,23 +64,23 @@ iam userenv -a profile -H web2
 # copy weblogic libraries
 iam weblogic -a wlstlibs -t identity -H oim1
 
-iam identity -a keyfile -u ${nmUser}   -p ${nmPwd} -n
-iam identity -a keyfile -u ${domiUser} -p ${domiPwd}
+iam identity -a keyfile -u ${nmUser}   -p ${nmPwd} -n -H oim1
+iam identity -a keyfile -u ${domiUser} -p ${domiPwd} -H oim1
 
-iam identity -t config
+iam identity -t config -H oim1
 
 # upgrade jdk
-iam jdk -t identity -P 1
+iam jdk -t identity -P 1 -H oim1
 
 ssh oim1 -- stop-all
 ssh oim2 -- stop-all
 ssh web1 -- stop-all
 ssh web2 -- stop-all
 
-iam jdk -t identity -P 2
+iam jdk -t identity -P 2 -H oim1
 
 # identity domain PSA run
-iam identity -a psa
+iam identity -a psa -H oim1
 
 iam weblogic -a jdk7fix -t identity -H oim1
 iam weblogic -a jdk7fix -t identity -H oim2
@@ -88,7 +88,7 @@ iam identity -a jdk7fix -t identity -H oim1
 iam identity -a jdk7fix -t identity -H oim2
 
 # identity domain post-install steps
-iam identity -a postinstall
+iam identity -a postinstall -H oim1
 iam identity -a movelogs -H oim1
 iam identity -a movelogs -H oim2
 

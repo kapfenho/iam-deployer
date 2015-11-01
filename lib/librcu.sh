@@ -45,7 +45,7 @@ rcu_drop_identity() {
     -component OPSS \
     -component SOAINFRA \
     -component ORASDPM \
-    -component OIM > /dev/null \
+    -component OIM \
     <<EOF
 ${iam_dba_pass}
 EOF

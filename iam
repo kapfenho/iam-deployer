@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 if ! shopt -q login_shell ; then
   source /etc/profile

@@ -7,10 +7,11 @@
 _cp_nodemanager()
 {
   local _dir=${iam_top}/config/nodemanager/$(hostname -f)
+  [[ -d ${_dir} ]] || return 0
   local _prop=nodemanager.properties
   local _start=startNodeManagerWrapper.sh
 
-  [ -f ${_dir}/${_prop}.orig ] && return
+  [[ -f ${_dir}/${_prop}.orig ]] && return 0
 
   # properties
   mv ${_dir}/${_prop} ${_dir}/${_prop}.orig
