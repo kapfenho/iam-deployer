@@ -152,6 +152,7 @@ init_userenv()
   mkdir -p ${env} ${bin} ${lib} ${crd}
   
   cp  ${src}/bin/iam*                 ${bin}/
+  cp  ${src}/bin/{stop,start}-all     ${bin}/
   cp  ${src}/env/common.env           ${env}/
   sed -i "s/__DEPLOYER__/${_deployer_path}/" ${env}/common.env
 

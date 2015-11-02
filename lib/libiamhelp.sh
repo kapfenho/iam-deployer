@@ -165,25 +165,20 @@ help_userenv() {
 # ---------------------------------------------------
 help_jdk() {
   echo "
-  Syntax: ${0} jdk -a {install|upgrade} -H host -O oracle_home [-P part]
-    ${0} jdk -a install -H iam.agoracon.at -O analytics
-    ${0} jdk -a upgrade -H iam.agoracon.at -O identity -P 1
+  Syntax: ${0} jdk -a {install7|move6} -O oracle_home
+    ${0} jdk -a install7 -O analytics
+    ${0} jdk -a move6 -O identity
 
-  Upgrade existing JDK (from JDK6 to JDK7). Takes place in two steps.
-  Extract new JDK with different path; then move/archive old JDK and 
-  sym link original path to JDK7 (used in products).
+  Upgrade existing JDK (from JDK6 to JDK7). This takes place in two 
+  steps: first install JDK7 (-a install7) then move the original one 
+  and replace it by a softlink to the new one (used in products).
 
   Parameter:
     -a  action to perform
-        install     install JDK7
-        upgrade     upgrade to JDK7
-            
-    -H  host        hostname: execute on host
+        install7    install JDK7
+        move6       move and replace JDK6 by symlink
     -O  home        oracle_home to install|upgrade:
-                       identity | accesss | analytics
-    -P  part        part 1 or 2
-                       1     can be done with original processes up
-                       2     shall be done with no processes running
+                       identity | access | analytics
                     
   Before exection:
     ORACLE_HOME/jdk6         shipped JDK

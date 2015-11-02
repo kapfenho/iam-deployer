@@ -7,7 +7,7 @@ fi
 echo "$(hostname -s) IAM >> $*"
 
 : ${DEPLOYER:="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"}
-
+set +x
 . ${DEPLOYER}/lib/user-config.sh
 . ${DEPLOYER}/lib/libcommon2.sh
 . ${DEPLOYER}/lib/libiam.sh
@@ -16,7 +16,7 @@ echo "$(hostname -s) IAM >> $*"
 . ${DEPLOYER}/lib/libmovelog.sh
 . ${DEPLOYER}/lib/libiamhelp.sh
 . ${DEPLOYER}/lib/libuserenv.sh
-
+set -x
 umask ${iam_user_umask}
 
 #  main program -----------------------------------------------------
@@ -160,16 +160,11 @@ else
       ;;
 
     jdk)
-      if   [ "${opt_a}" == "upgrade" -a -z "${opt_h}" ] ; then
-        if [ -n "${opt_P}" -a "${opt_P}" == "2" ] ; then
-          upgrade_jdk2 ${opt_t}
-        else
-          upgrade_jdk1 ${opt_t}
-        fi
-      elif [ "${opt_a}" == "install" -a -z "${opt_h}" ];
-      then
+      if   [ "${opt_a}" == "install7" -a -n "${opt_O}" -a -z "${opt_h}" ] ; then
         mkdir -p ${iam_top}/products/${opt_O}
-        upgrade_jdk1 ${opt_O}
+        jdk_install7 ${opt_O}
+      elif [ "${opt_a}" == "move6"    -a -n "${opt_O}" -a -z "${opt_h}" ] ; then
+        jdk_move6    ${opt_O}
       else
         help_jdk
         exit $ERROR_SYNTAX_ERROR

@@ -1,5 +1,4 @@
-#  Oracle Identity and Access Management
-#  vi: set ft=ruby :
+# ´Oracle Identity and Access Management
 #
 
 VAGRANTFILE_API_VERSION = "2"
@@ -74,13 +73,45 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   end
 
-  config.vm.provision "database", type: "shell" do |s|
-    s.inline = "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/db.sh  | /usr/bin/tee /tmp/prov-dbs.log'"
-  end
+  {
+    # database installation
+    "database"  =>  "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/db.sh  | /usr/bin/tee /tmp/prov-dbs.log'",
+    # create database schemas for iam
+    "rcu"       =>  "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/rcu.sh  | /usr/bin/tee /tmp/prov-rcu.log'",
+    # lcm: install software and configure
+    "iam"       =>  "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam.sh | /usr/bin/tee /tmp/prov-iam.log'",
+  
+    # create userenv
+    "userenv"   =>  "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam userenv -a env && DEPLOYER=/vagrant /vagrant/iam userenv -a profile'",
+    # copy wlst standard libs
+    "wlstlibs"  =>  "su - fmwuser -c '/vagrant/iam weblogic -a wlstlibs -t identity'",
+    # create user keyfiles for identity domain
+    "idmkey"    =>  "su - fmwuser -c '/vagrant/iam identity -a keyfile -u weblogic -p Montag11'",
+    # create user keyfiles for nodemanager
+    "idmkeynm"  =>  "su - fmwuser -c '/vagrant/iam identity -a keyfile -u admin -p Montag11 -n'",
+  
+    # upgrade to jdk7 - part 1
+    "jdk-part1" =>  "su - fmwuser -c '/vagrant/iam jdk -O identity -P 1'",
+    # stop all services
+    "stop-all"  =>  "su - fmwuser -c 'stop-webtier ; stop-identity ; stop-nodemanager'",
+    # upgrade to jdk7 - part 2
+    "jdk-part2" =>  "su - fmwuser -c '/vagrant/iam jdk -O identity -P 2'",
+  
+    # necessary fix for using jdk7 - wl_server
+    "jdk7fix-wlserver"  =>  "su - fmwuser -c '/vagrant/iam weblogic -a jdk7fix -t identity'",
+    # necessary fix for using jdk7 - identity domain
+    "jdk7fix-identity"  =>  "su - fmwuser -c '/vagrant/iam identity -a jdk7fix -t identity'",
+    # patch set assistant - opss schema upgrade
+    "psa-identity"      =>  "su - fmwuser -c '/vagrant/iam identity -a psa'",
+    # move logfiles und log locations
+    "movelogs-identity" =>  "su - fmwuser -c '/vagrant/iam identity -a movelogs'"
 
-  config.vm.provision "iam", type: "shell" do |s|
-    s.inline = "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam provision'"
+  }.each do |k,v| # generate provisioning step
+    config.vm.provision k, type: "shell" do |s|
+      s.inline = v
+    end
   end
 
 end
 
+# vi: set ft=ruby :

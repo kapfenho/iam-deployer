@@ -60,8 +60,10 @@ iam userenv -a profile -A
 
 # copy weblogic libraries
 iam weblogic -a wlstlibs -t identity -H oim1
+iam weblogic -a wlstlibs -t identity -H oim2
 
 iam identity -a keyfile -u ${nmUser}   -p ${nmPwd} -n -H oim1
+iam identity -a keyfile -u ${nmUser}   -p ${nmPwd} -n -H oim2
 iam identity -a keyfile -u ${domiUser} -p ${domiPwd} -H oim1
 
 iam identity -t config -H oim1

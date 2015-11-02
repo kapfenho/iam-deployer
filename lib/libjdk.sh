@@ -97,7 +97,7 @@ jdk_deploy() {
 #  JDK7 upgrade - part 1 --------------------------------------------
 #  this can be done while original processes are still running
 #
-upgrade_jdk1()
+jdk_install7()
 {
   local _oh=${1}
  
@@ -123,7 +123,7 @@ upgrade_jdk1()
 #  JDK7 upgrade - part 2 --------------------------------------------
 #  this shall be executed when procs are down
 #
-upgrade_jdk2()
+jdk_move6()
 {
   local _oh=${1}
 

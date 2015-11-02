@@ -9,6 +9,11 @@ load_userenv()
   local _f=${iam_hostenv}/env/${1}.env
   if [[ -a ${_f} ]] ; then
     source ${_f}
+    if [ ! -d ${JAVA_HOME} ] ; then
+      # in case jdk is not moved yet
+      export JAVA_HOME=${MW_HOME}/jdk6
+      export PATH=${JAVA_HOME}/bin:${PATH}
+    fi
   else
     error "User env file ${_f} not existing. Please run task userenv before!"
     exit $ERROR_FILE_NOT_FOUND
@@ -288,6 +293,7 @@ exit()
 "
 
     echo "${_wlst}" | ${WL_HOME}/common/bin/wlst.sh -loadProperties ${opt_w}
+    [[ $? -eq 0 ]] || exit $ERROR_WLST
 
     log "Finished creating domain keyfiles"
 
@@ -320,6 +326,7 @@ y
 exit()
 "
     echo "${_wlst}" | ${WL_HOME}/common/bin/wlst.sh -loadProperties ${opt_w}
+    [[ $? -eq 0 ]] || exit $ERROR_WLST
 
     log "Finished creating domain keyfiles"
 

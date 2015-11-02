@@ -5,7 +5,7 @@
 WARNING_DONE=0
 ERROR_FILE_NOT_FOUND=80
 ERROR_SYNTAX_ERROR=81
-
+ERROR_WLST=82
 
 log() {
   if [[ -t 1 ]]; then
