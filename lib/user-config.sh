@@ -56,10 +56,12 @@ getvar OHS_INSTANCENAME
 :     ${domiAdminServer:="AdminServer"}
 :     ${domaAdminServer:="AdminServer"}
 :     ${domlAdminServer:="AdminServer"}
-: ${domiAdminHost:?"Admin server hostname of Identity Domain"}
-: ${domaAdminHost:?"Admin server hostname of Access Domain"}
-: ${domlAdminHost:?"Admin server hostname of Analytics Domain"}
-
+#
+# mandatory when provisioning: 
+#  ${domiAdminHost}
+#  ${domaAdminHost}
+#  ${domlAdminHost}
+#
 # short cuts: sym links to userenv
 :           ${sc_env:="${HOME}/.env"}
 :           ${sc_bin:="${HOME}/bin"}
