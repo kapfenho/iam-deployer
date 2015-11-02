@@ -162,6 +162,8 @@ init_userenv()
   exists_product directory && _cp_oud
   exists_product web && _cp_web
   exists_product analytics && _cp_oia
+
+  return 0
 }
 
 #  ---------------------------------------------------

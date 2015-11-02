@@ -22,7 +22,7 @@ gen_ssh_keypair()
 {
   local _dest=${1}/id_rsa
   if [[ -a ${_dest} ]] ; then
-    return WARN_DONE
+    return 0
   else
     ssh-keygen -t rsa -b 4096 -C "iam-deployer insecure key" \
       -N "" -f ${_dest}
