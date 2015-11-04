@@ -1,8 +1,8 @@
 #!/bin/sh
 
-. ${HOSTENV}/env/idm.env
+. ~/.env/idm.env
 
-${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop <<EOS
+${WL_HOME}/common/bin/wlst.sh -loadProperties ~/.env/identity.prop <<EOS
 connect(userConfigFile=domUC,userKeyFile=domUK,url=domUrl);
 shutdown('AdminServer',force='true');
 exit();

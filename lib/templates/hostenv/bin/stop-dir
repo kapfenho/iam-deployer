@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ${HOSTENV}/env/dir.env
+. ~/.env/dir.env
 stop-ds -X
 
 exit 0

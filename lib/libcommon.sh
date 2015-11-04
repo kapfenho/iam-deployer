@@ -1,11 +1,5 @@
 #  common installation functions
 
-#  standard logging
-#
-log() {
-  echo "${1}: ${2}"
-}
-
 exit_on_not_root() {
   if [ $UID != 0 ] ; then
     echo "ERROR: please execute as system admin!"
@@ -25,15 +19,15 @@ backup() {
   done
 }
 
-create_user_profile() {
-  log "create_user_profile" "start"
-  [ -a ${HOME}/.env ] || mkdir -p ${HOME}/.env
-  cp ${_DIR}/lib/templates/iam/env/{acc,idm,dir,web,common}.sh* ${HOME}/.env/
-  if ! grep -q common ${HOME}/.bash_profile ; then
-    echo '[ -a ~/.env/common.sh ] && . ~/.env/common.sh' >>${HOME}/.bash_profile
-  fi
-  log "create_user_profile" "done"
-}
+# create_user_profile() {
+#   log "create_user_profile" "start"
+#   [ -a ${HOME}/.env ] || mkdir -p ${HOME}/.env
+#   cp ${_DIR}/lib/templates/iam/env/{acc,idm,dir,web,common}.sh* ${HOME}/.env/
+#   if ! grep -q common ${HOME}/.bash_profile ; then
+#     echo '[ -a ~/.env/common.sh ] && . ~/.env/common.sh' >>${HOME}/.bash_profile
+#   fi
+#   log "create_user_profile" "done"
+# }
 
 
 

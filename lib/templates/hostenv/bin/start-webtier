@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ${HOSTENV}/env/web.env ; opmnctl startall ; opmnctl status -l
+. ~/.env/web.env ; opmnctl startall ; opmnctl status -l
 
 exit 0
 

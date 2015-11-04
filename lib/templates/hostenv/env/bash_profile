@@ -7,6 +7,7 @@ fi
 
 # User specific environment and startup programs
 
-for f in __HOSTENV__/env/common.env __HOSTENV__/env/aliases ~/.aliases ; do
-  [[ -a ${f} ]] && . ${f}
-done
+[[ -a ~/.env/common.env ]] && . ~/.env/common.env
+[[ -a ~/.env/aliases    ]] && . ~/.env/aliases
+[[ -a ~/.aliases        ]] && . ~/.aliases
+

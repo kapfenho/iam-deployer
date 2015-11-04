@@ -1,8 +1,8 @@
 #!/bin/sh
 
-. ${HOSTENV}/env/idm.env
+. ~/.env/idm.env
 
-${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop <<EOS
+${WL_HOME}/common/bin/wlst.sh -loadProperties ~/.env/identity.prop <<EOS
 nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=acGetFQDN(),port=nmPort,domainName=domName,domainDir=domDir,nmType='ssl');
 nmKill('wls_oim1');
 nmKill('wls_soa1');

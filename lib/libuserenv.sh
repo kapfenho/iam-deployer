@@ -148,8 +148,10 @@ init_userenv()
   _deployer_path=$(echo ${DEPLOYER}    | sed -e 's/[\/&]/\\&/g')
   # also used but scaping not necessary:
   # iam_domain_oim, iam_domain_acc
-  
-  mkdir -p ${env} ${bin} ${lib} ${crd}
+
+  for d in ${env} ${bin} ${lib} ${crd} ; do
+    [[ -a ${d} ]] || mkdir -p ${d}
+  done
   
   cp  ${src}/bin/iam*                 ${bin}/
   cp  ${src}/bin/{stop,start}-all     ${bin}/
@@ -173,7 +175,7 @@ init_userenv()
 extend_bash_profile_on_host()
 {
   src=${DEPLOYER}/lib/templates/hostenv
-  env=${iam_hostenv}/env
+  env=${iam_hostenv}/.env
   bin=${iam_hostenv}/bin
   lib=${iam_hostenv}/lib
   crd=${iam_hostenv}/.creds
@@ -189,7 +191,7 @@ extend_bash_profile_on_host()
   # add the tools.property file to oud instance dir
   for d in ${iam_services}/instances/* ; do
     if [ -d ${d}/OUD ] ; then
-      cp -b ${iam_hostenv}/env/tools.properties ${d}/OUD/config/
+      cp -b ~/.env/tools.properties ${d}/OUD/config/
     fi
   done
 

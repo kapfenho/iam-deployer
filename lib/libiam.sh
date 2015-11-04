@@ -6,7 +6,7 @@
 #
 load_userenv()
 {
-  local _f=${iam_hostenv}/env/${1}.env
+  local _f=${iam_hostenv}/.env/${1}.env
   if [[ -a ${_f} ]] ; then
     source ${_f}
     if [ ! -d ${JAVA_HOME} ] ; then
@@ -378,7 +378,7 @@ config_identity()
   log ""
   log "Identity Domain: configuring domain..."
 
-  ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/identity.prop \
+  ${WL_HOME}/common/bin/wlst.sh -loadProperties ~/.env/identity.prop \
     ${DEPLOYER}/lib/identity/idm-config.py
 
   log "Identity Domain: configuration steps done."
@@ -391,7 +391,7 @@ config_access()
   log ""
   log "Access Domain: configuring access domain..."
 
-  ${WL_HOME}/common/bin/wlst.sh -loadProperties ${HOSTENV}/env/access.prop \
+  ${WL_HOME}/common/bin/wlst.sh -loadProperties ~/.env/access.prop \
     ${DEPLOYER}/lib/access/oam-config.py
 
   log "Access Domain: configuration steps done"
