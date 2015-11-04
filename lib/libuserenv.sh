@@ -58,14 +58,14 @@ _cp_oia()
   # already done?
   [ -f ${env}/oia.env ] && return
 
-  cp ${src}/env/oia.env             ${env}/
-  cp ${src}/env/analytics.prop       ${env}/
+  cp ${src}/env/oia.env                             ${env}/
+  cp ${src}/env/analytics.prop                      ${env}/
   sed -i "s/__HOSTENV__/${_iam_hostenv}/"           ${env}/*
   sed -i "s/__IAM_TOP__/${_iam_top}/"               ${env}/*
   sed -i "s/__IAM_LOG__/${_iam_log}/"               ${env}/*
   sed -i "s/__ADMHOSTNAME__/${domlAdminHost}/"      ${env}/*
   sed -i "s/__OIAADMINSERVER__/${domlAdminServer}/" ${env}/*
-  #sed -i "s/__HOSTNAME__/$(hostname -f)/"  ${env}/*
+  #sed -i "s/__HOSTNAME__/$(hostname -f)/"          ${env}/*
   sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/"     ${env}/*
 }
 
@@ -74,10 +74,10 @@ _cp_acc()
   # already done?
   [ -f ${env}/acc.env ] && return
 
-  cp ${src}/bin/*access*            ${bin}/
-  cp ${src}/bin/*nodemanager*       ${bin}/
-  cp ${src}/env/acc.env             ${env}/
-  cp ${src}/env/access.prop         ${env}/
+  cp ${src}/bin/*access*                            ${bin}/
+  cp ${src}/bin/*nodemanager*                       ${bin}/
+  cp ${src}/env/acc.env                             ${env}/
+  cp ${src}/env/access.prop                         ${env}/
   sed -i "s/__HOSTENV__/${_iam_hostenv}/"           ${env}/*
   sed -i "s/__IAM_TOP__/${_iam_top}/"               ${env}/*
   sed -i "s/__IAM_TOP__/${_iam_top}/"               ${bin}/*
@@ -85,8 +85,8 @@ _cp_acc()
   sed -i "s/__IAM_LOG__/${_iam_log}/"               ${bin}/*
   sed -i "s/__ADMHOSTNAME__/${domaAdminHost}/"      ${env}/*
   sed -i "s/__OAMADMINSERVER__/${domaAdminServer}/" ${env}/*
-  #sed -i "s/__HOSTNAME__/$(hostname -f)/"           ${env}/*
-  #sed -i "s/__HOSTNAME__/$(hostname -f)/"           ${bin}/*
+  #sed -i "s/__HOSTNAME__/$(hostname -f)/"          ${env}/*
+  #sed -i "s/__HOSTNAME__/$(hostname -f)/"          ${bin}/*
   sed -i "s/__DOMAIN_NAME__/${iam_domain_acc}/"     ${env}/*
   _cp_nodemanager
 }
@@ -96,13 +96,13 @@ _cp_oud()
   # already done?
   [ -f ${env}/dir.env ] && return
 
-  cp ${src}/bin/*dir*               ${bin}/
-  cp ${src}/env/dir.env             ${env}/
-  cp ${src}/env/tools.properties    ${env}/
-  sed -i "s/__HOSTENV__/${_iam_hostenv}/" ${env}/*
-  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${env}/*
-  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${env}/*
-  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${env}/*
+  cp ${src}/bin/*dir*                               ${bin}/
+  cp ${src}/env/dir.env                             ${env}/
+  cp ${src}/env/tools.properties                    ${env}/
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/"           ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"               ${env}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"               ${env}/*
+  sed -i "s/__HOSTNAME__/$(hostname -f)/"           ${env}/*
   echo -n ${oudPwd} > ${crd}/oudadmin
 }
 
@@ -111,16 +111,16 @@ _cp_web()
   # already done?
   [ -f ${env}/web.env ] && return
 
-  cp ${src}/bin/*webtier*           ${bin}/
-  cp ${src}/env/web.env             ${env}/
-  sed -i "s/__HOSTENV__/${_iam_hostenv}/" ${env}/*
-  sed -i "s/__HOSTENV__/${_iam_hostenv}/" ${bin}/*
-  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${env}/*
-  sed -i "s/__IAM_TOP__/${_iam_top}/"      ${bin}/*
-  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${env}/*
-  sed -i "s/__IAM_LOG__/${_iam_log}/"      ${bin}/*
-  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${env}/*
-  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${bin}/*
+  cp ${src}/bin/*webtier*                           ${bin}/
+  cp ${src}/env/web.env                             ${env}/
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/"           ${env}/*
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/"           ${bin}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"               ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"               ${bin}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"               ${env}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"               ${bin}/*
+  sed -i "s/__HOSTNAME__/$(hostname -f)/"           ${env}/*
+  sed -i "s/__HOSTNAME__/$(hostname -f)/"           ${bin}/*
 }
 
 #  ------------------------------------------------
@@ -133,7 +133,7 @@ init_userenv()
 {
       src=${DEPLOYER}/lib/templates/hostenv
   nodesrc=${DEPLOYER}/lib/templates/nodemanager
-      env=${iam_hostenv}/env
+      env=${iam_hostenv}/.env
       bin=${iam_hostenv}/bin
       lib=${iam_hostenv}/lib
       crd=${iam_hostenv}/.creds
@@ -158,10 +158,10 @@ init_userenv()
 
   # _create_startall
 
-  exists_product identity && _cp_oim
-  exists_product access && _cp_acc
+  exists_product identity  && _cp_oim
+  exists_product access    && _cp_acc
   exists_product directory && _cp_oud
-  exists_product web && _cp_web
+  exists_product web       && _cp_web
   exists_product analytics && _cp_oia
 
   return 0
@@ -181,10 +181,10 @@ extend_bash_profile_on_host()
   # this variable will be used in sed command and must be escaped
   _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
 
-  [ -L ${sc_env} ] || ln -sf ${env} ${sc_env}
-  [ -L ${sc_bin} ] || ln -sf ${bin} ${sc_bin}
-  [ -L ${sc_lib} ] || ln -sf ${lib} ${sc_lib}
-  [ -L ${sc_crd} ] || ln -sf ${crd} ${sc_crd}
+  # [ -L ${sc_env} ] || ln -sf ${env} ${sc_env}
+  # [ -L ${sc_bin} ] || ln -sf ${bin} ${sc_bin}
+  # [ -L ${sc_lib} ] || ln -sf ${lib} ${sc_lib}
+  # [ -L ${sc_crd} ] || ln -sf ${crd} ${sc_crd}
 
   # add the tools.property file to oud instance dir
   for d in ${iam_services}/instances/* ; do
