@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 if ! shopt -q login_shell ; then
   source /etc/profile
@@ -7,7 +7,7 @@ fi
 echo "$(hostname -s) IAM >> $*"
 
 : ${DEPLOYER:="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"}
-set +x
+
 . ${DEPLOYER}/lib/user-config.sh
 . ${DEPLOYER}/lib/libcommon2.sh
 . ${DEPLOYER}/lib/libiam.sh
@@ -16,7 +16,7 @@ set +x
 . ${DEPLOYER}/lib/libmovelog.sh
 . ${DEPLOYER}/lib/libiamhelp.sh
 . ${DEPLOYER}/lib/libuserenv.sh
-set -x
+
 umask ${iam_user_umask}
 
 #  main program -----------------------------------------------------
@@ -55,7 +55,6 @@ while getopts AH:LO:P:a:hnp:s:t:u:w: FLAG; do
 done
 
 set -o errexit errtrace
-
 
 if   [ -n "${opt_H}" ] ; then
 
@@ -201,9 +200,9 @@ else
       load_userenv common
       load_userenv idm
 
-      if   [ "${opt_a}" == "jdk7fix"     -a -z "${opt_h}" ] ; then
+      if   [ "${opt_a}" == "jdk7fix"  -a -z "${opt_h}" ] ; then
         patch_wls_domain "identity"
-      elif [ "${opt_a}" == "psa"         -a -z "${opt_h}" ] ; then
+      elif [ "${opt_a}" == "psa"      -a -z "${opt_h}" ] ; then
         run_psa identity
       elif [ "${opt_a}" == "keyfile"  -a -z "${opt_h}" -a -z "${opt_n}" ] ; then
         # domain keyfile
@@ -215,7 +214,7 @@ else
           exit $ERROR_FILE_NOT_FOUND
         fi
         create_domain_keyfile 
-      elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -n "${opt_n}" ] ; then
+      elif [ "${opt_a}" == "keyfile"  -a -z "${opt_h}" -a -n "${opt_n}" ] ; then
         # nodemanager keyfile
         : ${opt_u:=${nmUser}}
         : ${opt_p:=${nmPwd}}
@@ -225,9 +224,9 @@ else
           exit $ERROR_FILE_NOT_FOUND
         fi
         create_nodemanager_keyfile 
-      elif [ "${opt_a}" == "config"      -a -z "${opt_h}" ] ; then
+      elif [ "${opt_a}" == "config"   -a -z "${opt_h}" ] ; then
         config_identity
-      elif [ "${opt_a}" == "movelogs"    -a -z "${opt_h}" ] ; then
+      elif [ "${opt_a}" == "movelogs" -a -z "${opt_h}" ] ; then
         move_logs identity
       else
         help_identity

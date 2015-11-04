@@ -83,9 +83,9 @@ getvar OHS_INSTANCENAME
 
              s_base=${IL_INSTALLERDIR_LOCATION}
               s_lcm=${s_base}/installers/idmlcm
-         s_rcu_home=${s_base}/installers/fmw_rcu/linux/rcuHome
-           s_runjdk=${s_base}/installers/jdk/jdk7
-           s_runjre=${s_runjdk}/jre
+:    ${s_rcu_home:="${s_base}/installers/fmw_rcu/linux/rcuHome"}
+:      ${s_runjdk:="${s_base}/installers/jdk/jdk7"}
+:      ${s_runjre:="${s_runjdk}/jre"}
       
          dbs_dbhost=${OIM_SINGLE_DB_HOST}
            dbs_port=${OIM_SINGLE_DB_PORT}
@@ -104,7 +104,6 @@ for d in ${iam_services}/instances/* ; do
 done
 
 iam_lcm=$(grep "ORACLE_HOME=" ${lcm_config_rsp} | cut -d= -f2)
-
 
 #    ${iam_oam_prefix:=${OIM_DB_SCHEMAPREFIX}}
 #    ${iam_bip_prefix:=${OIM_DB_SCHEMAPREFIX}}

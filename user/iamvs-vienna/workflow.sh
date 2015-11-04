@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 #
 #  VWFS Post installation steps
 #
@@ -18,38 +18,38 @@ export DEPLOYER
 export PATH=${DEPLOYER}:${PATH}
 source ${DEPLOYER}/lib/user-config.sh
 
-# for h in ${provhosts[@]}; do
-#   if ! ping -q -w 1 ${h} >/dev/null 2>&1 ; then
-#     echo "Postponing provisioning until host ${h} is available"
-#     exit 0
-#   fi
-# done
+for h in ${provhosts[@]}; do
+  if ! ping -q -w 1 ${h} >/dev/null 2>&1 ; then
+    echo "Postponing provisioning until host ${h} is available"
+    exit 0
+  fi
+done
 
 # install database
 # database
-#jiam orainv
-#j
-#j# rcu: create database schemas
-#jiam rcu -a create -t identity
-#j
-#j# install lcm
-#jiam lcminst
-#j
-#j# let's do the lcm...
-#jfor step in \
-#j  preverify \
-#j  install \
-#j  unblock \
-#j  preconfigure \
-#j  configure \
-#j  configure-secondary \
-#j  postconfigure \
-#j  startup \
-#j  validate
-#jdo
-#j  # execute step on all hosts
-#j  iam lcmstep -a ${step}
-#jdone
+#iam orainv
+#
+## rcu: create database schemas
+#iam rcu -a create -t identity
+#
+## install lcm
+#iam lcminst
+#
+## let's do the lcm...
+#for step in \
+#  preverify \
+#  install \
+#  unblock \
+#  preconfigure \
+#  configure \
+#  configure-secondary \
+#  postconfigure \
+#  startup \
+#  validate
+#do
+#  # execute step on all hosts
+#  iam lcmstep -a ${step}
+#done
 
 # deploy user environment in shared location
 iam userenv -a env
@@ -69,8 +69,7 @@ iam identity -a config
 # upgrade jdk
 iam jdk -a install7 -O identity
 
-# ssh oim1 -- stop-all
-${HOME}/bin/stop-all
+~/bin/stop-all
 
 iam jdk -a move6 -O identity
 
@@ -84,6 +83,5 @@ iam identity -a jdk7fix
 iam identity -a movelogs
 
 # webgate installation bug fix
-iam webtier -a postinstall
 iam webtier -a movelogs
 
