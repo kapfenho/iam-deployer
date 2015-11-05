@@ -435,6 +435,25 @@ config_webtier()
   log "Webgate: done"
 }
 
+
+oia_dom_prop()
+{
+  local _propfile_template=${DEPLOYER}/user-config/oia/createdom-${1}-template.prop
+  local _propfile=/tmp/createdom-single.prop
+  #propfile=$(mktemp /tmp/oia-domain-prop-XXXXXXX)
+  cp ${_propfile_template} ${_propfile}
+  
+  _iam_top=$(echo ${iam_top} | sed -e 's/[\/&]/\\&/g')
+  
+  sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/"         ${_propfile}
+  sed -i "s/__IAM_TOP__/${_iam_top}/"                    ${_propfile}
+  sed -i "s/__IAM_OIA_HOST1__/${iam_oia_host1}/"        ${_propfile}
+  sed -i "s/__IAM_OIA_HOST2__/${iam_oia_host2}/"        ${_propfile}
+  sed -i "s/__IAM_OIA_DBUSER__/${iam_oia_dbuser}/"      ${_propfile}
+  sed -i "s/__IAM_OIA_DBPWD__/${iam_oia_schema_pass}/"  ${_propfile}
+  sed -i "s/__DBS_HOSTNAME__/${dbs_dbhost}/"            ${_propfile}
+  sed -i "s/__IAM_SERVICENAME__/${iam_servicename}/"    ${_propfile}
+}
 # create weblogic domain for OIA including:
 # nodemanager, boot properties, datasources, managed server
 # 
@@ -449,35 +468,23 @@ oia_wlst_exec()
       ;;
     oia)
       local _start_wlst=${DEPLOYER}/lib/weblogic/wlst/deploy_oia_app.py
-        ;;
-      *)
-        exit $ERROR_FILE_NOT_FOUND
-        ;;
-    esac
+      ;;
+    *)
+      exit $ERROR_FILE_NOT_FOUND
+      ;;
+  esac
 
   local _wls_dom_template=${WL_HOME}/common/templates/domains/wls.jar
-  local _create_domain_wlst=${DEPLOYER}/lib/weblogic/wlst/create_oia_domain.py
-  local _default_prop=${DEPLOYER}/user-config/oia/default.properties
-  local _user_prop=${IDM_PROP}
+  local _user_prop=/tmp/createdom-single.prop
 
   JAVA_OPTIONS="${JAVA_OPTIONS} -Xmx2048m -Xms2048m -Djava.net.preferIPv4Stack=true"
-
-  CLASSPATH="${CLASSPATH}${CLASSPATHSEP}${FMWLAUNCH_CLASSPATH}${CLASSPATHSEP}"
-  CLASSPATH+="${DERBY_CLASSPATH}${CLASSPATHSEP}${DERBY_TOOLS}${CLASSPATHSEP}"
-  CLASSPATH+="${POINTBASE_CLASSPATH}${CLASSPATHSEP}${POINTBASE_TOOLS}"
   JVM_ARGS="-Dprod.props.file='${WL_HOME}'/.product.properties \
-    ${WLST_PROPERTIES} ${JVM_D64} \
-    -Xms256m \
-    -Xmx1024m \
-    -XX:PermSize=128m \
     -Dweblogic.management.confirmKeyfileCreation=true \
-    ${CONFIG_JVM_ARGS}"
-
+     ${CONFIG_JVM_ARGS}"
   source ${WL_HOME}/server/bin/setWLSEnv.sh
   eval '"${JAVA_HOME}/bin/java"' ${JVM_ARGS} weblogic.WLST \
     -skipWLSModuleScanning ${_start_wlst} \
     ${_wls_dom_template} \
-    ${_default_prop} \
     ${_user_prop} \
     ${oiaWlUser} \
     ${oiaWlPwd}
@@ -495,13 +502,13 @@ oia_rdeploy()
   case ${_action} in
     pack)
       ${pack} -managed=true \
-              -domain=${DOMAIN_HOME} \
-              -template=${template_loc}/${template_name}.jar \
-              -template_name=${template_name}
+        -domain=${DOMAIN_HOME} \
+        -template=${template_loc}/${template_name}.jar \
+        -template_name=${template_name}
       ;;
     unpack)
       ${unpack} -domain=${DOMAIN_HOME} \
-                -template=${template_loc}/${template_name}.jar
+        -template=${template_loc}/${template_name}.jar
       ;;
     *)
       exit $ERROR_FILE_NOT_FOUND

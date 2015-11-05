@@ -59,8 +59,9 @@ def intialize():
         global connUri;
 
         # test arguments
-        if len(sys.argv) != 6:
-                print 'Usage:  createDomain.sh <template-file> <default.properties_file> <property_file> <wls_username> <wls_password>';
+        if len(sys.argv) != 5:
+                #print 'Usage:  createDomain.sh <template-file> <default.properties_file> <property_file> <wls_username> <wls_password>';
+                print 'Usage:  createDomain.sh <template-file> <property_file> <wls_username <wls_password>';
                 exit();
 
         print 'Starting the initialization process';
@@ -77,13 +78,13 @@ def intialize():
                 input.close()
 
 
-                # load properties and overwrite defaults
-                input = FileInputStream(sys.argv[3])
-                domainProps.load(input)
-                input.close()
+                # # load properties and overwrite defaults
+                # input = FileInputStream(sys.argv[3])
+                # domainProps.load(input)
+                # input.close()
 
-                adminUserName = sys.argv[4];
-                adminPassword = sys.argv[5];
+                adminUserName = sys.argv[3];
+                adminPassword = sys.argv[4];
 
                 domainLocation = domainProps.getProperty('domainsDirectory') + pathSeparator + domainProps.getProperty('domainName');
                 print 'Domain Location: ' + domainLocation;
@@ -93,10 +94,10 @@ def intialize():
 		# Files for generating secret key
 
 		#userConfigFile = File(sys.argv[3]).getParent()+'/'+domainProps.getProperty('domainName')+'.userconfig'
-		userConfigFile = userEnvHome + '/.creds' +'/'+domainProps.getProperty('domainName')+'.usr'
+		userConfigFile = userEnvHome + '.creds' +'/'+domainProps.getProperty('domainName')+'.usr'
                 print userConfigFile
 		#userKeyFile = File(sys.argv[3]).getParent()+'/'+domainProps.getProperty('domainName')+'.userkey'
-		userKeyFile = userEnvHome + '/.creds' +'/'+domainProps.getProperty('domainName')+'.key'
+		userKeyFile = userEnvHome + '.creds' +'/'+domainProps.getProperty('domainName')+'.key'
 	        print userKeyFile			
                 if len(domainProps.getProperty('jvmLocation')) == 0:
                         print 'JVM location property not defined - cancel creation !';

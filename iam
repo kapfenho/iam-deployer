@@ -290,6 +290,7 @@ else
       load_userenv oia
 
       if   [ "${opt_a}" == "domcreate"    -a -z "${opt_h}" ] ; then
+        oia_dom_prop single
         oia_wlst_exec wlstdom
       elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" ] ; then
         # nodemanager keyfile
