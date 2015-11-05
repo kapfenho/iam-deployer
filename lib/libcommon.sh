@@ -130,7 +130,7 @@ config_template() {
 }
 
 dir_for() {
-  if [ ! -a $1 ] ; then
+  if ! [ -a $1 ] ; then
     mkdir -p $1; chown -R $2 $1
   fi
 }

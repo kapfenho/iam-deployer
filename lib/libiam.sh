@@ -6,10 +6,10 @@
 #
 load_userenv()
 {
-  local _f=${iam_hostenv}/.env/${1}.env
+  local _f=~/.env/${1}.env
   if [[ -a ${_f} ]] ; then
     source ${_f}
-    if [ ! -d ${JAVA_HOME} ] ; then
+    if ! [ -d ${JAVA_HOME} ] ; then
       # in case jdk is not moved yet
       export JAVA_HOME=${MW_HOME}/jdk6
       export PATH=${JAVA_HOME}/bin:${PATH}
@@ -107,7 +107,7 @@ exists_product()
 #
 create_orainvptr()
 {
-  if [[ ! -a ${iam_orainv_ptr} ]] ; then
+  if ! [ -a ${iam_orainv_ptr} ] ; then
     cat > ${iam_orainv_ptr} <<-EOS
       inventory_loc=${iam_orainv}
       inst_group=${iam_orainv_grp}
@@ -350,10 +350,31 @@ remove_iam()
     ${iam_top}/lcm/lcmhome/provisioning/logs/
 
   if [ -n "${opt_incl_lcm}" ] ; then
-    rm -Rf ${iam_top}/lcm/* \
-      ${iam_top}/etc/*
+    rm -Rf ${iam_top}/lcm/*
   fi
 }
+
+#  remove hostenvironment: ~/{bin,lib,.env,.creds}
+#  Always returns 0
+#
+remove_env()
+{
+  #  bin, lib
+  for d in bin lib ; do
+    for f in $(ls ${DEPLOYER}/lib/templates/hostenv/${d}/*) ; do
+      rm -f ~/${d}/${f}
+    done
+    rmdir ~/${d} 2>/dev/null || true
+  done
+  #  env
+  for f in $(ls ${DEPLOYER}/lib/templates/hostenv/env/*) ; do
+    rm -f ~/.env/${f}
+  done
+  rmdir ~/.env 2>/dev/null || true
+  #  cred
+  rm -Rf ~/.cred 
+}
+
 
 #  run Oracle patch set assistant
 #  param1: product name
@@ -713,7 +734,7 @@ _mvlog()
 {
   local src=${1}
   local dst=${2}
-  if [[ ! -a ${src} ]] ; then
+  if ! [ -a ${src} ] ; then
     return
   fi
   # check if already done

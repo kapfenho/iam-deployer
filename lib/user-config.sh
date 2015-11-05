@@ -84,17 +84,8 @@ getvar OHS_INSTANCENAME
              s_base=${IL_INSTALLERDIR_LOCATION}
               s_lcm=${s_base}/installers/idmlcm
 :    ${s_rcu_home:="${s_base}/installers/fmw_rcu/linux/rcuHome"}
-
-# find available jdk on install share
-if [ -z "${s_runjdk}" -o -z "${s_runjre}" ] ; then
-  for d in jdk7 jdk6 jdk ; do
-    if [ -d ${s_base}/installers/jdk/${d} ] ; then
-      s_runjdk=${s_base}/installers/jdk/${d}
-      s_runjre=${s_runjdk}/jre
-      break
-    fi
-  done
-fi
+:      ${s_runjdk:="${s_base}/installers/jdk/jdk6"}
+:      ${s_runjre:="${s_runjdk}/jre"}
       
          dbs_dbhost=${OIM_SINGLE_DB_HOST}
            dbs_port=${OIM_SINGLE_DB_PORT}

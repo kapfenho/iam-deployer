@@ -1,5 +1,10 @@
 #!/bin/bash
 
+WARNING_DONE=0
+ERROR_FILE_NOT_FOUND=80
+ERROR_SYNTAX_ERROR=81
+ERROR_WLST=82
+
 if ! shopt -q login_shell ; then
   source /etc/profile
 fi
@@ -31,9 +36,10 @@ elif [ $# -ge 1 ] ; then
   shift
 fi
 
-while getopts AH:LO:P:a:hnp:s:t:u:w: FLAG; do
+while getopts AEH:LO:P:a:hnp:s:t:u:w: FLAG; do
   case ${FLAG} in
     A)  opt_A=yes       ;;  # execute on all hosts
+    E)  opt_E=yes       ;;  # Environment (remove)
     H)  opt_H=${OPTARG} ;;  # execute on host stated
     L)  opt_L=yes       ;;  # include LCM product
     O)  opt_O=${OPTARG} ;;  # Oracle home to upgrade
@@ -50,11 +56,14 @@ while getopts AH:LO:P:a:hnp:s:t:u:w: FLAG; do
     \?) # unrecognized option - show help
       echo -e \\n"Option -${BOLD}${OPTARG}${NORM} not allowed."
       iamhelp
+      exit $ERROR_SYNTAX_ERROR
       ;;
   esac
 done
 
-set -o errexit errtrace
+set -o errexit
+set -o errtrace
+set -o xtrace
 
 if   [ -n "${opt_H}" ] ; then
 
@@ -201,15 +210,15 @@ else
       load_userenv idm
 
       if   [ "${opt_a}" == "jdk7fix"  -a -z "${opt_h}" ] ; then
-        patch_wls_domain "identity"
+        patch_wls_domain identity
       elif [ "${opt_a}" == "psa"      -a -z "${opt_h}" ] ; then
         run_psa identity
       elif [ "${opt_a}" == "keyfile"  -a -z "${opt_h}" -a -z "${opt_n}" ] ; then
         # domain keyfile
         : ${opt_u:=${domiUser}}
         : ${opt_p:=${domiPwd}}
-        : ${opt_w:="${iam_hostenv}/env/identity.prop"}
-        if [[ ! -a ${opt_w} ]] ;  then
+        : ${opt_w:="${iam_hostenv}/.env/identity.prop"}
+        if ! [ -a ${opt_w} ] ;  then
           error "Domain property file not found. Please run userenv!"
           exit $ERROR_FILE_NOT_FOUND
         fi
@@ -218,8 +227,8 @@ else
         # nodemanager keyfile
         : ${opt_u:=${nmUser}}
         : ${opt_p:=${nmPwd}}
-        : ${opt_w:="${iam_hostenv}/env/identity.prop"}
-        if [[ ! -a ${opt_w} ]] ;  then
+        : ${opt_w:="${iam_hostenv}/.env/identity.prop"}
+        if ! [ -a ${opt_w} ] ;  then
           error "Domain property file not found. Please run userenv!"
           exit $ERROR_FILE_NOT_FOUND
         fi
@@ -239,14 +248,14 @@ else
       load_userenv acc
 
       if   [ "${opt_a}" == "jdk7fix"     -a -z "${opt_h}" ] ; then
-        patch_wls_domain "access"
+        patch_wls_domain access
       elif [ "${opt_a}" == "psa"         -a -z "${opt_h}" ] ; then
         run_psa access
       elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -z "${opt_n}" ] ; then
         ${opt_u:=${domaUser}}
         ${opt_p:=${domaPwd}}
-        ${opt_w:="${iam_hostenv}/env/access.prop"}
-        if [[ ! -a ${opt_w} ]] ;  then
+        ${opt_w:="${iam_hostenv}/.env/access.prop"}
+        if ! [ -a ${opt_w} ] ;  then
           error "Domain property file not found. Please run userenv!"
           exit $ERROR_FILE_NOT_FOUND
         fi
@@ -254,8 +263,8 @@ else
       elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -n "${opt_n}" ] ; then
         ${opt_u:=${nmUser}}
         ${opt_p:=${nmPwd}}
-        ${opt_w:="${iam_hostenv}/env/access.prop"}
-        if [[ ! -a ${opt_w} ]] ;  then
+        ${opt_w:="${iam_hostenv}/.env/access.prop"}
+        if ! [ -a ${opt_w} ] ;  then
           error "Domain property file not found. Please run userenv!"
           exit $ERROR_FILE_NOT_FOUND
         fi
@@ -329,7 +338,9 @@ else
       ;;
 
     remove)
-      if [ -z "${opt_h}" ] ; then
+      if   [ -z "${opt_h}" -a -n "${opt_E}" ] ; then
+        remove_env
+      elif [ -z "${opt_h}" ] ; then
         remove_iam ${opt_L}
       else
         help_remove
