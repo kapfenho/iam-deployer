@@ -1,9 +1,6 @@
 TODO
 ====
 
-- replace domain name in iam-monitor
-- search again for usage of "vagrant" in path
-- lib/liblogs -> [ ] -> [[ ]]
-- pwd in psa_identity
-
-- merge branch of wls persistent store
+- "ohs2" in web2 env file
+- stop the right services on each host
+- assoc. array for host-role
