@@ -3,13 +3,12 @@
 
 iamhelp() {
   echo "
-  Syntax: ${0} command [flags]
+  Syntax: ${0} command [flags] [-h] [-H host] [-A]
  
   Setup IAM environments. Run individual actions or create workflow file 
   from template, modify and run it.
 
-  Commands:   parameter -h for command help
-
+  Commands
     create    create workflow file from template
     provision run workflow file
     ssh-key   generate and deploy ssh keypair
@@ -27,6 +26,11 @@ iamhelp() {
     webtier   modify webtier instance (movelogs, postinstall)
     remove    remove installation
     help      show this help
+
+  Generell Parameters
+    -h        help
+    -H host   execute this command on the specified host
+    -A        All hosts, execute this command on all hosts
 
 "
   echo
@@ -62,11 +66,10 @@ help_provision() {
 # ---------------------------------------------------
 help_ssh_key() {
   echo "
-  Syntax: ${0} ssh-key -a {generate|deploy|add} [-t key_dest] [-H host]
+  Syntax: ${0} ssh-key -a {generate|deploy} [-t key_dest]
 
     ${0} ssh-key -a generate -t key_dest
-    ${0} ssh-key -a deploy [-s source_dir] [-H hostname]
-    ${0} ssh-key -a add -H hostname
+    ${0} ssh-key -a deploy [-s source_dir]
 
   Copy the common ssh keypair and authorized_keys file to the local 
   or specified host.
@@ -78,14 +81,13 @@ help_ssh_key() {
          add          add remote host to known_hosts on this machine
     -s   source_dir   default ${DEPLOYER}/lib/templates/hostenv/ssh
     -t   target_dir   default ~/.ssh
-    -H   hostname     host which to add to known_hosts file
 
   "
 }
 # ---------------------------------------------------
 help_orainv() {
   echo "
-  Syntax: ${0} orainv -H host
+  Syntax: ${0} orainv
 
   Create Oracle inventory pointer file on specified host
 
@@ -149,16 +151,15 @@ help_lcmstep() {
 # ---------------------------------------------------
 help_userenv() {
   echo "
-  Syntax: ${0} userenv -a {env|profile} [-H host]
+  Syntax: ${0} userenv -a {env|profile}
     ${0} userenv -a env
-    ${0} userenv -a profile [-H host]
+    ${0} userenv -a profile
 
   Create user environment (bin,etc,lib,cred)
   Parameter:
     -a   action to perform
          env          create all files
          profile      modify bash user profile
-    -H   hostname execute on remote host
 
   "
 }
@@ -194,12 +195,11 @@ help_jdk() {
 # ---------------------------------------------------
 help_rcd() {
   echo "
-  Syntax: ${0} rcd -H host -t target
+  Syntax: ${0} rcd -t target
 
   Deploy rc.d runlevel scripts 
 
   Parameter:
-    -H   host         execute on host
     -t   target       service to create runlevel script for:
                         {nodemanger|identity|access|webtier|oud}
 
@@ -208,10 +208,10 @@ help_rcd() {
 # ---------------------------------------------------
 help_weblogic() {
   echo "
-  Syntax: ${0} weblogic -a { install | jdk7fix | wlstlibs } -t target_path [-H host] 
-    ${0} weblogic -a jdk7fix -t product_name -H host
-    ${0} weblogic -a wlstlibs -t product_name -H host
-    ${0} weblogic -a install -t product_name -H host
+  Syntax: ${0} weblogic -a {install|jdk7fix|wlstlibs} -t target_path
+    ${0} weblogic -a jdk7fix -t product_name
+    ${0} weblogic -a wlstlibs -t product_name
+    ${0} weblogic -a install -t product_name
 
   Modify or extend WebLogic installation
 
@@ -219,8 +219,7 @@ help_weblogic() {
     -a   action to perform
          jdk7fix     fix java parameters in commEnv.sh
          wlstlibs    add libs to wlst common directory
-         install  install weblogic software
-    -H   hostname: execute on remote host
+         install     install weblogic software
     -t   target wlserver path
          target_name: (identity|access|analytics)
 
@@ -230,15 +229,15 @@ help_weblogic() {
 help_identity() {
   echo "
   Syntax: ${0} identity -a {jdk7fix|psa|keyfile|postinstall|movelogs}
-                        [-t target_path] [-H host] [-w wlst-prop-file] [-n] 
-                        [-u user] [-p pwd]
+                      [-t target_path] [-w wlst-prop-file] [-n] 
+                      [-u user] [-p pwd]
 
-    ${0} identity -a jdk7fix -H host
+    ${0} identity -a jdk7fix
     ${0} identity -a psa
     ${0} identity -a keyfile -u user -p pwd [-w wlst-prop-file] [-n]
     ${0} identity -a config
     ${0} identity -a postinstall
-    ${0} identity -a movelogs -H host
+    ${0} identity -a movelogs
 
   Changes, fixes and user modifications for installed Idenity Manager instance
 
@@ -251,7 +250,6 @@ help_identity() {
          postinstall  access domain postinstall configuration
          movelogs     move identity domain logfiles to common location
 
-    -H   host         execute on remote host
     -t   target       wls server path
     -u   user         user to create keyfile for
     -p   password     password of user
@@ -265,15 +263,15 @@ help_identity() {
 help_access() {
   echo "
   Syntax: ${0} access -a {jdk7fix|psa|keyfile|movelogs}
-                      [-t target_path] [-H host] [-w wlst-prop-file] [-n] 
+                      [-t target_path] [-w wlst-prop-file] [-n] 
                       [-u user] [-p pwd]
 
 
-    ${0} access -a jdk7fix -H host
+    ${0} access -a jdk7fix
     ${0} access -a psa
     ${0} access -a keyfile -u user -p pwd [-w wlst-prop-file] [-n]
     ${0} access -a config
-    ${0} access -a movelogs -H host
+    ${0} access -a movelogs
 
   Changes, fixes and user modifications for installed Access Manager
   instance
@@ -287,7 +285,6 @@ help_access() {
          postinstall  Access Domain postinstall configuration
          movelogs     Move Access Domain logfiles to common location
          
-    -H   hostname     execute on remote host
     -t   target       wls server path
     -u   user         user to create keyfile for
     -p   password     password of user
@@ -302,19 +299,19 @@ help_analytics() {
   echo "
   Syntax: ${0} analytics -a {domcreate|explode|appconfig|wlsdeploy
                             |oimintegrate|domconfig} 
-                         [-P single|cluster|pack|unpack] [-H host] [-w wlst-prop-file] 
+                         [-P {single|cluster|pack|unpack}]
+                         [-w wlst-prop-file] 
                          [-u user] [-p pwd] 
 
-
-    ${0} analytics -a domcreate -H host
+    ${0} analytics -a domcreate
     ${0} analytics -a keyfile -u user -p pwd [-w wlst-prop-file]
-    ${0} analytics -a domconfig -H host
+    ${0} analytics -a domconfig
     ${0} analytics -a rdeploy -P pack
-    ${0} analytics -a rdeploy -P unpack -H host
-    ${0} analytics -a explode -H host
-    ${0} analytics -a appconfig -P single -H host
-    ${0} analytics -a oimintegrate -H host
-    ${0} analytics -a wlsdeploy -H host
+    ${0} analytics -a rdeploy -P unpack
+    ${0} analytics -a explode
+    ${0} analytics -a appconfig -P single
+    ${0} analytics -a oimintegrate
+    ${0} analytics -a wlsdeploy
 
   Changes, fixes and user modifications for installed Identity Analytics
   instance
@@ -332,14 +329,14 @@ help_analytics() {
 
     -H   hostname: execute on remote host
     -P   patch instance
-         single   patch for single instance
-         cluster  patch for cluster
-         pack     package the OIA Managed server on current host
-                  (NOTE: when using this option, don't combine with -H)
-         unpack   unpackage the OIA Managed server on the remote machine
-                  (NOTE: when using this option, always combine with -H)
-    -w   path     path of WLST properties file to use
-                  default: ~/.env/analytics.prop
+         single       patch for single instance
+         cluster      patch for cluster
+         pack         package the OIA Managed server on current host
+                      (NOTE: when using this option, don't combine with -H)
+         unpack       unpackage the OIA Managed server on the remote machine
+                      (NOTE: when using this option, always combine with -H)
+    -w   path         path of WLST properties file to use
+                      default: ~/.env/analytics.prop
 
   "
 }
@@ -355,36 +352,37 @@ help_directory() {
 
   Parameter:
     -a   action to perform
-         postinstall  # fix OUD Global ACIs
-         harden       # Harden OUD connection settings (e.g. turn on TLS)
-         movelogs     # Move OUD logfiles to common location
+         postinstall  fix OUD Global ACIs
+         harden       Harden OUD connection settings (e.g. turn on TLS)
+         movelogs     Move OUD logfiles to common location
 
   "
 }
 # ---------------------------------------------------
 help_webtier() {
   echo "
-  Syntax: ${0} webtier -a {postinstall|movelogs} -t target_path [-H host] 
+  Syntax: ${0} webtier -a {postinstall|config|movelogs}
     ${0} webtier -a postinstall
-    ${0} webtier -a movelogs -H host
+    ${0} webtier -a config
+    ${0} webtier -a movelogs
 
   Changes, fixes and user modifications for installed WebTier instance
 
   Parameter:
     -a   action to perform
-         postinstall  # Fix Webgate installation bug (oblog_config.xml)
-         movelogs     # Move Webtier logfiles to common location
-
-    -H   hostname: execute on remote host
+         postinstall  Fix Webgate installation bug (oblog_config.xml)
+         config       remove the shipped httpd config and install an
+                      improved and modular version
+         movelogs     move Webtier logfiles to common location
   "
 } 
 # ---------------------------------------------------
 help_remove() {
   echo "
-  Syntax: ${0} remove [-d] [-L] [-A] 
+  Syntax: ${0} remove [-E] [-L]
 
     ${0} remove [-L]
-    ${0} remove [-L] -A
+    ${0} remove -E
 
   Remove IAM installation. Options to include LCM and to clean multiple
   hosts.
@@ -392,6 +390,7 @@ help_remove() {
   Parameter:
     -L   include LCM (default is no)
     -A   remove on all hosts (default is no)
+    -E   only remove the user environment: ~/{bin,lib,.env,.creds}
   "
 } 
 

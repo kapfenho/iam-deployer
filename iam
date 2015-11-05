@@ -44,7 +44,7 @@ while getopts AEH:LO:P:a:hnp:s:t:u:vw: FLAG; do
     H)  opt_H=${OPTARG} ;;  # execute on host stated
     L)  opt_L=yes       ;;  # include LCM product
     O)  opt_O=${OPTARG} ;;  # Oracle home to upgrade
-    P)  opt_P=${OPTARG} ;;  # - part 1 or 2
+    P)  opt_P=${OPTARG} ;;  # pack or unpack (OIA rdeploy)
     a)  opt_a=${OPTARG} ;;  # action to perform
     h)  opt_h=yes       ;;  # help
     n)  opt_n=yes       ;;  # yes/no switch

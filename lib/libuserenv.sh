@@ -67,6 +67,7 @@ _cp_oia()
   sed -i "s/__OIAADMINSERVER__/${domlAdminServer}/" ${env}/*
   #sed -i "s/__HOSTNAME__/$(hostname -f)/"          ${env}/*
   sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/"     ${env}/*
+  _cp_nodemanager
 }
 
 _cp_acc()
@@ -138,8 +139,6 @@ init_userenv()
       lib=${iam_hostenv}/lib
       crd=${iam_hostenv}/.creds
 
-  [[ -d ${env} ]] && return 0
- 
   # these variables will be used in sed command and must
   # be escaped before
     _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
@@ -152,13 +151,21 @@ init_userenv()
   for d in ${env} ${bin} ${lib} ${crd} ; do
     [[ -a ${d} ]] || mkdir -p ${d}
   done
-  
-  cp  ${src}/bin/iam*                 ${bin}/
-  cp  ${src}/bin/{stop,start}-all     ${bin}/
-  cp  ${src}/env/common.env           ${env}/
-  sed -i "s/__DEPLOYER__/${_deployer_path}/" ${env}/common.env
 
-  # _create_startall
+  # common bin files
+  for f in iam-memusage iam-monitor start-all stop-all ; do
+    if ! [ -a ${f} ] ; then
+      cp ${src}/bin/${f} ${bin}/
+    fi
+  done
+
+  # common env files
+  for f in common.env ; do
+    if ! [ -a ~/.env/${f} ] ; then
+      cp ${src}/env/${f} ${env}/
+      sed -i "s/__DEPLOYER__/${_deployer_path}/" ${env}/${f}
+    fi
+  done
 
   exists_product identity  && _cp_oim
   exists_product access    && _cp_acc
@@ -182,11 +189,6 @@ extend_bash_profile_on_host()
 
   # this variable will be used in sed command and must be escaped
   _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
-
-  # [ -L ${sc_env} ] || ln -sf ${env} ${sc_env}
-  # [ -L ${sc_bin} ] || ln -sf ${bin} ${sc_bin}
-  # [ -L ${sc_lib} ] || ln -sf ${lib} ${sc_lib}
-  # [ -L ${sc_crd} ] || ln -sf ${crd} ${sc_crd}
 
   # add the tools.property file to oud instance dir
   for d in ${iam_services}/instances/* ; do
