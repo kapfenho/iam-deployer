@@ -69,7 +69,7 @@ iam identity -a config
 # upgrade jdk
 iam jdk -a install7 -O identity
 
-~/bin/stop-all
+$SHELL -l ~/bin/stop-all
 
 iam jdk -a move6 -O identity
 

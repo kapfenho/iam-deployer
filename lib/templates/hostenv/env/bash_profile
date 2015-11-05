@@ -7,7 +7,7 @@ fi
 
 # User specific environment and startup programs
 
-[[ -a ~/.env/common.env ]] && . ~/.env/common.env
-[[ -a ~/.env/aliases    ]] && . ~/.env/aliases
-[[ -a ~/.aliases        ]] && . ~/.aliases
+[[ -a ~/.env/common.env ]] && . ~/.env/common.env
+[[ -a ~/.env/aliases    ]] && . ~/.env/aliases
+[[ -a ~/.aliases        ]] && . ~/.aliases
 

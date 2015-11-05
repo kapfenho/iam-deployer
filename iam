@@ -327,9 +327,9 @@ else
       ;;
 
     webtier)
-      if   [ "${opt_a}" == "postinstall" -a -z "${opt_t}" ] ; then
-        postinst webtier
-      elif [ "${opt_a}" == "movelogs"    -a -z "${opt_t}" ] ; then
+      if   [ "${opt_a}" == "config"   -a -z "${opt_h}" ] ; then
+        httpd_config
+      elif [ "${opt_a}" == "movelogs" -a -z "${opt_h}" ] ; then
         move_logs webtier
       else
         help_webtier
