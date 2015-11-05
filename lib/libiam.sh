@@ -359,15 +359,18 @@ remove_iam()
 #
 remove_env()
 {
-  #  bin, lib
-  for d in bin lib ; do
-    for f in $(ls ${DEPLOYER}/lib/templates/hostenv/${d}/*) ; do
-      rm -f ~/${d}/${f}
-    done
-    rmdir ~/${d} 2>/dev/null || true
+  #  bin
+  for f in $(ls ${DEPLOYER}/lib/templates/hostenv/bin/) ; do
+    rm -f ~/bin/${f}
   done
+  rmdir ~/bin 2>/dev/null || true
+  #  lib
+  for f in $(ls ${DEPLOYER}/lib/templates/hostenv/lib/) ; do
+    rm -f ~/lib/${f}
+  done
+  rmdir ~/lib 2>/dev/null || true
   #  env
-  for f in $(ls ${DEPLOYER}/lib/templates/hostenv/env/*) ; do
+  for f in $(ls ${DEPLOYER}/lib/templates/hostenv/env/) ; do
     rm -f ~/.env/${f}
   done
   rmdir ~/.env 2>/dev/null || true

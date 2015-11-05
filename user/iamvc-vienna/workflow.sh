@@ -73,10 +73,11 @@ iam identity -a config -H oim1
 # upgrade jdk
 iam jdk -a install7 -O identity -H oim1
 
-ssh oim1 -- $SHELL -l ~/bin/stop-all
-ssh oim2 -- $SHELL -l ~/bin/stop-all
-ssh web1 -- $SHELL -l ~/bin/stop-all
-ssh web2 -- $SHELL -l ~/bin/stop-all
+ssh oim1 -- $SHELL -l ~/bin/stop-identity
+ssh oim1 -- $SHELL -l ~/bin/stop-nodemanager
+ssh oim2 -- $SHELL -l ~/bin/stop-nodemanager
+ssh web1 -- $SHELL -l ~/bin/stop-webtier
+ssh web2 -- $SHELL -l ~/bin/stop-webtier
 
 iam jdk -a move6 -O identity -H oim1
 
