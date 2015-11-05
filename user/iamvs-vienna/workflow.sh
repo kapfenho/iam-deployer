@@ -27,29 +27,29 @@ done
 
 # install database
 # database
-#iam orainv
-#
-## rcu: create database schemas
-#iam rcu -a create -t identity
-#
-## install lcm
-#iam lcminst
-#
-## let's do the lcm...
-#for step in \
-#  preverify \
-#  install \
-#  unblock \
-#  preconfigure \
-#  configure \
-#  configure-secondary \
-#  postconfigure \
-#  startup \
-#  validate
-#do
-#  # execute step on all hosts
-#  iam lcmstep -a ${step}
-#done
+iam orainv
+
+# rcu: create database schemas
+iam rcu -a create -t identity
+
+# install lcm
+iam lcminst
+
+# let's do the lcm...
+for step in \
+  preverify \
+  install \
+  unblock \
+  preconfigure \
+  configure \
+  configure-secondary \
+  postconfigure \
+  startup \
+  validate
+do
+  # execute step on all hosts
+  iam lcmstep -a ${step}
+done
 
 # deploy user environment in shared location
 iam userenv -a env
@@ -84,4 +84,5 @@ iam identity -a movelogs
 
 # webgate installation bug fix
 iam webtier -a movelogs
+iam webtier -a config -v
 

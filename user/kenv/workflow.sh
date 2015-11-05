@@ -7,7 +7,9 @@
 #    on hosts on which the deployment should be performed
 #
 
-#  Single host setup workflow
+#  Hosts are:
+#    OIM + WEB:  bsul0355  bsul0356
+#
 #
 
 #  we need common.env to be able to execute iam tool locally
@@ -51,7 +53,6 @@ do
   iam lcmstep -a ${step} -A
 done
 
-
 # deploy user environment in shared location
 iam userenv -a env -A
 # on each host: load in user profile and create easy to reach shortcuts 
@@ -62,22 +63,20 @@ iam weblogic -a wlstlibs -t identity
 
 # generate keyfiles
 iam identity -a keyfile -u ${nmUser}   -p ${nmPwd} -n -H bsul0355
-iam identity -a keyfile -u ${domiUser} -p ${domiPwd} -H bsul0355
-
 iam identity -a keyfile -u ${nmUser}   -p ${nmPwd} -n -H bsul0356
+
+iam identity -a keyfile -u ${domiUser} -p ${domiPwd} -H bsul0355
 iam identity -a keyfile -u ${domiUser} -p ${domiPwd} -H bsul0356
 
-# domain configuration
 iam identity -a config
 
 # upgrade jdk
 iam jdk -a install7 -O identity
 
-# ssh oim1 -- stop-all
-${HOME}/bin/stop-all
+ssh bsul0355 -- $SHELL -l ~/bin/stop-all
+ssh bsul0356 -- $SHELL -l ~/bin/stop-all
 
-# auf 2. Knoten alles stoppen
-ssh bsul0356 -- ${HOME}/bin/stop-all
+
 
 iam jdk -a move6 -O identity
 
@@ -87,10 +86,14 @@ iam identity -a psa
 iam weblogic -a jdk7fix -t identity
 iam identity -a jdk7fix -A
 
+
 # identity domain post-install steps
 iam identity -a movelogs -A
 
+
 # webgate installation bug fix
-iam webtier -a postinstall -A
 iam webtier -a movelogs -A
+iam webtier -a config -v -A
+
+
 

@@ -60,39 +60,40 @@ iam userenv -a profile -A
 
 # copy weblogic libraries
 iam weblogic -a wlstlibs -t identity -H oim1
-iam weblogic -a wlstlibs -t identity -H oim2
 
 iam identity -a keyfile -u ${nmUser}   -p ${nmPwd} -n -H oim1
 iam identity -a keyfile -u ${nmUser}   -p ${nmPwd} -n -H oim2
-iam identity -a keyfile -u ${domiUser} -p ${domiPwd} -H oim1
 
-iam identity -t config -H oim1
+iam identity -a keyfile -u ${domiUser} -p ${domiPwd} -H oim1
+iam identity -a keyfile -u ${domiUser} -p ${domiPwd} -H oim2
+
+
+iam identity -a config -H oim1
 
 # upgrade jdk
-iam jdk -t identity -P 1 -H oim1
+iam jdk -a install7 -O identity -H oim1
 
-ssh oim1 -- stop-all
-ssh oim2 -- stop-all
-ssh web1 -- stop-all
-ssh web2 -- stop-all
+ssh oim1 -- $SHELL -l ~/bin/stop-all
+ssh oim2 -- $SHELL -l ~/bin/stop-all
+ssh web1 -- $SHELL -l ~/bin/stop-all
+ssh web2 -- $SHELL -l ~/bin/stop-all
 
-iam jdk -t identity -P 2 -H oim1
+iam jdk -a move6 -O identity -H oim1
 
 # identity domain PSA run
 iam identity -a psa -H oim1
 
 iam weblogic -a jdk7fix -t identity -H oim1
-iam weblogic -a jdk7fix -t identity -H oim2
-iam identity -a jdk7fix -t identity -H oim1
-iam identity -a jdk7fix -t identity -H oim2
+iam identity -a jdk7fix -H oim1
+iam identity -a jdk7fix -H oim2
 
 # identity domain post-install steps
-iam identity -a postinstall -H oim1
 iam identity -a movelogs -H oim1
 iam identity -a movelogs -H oim2
 
 # webgate installation bug fix
-iam webtier -a postinstall
 iam webtier -a movelogs -H web1
 iam webtier -a movelogs -H web2
+iam webtier -a config -v -H web1
+iam webtier -a config -v -H web2
 
