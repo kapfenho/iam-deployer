@@ -108,3 +108,9 @@
         WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
+    # Entries Required by Oracle Entitlements Server
+    # APM
+    <Location /apm>
+        SetHandler weblogic-handler
+        __WLS_ADMINSERVER__
+    </Location>

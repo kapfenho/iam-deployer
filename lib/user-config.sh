@@ -7,7 +7,7 @@ iam_config_rsp=${DEPLOYER}/user-config/iam/provisioning.rsp
 lcm_config_rsp=${DEPLOYER}/user-config/lcm/lcm_install.rsp
 
 getvar() {
-  eval $(grep ${1} ${iam_config_rsp})
+  eval $(grep ${1} ${iam_config_rsp}) 2>/dev/null || true
 }
 
 . ${DEPLOYER}/user-config/iam.config

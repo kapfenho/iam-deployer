@@ -9,7 +9,7 @@ if ! shopt -q login_shell ; then
   source /etc/profile
 fi
 
-echo "$(hostname -s) IAM >> $*"
+echo -e "\nHOST $(hostname -s) >> IAM >> $*"
 
 : ${DEPLOYER:="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"}
 
@@ -21,6 +21,7 @@ echo "$(hostname -s) IAM >> $*"
 . ${DEPLOYER}/lib/libmovelog.sh
 . ${DEPLOYER}/lib/libiamhelp.sh
 . ${DEPLOYER}/lib/libuserenv.sh
+. ${DEPLOYER}/lib/libweb.sh
 
 umask ${iam_user_umask}
 
@@ -36,7 +37,7 @@ elif [ $# -ge 1 ] ; then
   shift
 fi
 
-while getopts AEH:LO:P:a:hnp:s:t:u:w: FLAG; do
+while getopts AEH:LO:P:a:hnp:s:t:u:vw: FLAG; do
   case ${FLAG} in
     A)  opt_A=yes       ;;  # execute on all hosts
     E)  opt_E=yes       ;;  # Environment (remove)
@@ -52,6 +53,7 @@ while getopts AEH:LO:P:a:hnp:s:t:u:w: FLAG; do
     t)  opt_t=${OPTARG} ;;  # target
     t)  opt_f=${OPTARG} ;;  # file name
     u)  opt_u=${OPTARG} ;;  # username
+    v)  opt_v=yes       ;;  # verbose
     w)  opt_w=${OPTARG} ;;  # wlst property file path
     \?) # unrecognized option - show help
       echo -e \\n"Option -${BOLD}${OPTARG}${NORM} not allowed."
@@ -61,9 +63,13 @@ while getopts AEH:LO:P:a:hnp:s:t:u:w: FLAG; do
   esac
 done
 
+# stop on errors, whereever
 set -o errexit
 set -o errtrace
-set -o xtrace
+
+# verbose output
+[[ -n "${opt_v}" ]] && set -o xtrace
+
 
 if   [ -n "${opt_H}" ] ; then
 
@@ -327,6 +333,9 @@ else
       ;;
 
     webtier)
+      load_userenv common
+      load_userenv web
+
       if   [ "${opt_a}" == "config"   -a -z "${opt_h}" ] ; then
         httpd_config
       elif [ "${opt_a}" == "movelogs" -a -z "${opt_h}" ] ; then

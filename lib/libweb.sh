@@ -21,18 +21,20 @@ httpd_config() {
   [[ -a ${bak} ]] || \
     tar --create --gzip --directory=${dst}/.. --file=${bak} ${dst}
 
-  local files=( app-oim.conf
-                app-oimadmin.conf
-                app-soa.conf
+  local files=( _app-oim
+                _app-oimadmin
+                _app-soa
+                _app-admin
+                _ssl
                 iam-admin.conf
                 iam-backend.conf
-                iam-frontend.conf
-                sslvh.conf )
+                iam-frontend.conf )
 
   log "Replacing SSL files"
   cp -f ${src}/ssl.conf ${dst}/
 
   log "Replacing virtual host files"
+  rm -f ${dst}/moduleconf/*
   for f in ${files[@]} ; do
     cp -f ${src}/moduleconf/${f} ${dst}/moduleconf/
   done
@@ -44,28 +46,25 @@ httpd_config() {
 
   log "Adjust files to environment hosts"
   # adminserver
-  wlsadm+="        WebLogicHost ${IDMPROV_OIMDOMAIN_ADMINSERVER_HOST}"$'\n'
+  wlsadm+="WebLogicHost ${IDMPROV_OIMDOMAIN_ADMINSERVER_HOST}\\"$'\n'
   wlsadm+="        WebLogicPort ${IDMPROV_OIMDOMAIN_ADMINSERVER_PORT}"
 
-  # prepare the substitution values, in mod_wls clusters use 
-  # different syntax
-  #
   if [ "${DT_SINGLEHOST}" == "true" ] ; then
     # oim
-    wlsoim+="        WebLogicHost $(hostname -f)"$'\n'
+    wlsoim+="WebLogicHost $(hostname -f)\\"$'\n'
     wlsoim+="        WebLogicPort ${IDMPROV_OIM_PORT}"
     # soa
-    wlssoa+="        WebLogicHost $(hostname -f)"$'\n'
+    wlssoa+="WebLogicHost $(hostname -f)\\"$'\n'
     wlssoa+="        WebLogicPort ${IDMPROV_SOA_PORT}"
   else
     # oim cluster
-    wlsoim+="        WebLogicCluster "
+    wlsoim+="WebLogicCluster "
     wlsoim+="${IDMPROV_OIM_HOST}:"
     wlsoim+="${IDMPROV_OIM_PORT},"
     wlsoim+="${IDMPROV_SECOND_OIM_HOST}:"
     wlsoim+="${IDMPROV_SECOND_OIM_PORT}"
     # soa cluster
-    wlssoa+="        WebLogicCluster "
+    wlssoa+="WebLogicCluster "
     wlssoa+="${IDMPROV_SOA_HOST}:"
     wlssoa+="${IDMPROV_SOA_PORT},"
     wlssoa+="${IDMPROV_SECOND_SOA_HOST}:"
@@ -74,15 +73,13 @@ httpd_config() {
 
   # now we do the substi thing, in place
   #
-  for fn in ${files[@]} ; do
-    f=${dst}/moduleconf/${fn}
-    sed -i "s/__WLS_VH_FRONTEND__/${IDMPROV_LBR_SSO_HOST}/g" ${f}
-    sed -i "s/__WLS_VH_BACKEND__/${IDMPROV_LBR_OIMINTERNAL_HOST}/g" ${f}
-    sed -i "s/__WLS_VH_ADMIN__/${IDMPROV_LBR_OIMINTERNAL_HOST}/g" ${f}
-
-    sed -i "s/__WLS_ADMINSERVER__/${wlsadm}/g" ${f}
-    sed -i "s/__WLS_OIM__/${wlsoim}/g" ${f}
-    sed -i "s/__WLS_SOA__/${wlssoa}/g" ${f}
+  for f in ${files[@]} ; do
+    sed -i -e "s/__WLS_VH_FRONTEND__/${IDMPROV_LBR_SSO_HOST}/g" \
+           -e "s/__WLS_VH_BACKEND__/${IDMPROV_LBR_OIMINTERNAL_HOST}/g" \
+           -e "s/__WLS_VH_ADMIN__/${IDMPROV_LBR_OIMINTERNAL_HOST}/g" \
+           -e "s/__WLS_ADMINSERVER__/${wlsadm}/g" \
+           -e "s/__WLS_OIM__/${wlsoim}/g" \
+           -e "s/__WLS_SOA__/${wlssoa}/g" ${dst}/moduleconf/${f}
   done
 
 
