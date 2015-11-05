@@ -60,6 +60,8 @@ getvar IDMPROV_LBR_OIMINTERNAL_HOST
 :             ${iam_pwd:="Montag11"}
 : ${iam_oim_schema_pass:=${iam_pwd}}
 : ${iam_oam_schema_pass:=${iam_pwd}}
+: ${iam_bip_schema_pass:=${iam_pwd}}
+: ${iam_oia_schema_pass:=${iam_pwd}}
 :        ${iam_dba_pass:=${iam_pwd}}
 :               ${nmPwd:=${iam_pwd}}
 :             ${domaPwd:=${iam_pwd}}
@@ -75,12 +77,6 @@ getvar IDMPROV_LBR_OIMINTERNAL_HOST
 #  ${domiAdminHost}
 #  ${domaAdminHost}
 #  ${domlAdminHost}
-#
-# short cuts: sym links to userenv
-:           ${sc_env:="${HOME}/.env"}
-:           ${sc_bin:="${HOME}/bin"}
-:           ${sc_lib:="${HOME}/lib"}
-:           ${sc_crd:="${HOME}/.cred"}
 
 # --------- user must not set this
             iam_top=${IL_APP_BASE}
