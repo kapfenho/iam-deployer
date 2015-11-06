@@ -156,6 +156,15 @@ run_rcu()
     bip)
       error "TODO: find db schema name"
       _user_check="${iam_bip_prefix}_BIP" ;;
+    analytics)
+      if [ "${_mode}" == "create" ] ; then
+        create_oia_schema
+        return $?
+      elif [ "${_mode}" == "remove" ] ; then
+        drop_oia_schema
+        return $?
+      fi
+      ;;
     \*)
       error "product not available in schema check!" ;;
   esac
@@ -192,5 +201,40 @@ run_rcu()
   set +x
 }
 
+# ----------------------------------------------------------------------
+#
 
+create_oia_schema()
+{
+  log "Creating OIA database schema"
+
+  local dbconn="//${dbs_dbhost}:${dbs_port}/${iam_servicename}"
+  ORACLE_HOME=${s_rcu_home}
+  LD_LIBRARY_PATH=${ORACLE_HOME}/lib
+  export ORACLE_HOME LD_LIBRARY_PATH
+  set -x
+
+  # create user and tablespaces
+  local sqlp1="${ORACLE_HOME}/bin/sqlplus sys/${iam_dba_pass}@${dbconn} as sysdba"
+  ${sqlp1} <<-EOS
+  @${DEPLOYER}/oia/dbuser.sql;
+  exit;
+EOS
+  
+  # create objects
+  sqlp2="${ORACLE_HOME}/bin/sqlplus ${iam_oia_dbuser}/${iam_oia_schema_pass}@${dbconn}"
+  ${sqlp2} <<-EOS
+  @${s_oia}/sql/10-create-schema.sql
+  @${s_oia}/sql/20-mig1.sql
+  @${s_oia}/sql/21-mig2.sql
+  @${s_oia}/sql/22-mig3.sql
+  commit;
+  exit;
+EOS
+
+  log "Database schema OIA created"
+
+  unset ORACLE_HOME LD_LIBRARY_PATH
+  set +x
+}
 
