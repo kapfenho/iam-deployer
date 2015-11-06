@@ -118,7 +118,7 @@ def intialize():
 ###################################################################
 def configureDomainOptions():
     try:
-        domainLogPath = domainProps.getProperty('logsDirectory')+"/AdminServer/"+domainProps.getProperty('domainName');
+        domainLogPath = domainProps.getProperty('logsDirectory')+"/"+domainProps.getProperty('domainName');
         try:
            os.makedirs(domainLogPath);
         except:
