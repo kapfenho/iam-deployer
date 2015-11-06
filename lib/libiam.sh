@@ -439,7 +439,7 @@ config_webtier()
 oia_dom_prop()
 {
   local _propfile_template=${DEPLOYER}/user-config/oia/createdom-${1}-template.prop
-  local _propfile=/tmp/createdom-single.prop
+  local _propfile=${iam_top}/etc/createdom-${1}.prop
   #propfile=$(mktemp /tmp/oia-domain-prop-XXXXXXX)
   cp ${_propfile_template} ${_propfile}
   
@@ -475,19 +475,21 @@ oia_wlst_exec()
   esac
 
   local _wls_dom_template=${WL_HOME}/common/templates/domains/wls.jar
-  local _user_prop=/tmp/createdom-single.prop
+  local _user_prop=${iam_top}/etc/createdom-${2}.prop
 
   JAVA_OPTIONS="${JAVA_OPTIONS} -Xmx2048m -Xms2048m -Djava.net.preferIPv4Stack=true"
   JVM_ARGS="-Dprod.props.file='${WL_HOME}'/.product.properties \
     -Dweblogic.management.confirmKeyfileCreation=true \
      ${CONFIG_JVM_ARGS}"
   source ${WL_HOME}/server/bin/setWLSEnv.sh
+  set -x
   eval '"${JAVA_HOME}/bin/java"' ${JVM_ARGS} weblogic.WLST \
     -skipWLSModuleScanning ${_start_wlst} \
-    ${_wls_dom_template} \
-    ${_user_prop} \
-    ${oiaWlUser} \
-    ${oiaWlPwd}
+                           ${_wls_dom_template} \
+                           ${oiaWlUser} \
+                           ${oiaWlPwd} \
+                           ${_user_prop}
+  set +x
 }
 
 oia_rdeploy()
@@ -508,7 +510,8 @@ oia_rdeploy()
       ;;
     unpack)
       ${unpack} -domain=${DOMAIN_HOME} \
-        -template=${template_loc}/${template_name}.jar
+                -app_dir=${DOMAIN_HOME} \
+                -template=${template_loc}/${template_name}.jar \
       ;;
     *)
       exit $ERROR_FILE_NOT_FOUND

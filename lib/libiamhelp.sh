@@ -303,7 +303,7 @@ help_analytics() {
                          [-w wlst-prop-file] 
                          [-u user] [-p pwd] 
 
-    ${0} analytics -a domcreate
+    ${0} analytics -a domcreate -P cluster
     ${0} analytics -a keyfile -u user -p pwd [-w wlst-prop-file]
     ${0} analytics -a domconfig
     ${0} analytics -a rdeploy -P pack
@@ -311,7 +311,7 @@ help_analytics() {
     ${0} analytics -a explode
     ${0} analytics -a appconfig -P single
     ${0} analytics -a oimintegrate
-    ${0} analytics -a wlsdeploy
+    ${0} analytics -a wlsdeploy -P cluster
 
   Changes, fixes and user modifications for installed Identity Analytics
   instance

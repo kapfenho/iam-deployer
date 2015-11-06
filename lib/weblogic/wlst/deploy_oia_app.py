@@ -19,4 +19,4 @@ if __name__== "main":
     print 'Connected';
     #startAndConnnectToAdminServer()
     deployAllApplications()
-    restartDomain()
+    #restartDomain()

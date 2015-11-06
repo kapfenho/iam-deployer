@@ -59,7 +59,7 @@ def intialize():
         global connUri;
 
         # test arguments
-        if len(sys.argv) != 5:
+        if len(sys.argv) < 4:
                 #print 'Usage:  createDomain.sh <template-file> <default.properties_file> <property_file> <wls_username> <wls_password>';
                 print 'Usage:  createDomain.sh <template-file> <property_file> <wls_username <wls_password>';
                 exit();
@@ -70,10 +70,13 @@ def intialize():
         print 'Using Domain Template: ' + domainTemplate;
         try:
                 domainProps = Properties()
+                adminUserName = sys.argv[2];
+                adminPassword = sys.argv[3];
+
 
                 # load DEFAULT properties
                 # print 'Reading default properties from '+sys.argv[2];
-                input = FileInputStream(sys.argv[2])
+                input = FileInputStream(sys.argv[4])
                 domainProps.load(input)
                 input.close()
 
@@ -82,9 +85,6 @@ def intialize():
                 # input = FileInputStream(sys.argv[3])
                 # domainProps.load(input)
                 # input.close()
-
-                adminUserName = sys.argv[3];
-                adminPassword = sys.argv[4];
 
                 domainLocation = domainProps.getProperty('domainsDirectory') + pathSeparator + domainProps.getProperty('domainName');
                 print 'Domain Location: ' + domainLocation;
@@ -795,7 +795,7 @@ def deployAllApplications():
                                 targetsSetting         = get_instance_property('deployment',str(i),'targets');
 
                                 print 'Start deployment of '+applicationName+' ('+sourcepath+') ';
-                                deploy(appName=applicationName, path=sourcepath, targets=targetsSetting, upload='true', stageMode='nostage');
+                                deploy(appName=applicationName, path=sourcepath, targets=targetsSetting, upload='false', stageMode='nostage');
 
             except:
                 print '***** deployment of '+applicationname+' ('+sourcepath+') FAILED !';

@@ -37,7 +37,6 @@ _cp_oim()
   cp ${src}/env/idm.env             ${env}/
   cp ${src}/env/idm-deplenv.env     ${env}/
   cp ${src}/env/identity.prop       ${env}/
-  cp ${src}/env/imint.prop          ${env}/
   cp ${src}/lib/deploy.py           ${lib}/
   sed -i "s/__HOSTENV__/${_iam_hostenv}/"           ${env}/*
   sed -i "s/__IAM_TOP__/${_iam_top}/"               ${env}/*
@@ -65,7 +64,7 @@ _cp_oia()
   sed -i "s/__IAM_LOG__/${_iam_log}/"               ${env}/*
   sed -i "s/__ADMHOSTNAME__/${domlAdminHost}/"      ${env}/*
   sed -i "s/__OIAADMINSERVER__/${domlAdminServer}/" ${env}/*
-  #sed -i "s/__HOSTNAME__/$(hostname -f)/"          ${env}/*
+  sed -i "s/__HOSTNAME__/$(hostname -f)/"           ${env}/*
   sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/"     ${env}/*
   _cp_nodemanager
 }

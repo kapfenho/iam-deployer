@@ -289,9 +289,9 @@ else
       load_userenv common
       load_userenv oia
 
-      if   [ "${opt_a}" == "domcreate"    -a -z "${opt_h}" ] ; then
-        oia_dom_prop single
-        oia_wlst_exec wlstdom
+      if   [ "${opt_a}" == "domcreate"    -a "${opt_P}" -a -z "${opt_h}" ] ; then
+        oia_dom_prop ${opt_P}
+        oia_wlst_exec wlstdom ${opt_P}
       elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" ] ; then
         # nodemanager keyfile
         : ${opt_u:=${nmUser}}
@@ -312,8 +312,8 @@ else
         oia_appconfig ${opt_P}
       elif [ "${opt_a}" == "oimintegrate" -a -z "${opt_h}" ] ; then
         oia_oim_integrate
-      elif [ "${opt_a}" == "wlsdeploy"    -a -z "${opt_h}" ] ; then
-        oia_wlst_exec oia
+      elif [ "${opt_a}" == "wlsdeploy"    -a "${opt_P}" -a -z "${opt_h}" ] ; then
+        oia_wlst_exec oia ${opt_P}
       else
         help_analytics
         exit $ERROR_SYNTAX_ERROR
