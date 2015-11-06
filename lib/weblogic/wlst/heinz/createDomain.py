@@ -131,7 +131,7 @@ def configureDomainOptions():
         cmo.setFileTimeSpan(24)
         cmo.setNumberOfFilesLimited(true)
         cmo.setFileCount(14)
-        cmo.setFileName(domainLogPath+'/'+domainProps.getProperty('domainName')+'.log')
+        cmo.setFileName(domainLogPath+'/AdminServer/'+domainProps.getProperty('domainName')+'.log')
 
     except:
         print 'Exception while setting startup options !';
