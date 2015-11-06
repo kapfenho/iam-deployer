@@ -17,6 +17,5 @@ if __name__== "main":
     intialize()
     connect(adminUserName, adminPassword, connUri);
     print 'Connected';
-    #startAndConnnectToAdminServer()
     deployAllApplications()
-    #restartDomain()
+    restartDomain()

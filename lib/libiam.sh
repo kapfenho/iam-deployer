@@ -439,14 +439,15 @@ config_webtier()
 oia_dom_prop()
 {
   local _propfile_template=${DEPLOYER}/user-config/oia/createdom-${1}-template.prop
-  local _propfile=${iam_top}/etc/createdom-${1}.prop
-  #propfile=$(mktemp /tmp/oia-domain-prop-XXXXXXX)
+  local _propfile=/tmp/createdom-${1}.prop
   cp ${_propfile_template} ${_propfile}
   
-  _iam_top=$(echo ${iam_top} | sed -e 's/[\/&]/\\&/g')
+      _iam_top=$(echo ${iam_top} | sed -e 's/[\/&]/\\&/g')
+  _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
   
   sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/"         ${_propfile}
-  sed -i "s/__IAM_TOP__/${_iam_top}/"                    ${_propfile}
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/"                ${_propfile}
+  sed -i "s/__IAM_TOP__/${_iam_top}/"                   ${_propfile}
   sed -i "s/__IAM_OIA_HOST1__/${iam_oia_host1}/"        ${_propfile}
   sed -i "s/__IAM_OIA_HOST2__/${iam_oia_host2}/"        ${_propfile}
   sed -i "s/__IAM_OIA_DBUSER__/${iam_oia_dbuser}/"      ${_propfile}
@@ -475,7 +476,7 @@ oia_wlst_exec()
   esac
 
   local _wls_dom_template=${WL_HOME}/common/templates/domains/wls.jar
-  local _user_prop=${iam_top}/etc/createdom-${2}.prop
+  local _user_prop=/tmp/createdom-${2}.prop
 
   JAVA_OPTIONS="${JAVA_OPTIONS} -Xmx2048m -Xms2048m -Djava.net.preferIPv4Stack=true"
   JVM_ARGS="-Dprod.props.file='${WL_HOME}'/.product.properties \
