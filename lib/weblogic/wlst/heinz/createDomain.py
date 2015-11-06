@@ -118,7 +118,7 @@ def intialize():
 ###################################################################
 def configureDomainOptions():
     try:
-        domainLogPath = domainProps.getProperty('logsDirectory')+"/"+domainProps.getProperty('domainName');
+        domainLogPath = domainProps.getProperty('logsDirectory')+"/AdminServer/"+domainProps.getProperty('domainName');
         try:
            os.makedirs(domainLogPath);
         except:
@@ -523,15 +523,6 @@ def restartDomain():
         i = i + 1
 
 ###################################################################
-# Shutdown adminserver
-###################################################################
-def shutdownAndExit():
-        print 'Shutting down the Admin Server...';
-        shutdown();
-        print 'Exiting...';
-        exit();
-
-###################################################################
 # Create the boot.properties file
 ###################################################################
 def createBootProperties(serverName):
@@ -648,107 +639,6 @@ def createAllDatasources():
         print 'Exception while creating datasources - please check databases !';
         dumpStack();
 
-###################################################################
-# create all WTC server
-###################################################################
-def createAllWTCServer():
-  try:
-        totalWTCServer=domainProps.get("wtc.amountserver")
-
-        edit()
-        startEdit()
-        print 'Creating All WTC server ....'
-        i=1
-        while (i <= int(totalWTCServer)) :
-
-            try:
-                cd('/')
-                wtc_name                   = get_instance_property('wtc.server',str(i), 'name');
-                wtc_targetmanagedserver    = get_instance_property('wtc.server',str(i), 'targetmanagedserver');
-                wtc_localdomainname        = get_instance_property('wtc.server',str(i), 'localtuxdomain.name');
-                wtc_access_point           = get_instance_property('wtc.server',str(i), 'localtuxdomain.access_point');
-                wtc_access_point_id        = get_instance_property('wtc.server',str(i), 'localtuxdomain.access_point_id');
-                wtc_connection_policy      = get_instance_property('wtc.server',str(i), 'localtuxdomain.connection_policy');
-                wtc_nwaddr                 = get_instance_property('wtc.server',str(i), 'localtuxdomain.nw_addr');
-				
-		# create WTC server
-                cmo.createWTCServer(wtc_name)
-
-		# change to WTC server
-                cd ('/WTCServers/'+wtc_name)
-                cmo.addTarget(getMBean('/Servers/'+wtc_targetmanagedserver))
-				
-		# create local domain configuration
-                cmo.createWTCLocalTuxDom(wtc_localdomainname)
-                cd ('WTCLocalTuxDoms/'+wtc_localdomainname)
-                cmo.setAccessPoint(wtc_access_point)
-                cmo.setAccessPointId(wtc_access_point_id)
-                cmo.setNWAddr(wtc_nwaddr)
-                cmo.setConnectionPolicy(wtc_connection_policy)				
-				
-		# create remote tux domains
-		totalWTCRemoteDomains=get_instance_property('wtc.server',str(i), 'amountremotedomains')
-				
-		r=1
-		while (r <= int(totalWTCRemoteDomains)) :
-                        remotetuxdomain_name                   = get_instance_property('wtc.server',str(i), 'remotetuxdomain.'+str(r)+'.name');
-                        remotetuxdomain_access_point           = get_instance_property('wtc.server',str(i), 'remotetuxdomain.'+str(r)+'.access_point');
-                        remotetuxdomain_access_point_id        = get_instance_property('wtc.server',str(i), 'remotetuxdomain.'+str(r)+'.access_point_id');
-                        remotetuxdomain_local_access_point     = get_instance_property('wtc.server',str(i), 'remotetuxdomain.'+str(r)+'.local_access_point');
-                        remotetuxdomain_nw_addr                = get_instance_property('wtc.server',str(i), 'remotetuxdomain.'+str(r)+'.nw_addr');
-                        remotetuxdomain_federation_url         = get_instance_property('wtc.server',str(i), 'remotetuxdomain.'+str(r)+'.federation_url');
-                        remotetuxdomain_federation_name        = get_instance_property('wtc.server',str(i), 'remotetuxdomain.'+str(r)+'.federation_name');
-
-                        # create remote tux domain
-                        cd ('/WTCServers/'+wtc_name)
-                        cmo.createWTCRemoteTuxDom(remotetuxdomain_name)
-                        cd ('WTCRemoteTuxDoms/'+remotetuxdomain_name)
-                        cmo.setAccessPoint(remotetuxdomain_access_point)
-                        cmo.setAccessPointId(remotetuxdomain_access_point_id)
-                        cmo.setLocalAccessPoint(remotetuxdomain_local_access_point)
-                        cmo.setNWAddr(remotetuxdomain_nw_addr)
-                        cmo.setFederationName(remotetuxdomain_federation_name)
-                        cmo.setFederationURL(remotetuxdomain_federation_url)
-
-                        r = r+1
-
-                # create WTC imports
-                totalWTCRImports=get_instance_property('wtc.server',str(i), 'amountimports')
-
-                r=1
-                while (r <= int(totalWTCRImports)) :
-                        import_name                 = get_instance_property('wtc.server',str(i), 'import.'+str(r)+'.name');
-                        import_resource_name        = get_instance_property('wtc.server',str(i), 'import.'+str(r)+'.resource_name');
-                        import_remote_name          = get_instance_property('wtc.server',str(i), 'import.'+str(r)+'.remote_name');
-                        import_local_access_point   = get_instance_property('wtc.server',str(i), 'import.'+str(r)+'.local_access_point');
-                        import_remote_access_point  = get_instance_property('wtc.server',str(i), 'import.'+str(r)+'.remote_access_point');
-
-			# create WTC import
-			cd ('/WTCServers/'+wtc_name)
-			cmo.createWTCImport(import_name)
-			cd ('WTCImports/'+import_name)
-			cmo.setRemoteName(import_remote_name)
-			cmo.setLocalAccessPoint(import_local_access_point)
-			cmo.setResourceName(import_resource_name)
-			cmo.setRemoteAccessPointList(import_remote_access_point)
-
-			r = r+1
-
-					
-                print 'WTC Server: ',wtc_name,', has been created Successfully !!!'
-
-            except:
-                dumpStack();
-                print '***** CANNOT CREATE WTC-Server !!! Check If the WTC-Server with the Name : ' , wtc_name ,' Alreday exists or NOT...'
-                print ''
-
-            i = i + 1
-        save()
-        activate()
-  except:
-        print 'Exception while creating WTC server !';
-        dumpStack();
-
 
 ###################################################################
 # Create ALL boot.properties files
@@ -805,60 +695,3 @@ def deployAllApplications():
     except:
         print 'Exception while deploying all applications !';
         dumpStack();
-
-
-###################################################################
-# Overwrite Domain Admin Start Script
-###################################################################
-def overwriteDomainAdminStartScript():
-    try:
-        print 'Overwrite Domain Admin Start Script';
-        filename=domainLocation + '/startWebLogic.sh';
-        adminOut = domainProps.getProperty('logsDirectory')+"/"+domainProps.getProperty('domainName')+"/AdminServer/AdminServer.out";
-        adminErr = domainProps.getProperty('logsDirectory')+"/"+domainProps.getProperty('domainName')+"/AdminServer/AdminServer.err";
-
-        f=open(filename, 'w')
-        f.write('#!/bin/sh\n');
-        f.write('\n');
-        f.write('DOMAIN_HOME="'+domainProps.getProperty('domainsDirectory')+'/'+domainProps.getProperty('domainName')+'"\n');
-        f.write('\n');
-        f.write('${DOMAIN_HOME}/bin/startWebLogic.sh $*  >> '+adminOut+' 2>> '+adminErr+'\n');
-        f.write('\n');
-        f.flush()
-        f.close()
-    except OSError:
-        print 'Exception while overwrite Domain Admin Start Script.';
-        dumpStack();
-
-
-
-## ================================================================
-##           Main Code Execution
-## ================================================================
-#if __name__== "main":
-#        print '###################################################################';
-#        print '#                   Domain Creation                               #';
-#        print '###################################################################';
-#        print '';
-#        intialize();
-#        createCustomDomain();
-#        createAllBootProperties();
-#        overwriteDomainAdminStartScript();
-#
-#        startAndConnnectToAdminServer();
-#
-#        # do enroll on local machine
-#        print ' Do enroll '+ domainLocation +'  -  '+ domainProps.getProperty('nmDir')+' !\n';
-#        nmEnroll(domainLocation, domainProps.getProperty('nmDir'));
-#
-#        setJTATimeout();
-#        createAllDatasources();
-#
-#        createAllWTCServer()           
-#
-#        deployAllApplications();
-#
-#        shutdownAndExit();
-## =========== End Of Script ===============
-
-
