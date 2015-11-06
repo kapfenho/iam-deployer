@@ -94,6 +94,7 @@ getvar IDMPROV_LBR_OIMINTERNAL_HOST
              s_base=${IL_INSTALLERDIR_LOCATION}
               s_lcm=${s_base}/installers/idmlcm
 :    ${s_rcu_home:="${s_base}/installers/fmw_rcu/linux/rcuHome"}
+:         ${s_wls:="${s_base}/installers/weblogic/wls_generic.jar"}
 :      ${s_runjdk:="${s_base}/installers/jdk/jdk6"}
 :      ${s_runjre:="${s_runjdk}/jre"}
       
