@@ -500,7 +500,7 @@ oia_rdeploy()
   pack=$WL_HOME/common/bin/pack.sh
   unpack=$WL_HOME/common/bin/unpack.sh
   template_loc=/l/ora/products
-  template_name=oia_iamv2_template
+  template_name=${iam_domain_oia}
 
   case ${_action} in
     pack)
@@ -518,12 +518,6 @@ oia_rdeploy()
       exit $ERROR_FILE_NOT_FOUND
       ;;
   esac
-
-  # ./pack.sh -managed=true 
-  #           -domain=/l/ora/services/domains/oia_iamv2
-  #           -template=/tmp/oia_iamv2_template.jar 
-  #           -template_name="oia_iamv2_template"
-
 }
 # unpack OIA instance
 #
