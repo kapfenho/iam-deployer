@@ -4,7 +4,7 @@
 
 set -o errexit nounset
 
-iam_oia_prefix=IAM1I_OIA
+iam_oia_prefix=IAML_OIA
 iam_oia_schema_pass=Montag11
 
 logfile=/tmp/oia_schema.log

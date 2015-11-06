@@ -32,7 +32,7 @@ logsDirectory=__IAM_TOP__/IAM/logs
 walletsDirectory=__IAM_TOP__/products/analytics/wallets
 jvmLocation=__IAM_TOP__/products/analytics/jdk
 JTATimeout = 3700
-userEnvHome = __IAM_TOP__/etc/home
+userEnvHome = __HOSTENV__
 
 
 # Adminserver                                                                                                                                                            
