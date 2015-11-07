@@ -1,0 +1,14 @@
+#!/bin/sh
+
+. ~/.env/oia.env
+
+${WL_HOME}/common/bin/wlst.sh -loadProperties ~/.env/analytics.prop <<EOS
+nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=acGetFQDN(),port=nmPort,domainName=domName,domainDir=admDir,nmType='ssl');
+nmStart('AdminServer');
+connect(userConfigFile=domUC,userKeyFile=domUK,url=domUrl);
+start('wls_oia1');
+exit();
+EOS
+
+exit 0
+

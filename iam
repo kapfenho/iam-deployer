@@ -9,8 +9,6 @@ if ! shopt -q login_shell ; then
   source /etc/profile
 fi
 
-echo -e "\nHOST $(hostname -s) >> IAM >> $*"
-
 : ${DEPLOYER:="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"}
 
 . ${DEPLOYER}/lib/user-config.sh
@@ -33,25 +31,26 @@ orig_params="${@}"
 if   [ $# -lt 1 ] ; then
   iamhelp       # not enough params
 elif [ $# -ge 1 ] ; then
+  echo -e "\n\n"
+  log "HOST $(hostname -s) >> IAM >> $*"
   cmd=${1}      # command entered
   shift
 fi
 
-while getopts AEH:LO:P:a:hnp:s:t:u:vw: FLAG; do
+
+while getopts AH:O:P:a:hnp:s:t:u:vw: FLAG; do
   case ${FLAG} in
     A)  opt_A=yes       ;;  # execute on all hosts
-    E)  opt_E=yes       ;;  # Environment (remove)
     H)  opt_H=${OPTARG} ;;  # execute on host stated
-    L)  opt_L=yes       ;;  # include LCM product
     O)  opt_O=${OPTARG} ;;  # Oracle home to upgrade
     P)  opt_P=${OPTARG} ;;  # pack or unpack (OIA rdeploy)
     a)  opt_a=${OPTARG} ;;  # action to perform
     h)  opt_h=yes       ;;  # help
-    n)  opt_n=yes       ;;  # yes/no switch
+    n)  opt_n=yes       ;;  # nodemanager (keyfiles)
     p)  opt_p=${OPTARG} ;;  # password
     s)  opt_s=${OPTARG} ;;  # source
     t)  opt_t=${OPTARG} ;;  # target
-    t)  opt_f=${OPTARG} ;;  # file name
+    f)  opt_f=${OPTARG} ;;  # file name
     u)  opt_u=${OPTARG} ;;  # username
     v)  opt_v=yes       ;;  # verbose
     w)  opt_w=${OPTARG} ;;  # wlst property file path
@@ -348,8 +347,16 @@ else
       ;;
 
     remove)
-      if   [ -z "${opt_h}" -a -n "${opt_E}" ] ; then
-        remove_env
+      if   [ "${opt_a}" == "identity" ] ; then
+        remove 
+      elif [ "${opt_a}" == "analytics" ] ; then
+        remove
+      elif [ "${opt_a}" == "lcm" ] ; then
+        remove 
+      elif [ "${opt_a}" == "env" ] ; then
+        remove 
+      elif [ "${opt_a}" == "all" ] ; then
+        remove
       elif [ -z "${opt_h}" ] ; then
         remove_iam ${opt_L}
       else

@@ -85,7 +85,7 @@ deploy_ssh_keypair()
 }
 
 
-#  helper funcitons for product selection
+#  helper functions for product selection
 #  vendor products: identity, access, web, directory
 #  user products:   bip
 #  in case products directory not found exit run
@@ -187,43 +187,6 @@ lcmstep()
       -target ${_action}
   fi
 }
-
-# prov_on_all()
-# {
-#   # log "Deployment step ${1} +++ starting on localhost..."
-#   # deploy ${1}
-#   # log "Deployment step ${1} +++ completed on localhost"
-# 
-#   for h in ${provhosts[@]}
-#   do
-#     log "Deployment step ${1} +++ starting on ${h}..."
-#     ssh ${h} -- ${DEPLOYER}/user-config/env/prov.sh ${1}
-#     log "Deployment step ${1} +++ completed on ${h}"
-#   done
-#   log "Deployment step ${1} completed"
-# }
-
-# deployment and instance creation with lifecycle management
-# in PS2 Release we also need to patch JDK with custom random pool
-#
-# iam_prov ()
-# {
-#   for step in preverify install
-#   do
-#     deploy_on_all $step
-#   done
-# 
-#   # use urandom
-#   do_idm && jdk_patch_config ${iam_top}/products/identity/jdk6
-#   do_acc && jdk_patch_config ${iam_top}/products/access/jdk6
-#   do_oud && jdk_patch_config ${iam_top}/products/dir/jdk6
-#   do_web && jdk_patch_config ${iam_top}/products/web/jdk6
-# 
-#   for step in preconfigure configure configure-secondary postconfigure startup validate
-#   do
-#     deploy_on_all $step
-#   done
-# }
 
 # post install task: patching of OPSS database instances
 #
@@ -333,27 +296,6 @@ exit()
   fi
 }
 
-#  remove installation directories populated by LCM
-#  if $iam_remove_lcm is set to "yes" also remove all LCM dirs
-#  Always returns 0
-#
-remove_iam()
-{
-  opt_incl_lcm=${1}
-
-  rm -Rf ${iam_top}/products/* \
-    ${iam_top}/config/* \
-    ${iam_services}/* \
-    ${iam_top}/*.lck \
-    ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
-    ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
-    ${iam_top}/lcm/lcmhome/provisioning/logs/
-
-  if [ -n "${opt_incl_lcm}" ] ; then
-    rm -Rf ${iam_top}/lcm/*
-  fi
-}
-
 #  remove hostenvironment: ~/{bin,lib,.env,.creds}
 #  Always returns 0
 #
@@ -378,6 +320,39 @@ remove_env()
   rm -Rf ~/.cred 
 }
 
+
+#  remove installation directories populated by LCM
+#  if $iam_remove_lcm is set to "yes" also remove all LCM dirs
+#  Always returns 0
+#
+remove_iam()
+{
+  opt_incl_lcm=${1}
+
+  rm -Rf ${iam_top}/products/* \
+    ${iam_top}/config/* \
+    ${iam_services}/* \
+    ${iam_top}/*.lck \
+    ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
+    ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
+    ${iam_top}/lcm/lcmhome/provisioning/logs/
+
+  remove_env
+
+  if [ -n "${opt_incl_lcm}" ] ; then
+    rm -Rf ${iam_top}/lcm/*
+  fi
+}
+
+#  remove OIA installation including including env
+#  Always returns 0
+#
+remove_oia()
+{
+  rm -Rf ${iam_top}/products/analytics \
+    ${iam_services}/${iam_domain_oia} \
+    ~/.env/{oia.env,analytics.prop}
+}
 
 #  run Oracle patch set assistant
 #  param1: product name
@@ -442,7 +417,7 @@ oia_dom_prop()
   local _propfile=/tmp/createdom-${1}.prop
   cp ${_propfile_template} ${_propfile}
   
-      _iam_top=$(echo ${iam_top} | sed -e 's/[\/&]/\\&/g')
+      _iam_top=$(echo ${iam_top}     | sed -e 's/[\/&]/\\&/g')
   _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
   
   sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/"         ${_propfile}
@@ -519,6 +494,7 @@ oia_rdeploy()
       ;;
   esac
 }
+
 # unpack OIA instance
 #
 oia_explode()
@@ -664,7 +640,7 @@ weblogic_install()
 #  deploy standard lib acStdLib for wlst ----------------------------
 #  param1: product namem (identity,access)
 #
-wlst_copy_libs ()
+wlst_copy_libs()
 {
   local _target=${1}
   local _dest=${iam_top}/products/${_target}/wlserver_10.3/common/wlst

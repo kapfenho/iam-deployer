@@ -18,7 +18,7 @@ iamhelp() {
     lcmstep   execute LCM step
     userenv   create userenv on host
     jdk       upgrade existing jdk
-    rcd       deploy runlevel scripts (root permissions with sudo necessary)
+    rcd       deploy runlevel scripts (root)
     weblogic  modify wlserver installation
     identity  modify identity domain (psa, jdk7fix, movelogs, postinstall)
     access    modify access domain   (psa, jdk7fix, movelogs, postinstall)
@@ -28,9 +28,22 @@ iamhelp() {
     help      show this help
 
   Generell Parameters
+    -A        All (execute on all hosts)
     -h        help
-    -H host   execute this command on the specified host
-    -A        All hosts, execute this command on all hosts
+    -H host   execute on host
+
+  Parameters
+    -O Oracle home
+    -P        Pack or unpack a domain
+    -a action action
+    -n        nodemanager (keyfiles)
+    -p password
+    -s source
+    -t target
+    -f filename
+    -u username
+    -v        verbose
+    -w        wlst property file
 
 "
   echo
@@ -379,18 +392,15 @@ help_webtier() {
 # ---------------------------------------------------
 help_remove() {
   echo "
-  Syntax: ${0} remove [-E] [-L]
+  Syntax: ${0} remove -t {identity,analytics,lcm,env,all}
 
-    ${0} remove [-L]
-    ${0} remove -E
+  Remove parts or all of the IAM installation.
 
-  Remove IAM installation. Options to include LCM and to clean multiple
-  hosts.
+  Attention: database schemas are remove with command
+     ${0} rcu -a remove -t {identity,access,analytics}
 
   Parameter:
-    -L   include LCM (default is no)
-    -A   remove on all hosts (default is no)
-    -E   only remove the user environment: ~/{bin,lib,.env,.creds}
+    -t target         product to remove (instances and binaries)
   "
 } 
 

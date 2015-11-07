@@ -1,10 +1,9 @@
-hostname=__HOSTNAME__
 nmPort=5556
 domName=__DOMAIN_NAME__
 admDir=__IAM_TOP__/services/domains/__DOMAIN_NAME__
 domDir=__IAM_TOP__/services/domains/__DOMAIN_NAME__
-domAdminPort=7302
-domUrl=t3://__HOSTNAME__:7302
+domAdminPort=7301
+domUrl=t3://__HOSTNAME__:7301
 domUC=__HOSTENV__/.creds/__DOMAIN_NAME__.usr
 domUK=__HOSTENV__/.creds/__DOMAIN_NAME__.key
 nmUC=__HOSTENV__/.creds/nm.usr

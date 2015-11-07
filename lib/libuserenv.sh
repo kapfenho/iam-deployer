@@ -27,6 +27,18 @@ _cp_nodemanager()
   sed -i "s/__IAM_LOG__/${_iam_log}/"      ${_dir}/${_prop}
 }
 
+_replace_in_env()
+{
+  sed -i "s/__HOSTENV__/${_iam_hostenv}/"           ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"               ${env}/*
+  sed -i "s/__IAM_TOP__/${_iam_top}/"               ${bin}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"               ${env}/*
+  sed -i "s/__IAM_LOG__/${_iam_log}/"               ${bin}/*
+  sed -i "s/__ADMHOSTNAME__/${domiAdminHost}/"      ${env}/*
+  sed -i "s/__OIMADMINSERVER__/${domiAdminServer}/" ${env}/*
+  sed -i "s/__DOMAIN_NAME__/${iam_domain_oim}/"     ${env}/*
+}
+
 _cp_oim()
 {
   # already done?
@@ -59,6 +71,7 @@ _cp_oia()
 
   cp ${src}/env/oia.env                             ${env}/
   cp ${src}/env/analytics.prop                      ${env}/
+  cp ${src}/bin/*identity*                          ${bin}/
   sed -i "s/__HOSTENV__/${_iam_hostenv}/"           ${env}/*
   sed -i "s/__IAM_TOP__/${_iam_top}/"               ${env}/*
   sed -i "s/__IAM_LOG__/${_iam_log}/"               ${env}/*
@@ -67,6 +80,7 @@ _cp_oia()
   sed -i "s/__HOSTNAME__/$(hostname -f)/"           ${env}/*
   sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/"     ${env}/*
   _cp_nodemanager
+  _replace_in_env
 }
 
 _cp_acc()
