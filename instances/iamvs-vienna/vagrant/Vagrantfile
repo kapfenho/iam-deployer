@@ -4,7 +4,7 @@
 
 VAGRANTFILE_API_VERSION = "2"
 
-app_name       = "iam7.agoracon.at"
+app_name       = "iamvs.agoracon.at"
 app_ip         = "192.168.168.250"
 app_box        = "centos66min"
 app_box_url    = "https://agoracon.at/boxes/centos66min.box"
@@ -14,10 +14,10 @@ $frontend_ip = "192.168.168.250"
 $hostfile = "# ...cant touch this
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1                                         localhost6 localhost6.localdomain6
-192.168.168.250               iam7.agoracon.at        iam7
-192.168.168.250         oradb.iam7.agoracon.at
-#{$frontend_ip}   idminternal.iam7.agoracon.at
-#{$frontend_ip}           sso.iam7.agoracon.at
+192.168.168.250               iamvs.agoracon.at        iamvs
+192.168.168.250         oradb.iamvs.agoracon.at
+#{$frontend_ip}   idminternal.iamvs.agoracon.at
+#{$frontend_ip}           sso.iamvs.agoracon.at
 192.168.168.1                           images
 "
 
@@ -83,5 +83,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     s.inline = "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam provision'"
   end
 
+  #config.vm.provision "load-balancer", type: "shell" do |s|
+  #  s.inline = "/vagrant/user-config/env/load-balancer.sh #{$frontend_ip}"
+  #end
 end
 
