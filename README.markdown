@@ -6,21 +6,33 @@
  |_|\__,_|_| |_| |_| /_/(_)  \__,_|\___| .__/|_|\___/ \__, |\___|_|   
                                        |_|            |___/           
 ```
-### Identity and Access Management Deployment
-This project will install and configure Oracle Identity and Access
-Management 11gR2 and all required components either on a local VM or on
-multiple servers in your data centre.
--
+### Identity and Access Management Deployer
+Automagical deployments of Oracle Identity and Access Management. Don't
+spend your lifetime on installation that take longer that you annual
+vacation!
+
+## From single-host setups to active/active clusters
+
+We belive the power of automated application deployment can't be
+over-estimated.
+
+- automated == documented (it is clear what and how to do)
+- reuse of procedures and processes
+- spend effort in non-repeated tasks
+- possible usage: QA - user acceptance test runs
+    create env from scratch,
+    add your test data baseline and 
+    let the user-acceptance test cases run
+
 ### Version
 
 * Oracle Enterprise Database 11.2.0.4
 * Oracle Identity and Access Managemt 11.1.2.2
 * Oracle Identity Analytics 11.1.1.5
 
-
 # Multipe Scenarios
 
-The project can be used in different scenarious:
+The project can be used for different scenarious:
 
 * create new VM (single host setup) from scratch
 * create new VMs (cluster setup) in virtual network from scratch
@@ -36,9 +48,74 @@ the tasks on the remote machines. In the first two approaches this is
 the virtualization host using Vagrant, in the other ones this may be one
 of the existing hosts using ssh connections to the other members.
 
+## Deployment: main blocks
+
+The deployment consists of the following steps:
+
+1. Virtual Machine(s) Creation (optional)
+2. OS configuration and package installation
+3. Installation of Oracle Enterprise Database
+4. IAM deployment with Oracle's Lifecycle Manager (LCM)
+5. Oracle Analytics deployment
+5. IAM post installation tasks
+
+However, to get a new environment provisioned you need to describe how
+it shall look like - what are the host names, ip addresses, domain
+names, etc.
+
+As a quick start you can use one of the prepared sample environments:
+
+  - @iamvs@ is a sample single host installation and
+  - @iamvc@ is quite close to the enterprise setup, with three to four 
+    network zones, six to ten machines, etc.
+
+## Configuration Set: One Environment
+
+One configuration set describes one environment. It consists of several
+directories and files, that must not be renamed or deleted.
+
+You can create a new configuration set with the command
+
+    iam create [-t {single|cluster}]
+
+It may be a good idea to add the new config to the version control
+system
+
+
+```
+    Vagrantfile                         <- machine configs
+    ├── user-config
+    |   ├── database.config             <- database server
+    |   ├── dbs
+    |   │   ├── db_create.rsp           <- database server
+    |   │   ├── db_install.rsp          <- database server
+    |   │   └── db_netca.rsp            <- database server
+    |   ├── iam
+    |   │   ├── provisioning.rsp        <- other servers
+    |   │   ├── provisioning_data
+    |   │   │   └── cwallet.sso         <- other servers
+    |   │   ├── psa_access.rsp          <- other servers
+    |   │   └── psa_identity.rsp        <- other servers
+    |   ├── iam.config                  <- other servers
+    |   └── lcm
+            └── lcm_install.rsp         <- other servers
+```
+
+
+
+
+1. Virtual Machine(s) Creation (optional)
+
+If you want virtual machines to be created you can choose between one of
+the 'Vagrantfile' 
+
+
+
+
+
 ## Root Actions
 
-All actions with root permissions are collected in one script:
+All actions that need root permissions are collected in one script:
 
 `user-config/env/root-script.sh`
 
@@ -83,16 +160,6 @@ The definition of your topology will be specified in
 `user-config/iam/provisioning.rsp`. You can do this by hand or create a
 new one with the _Oracle Life Cycle Management Wizard_.
 
-
-## What's in?
-
-Database, Application and Web Server:
-
-* Cent OS 6.7 64bit minimal
-* Oracle Database 11.2.0.4 Enterprise Edition
-* JRockit 64bit (JDK 1.6.0\_51)
-* WebLogic 10.3.6 (incl Coherence, without samples)
-* Oracle Identity and Access Mgmt Suite 11.1.2.2
 
 
 ## Detailed Description
