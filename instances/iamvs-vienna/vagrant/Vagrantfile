@@ -46,9 +46,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       mount /mnt/oracle"
   end
 
-  config.vm.provision "vbox", type: "shell" do |s|
-    s.inline = "/mnt/oracle/vbox5/VBoxLinuxAdditions.run"
-  end
+  # config.vm.provision "vbox", type: "shell" do |s|
+  #   s.inline = "/mnt/oracle/vbox5/VBoxLinuxAdditions.run"
+  # end
 
   # config.vm.provision "ssh-key", type: "shell" do |s|
   #   s.inline = "su - fmwuser -c 'mkdir -p ~/.ssh;
@@ -69,8 +69,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     app.vm.provider :virtualbox do |v|
       v.name   = app_name
       v.cpus   = 4
-      #v.memory = 12288
-      v.memory = 10240
+      v.memory = 12288
+      # v.memory = 10240
     end
 
   end
