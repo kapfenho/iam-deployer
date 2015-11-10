@@ -396,8 +396,7 @@ help_remove() {
 
   Remove parts or all of the IAM installation.
 
-  Attention: database schemas are remove with command
-     ${0} rcu -a remove -t {identity,access,analytics}
+  Attention: database schemas are remove by command 'rcu'
 
   Parameter:
     -t target         product to remove (instances and binaries)

@@ -7,30 +7,37 @@
                                        |_|            |___/           
 ```
 ### Identity and Access Management Deployer
+
 Automagical deployments of Oracle Identity and Access Management. Don't
-spend your lifetime on installation that take longer that you annual
+spend your lifetime on installations that take longer that your annual
 vacation!
 
-## From single-host setups to active/active clusters
+### Software Required
 
-We belive the power of automated application deployment can't be
-over-estimated.
+* [Vagrant](http://www.vagrantup.com) 
+* A Virtualization Provider like
+[VirtualBox](https://www.virtualbox.org),
+[VMWare](https://www.vmware.com) or [Docker](https://www.docker.io)
 
-- automated == documented (it is clear what and how to do)
-- reuse of procedures and processes
-- spend effort in non-repeated tasks
-- possible usage: QA - user acceptance test runs
-    create env from scratch,
-    add your test data baseline and 
-    let the user-acceptance test cases run
+Docker may be an option for the application services, but not for the
+Oracle database. The project uses Vagrant for VM management, the
+provisioning implementation is done with bash scrips. The bash scripts
+configure and execute Oracle's LCM that does the native software
+installation.
 
-### Version
+
+### Provisioned Software
 
 * Oracle Enterprise Database 11.2.0.4
-* Oracle Identity and Access Managemt 11.1.2.2
+* Oracle Identity and Access Management 11.1.2.2
 * Oracle Identity Analytics 11.1.1.5
 
-# Multipe Scenarios
+_It is required to use a POSIX compliant environment for using the
+project - including Vagrant. As script environment the project is using
+bash(8). It may be possible to run the provisioning on Microsoft Windows 
+by installing 3rd party tools. However we recommend to use Unix/BSD or Linux._
+
+## Multipe Scenarios
 
 The project can be used for different scenarious:
 
@@ -59,74 +66,190 @@ The deployment consists of the following steps:
 5. Oracle Analytics deployment
 5. IAM post installation tasks
 
-However, to get a new environment provisioned you need to describe how
+To get a new environment provisioned you need to describe how
 it shall look like - what are the host names, ip addresses, domain
 names, etc.
-
-As a quick start you can use one of the prepared sample environments:
-
-  - @iamvs@ is a sample single host installation and
-  - @iamvc@ is quite close to the enterprise setup, with three to four 
-    network zones, six to ten machines, etc.
 
 ## Configuration Set: One Environment
 
 One configuration set describes one environment. It consists of several
-directories and files, that must not be renamed or deleted.
+directories and files, that must not be renamed or deleted. 
 
 You can create a new configuration set with the command
+(see below how to set the environment for command execution):
 
-    iam create [-t {single|cluster}]
+    iam create -t {single|cluster}
 
 It may be a good idea to add the new config to the version control
-system
+system. You can keep multiple environments in the project. The project
+expects the current configuration set in the subdirectory `user-config`.
+This directory is excluded from _git_ (`.gitignore`). Put all your
+instances in one containing directory (`instances`) and symlink your
+current one to `user-config`:
 
+    ln -s instances/my_instance user-config
+
+All config files available:
 
 ```
-    Vagrantfile                         <- machine configs
-    ├── user-config
-    |   ├── database.config             <- database server
-    |   ├── dbs
-    |   │   ├── db_create.rsp           <- database server
-    |   │   ├── db_install.rsp          <- database server
-    |   │   └── db_netca.rsp            <- database server
-    |   ├── iam
-    |   │   ├── provisioning.rsp        <- other servers
-    |   │   ├── provisioning_data
-    |   │   │   └── cwallet.sso         <- other servers
-    |   │   ├── psa_access.rsp          <- other servers
-    |   │   └── psa_identity.rsp        <- other servers
-    |   ├── iam.config                  <- other servers
-    |   └── lcm
-            └── lcm_install.rsp         <- other servers
+my-instance
+├── worklist.sh                 <- provisioning commands
+├── database.config             <- database server
+├── iam.config                  <- addition setup config
+├── dbs
+│   ├── db_create.rsp           <- database instance
+│   ├── db_install.rsp          <- database software install
+│   └── db_netca.rsp            <- database network
+├── env
+│   ├── root-check.sh           <- verify OS config
+│   └── root-script.sh          <- configure OS
+├── iam
+│   ├── provisioning.rsp        <- iam configuration
+│   ├── psa_access.rsp          <- patch set assistant oam (PS2)
+│   └── psa_identity.rsp        <- patch set assistant oim (PS2)
+├── lcm
+|   └── lcm_install.rsp         <- LCM installation config
+├── vagrant
+│   └── Vagrantfile             <- VM config
+├── oia
+│   ├── create-schema.sql       <- OIA database: user and tablespace
+│   ├── remove-schema.sql       <- OIA database: remove user and tbs
+│   ├── createdom-single.prop   <- OIA single instance: domain config
+│   ├── createdom-cluster.prop  <- OIA cluster: domain config
+│   ├── rbacx_single.patch      <- OIA single instance: config as patch
+│   ├── rbacx_cluster.patch     <- OIA cluster: config as patch
+│   ├── rbacx_workflow.patch    <- OIA workflow: config as patch
+│   └── psa_identity.rsp        <- patch set assistant oim (PS2)
 ```
 
+## Vagrant
+
+Skip this step if you provision on already existing VM or bare metal.
+
+For detailed configuration of virtual machines and the syntax used
+please see the [Vagrant documentation](https://vagrantup.com)
+
+### VLAN Configuration
+
+You need to prepare the network config in you virtualization software.
+In VirtualBox you can condifure this in the application configuration
+(not in the VM configuration). The Vagrantfile shipped use the network
+
+    192.168.168.0/24
+
+with static IP addresses - no DHCP necessary. The base box has this link
+enabled on host adapter 1. In Vagrant each machine automatically gets a
+DHCP config enabled on the first network adapter. The default route uses
+that adapter. Not all Oracle products run on IPv6. A mixed use of IPv4
+and IPv6 is only possible for parts of the environment. For reducing the
+complexity IPv6 has been disabled completely.
+
+
+You start the provisioning process with `vagrant up`. After the creation
+of the machines the provisioning steps will be executed. A ping-check
+helps making sure the application provisioning will be postponed until
+all servers are up and running.
+
+Info: Vagrant mounts the project directory on each machine at `/vagrant`
+with permissions `vagrant:vagrant`.
+
+A necessary hardware load balancer is substituted by a simple port
+forwarding in the OS kernel of the first web server:
+
+    http:  tcp/80  -> tcp/7777
+    https: tcp/443 -> tcp/4443
+
+## Manual Approach: Provisioning on existing hosts
+
+Read carefully if you plan to provision on existing hosts. The topics
+here are also valid when using Vagrant, but using existing hosts
+replaces the properly prepared base box with an host that for sure has a
+different configuration.
+
+### Operating System Configuration and Installation Requirements
+
+This project supports RedHat 6 and 7. In case you use related systems
+(the base box is a CentOS 6) take care of the `/etc/redhat-release`).
+
+Using Vagrant and the base box guarentee we fullfil the pre-requistes
+for privisioning and using IAM. When you are using existing hosts you
+need to make sure your hosts fullfil those requirements as well.
+
+The OS configuration is done by executing the script
+
+    user-config/env/root-script.sh
+
+You may get a report of missing configs by running
+
+    user-config/env/root-check.sh
+
+Keep in mind the report may not be complete. Please check the Oracle
+documentation for the installation requirements.
+
+_Make sure `root-scripts.sh` has been run without errors on each host._
+
+Before you do any provisioning on an existing host: verify the
+configuration of the operating system and make sure no application or
+files are in the way of the provisioning ($iam_top) or using the ports 
+you plan to use.
+
+You can start the provisioning on one of the existing application hosts,
+it is not important which one. You can execute all steps from a remote
+machine by using the option `-H hostname` on each provisioning step.
+
+_However, it is necessary to have the project files available on all
+hosts on the same path._ If you copy the files on the other machines,
+don't forget to repeat this after a configuration change. A better
+approach is using a network filesystem.
+
+### Access between hosts
+
+_Automatically done when using Vagrant_
+
+We need to enable trusted ssh connections between the hosts, without
+entering credentials. This is done by creating ssh-keys and adding
+foreign ssh-keys into the `authorized_keys` file. See `ssh(8)` for more
+information.
+
+### Provisioning Environment
+
+_Automatically done when using Vagrant_
+
+There is one requiered environment variable for provisionings: the path
+of the project directory on the application host. You can add this
+variable to the profile.
+
+    export DEPLOYER=/vagrant
+
+### Provisioning
+
+_Automatically done when using Vagrant_
+
+Provisioning is executed with the command
+
+    iam provision
+
+This will run the `worklist.sh` script file where all provision steps of
+the enviroment are listed. You can rerun the script in case of an error.
+However, if the process fails within one of the LCM steps, you need to
+start from scratch, after removing the already installed files.
+
+### Removing IAM
+
+You can remove a complete or partly installed installation by the
+command
+
+    iam remove -t all
+
+### Creating and Removing Database Schema
+
+Creating the schema is part of the worklist execution. If you need to
+execute it manually use
+
+    iam rcu -a {create|remove} -t {identity|access|bip}
 
 
 
-1. Virtual Machine(s) Creation (optional)
-
-If you want virtual machines to be created you can choose between one of
-the 'Vagrantfile' 
-
-
-
-
-
-## Root Actions
-
-All actions that need root permissions are collected in one script:
-
-`user-config/env/root-script.sh`
-
-The execution of this script is always the first action on a new
-VM/host. Administrators can adapt this script. However, keep the
-applicaton paths in sync with the other config files (see below).
-
-## Auto Deployment in one VM
-
-If you go for the local VM setup you need those applications
-installed before you start. _Not needed for a production setup._
 
 * [Vagrant](http://www.vagrantup.com) 
 * A Virtualization Provider, e.g.
