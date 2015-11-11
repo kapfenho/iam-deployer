@@ -4,7 +4,8 @@
 #+ 1: oracle_home of database installation
 #+ 2: database name, used as SID
 #
-dbs_source_env() {
+dbs_source_env()
+{
   if ! [ -a ${1} ] ; then
     log "dbs_source_env" "ERROR: given directory doesn't exist"
   else
@@ -21,7 +22,8 @@ dbs_source_env() {
 #+ storing in spfile. Stateless, can be re-executed.
 #+ Vars used: ORACLE_SID, dbs_sid
 #
-config_database_for_iam() {
+config_database_for_iam()
+{
   log "config_database_for_iam" "start"
   if [ -z ${ORACLE_SID} ] ; then
     ORACLE_SID=${dbs_sid}
@@ -39,7 +41,8 @@ EOF
 #  Restart database with shutdown immediate, followed by start to online.
 #+ Vars used: ORACLE_HOME and ORACLE_SID
 #
-restart_db() {
+restart_db()
+{
   if [ -z ${ORACLE_SID} ] ; then
     ORACLE_SID=${dbs_sid}
   fi
@@ -89,7 +92,8 @@ install_db() {
 #+ install. 
 #+ Variables needed: ORACLE_HOME and s_patch, no parameters
 #
-patch_opatch() {
+patch_opatch()
+{
   local _o=${ORACLE_HOME}/OPatch
   local _b=${ORACLE_HOME}/OPatch.prev
   local _skip='OPatch.*11\.2\.0\.3\.5'
@@ -114,7 +118,8 @@ patch_opatch() {
 #+ skip when lsinventory repsonds with patch number or /No need to/
 #+ in 1: oracle patch number
 #
-patch_orahome() {
+patch_orahome()
+{
   log "patch_orahome_$1" "start"
 
   # check if patch has already been applied
@@ -135,7 +140,8 @@ patch_orahome() {
 #  create database instance as defined in response file, skip if existing
 #+ no parameters
 #
-create_database() {
+create_database()
+{
   log "create_database" "start"
 
   # check if db already exists
@@ -154,7 +160,8 @@ create_database() {
 #+ in response file
 #+ Vars used: ORACLE_HOME
 #
-run_netca() {
+run_netca()
+{
   log "run_netca" "start"
   if ! [ -a ${ORACLE_HOME}/network/admin/listener.ora ] ; then
     ${ORACLE_HOME}/bin/netca -silent \
@@ -165,11 +172,12 @@ run_netca() {
   fi
 }
 
-#  TODO: check if still useful - not called
+#  check if OID schema is installed
 #
-check_oid_schemas() {
+check_oid_schemas()
+{
   local old_sid=$ORACLE_SID              # backup old SID name
-  export ORACLE_SID=${DB_SERVICENAME}     # set new SID name
+  export ORACLE_SID=${DB_SERVICENAME}    # set new SID name
 
   ## execute SQL script (check if ODS and ODSSM schemas exist) with sqlplus
   ${ORACLE_HOME}/bin/sqlplus -s / as sysdba << EOF &>/dev/null

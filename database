@@ -16,11 +16,12 @@ umask 0002
 _DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 . ${_DIR}/user-config/database.config
 . ${_DIR}/lib/libcommon.sh
+. ${_DIR}/lib/libcommon2.sh
 . ${_DIR}/lib/libdb.sh
 . ${_DIR}/lib/libsys.sh
 . ${_DIR}/lib/librcu.sh
 
-log "main" "start"
+log "Deploying Oracle Database"
 
 # use settings from response files
 ic=${_DIR}/user-config/dbs/db_install.rsp
@@ -82,7 +83,7 @@ rcd_service oracle stop
 set -o errexit
 rcd_service oracle start
 
-log "main" "done"
+log "Database has been deployed"
 
 exit 0
 

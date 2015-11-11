@@ -76,11 +76,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.provision "database", type: "shell" do |s|
-    s.inline = "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/db.sh  | /usr/bin/tee /tmp/prov-dbs.log'"
+    s.inline = "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/database  | /usr/bin/tee /tmp/prov-database.log'"
   end
 
   config.vm.provision "iam", type: "shell" do |s|
-    s.inline = "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam provision'"
+    s.inline = "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam provision | /usr/bin/tee /tmp/prov-iam.log'"
   end
 
   #config.vm.provision "load-balancer", type: "shell" do |s|
