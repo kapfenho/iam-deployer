@@ -1,0 +1,13 @@
+    # -----------------------------------------------------------------
+    # OIA contexts
+    #
+    # vi: ft=apache :
+
+    # rbacx - identity analytics
+    <Location /rbacx>
+        SetHandler weblogic-handler
+        WLCookieName    oimjsessionid
+        __WLS_OIA__
+        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oia_component.log"
+    </Location>
+

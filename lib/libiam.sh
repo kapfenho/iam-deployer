@@ -416,8 +416,13 @@ config_webtier()
 weblogic_install()
 {
   local _mw="${iam_top}/products/${1}"
-  local _xml=$(mktemp /tmp/wls-XXXXXXXX)
-  cat > ${_xml} <<-EOS
+
+  if ! [ -a ${_mw}/wlserver_10.3 ] ; then
+
+    echo "Installing Weblogic Server..."
+    local _xml=$(mktemp /tmp/wls-XXXXXXXX)
+
+    cat > ${_xml} <<-EOS
 <?xml version="1.0" encoding="UTF-8"?>
 <bea-installer>
 <input-fields>
@@ -427,10 +432,8 @@ weblogic_install()
 </input-fields>
 </bea-installer>
 EOS
-
-  if ! [ -a ${_mw}/wlserver_10.3 ] ; then
-    echo "Installing Weblogic Server..."
     java -d64 -jar ${s_wls} -mode=silent -silent_xml=${_xml}
+    rm -f ${_xml}
   else
     echo "Skipped: Weblogic server installation"
   fi

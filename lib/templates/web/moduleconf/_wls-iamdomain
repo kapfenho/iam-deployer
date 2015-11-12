@@ -1,20 +1,20 @@
     # -----------------------------------------------------------------
-    # Weblogic Admin
+    # Weblogic Admin of IAM domain
     #
     # vi: ft=apache :
 
     # IDM Admin Server and EM
     <Location /console>
         SetHandler weblogic-handler
-        __WLS_ADMINSERVER__
+        __WLS_IAMADMINSERVER__
     </Location>
 
     <Location /consolehelp>
         SetHandler weblogic-handler
-        __WLS_ADMINSERVER__
+        __WLS_IAMADMINSERVER__
     </Location>
 
     <Location /em>
         SetHandler weblogic-handler
-        __WLS_ADMINSERVER__
+        __WLS_IAMADMINSERVER__
     </Location>

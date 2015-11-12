@@ -24,11 +24,14 @@ httpd_config() {
   local files=( _app-oim
                 _app-oimadmin
                 _app-soa
-                _app-admin
+                _app-oia
+                _wls-iamadmin
+                _wls-oiaadmin
                 _ssl
-                iam-admin.conf
-                iam-backend.conf
-                iam-frontend.conf )
+                iamadmin.conf
+                oiaadmin.conf
+                idminternal.conf
+                sso.conf )
 
   log "Replacing SSL files"
   cp -f ${src}/ssl.conf ${dst}/
@@ -45,9 +48,12 @@ httpd_config() {
   cp -f ${src}/htdocs/probe.up.html   ${dst}/htdocs/probe.html
 
   log "Adjust files to environment hosts"
-  # adminserver
-  wlsadm+="WebLogicHost ${IDMPROV_OIMDOMAIN_ADMINSERVER_HOST}\\"$'\n'
-  wlsadm+="        WebLogicPort ${IDMPROV_OIMDOMAIN_ADMINSERVER_PORT}"
+  # adminserver iam
+  wlsdom1+="WebLogicHost ${IDMPROV_OIMDOMAIN_ADMINSERVER_HOST}\\"$'\n'
+  wlsdom1+="        WebLogicPort ${IDMPROV_OIMDOMAIN_ADMINSERVER_PORT}"
+  # adminserver oia
+  wlsdom2+="WebLogicHost ${IDMPROV_OIADOMAIN_ADMINSERVER_HOST}\\"$'\n'
+  wlsdom2+="        WebLogicPort ${IDMPROV_OIADOMAIN_ADMINSERVER_PORT}"
 
   if [ "${DT_SINGLEHOST}" == "true" ] ; then
     # oim
@@ -56,6 +62,9 @@ httpd_config() {
     # soa
     wlssoa+="WebLogicHost $(hostname -f)\\"$'\n'
     wlssoa+="        WebLogicPort ${IDMPROV_SOA_PORT}"
+    # oia
+    wlsoia+="WebLogicHost $(hostname -f)\\"$'\n'
+    wlsoia+="        WebLogicPort ${IDMPROV_OIA_PORT}"
   else
     # oim cluster
     wlsoim+="WebLogicCluster "
@@ -69,15 +78,24 @@ httpd_config() {
     wlssoa+="${IDMPROV_SOA_PORT},"
     wlssoa+="${IDMPROV_SECOND_SOA_HOST}:"
     wlssoa+="${IDMPROV_SECOND_SOA_PORT}"
+    # oia cluster
+    wlssoa+="WebLogicCluster "
+    wlssoa+="${IDMPROV_OIA_HOST}:"
+    wlssoa+="${IDMPROV_OIA_PORT},"
+    wlssoa+="${IDMPROV_SECOND_OIA_HOST}:"
+    wlssoa+="${IDMPROV_SECOND_OIA_PORT}"
   fi
 
   # now we do the substi thing, in place
   #
   for f in ${files[@]} ; do
     sed -i -e "s/__WLS_VH_FRONTEND__/${IDMPROV_LBR_SSO_HOST}/g" \
-           -e "s/__WLS_VH_BACKEND__/${IDMPROV_LBR_OIMINTERNAL_HOST}/g" \
-           -e "s/__WLS_VH_ADMIN__/${IDMPROV_LBR_OIMINTERNAL_HOST}/g" \
-           -e "s/__WLS_ADMINSERVER__/${wlsadm}/g" \
+           -e "s/__WLS_VH_IDMINTERNAL__/${IDMPROV_LBR_OIMINTERNAL_HOST}/g" \
+           -e "s/__WLS_VH_IAMADMIN__/${vh_iamadmin}/g" \
+           -e "s/__WLS_VH_OIAADMIN__/${vh_oiaadmin}/g" \
+           -e "s/__WLS_IAMADMINSERVER__/${wlsdom1}/g" \
+           -e "s/__WLS_OIAADMINSERVER__/${wlsdom2}/g" \
+           -e "s/__WLS_OIA__/${wlsoia}/g" \
            -e "s/__WLS_OIM__/${wlsoim}/g" \
            -e "s/__WLS_SOA__/${wlssoa}/g" ${dst}/moduleconf/${f}
   done

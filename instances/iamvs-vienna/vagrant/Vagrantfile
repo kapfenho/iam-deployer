@@ -16,8 +16,10 @@ $hostfile = "# ...cant touch this
 ::1                                         localhost6 localhost6.localdomain6
 192.168.168.250               iamvs.agoracon.at        iamvs
 192.168.168.250         oradb.iamvs.agoracon.at
-#{$frontend_ip}   idminternal.iamvs.agoracon.at
 #{$frontend_ip}           sso.iamvs.agoracon.at
+#{$frontend_ip}   idminternal.iamvs.agoracon.at
+#{$frontend_ip}      iamadmin.iamvs.agoracon.at
+#{$frontend_ip}      oiaadmin.iamvs.agoracon.at
 192.168.168.1                           images
 "
 

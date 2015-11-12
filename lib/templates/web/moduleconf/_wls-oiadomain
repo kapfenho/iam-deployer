@@ -1,0 +1,16 @@
+    # -----------------------------------------------------------------
+    # Weblogic Admin of domain analytics
+    #
+    # vi: ft=apache :
+
+    # Analytics Admin Server
+    <Location /console>
+        SetHandler weblogic-handler
+        __WLS_OIAADMINSERVER__
+    </Location>
+
+    <Location /consolehelp>
+        SetHandler weblogic-handler
+        __WLS_OIAADMINSERVER__
+    </Location>
+
