@@ -122,16 +122,22 @@ implement multiple application domains, without rewriting URLs, etc.
 
 The default setup comes with this URLs:
 
-    https://sso.iamvs.agoracon.at/identity          IAM Identity Manager
-    https://idminternal.iamvs.agoracon.at/console   IAM console
+    https://sso.iamvs.agoracon.at/identity          Identity Manager
+    https://sso.iamvs.agoracon.at/rbacx             Identity Analytics
+     http://iamadmin.iamvs.agoracon.at/console      IAM console
+     http://iamadmin.iamvs.agoracon.at/em           IAM em
+     http://oiaadmin.iamvs.agoracon.at/console      OIA console
+     http://idminternal.iamvs.agoracon.at/soa       SOA interfaces
 
 For connection to the UI from your host add something like this to your
 hosts file or DNS:
 
-    192.168.168.250              iamvs.agoracon.at  iamvs
-    192.168.168.250  idminternal.iamvs.agoracon.at
-    192.168.168.250          sso.iamvs.agoracon.at
-    192.168.168.250        oradb.iamvs.agoracon.at
+    192.168.168.250              iamvs.agoracon.at  # hostname
+    192.168.168.250          sso.iamvs.agoracon.at  # lb frontend
+    192.168.168.250  idminternal.iamvs.agoracon.at  # lb api on backend
+    192.168.168.250     iamadmin.iamvs.agoracon.at  # weblogic admin
+    192.168.168.250     oiaadmin.iamvs.agoracon.at  # weblogic admin
+    192.168.168.250        oradb.iamvs.agoracon.at  # database
 
 You can change the HTTP routing in the OHS `moduleconf` files. We've
 extended the Oracle setup with a modular approach where you include
