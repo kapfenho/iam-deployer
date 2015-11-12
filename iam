@@ -14,12 +14,6 @@ fi
 . ${DEPLOYER}/lib/user-config.sh
 . ${DEPLOYER}/lib/libcommon2.sh
 . ${DEPLOYER}/lib/libiam.sh
-. ${DEPLOYER}/lib/libjdk.sh
-. ${DEPLOYER}/lib/librcu.sh
-. ${DEPLOYER}/lib/libmovelog.sh
-. ${DEPLOYER}/lib/libiamhelp.sh
-. ${DEPLOYER}/lib/libuserenv.sh
-. ${DEPLOYER}/lib/libweb.sh
 
 umask ${iam_user_umask}
 
@@ -201,8 +195,7 @@ else
         patch_wls_bin  ${opt_t}
       elif [ "${opt_a}" == "wlstlibs" -a -n "${opt_t}" -a -z "${opt_h}" ] ; then
         wlst_copy_libs ${opt_t}
-      elif [ "${opt_a}" == "install" -a -n "${opt_t}" -a -z "${opt_h}" ];
-      then
+      elif [ "${opt_a}" == "install"  -a -n "${opt_t}" -a -z "${opt_h}" ] ; then
         weblogic_install ${opt_t}
       else
         help_weblogic
