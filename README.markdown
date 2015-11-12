@@ -6,11 +6,21 @@
  |_|\__,_|_| |_| |_| /_/(_)  \__,_|\___| .__/|_|\___/ \__, |\___|_|   
                                        |_|            |___/           
 ```
+
 ### Identity and Access Management Deployer
 
 Automagical deployments of Oracle Identity and Access Management. Don't
 spend your lifetime on installations that take longer that your annual
 vacation!
+
+This project simplifies the deployment of Oracle Identity and Access
+Management. However, a knowledge of the Oracle software and the original
+documentation is essential for using and installing the components! 
+
+**This README is not a subsitiute for the Oracle installation guides!**
+
+__Read those guides before and then continue.__
+
 
 ### Software Required
 
@@ -25,17 +35,27 @@ provisioning implementation is done with bash scrips. The bash scripts
 configure and execute Oracle's LCM that does the native software
 installation.
 
-
-### Provisioned Software
-
-* Oracle Enterprise Database 11.2.0.4
-* Oracle Identity and Access Management 11.1.2.2
-* Oracle Identity Analytics 11.1.1.5
-
 _It is required to use a POSIX compliant environment for using the
 project - including Vagrant. As script environment the project is using
 bash(8). It may be possible to run the provisioning on Microsoft Windows 
 by installing 3rd party tools. However we recommend to use Unix/BSD or Linux._
+
+
+### Oracle Application Versions
+
+* Oracle Enterprise Database 11.2 or 12
+* Oracle Identity and Access Management 11.1.2.2 or 11.1.2.3
+* Oracle Identity Analytics 11.1.1.5
+
+The currently supported versions of the Oracle Identity and Access
+Management Suite the version specific README files:
+
+    11.1.2.2:  doc/iam-11.1.2.2.markdown
+    11.1.2.3:  doc/iam-11.1.2.3.markdown
+
+You will find information there like how to get the software, the bundle
+patches and used data check sums.
+
 
 ## Multipe Scenarios
 
@@ -55,30 +75,122 @@ the tasks on the remote machines. In the first two approaches this is
 the virtualization host using Vagrant, in the other ones this may be one
 of the existing hosts using ssh connections to the other members.
 
-## Deployment: main blocks
+------------------------------------------------------------------------
 
-The deployment consists of the following steps:
+# After the Deployment
 
-1. Virtual Machine(s) Creation (optional)
-2. OS configuration and package installation
-3. Installation of Oracle Enterprise Database
-4. IAM deployment with Oracle's Lifecycle Manager (LCM)
-5. Oracle Analytics deployment
-5. IAM post installation tasks
+You can start and stop the application service with `start-*` and
+`stop-*` scripts that are already in the path - use Tab key for
+auto-completion to see what's availble. `start-all` and `stop-all` are
+also available.
+
+The Oracle database is the only service with runlevel scripts activated.
+You can activate to application ones as well, but as a consequence
+restarting the host will take significant longer.
+
+In case you've provisioned a VM: why not creating a snapshot now -
+the waiting time is worth a backup. If you plan to do development on the
+machine, a layered filesystem on top of the installation may help you to
+handle the deltas.
+
+
+## User Environment
+
+When you log into the host as the application user (e.g. `fmwuser`) you
+will find those directories in the home directory:
+
+    ~/.env      shell environment and wlst properties files
+    ~/.creds    weblogic user keyfiles for admin access
+    ~/bin       start/stop/status scripts and other helpers
+    ~/lib       common functions (deploying, etc)
+
+On a cluster environment remember where to start the individual
+services. You can also control all services from one machine, the
+ssh-connectivity is available.
+
+
+## Where is my User Interface
+
+The setup uses multiple virtual hosts (in webserver language) for user
+interfaces. There are different reasons for this.
+
+In a tyical production environment, with designated VLAN and hardware
+load balancers, virtual hosts help you to seperate access already on an
+infrastructure layer. This approach is flexible, you can put those names
+on one IP address, on seperated ones or even on seperated VLAN. You can
+implement multiple application domains, without rewriting URLs, etc.
+
+The default setup comes with this URLs:
+
+    https://sso.iamvs.agoracon.at/identity          IAM Identity Manager
+    https://idminternal.iamvs.agoracon.at/console   IAM console
+
+For connection to the UI from your host add something like this to your
+hosts file or DNS:
+
+    192.168.168.250              iamvs.agoracon.at  iamvs
+    192.168.168.250  idminternal.iamvs.agoracon.at
+    192.168.168.250          sso.iamvs.agoracon.at
+    192.168.168.250        oradb.iamvs.agoracon.at
+
+You can change the HTTP routing in the OHS `moduleconf` files. We've
+extended the Oracle setup with a modular approach where you include
+sub-modules in the virtual host (access point).
+
+
+## Something Left To Do?
+
+The provisioning is done with the same credentials for many (service)
+users. Before go-live you really should change this situation. Use
+scripts for changing service user passwords.
+
+You may want to force admins to use named users, that's possible
+and recommended.
+
+------------------------------------------------------------------------
+
+# The Provisioning Process
+
+## Overview
+
+For provisioning an evironment you need some patience and those
+artefacts:
+
+* this project
+* a complete configuration set, symlinked as `user-config`
+* the software installation images from Oracle
+* the target hardware or system resources
+
+
+### Project
+
+Get the project by cloning the repo:
+
+    git clone .....
+
+The project consists of scripts and templates, everything already under
+version control. You will also add files there - your configuration
+files.
 
 To get a new environment provisioned you need to describe how
 it shall look like - what are the host names, ip addresses, domain
 names, etc.
 
+------------------------------------------------------------------------
+
 ## Configuration Set: One Environment
 
-One configuration set describes one environment. It consists of several
-directories and files, that must not be renamed or deleted. 
+One configuration set describes one complete environment. It consists of
+several directories and files, that must not be renamed or deleted. 
 
 You can create a new configuration set with the command
 (see below how to set the environment for command execution):
 
-    iam create -t {single|cluster}
+    ./iam create -t {single|cluster}
+
+The working directory specifier is necessary if you don't have the
+project directory in your PATH (which is not required). For simplicity I
+won't mention it from here on.
 
 It may be a good idea to add the new config to the version control
 system. You can keep multiple environments in the project. The project
@@ -89,7 +201,7 @@ current one to `user-config`:
 
     ln -s instances/my_instance user-config
 
-All config files available:
+All available config files:
 
 ```
 my-instance
@@ -122,6 +234,54 @@ my-instance
 │   └── psa_identity.rsp        <- patch set assistant oim (PS2)
 ```
 
+There is an additional script you can use for changing values that are
+spread over multiple config files: `changeconf.sh`. Calling this script 
+with one paramter will search that value in all your config files, a
+second parameter is used for changing those occurences. Changing the 
+hostname is simple using the script:
+
+    # check occurences
+    ./changeconf.sh iam2.agoracon.at
+
+    # check result, then change with:
+    ./changeconf.sh iam2.agoracon.at iam3.example.com
+    
+Changing the installation path:
+
+    ./changeconf.sh /appl/iam /usr/iam
+
+
+### Installation Images
+
+Please see the version specific document for what software packages to
+get.
+
+You will put thos packages on a NFS mount point reachable from all
+machines. Or copy them to all machines to the same location.
+
+
+### System Resources
+
+See the Oracle System Requirements for the minimum resources required.
+
+Fot testing purposes: all versions supported have been provisioned
+successfully in a single host setup on a MacBook Pro with 16 GB RAM
+using VirtualBox 4 and 5.
+
+The core deployment consists of the following steps:
+
+- Virtual Machine(s) Creation (optional)
+- OS configuration and package installation
+- Installation of Oracle Enterprise Database
+- Database instance creation
+- Creation of products database schema(s)
+- Installation of Oracle's Lifecycle Manager (LCM)
+- IAM deployment with LCM
+- Oracle Analytics deployment
+- IAM post installation tasks
+
+------------------------------------------------------------------------
+
 ## Vagrant
 
 Skip this step if you provision on already existing VM or bare metal.
@@ -129,7 +289,8 @@ Skip this step if you provision on already existing VM or bare metal.
 For detailed configuration of virtual machines and the syntax used
 please see the [Vagrant documentation](https://vagrantup.com)
 
-### VLAN Configuration
+
+### Vagrant VLAN Configuration
 
 You need to prepare the network config in you virtualization software.
 In VirtualBox you can condifure this in the application configuration
@@ -145,12 +306,29 @@ and IPv6 is only possible for parts of the environment. For reducing the
 complexity IPv6 has been disabled completely.
 
 
-You start the provisioning process with `vagrant up`. After the creation
-of the machines the provisioning steps will be executed. A ping-check
-helps making sure the application provisioning will be postponed until
-all servers are up and running.
+### Vagrant Provisioning
 
-Info: Vagrant mounts the project directory on each machine at `/vagrant`
+You start the provisioning process with `vagrant up`. This will trigger
+all necessary steps and come back with a ready to use system. The
+runtime is four to ten hours, depending on your config and scenario.
+
+The process starts with the creation of the virtual machine(s). The OS
+will be configured, system packages, user and groups are added. The
+cluster setup also creates an NFS Server which hosts the necessary
+shared mount points.
+
+The database will be installed under a designated user (`oracle:dba`). A
+ping-check helps making sure application provisioning on cluster
+topology will be postponed until all hosts are up and running.
+
+You can find more information on the individual steps under section
+"Manual Approach".
+
+It's important to remember that controlling the VM and the main
+provisioning steps is done outside the environment with `vagrant ...`
+while the `iam ...` commands are executed on the host(s).
+
+Info: Vagrant mounts this project directory on each machine at `/vagrant`
 with permissions `vagrant:vagrant`.
 
 A necessary hardware load balancer is substituted by a simple port
@@ -159,12 +337,23 @@ forwarding in the OS kernel of the first web server:
     http:  tcp/80  -> tcp/7777
     https: tcp/443 -> tcp/4443
 
-## Manual Approach: Provisioning on existing hosts
+Getting rid of your environment is not much more effort to type with
+Vagrant: `vagrant destroy`.
+
+
+## Manual Approach: Provisioning on Existing Hosts
 
 Read carefully if you plan to provision on existing hosts. The topics
 here are also valid when using Vagrant, but using existing hosts
 replaces the properly prepared base box with an host that for sure has a
 different configuration.
+
+Before you start to provision individual hosts, execute your setup with 
+Vagrant on VMs using the basebox. This helps you to save a lot of time.
+In case something fails on the individual host setup, compare the
+situation to the Vagrant run. See troubleshooting below for additional
+information.
+
 
 ### Operating System Configuration and Installation Requirements
 
@@ -202,7 +391,8 @@ hosts on the same path._ If you copy the files on the other machines,
 don't forget to repeat this after a configuration change. A better
 approach is using a network filesystem.
 
-### Access between hosts
+
+### Access Between Hosts
 
 _Automatically done when using Vagrant_
 
@@ -210,6 +400,7 @@ We need to enable trusted ssh connections between the hosts, without
 entering credentials. This is done by creating ssh-keys and adding
 foreign ssh-keys into the `authorized_keys` file. See `ssh(8)` for more
 information.
+
 
 ### Provisioning Environment
 
@@ -220,6 +411,7 @@ of the project directory on the application host. You can add this
 variable to the profile.
 
     export DEPLOYER=/vagrant
+
 
 ### Provisioning
 
@@ -234,6 +426,7 @@ the enviroment are listed. You can rerun the script in case of an error.
 However, if the process fails within one of the LCM steps, you need to
 start from scratch, after removing the already installed files.
 
+
 ### Removing IAM
 
 You can remove a complete or partly installed installation by the
@@ -241,7 +434,8 @@ command
 
     iam remove -t all
 
-### Creating and Removing Database Schema
+
+### Creating and Removing Database Schemas
 
 Creating the schema is part of the worklist execution. If you need to
 execute it manually use
@@ -249,259 +443,33 @@ execute it manually use
     iam rcu -a {create|remove} -t {identity|access|bip}
 
 
+------------------------------------------------------------------------
 
+## Troubleshooting
 
-* [Vagrant](http://www.vagrantup.com) 
-* A Virtualization Provider, e.g.
-[VirtualBox](https://www.virtualbox.org), [VMWare](https://www.vmware.com)
-  [Docker](https://www.docker.io) support is in development and not supported yet
+When something fails during the provisioning run, you will most likely see
+immediatelly what's the cause of it.
 
-After checking the pre-requisites and editing you destination description
-you can create the environment with:
+### Errors and Restart
 
-```
-    $ vagrant up
-```
+Usually you can resolve the problem and rerun, but not during the LCM
+steps. If an LCM step fails you need to remove the deployed software
+(not the database and LCM) and usually recreate the database schema. The
+step `preconfigure` writes into the database, so when you fail in the
+step or later recreate the database schemas with `iam rcu ...` (see
+above), remove the software with `iam remove ...` and restart the
+provisioning `iam provision`.
 
-Start using your env:
+### Log Information
 
-* Identity Manager: `http://machine:7777/identity`
+You can get more details from reading the log files in
 
-Remove the environment with:
+    $iam_top/lcm/lcmhome/provisioning/logs/`hostname -f`/*
 
-```
-    $ vagrant destroy
-```
+Listing the log files with options `-lrt` sorts them chronologically.
+Opening them with `less -S` prevents wrapping long lines.
 
+Quite often the route cause is a misconfiguration in the config set or
+the host OS, or not removing the last runs files, etc.
 
-## Multi Server Deployment
-
-The producion setup can be started on bare metal servers or virtual
-servers. Necessary OS packages will be added during the installation.
-
-The definition of your topology will be specified in
-`user-config/iam/provisioning.rsp`. You can do this by hand or create a
-new one with the _Oracle Life Cycle Management Wizard_.
-
-
-
-## Detailed Description
-
-This procedure simplifies the deployment of Oracle Identity and Access
-Management. However, a knowledge of the Oracle software and the original
-documentation is essential for using and installing the components! 
-
-**This README is not a subsitiute for the Oracle installation guides!**
-
-__Read those guides before and then continue.__
-
-### Download Software
-
-Download the software packages from
-[edelivery.oracle.com](https://edelivery.oracle.com/), see at the end
-of this file for a complete list with checksums.
-
-
-### Create Installation Image Directory
-
-You will need the following software packages from Oracle:
-
-Extract the installation images in a directory on your local machine (when
-deploying to VM on your local machine) or on a network server. This
-directory will be mounted on the new servers via NFS. There is no need
-to copy the files onto the new virtual machines, the installer can read
-them from any mounted location.
-
-The structure with the extracted images shall look like this:
-
-```
-    ├── iam-11.1.2.2                <- the application packages
-    │   ├── repo
-    │   │   └── installers
-    │   │       ├── appdev
-    │   │       ├── fmw_rcu
-    │   │       ├── iamsuite
-    │   │       ├── idmlcm
-    │   │       ├── jdk
-    │   │       ├── oud
-    │   │       ├── smart_update
-    │   │       ├── soa
-    │   │       ├── webgate
-    │   │       ├── weblogic
-    │   │       └── webtier
-    ├── database-ee-11.2.0.4        <- the databaes packages
-    │   └── p13390677_112040_Linux-x86-64
-    │       ├── client
-    │       ├── database
-    │       ├── deinstall
-    │       ├── examples
-    │       ├── gateways
-    │       └── grid
-    ├── patches                     <- common location for software patches
-    │   │   ├── ...
-```
-
-### Patch the installation images
-
-The installation images need patching to be installed properly.
-Download from [Oracle Support](https://support.oracl.com) the following
-patch and apply it to the downloaded repository:
-
-```
-# fix for wrong 32bit specs: i386 -> i686
-patch 18231786
-```
-
-You can apply this patch to all products: exchange the old `refhost.xml`
-with the new version:
-
-```
-./appdev/Disk1/stage/prereq/linux64/refhost.xml
-./iamsuite/Disk1/stage/prereq/linux64/refhost.xml
-./idmlcm/Disk1/stage/prereq/linux64/refhost.xml
-./oud/Disk1/stage/prereq/linux64/refhost.xml
-./soa/Disk1/stage/prereq/linux64/refhost.xml
-./webgate/Disk1/stage/prereq/linux64/refhost.xml
-./webtier/Disk1/stage/prereq/linux64/refhost.xml
-```
-
-### Create your config files
-
-Create your own copy of the config files with the included help-script:
-
-```
-./createconf.sh
-```
-
-Adapt the configuration files according to your needs in:
-
-```
-    Vagrantfile                         <- machine configs
-    ├── user-config
-    |   ├── database.config             <- database server
-    |   ├── dbs
-    |   │   ├── db_create.rsp           <- database server
-    |   │   ├── db_install.rsp          <- database server
-    |   │   └── db_netca.rsp            <- database server
-    |   ├── iam
-    |   │   ├── provisioning.rsp        <- other servers
-    |   │   ├── provisioning_data
-    |   │   │   └── cwallet.sso         <- other servers
-    |   │   ├── psa_access.rsp          <- other servers
-    |   │   └── psa_identity.rsp        <- other servers
-    |   ├── iam.config                  <- other servers
-    |   └── lcm
-            └── lcm_install.rsp         <- other servers
-```
-
-See below for using configuration management.
-
-There is an additional script you can use for changing values that are
-spread over multiple config files: `changeconf.sh`. Calling this script 
-with one paramter will search that value in all your config files, a
-second parameter is used for changing those occurences. Changing the 
-hostname is simple using the script:
-
-    # check occurences
-    ./changeconf.sh iam2.agoracon.at
-
-    # check result, then change with:
-    ./changeconf.sh iam2.agoracon.at iam3.example.com
-    
-Changing the installation path:
-
-    ./changeconf.sh /appl/iam /usr/iam
-
-
-### Start Installation
-
-
-The virtual machine is created with `vagrant up`, configuration and
-trigger points for software installation is inside Vagrantfile.
-
-System configuration: the script "sys.sh" produces a script that needs
-to be executed as root. This root-script will also create the
-application users and groups.
-
-The application installation scripts can then be run as the appropriate
-application user.
-
-If you want to execute those scripts on your own, just remove the call
-in Vagrantfile.
-
-
-
-## Configuration Management
-
-It is crucial to save your configurations for deploying and staging in later
-phases.
-
-The \*.rsp files are standard Oracle response files, used typically in server
-installations. Whatever you configure you should keep your configuration and
-add it to your configuration management. With Git you would now branch the
-project and add those files (beside the shipped example files that you've used
-as templates), eg. with:
-
-```
-    $ git checkout -b mydevboxbranch
-    $ git add .
-    $ git commit -m "initial version of mydevbox config"
-```
-You can add your own git server with
-
-```
-    $ git remote add mygit ssh://git@git.srv.priv/myrepo.git
-    $ git push mygit mydevboxbranch
-```
-
-
-
-## Software Packages to Download 
-
-You can verify the checksums online at:
-
-```
-https://edelivery.oracle.com/EPD/ViewDigest/get_form?epack_part_number=B77727&export_to_csv=1
-```
-
-```
-Enterprise Database 11.2.0.4 p13390677
---------------------------------------
-
-Download from Oracle eDelivery:
-  https://support.oracle.com
-
-0b399a6593804c04b4bd65f61e73575341a49f8a273acaba0dcda2dfec4979e0  p13390677_112040_Linux-x86-64_1of7.zip
-73e04957ee0bf6f3b3e6cfcf659bdf647800fe52a377fb8521ba7e3105ccc8dd  p13390677_112040_Linux-x86-64_2of7.zip
-09c08ad3e1ee03db1707f01c6221c7e3e75ec295316d0046cc5d82a65c7b928c  p13390677_112040_Linux-x86-64_3of7.zip
-88b4a4abb57f7e94941fe21fa99f8481868badf2e1e0749522bba53450f880c2  p13390677_112040_Linux-x86-64_4of7.zip
-f9c9d077549efa10689804b3b07e3efd56c655a4aba51ec307114b46b8eafc5f  p13390677_112040_Linux-x86-64_5of7.zip
-b2e08f605d7a4f8ece2a15636a65c922933c7ef29f7ad8b8f71b23fe1ecbaca8  p13390677_112040_Linux-x86-64_6of7.zip
-1cb47b7c0b437d7d25d497ed49719167a9fb8f97a434e93e4663cfa07590e2ba  p13390677_112040_Linux-x86-64_7of7.zip
-
-
-Identity and Access Management
-------------------------------
-
-Download from Oracle eDelivery:
-  https://edelivery.oracle.com/EPD/Download/get_form?egroup_aru_number=15364661
-
-Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 1 of 2 (Part 1 of 4)
-  SHA-1         4326D264BA21CC87AE724CF6B5D3B130A966579B
-Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 1 of 2 (Part 2 of 4)
-  SHA-1         C1AC8EEA2ADD699EE6D8723445D5FCBE8603DAFF
-Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 1 of 2 (Part 3 of 4)
-  SHA-1         7FB76DF9ACE7B0E54F4B8448307720DBA8635071
-Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 1 of 2 (Part 4 of 4)
-  SHA-1         B9739C4D0B3A9D704FB7356F946E049882616637
-Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 2 of 2 (Part 1 of 3)
-  SHA-1         F96849F2781B581419A1852865C44C6E69881B21
-Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 2 of 2 (Part 2 of 3)
-  SHA-1         560C49239B05C4DC7DEF69B44865FF19894F0846
-Oracle Identity and Access Management Deployment Repository 11.1.2.2.0, Linux x86-64, part 2 of 2 (Part 3 of 3)
-  SHA-1         71E1FE0A15FC54DBC7EAC279F7B6FB8E4B879CC3
-
-p18231786_111220_Generic.zip - Patch for installation images
-  SHA-1         72d6dc6c1e970e44736ba25f50723645ebc9bd10
-```
 
