@@ -5,7 +5,7 @@
 # nohup ${dir}/startNodemanager.sh >${log} 2>&1 &
 
 WLS_HOME=__IAM_TOP__/products/identity/wlserver_10.3
-NM_HOME=__IAM_TOP__/config/nodemanager/__HOSTNAME__
+NM_HOME=__IAM_TOP__/config/nodemanager/$(hostname -f)
 LOG=__IAM_LOG__/nodemanager/nodemanager.log
 
 JAVA_OPTIONS="-DNodeManagerHome=${NM_HOME} ${JAVA_OPTIONS}"
