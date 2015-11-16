@@ -12,6 +12,7 @@ httpd_config() {
   local bak=${dst}-orig.tgz
   local wlsoim=""
   local wlssoa=""
+  local wlsoia=""
   local wlsadm=""
 
   log "Generating OHS config files"
@@ -79,11 +80,11 @@ httpd_config() {
     wlssoa+="${IDMPROV_SECOND_SOA_HOST}:"
     wlssoa+="${IDMPROV_SECOND_SOA_PORT}"
     # oia cluster
-    wlssoa+="WebLogicCluster "
-    wlssoa+="${IDMPROV_OIA_HOST}:"
-    wlssoa+="${IDMPROV_OIA_PORT},"
-    wlssoa+="${IDMPROV_SECOND_OIA_HOST}:"
-    wlssoa+="${IDMPROV_SECOND_OIA_PORT}"
+    wlsoia+="WebLogicCluster "
+    wlsoia+="${IDMPROV_OIA_HOST}:"
+    wlsoia+="${IDMPROV_OIA_PORT},"
+    wlsoia+="${IDMPROV_SECOND_OIA_HOST}:"
+    wlsoia+="${IDMPROV_SECOND_OIA_PORT}"
   fi
 
   # now we do the substi thing, in place
