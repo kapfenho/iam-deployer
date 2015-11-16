@@ -13,8 +13,9 @@ $hostfile = "# ...cant touch this
 192.168.168.240          oim1.iamvc.agoracon.at             oim1
 192.168.168.241          oim2.iamvc.agoracon.at             oim2
 #{$frontend_ip}   idminternal.iamvc.agoracon.at      idminternal
-#{$frontend_ip}        oimadm.iamvc.agoracon.at           oimadm
-#{$frontend_ip}        oiaadm.iamvc.agoracon.at           oiaadm
+#{$frontend_ip}      oamadmin.iamvc.agoracon.at           oimadm
+#{$frontend_ip}      iamadmin.iamvc.agoracon.at           oiaadm
+#{$frontend_ip}      diradmin.iamvc.agoracon.at           oiaadm
 #{$frontend_ip}           sso.iamvc.agoracon.at              sso
 192.168.168.170         oradb11.vie.agoracon.at          oradb11
 192.168.1.16              nyx.iamvc.agoracon.at              nyx
