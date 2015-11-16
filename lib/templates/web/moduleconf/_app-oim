@@ -112,5 +112,5 @@
     # APM
     <Location /apm>
         SetHandler weblogic-handler
-        __WLS_ADMINSERVER__
+        __WLS_IAMADMINSERVER__
     </Location>
