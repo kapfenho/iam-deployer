@@ -25,8 +25,8 @@ httpd_config() {
                 _app-oimadmin
                 _app-soa
                 _app-oia
-                _wls-iamadmin
-                _wls-oiaadmin
+                _wls-iamdomain
+                _wls-oiadomain
                 _ssl
                 iamadmin.conf
                 oiaadmin.conf
@@ -91,8 +91,8 @@ httpd_config() {
   for f in ${files[@]} ; do
     sed -i -e "s/__WLS_VH_FRONTEND__/${IDMPROV_LBR_SSO_HOST}/g" \
            -e "s/__WLS_VH_IDMINTERNAL__/${IDMPROV_LBR_OIMINTERNAL_HOST}/g" \
-           -e "s/__WLS_VH_IAMADMIN__/${vh_iamadmin}/g" \
-           -e "s/__WLS_VH_OIAADMIN__/${vh_oiaadmin}/g" \
+           -e "s/__WLS_VH_IAMADMIN__/${IDMPROV_LBR_OIMADMIN_HOST}/g" \
+           -e "s/__WLS_VH_OIAADMIN__/${IDMPROV_LBR_OIAADMIN_HOST}/g" \
            -e "s/__WLS_IAMADMINSERVER__/${wlsdom1}/g" \
            -e "s/__WLS_OIAADMINSERVER__/${wlsdom2}/g" \
            -e "s/__WLS_OIA__/${wlsoia}/g" \

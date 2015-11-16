@@ -57,26 +57,26 @@ getvar IDMPROV_LBR_OIMINTERNAL_HOST
 
 :   ${iam_orainv_grp:="oinstall"}
     
-:             ${iam_pwd:="Montag11"}
-: ${iam_oim_schema_pass:=${iam_pwd}}
-: ${iam_oam_schema_pass:=${iam_pwd}}
-: ${iam_bip_schema_pass:=${iam_pwd}}
-: ${iam_oia_schema_pass:=${iam_pwd}}
-:        ${iam_dba_pass:=${iam_pwd}}
-:               ${nmPwd:=${iam_pwd}}
-:             ${domaPwd:=${iam_pwd}}
-:             ${domiPwd:=${iam_pwd}}
-:              ${oudPwd:=${iam_pwd}}
-:           ${oiaWlUser:="Weblogic"}
-:            ${oiaWlPwd:=${iam_pwd}}
-:     ${domiAdminServer:="AdminServer"}
-:     ${domaAdminServer:="AdminServer"}
-:     ${domlAdminServer:="AdminServer"}
+:                 ${iam_pwd:="Montag11"}
+:     ${iam_oim_schema_pass:=${iam_pwd}}
+:     ${iam_oam_schema_pass:=${iam_pwd}}
+:     ${iam_bip_schema_pass:=${iam_pwd}}
+:     ${iam_oia_schema_pass:=${iam_pwd}}
+:            ${iam_dba_pass:=${iam_pwd}}
+:                   ${nmPwd:=${iam_pwd}}
+:                 ${domaPwd:=${iam_pwd}}
+:                 ${domiPwd:=${iam_pwd}}
+:                  ${oudPwd:=${iam_pwd}}
+:               ${oiaWlUser:="Weblogic"}
+:                ${oiaWlPwd:=${iam_pwd}}
+:         ${domiAdminServer:="AdminServer"}
+:         ${domaAdminServer:="AdminServer"}
+:         ${domlAdminServer:="AdminServer"}
+:        ${IDMPROV_OIA_HOST:=${IDMPROV_OIM_HOST}}
+: ${IDMPROV_SECOND_OIA_HOST:=${IDMPROV_SECOND_OIM_HOST}}
+:        ${IDMPROV_OIA_PORT:="7310"}
+: ${IDMPROV_SECOND_OIA_PORT:="7310"}
 #
-# mandatory when provisioning: 
-#  ${domiAdminHost}
-#  ${domaAdminHost}
-#  ${domlAdminHost}
 
 # --------- user must not set this
             iam_top=${IL_APP_BASE}

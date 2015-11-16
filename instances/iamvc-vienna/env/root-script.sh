@@ -44,7 +44,7 @@ EOS
 yum check-update
 yum install -y epel-release
 yum check-update
-yum -y upgrade
+#yum -y upgrade
 
 #   64bit packages for all fusion apps
 yum install -y \
