@@ -206,6 +206,7 @@ instances in one containing directory (`instances`) and symlink your
 current one to `user-config`:
 
     ln -s instances/my_instance user-config
+    ln -s user-config/vagrant/Vagrantfile
 
 All available config files:
 
@@ -236,8 +237,7 @@ my-instance
 │   ├── createdom-cluster.prop  <- OIA cluster: domain config
 │   ├── rbacx_single.patch      <- OIA single instance: config as patch
 │   ├── rbacx_cluster.patch     <- OIA cluster: config as patch
-│   ├── rbacx_workflow.patch    <- OIA workflow: config as patch
-│   └── psa_identity.rsp        <- patch set assistant oim (PS2)
+│   └── rbacx_workflow.patch    <- OIA workflow: config as patch
 ```
 
 There is an additional script you can use for changing values that are
