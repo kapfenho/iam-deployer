@@ -140,11 +140,11 @@ oia_appconfig()
   if [ "${deployment_type}" == "single" ]
   then
     echo "Patching RBACX_HOME for single instance deployment.."
-    patch -p1 --silent < ${DEPLOYER}/user-config/oia/rbacx_single.patch
+    patch -p1 < ${DEPLOYER}/user-config/oia/rbacx_single.patch
   elif [ "${deployment_type}" == "cluster" ]
   then
     echo "Patching RBACX_HOME for cluster deployment.."
-    patch -p1 --silent < ${DEPLOYER}/user-config/oia/rbacx_cluster.patch
+    patch -R -p1 < ${DEPLOYER}/user-config/oia/rbacx_cluster.patch
   fi
   echo "Done patching RBACX_HOME."
   echo ""
