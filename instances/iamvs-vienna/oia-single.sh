@@ -2,6 +2,8 @@
 
 # run IAM Tool steps to deploy OIA
 #
+set -o errexit
+set -o errtrace
 
 export PATH=${DEPLOYER}:${PATH}
 

@@ -340,18 +340,21 @@ else
       ;;
 
     remove)
-      if   [ "${opt_a}" == "identity" ] ; then
-        remove 
-      elif [ "${opt_a}" == "analytics" ] ; then
-        remove
-      elif [ "${opt_a}" == "lcm" ] ; then
-        remove 
-      elif [ "${opt_a}" == "env" ] ; then
-        remove 
-      elif [ "${opt_a}" == "all" ] ; then
-        remove
-      elif [ -z "${opt_h}" ] ; then
-        remove_iam ${opt_L}
+      if   [ -z "${opt_h}" -a -n "${opt_a}" -a "${opt_a}" == "identity" ] ; then
+        error "not implemented yet, choose optional <all>"
+        ;;
+      elif [ -z "${opt_h}" -a -n "${opt_a}" -a "${opt_a}" == "analytics" ] ; then
+        remove_oia
+        ;;
+      elif [ -z "${opt_h}" -a -n "${opt_a}" -a "${opt_a}" == "lcm" ] ; then
+        remove_lcm
+        ;;
+      elif [ -z "${opt_h}" -a -n "${opt_a}" -a "${opt_a}" == "env" ] ; then
+        remove_env
+        ;;
+      elif [ -z "${opt_h}" -a -n "${opt_a}" -a "${opt_a}" == "all" ] ; then
+        remove_oia ; remover_env ; remove_iam ; remove_lcm
+        ;;
       else
         help_remove
         exit $ERROR_SYNTAX_ERROR

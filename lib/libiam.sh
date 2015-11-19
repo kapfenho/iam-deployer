@@ -337,11 +337,11 @@ remove_iam()
     ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
     ${iam_top}/lcm/lcmhome/provisioning/logs/
 
-  remove_env
+}
 
-  if [ -n "${opt_incl_lcm}" ] ; then
-    rm -Rf ${iam_top}/lcm/*
-  fi
+remove_lcm()
+{
+  rm -Rf ${iam_top}/lcm/*
 }
 
 #  remove OIA installation including including env
