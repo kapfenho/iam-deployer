@@ -12,13 +12,13 @@ diff -rupN oiaclean/conf/iam.properties oia/conf/iam.properties
 -com.vaau.rbacx.etl.import.graphsLocation=$RBACX_HOME/import/etl/graphs
 -com.vaau.rbacx.etl.import.completeLocation=$RBACX_HOME/import/etl/complete
 -com.vaau.rbacx.etl.import.outputLocation=$RBACX_HOME/import/in
-+com.vaau.rbacx.iam.file.import.completeLocation=/l/ora/products/analytics/oia/import/complete
-+com.vaau.rbacx.iam.file.import.schemaLocation=/l/ora/products/analytics/oia/import/schema
-+com.vaau.rbacx.iam.file.import.dropLocation=/l/ora/products/analytics/oia/import/in
-+com.vaau.rbacx.etl.import.dropLocation=/l/ora/products/analytics/oia/import/etl/in
-+com.vaau.rbacx.etl.import.graphsLocation=/l/ora/products/analytics/oia/import/etl/graphs
-+com.vaau.rbacx.etl.import.completeLocation=/l/ora/products/analytics/oia/import/etl/complete
-+com.vaau.rbacx.etl.import.outputLocation=/l/ora/products/analytics/oia/import/in
++com.vaau.rbacx.iam.file.import.completeLocation=/k/fmw/products/analytics/oia/import/complete
++com.vaau.rbacx.iam.file.import.schemaLocation=/k/fmw/products/analytics/oia/import/schema
++com.vaau.rbacx.iam.file.import.dropLocation=/k/fmw/products/analytics/oia/import/in
++com.vaau.rbacx.etl.import.dropLocation=/k/fmw/products/analytics/oia/import/etl/in
++com.vaau.rbacx.etl.import.graphsLocation=/k/fmw/products/analytics/oia/import/etl/graphs
++com.vaau.rbacx.etl.import.completeLocation=/k/fmw/products/analytics/oia/import/etl/complete
++com.vaau.rbacx.etl.import.outputLocation=/k/fmw/products/analytics/oia/import/in
  
  # FILE IAM Export parameters
 -com.vaau.rbacx.iam.file.export.dropLocation=$RBACX_HOME/export/etl/in
@@ -27,12 +27,12 @@ diff -rupN oiaclean/conf/iam.properties oia/conf/iam.properties
 -com.vaau.rbacx.etl.export.graphsLocation=$RBACX_HOME/export/etl/graphs
 -com.vaau.rbacx.etl.export.completeLocation=$RBACX_HOME/export/etl/complete
 -com.vaau.rbacx.etl.export.outputLocation=$RBACX_HOME/export/out
-+com.vaau.rbacx.iam.file.export.dropLocation=/l/ora/products/analytics/oia/export/etl/in
-+com.vaau.rbacx.iam.file.export.schemaLocation=/l/ora/products/analytics/oia/export/schema
-+com.vaau.rbacx.etl.export.dropLocation=/l/ora/products/analytics/oia/export/etl/in
-+com.vaau.rbacx.etl.export.graphsLocation=/l/ora/products/analytics/oia/export/etl/graphs
-+com.vaau.rbacx.etl.export.completeLocation=/l/ora/products/analytics/oia/export/etl/complete
-+com.vaau.rbacx.etl.export.outputLocation=/l/ora/products/analytics/oia/export/out
++com.vaau.rbacx.iam.file.export.dropLocation=/k/fmw/products/analytics/oia/export/etl/in
++com.vaau.rbacx.iam.file.export.schemaLocation=/k/fmw/products/analytics/oia/export/schema
++com.vaau.rbacx.etl.export.dropLocation=/k/fmw/products/analytics/oia/export/etl/in
++com.vaau.rbacx.etl.export.graphsLocation=/k/fmw/products/analytics/oia/export/etl/graphs
++com.vaau.rbacx.etl.export.completeLocation=/k/fmw/products/analytics/oia/export/etl/complete
++com.vaau.rbacx.etl.export.outputLocation=/k/fmw/products/analytics/oia/export/out
  
  
  # FILE BASED Account Import parameters
@@ -76,7 +76,7 @@ diff -rupN oiaclean/rbacx/WEB-INF/classes/jasperreports.properties oia/rbacx/WEB
 @@ -1,2 +1,3 @@
  net.sf.jasperreports.subreport.runner.factory=net.sf.jasperreports.engine.fill.JRContinuationSubreportRunnerFactory
  net.sf.jasperreports.export.xls.max.rows.per.sheet=65534
-+net.sf.jasperreports.compiler.classpath=/l/ora/products/analytics/oia/rbacx/WEB-INF/lib/jasperreports-2.0.5-javaflow.jar
++net.sf.jasperreports.compiler.classpath=/k/fmw/products/analytics/oia/rbacx/WEB-INF/lib/jasperreports-2.0.5-javaflow.jar
 diff -rupN oiaclean/rbacx/WEB-INF/classes/oscache.properties oia/rbacx/WEB-INF/classes/oscache.properties
 --- oiaclean/rbacx/WEB-INF/classes/oscache.properties	2014-10-01 11:09:30.000000000 +0200
 +++ oia/rbacx/WEB-INF/classes/oscache.properties	2015-10-01 11:01:55.189170915 +0200
@@ -114,14 +114,14 @@ diff -rupN oiaclean/rbacx/WEB-INF/conf-context.xml oia/rbacx/WEB-INF/conf-contex
 -                <value>file:${RBACX_HOME}/conf/ida.properties</value>
 -                <value>file:${RBACX_HOME}/conf/idw.properties</value>
 -                <value>file:${RBACX_HOME}/conf/oimjdbc.properties</value>
-+                <!--value>file:/l/ora/products/analytics/oia/conf/jdbc.properties</value-->
-+                <value>file:/l/ora/products/analytics/oia/conf/mail.properties</value>
-+                <value>file:/l/ora/products/analytics/oia/conf/ldap.properties</value>
-+                <value>file:/l/ora/products/analytics/oia/conf/iam.properties</value>
-+                <value>file:/l/ora/products/analytics/oia/conf/idc.properties</value>
-+                <value>file:/l/ora/products/analytics/oia/conf/ida.properties</value>
-+                <value>file:/l/ora/products/analytics/oia/conf/idw.properties</value>
-+                <value>file:/l/ora/products/analytics/oia/conf/oimjdbc.properties</value>
++                <!--value>file:/k/fmw/products/analytics/oia/conf/jdbc.properties</value-->
++                <value>file:/k/fmw/products/analytics/oia/conf/mail.properties</value>
++                <value>file:/k/fmw/products/analytics/oia/conf/ldap.properties</value>
++                <value>file:/k/fmw/products/analytics/oia/conf/iam.properties</value>
++                <value>file:/k/fmw/products/analytics/oia/conf/idc.properties</value>
++                <value>file:/k/fmw/products/analytics/oia/conf/ida.properties</value>
++                <value>file:/k/fmw/products/analytics/oia/conf/idw.properties</value>
++                <value>file:/k/fmw/products/analytics/oia/conf/oimjdbc.properties</value>
              </list>
          </constructor-arg>
      </bean>
@@ -200,7 +200,7 @@ diff -rupN oiaclean/rbacx/WEB-INF/log4j.properties oia/rbacx/WEB-INF/log4j.prope
  #File Appender
  log4j.appender.file=org.apache.log4j.DailyRollingFileAppender
 -log4j.appender.file.file=logs/rbacx.log
-+log4j.appender.file.file=/l/ora/IAM/logs/oiavs/rbacx.log
++log4j.appender.file.file=/k/fmw/IAM/logs/oiavs/rbacx.log
  log4j.appender.file.layout=org.apache.log4j.PatternLayout
  log4j.appender.file.layout.ConversionPattern=%d{ABSOLUTE} %-5p [%c{1}] %m%n
  log4j.appender.file.ImmediateFlush=true

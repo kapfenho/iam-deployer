@@ -89,8 +89,8 @@ getvar WLSADMIN_NAME
            domaUser=${WLSADMIN_NAME}
            domiUser=${WLSADMIN_NAME}
    
-     iam_orainv_ptr=${iam_top}/etc/oraInst.loc
-         iam_orainv=${iam_top}/etc/oraInventory
+: ${iam_orainv_ptr:=${iam_top}/lcm/oraInst.loc}
+:     ${iam_orainv:=${iam_top}/lcm/oraInventory}
 
              s_base=${IL_INSTALLERDIR_LOCATION}
               s_lcm=${s_base}/installers/idmlcm
