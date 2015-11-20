@@ -8,7 +8,10 @@
 --
 
 CREATE TABLESPACE IAK1_OIA
-  DATAFILE 'tbs_iak1_oia01.dbf' SIZE 200M ONLINE;
+  LOGGING
+  DATAFILE '/k/ksum/ora/UM1K/dbf01/IMK1_oia01.dbf' SIZE 200M ONLINE
+  autoextend on next 100m
+/
 
 CREATE USER IAK1_OIA
   IDENTIFIED BY "Montag11"
