@@ -2,7 +2,7 @@
 ::1                                         localhost6 localhost6.localdomain6
 
 # hostname
-192.168.168.30                bsul0355.fs01.vwf.vwfs-ad    iam1
+192.168.168.30                bsul0355.fs01.vwf.vwfs-ad    bsul0355
 
 # end user URL
 192.168.168.30            sso.bsul0355.fs01.vwf.vwfs-ad

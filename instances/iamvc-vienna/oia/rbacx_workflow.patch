@@ -1,0 +1,67 @@
+diff -rupN conf/_workflows/policy-creation-workflow.xml conf/workflows/policy-creation-workflow.xml
+--- conf/_workflows/policy-creation-workflow.xml	2015-10-27 11:38:18.683433169 +0000
++++ conf/workflows/policy-creation-workflow.xml	2015-10-27 11:31:06.500449701 +0000
+@@ -123,10 +123,10 @@
+                 <function name="createSIMPolicyFunction" type="spring">
+                     <arg name="bean.name">createSIMPolicyFunction</arg>
+                 </function>
+-                <!--<function name="exportIAMPolicyFunction" type="spring">
++                <function name="exportIAMPolicyFunction" type="spring">
+                     <arg name="bean.name">exportIAMPolicyFunction</arg>
+-                    <arg name="iamConnectionName"/>
+-                </function>-->
++                    <arg name="OIMServer"/>
++                </function>
+             </pre-functions>
+         </step>
+         <step id="4" name="Discard Policy">
+diff -rupN conf/_workflows/policy-modification-workflow.xml conf/workflows/policy-modification-workflow.xml
+--- conf/_workflows/policy-modification-workflow.xml	2015-10-27 11:38:18.683433169 +0000
++++ conf/workflows/policy-modification-workflow.xml	2015-10-27 11:31:55.812093195 +0000
+@@ -123,10 +123,10 @@
+                 <function name="updateSIMPolicyFunction" type="spring">
+                     <arg name="bean.name">updateSIMPolicyFunction</arg>
+                 </function>
+-                <!--<function name="exportIAMPolicyFunction" type="spring">
++                <function name="exportIAMPolicyFunction" type="spring">
+                     <arg name="bean.name">exportIAMPolicyFunction</arg>
+-                    <arg name="iamConnectionName"/>
+-                </function>-->
++                    <arg name="OIMServer"/>
++                </function>
+             </pre-functions>
+         </step>
+         <step id="4" name="Discard Policy">
+diff -rupN conf/_workflows/role-creation-workflow.xml conf/workflows/role-creation-workflow.xml
+--- conf/_workflows/role-creation-workflow.xml	2015-10-27 11:38:18.682432669 +0000
++++ conf/workflows/role-creation-workflow.xml	2015-10-27 11:32:31.382869699 +0000
+@@ -243,10 +243,10 @@
+                 <function name="createSIMRoleFunction" type="spring">
+                     <arg name="bean.name">createSIMRoleFunction</arg>
+                 </function>
+-                <!--<function name="exportIAMRoleFunction" type="spring">
++                <function name="exportIAMRoleFunction" type="spring">
+                     <arg name="bean.name">exportIAMRoleFunction</arg>
+-                    <arg name="iamConnectionName"/>
+-                </function>-->
++                    <arg name="OIMServer"/>
++                </function>
+             </pre-functions>
+         </step>
+         <step id="6" name="Delete Role">
+diff -rupN conf/_workflows/role-modification-workflow.xml conf/workflows/role-modification-workflow.xml
+--- conf/_workflows/role-modification-workflow.xml	2015-10-27 11:38:18.683433169 +0000
++++ conf/workflows/role-modification-workflow.xml	2015-10-27 11:32:46.461405191 +0000
+@@ -277,10 +277,10 @@
+                 <function name="updateSIMRoleFunction" type="spring">
+                     <arg name="bean.name">updateSIMRoleFunction</arg>
+                 </function>
+-                <!--<function name="exportIAMRoleFunction" type="spring">
++                <function name="exportIAMRoleFunction" type="spring">
+                     <arg name="bean.name">exportIAMRoleFunction</arg>
+                     <arg name="iamConnectionName"/>
+-                </function>-->
++                </function>
+             </pre-functions>
+         </step>
+         <step id="6" name="Delete Role">

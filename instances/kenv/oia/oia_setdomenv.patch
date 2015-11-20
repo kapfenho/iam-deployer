@@ -1,0 +1,18 @@
+--- setDomainEnv.sh.orig        2015-10-01 10:07:33.949743573 +0000
++++ setDomainEnv.sh     2015-10-01 10:09:05.727607560 +0000
+@@ -32,6 +32,15 @@ popd()
+        return
+ }
+
++# OIA Integration
++export RBACX_HOME=/k/fmw/products/analytics/oia
++export OIM_CLIENT_HOME=/k/fmw/products/analytics/oia/xellerate
++export APPSERVER_TYPE=wls
++JAVA_OPTIONS="-Djava.naming.factory.initial=weblogic.jndi.WLInitialContextFactory ${JAVA_OPTIONS}"
++JAVA_OPTIONS="-Djava.security.auth.login.config=${OIM_CLIENT_HOME}/config/authwl.conf ${JAVA_OPTIONS}"
++JAVA_OPTIONS="-Djava.net.preferIPv4Stack=true ${JAVA_OPTIONS}"
++export JAVA_OPTIONS
++
+ # --- End Functions ---
+
+ # *************************************************************************

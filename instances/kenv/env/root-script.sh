@@ -10,7 +10,7 @@ sed -i -e "/kernel.shmmax/d" /etc/sysctl.conf ; echo "kernel.shmmax=17179869184"
 echo "kernel.sem=256 32000 100 142" >> /etc/sysctl.conf
 echo "fs.file-max=6815744" >> /etc/sysctl.conf
 
-# --- database specific start ----
+# --- database and rcu specific start ----
 sed -i -e "/kernel.msgmnb/d" /etc/sysctl.conf ; echo "kernel.msgmnb=65536" >> /etc/sysctl.conf
 sed -i -e "/kernel.msgmax/d" /etc/sysctl.conf ; echo "kernel.msgmax=65536" >> /etc/sysctl.conf
 sed -i -e "/kernel.shmall/d" /etc/sysctl.conf ; echo "kernel.shmall=16777216" >> /etc/sysctl.conf
@@ -108,43 +108,40 @@ groupadd -g 6100 fmwgroup
 groupadd -g 6200 oinstall
 groupadd -g 6201 dba
 
-useradd -u 5200 -g 6200 -G vagrant,dba oracle
-useradd -u 5100 -g 6100 -G vagrant,oinstall fmwuser
-useradd -u 5101 -g 6100 oamadmin
-useradd -u 5102 -g 6100 oimadmin
-useradd -u 5103 -g 6100 webadmin
-useradd -u 5104 -g 6100 dsadmin
+useradd -u 5200 -g 6200 -G dba oracle
+useradd -u 5100 -g 6100 -G oinstall fmwuser
 
 echo "%fmwgroup  ALL=(ALL)  NOPASSWD: ALL" > /etc/sudoers.d/fmwgroup
 chmod 440 /etc/sudoers.d/fmwgroup
 
-echo "oracle  ALL=(ALL)  NOPASSWD: ALL" > /etc/sudoers.d/oracle
-chmod 440 /etc/sudoers.d/oracle
+# echo "oracle  ALL=(ALL)  NOPASSWD: ALL" > /etc/sudoers.d/oracle
+# chmod 440 /etc/sudoers.d/oracle
 
-cat >> /etc/security/limits.d/91-fusion.conf <<-EOF
+cat >> /etc/security/limits.d/91-fmw.conf <<-EOS
 @fmwgroup  soft    nofile     150000
 @fmwgroup  hard    nofile     150000
 @fmwgroup  soft    nproc       16384
 @fmwgroup  hard    nproc       16384
-oracle     soft    nofile      65536
-oracle     hard    nofile      65536
-oracle     soft    stack       10240
-EOF
+EOS
 
-install  --owner=oracle  --group=oinstall --mode=0775 --directory /var/log/oracle           # logs (local)
-install  --owner=oracle  --group=oinstall --mode=0775 --directory /opt/oracle               # products, config (shared, rw)
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /var/log/fmw              # logs (local)
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora            # products, config (shared, rw)
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/lcm        # life cycle manager
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/local      # local instance data
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /mnt/oracle               # images (shared, ro)
+# cat >> /etc/security/limits.d/91-oracle.conf <<-EOS
+# oracle     soft    nofile      65536
+# oracle     hard    nofile      65536
+# oracle     soft    stack       10240
+# EOS
+
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /k/fmw/IAM/logs   # logs (local)
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /k/fmw            # products, config (shared, rw)
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /k/fmw/lcm        # life cycle manager
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /k/fmw/local      # local instance data
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /mnt/oracle       # images (shared, ro)
 
 # shared mount points must be munally added
 # -----------------------------------------
-echo "horst12:/Users/horst/Downloads/software/oracle /mnt/oracle  nfs  rw,bg,rsize=32768,wsize=32768  0 0" >> /etc/fstab
+#echo "nfsserver:/export/oracle /mnt/oracle  nfs  rw,bg,rsize=32768,wsize=32768  0 0" >> /etc/fstab
 mount /mnt/oracle
 
-echo "Red Hat Enterprise Linux Server release 6.7 (Santiago)" >>/etc/redhat-release
+#echo "Red Hat Enterprise Linux Server release 6.7 (Santiago)" >>/etc/redhat-release
 
 set +x
 exit 0
