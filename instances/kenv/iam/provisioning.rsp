@@ -96,7 +96,7 @@ PROVPLAN_CREATEDDATE=2015-10-06 12:12:23 UTC
 PROVPLAN_DESC=
 
 #Installation Locations
-INSTALL_INSTALLERS_DIR=/mnt/media/IAM_repository/iam-11.1.2.2/repo
+INSTALL_INSTALLERS_DIR=/home/fmwuser/src/IAM_repository/iam-11.1.2.2/repo
 INSTALL_APPHOME_DIR=/k/fmw
 INSTALL_LCMHOME_DIR=/k/fmw/lcm/lcmhome
 INSTALL_LCMHOME_IS_MOUNTED_IN_DIR_HOSTS=true
@@ -181,7 +181,7 @@ UC_CREATE_DATE=2015-10-06 14:00:23 UTC
 UC_PALN_DESC=Identity Manager
 
 #Install Locations
-IL_INSTALLERDIR_LOCATION=/mnt/media/IAM_repository/iam-11.1.2.2/repo
+IL_INSTALLERDIR_LOCATION=/home/fmwuser/src/IAM_repository/iam-11.1.2.2/repo
 IL_APP_BASE=/k/fmw
 IL_APP_CONFIG=${provisioning.setup.install-location.locations.default.home.top}/config
 IL_ENABLE_LOCALAPP_CONFIG=true
@@ -197,7 +197,7 @@ COMMON_STD_ADMIN_NAME=admin
 COMMON_STD_ADMIN_PWD=
 COMMON_STD_ADMIN_PWD_CONFIRM=
 COMMON_FMW_DIR=/k/fmw
-COMMON_FUSION_REPO_INSTALL_DIR=/mnt/media/IAM_repository/iam-11.1.2.2/repo
+COMMON_FUSION_REPO_INSTALL_DIR=/home/fmwuser/src/IAM_repository/iam-11.1.2.2/repo
 COMMON_STD_PROV_LOGDIR=${provisioning.setup.install-location.locations.default.log.directory}
 
 #DOMAIN TOPOLOGY
