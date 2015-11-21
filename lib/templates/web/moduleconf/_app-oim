@@ -108,6 +108,14 @@
         WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
+    # Stop and getStatus Scheduler Service
+    <Location /SchedulerService-web>
+        SetHandler weblogic-handler
+        WLCookieName    oimjsessionid
+        __WLS_OIM__
+        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
+    </Location>
+
     # Entries Required by Oracle Entitlements Server
     # APM
     <Location /apm>
