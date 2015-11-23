@@ -322,13 +322,10 @@ remove_env()
 
 
 #  remove installation directories populated by LCM
-#  if $iam_remove_lcm is set to "yes" also remove all LCM dirs
 #  Always returns 0
 #
 remove_iam()
 {
-  opt_incl_lcm=${1}
-
   rm -Rf ${iam_top}/products/* \
     ${iam_top}/config/* \
     ${iam_services}/* \
@@ -336,10 +333,12 @@ remove_iam()
     ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
     ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
     ${iam_top}/lcm/lcmhome/provisioning/logs/
-
 }
 
-remove_lcm()
+#  remove LCM (life cycle manager) iam_base/lcm
+#  binaries and home
+#
+remmve_lcm()
 {
   rm -Rf ${iam_top}/lcm/*
 }
@@ -350,8 +349,9 @@ remove_lcm()
 remove_oia()
 {
   rm -Rf ${iam_top}/products/analytics \
-    ${iam_services}/${iam_domain_oia} \
-    ~/.env/{oia.env,analytics.prop}
+    ${iam_services}/domains/${iam_domain_oia}
+  echo
+  echo "OIA webapp and domain removed. Env kept"
 }
 
 #  run Oracle patch set assistant

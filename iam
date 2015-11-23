@@ -340,15 +340,15 @@ else
       ;;
 
     remove)
-      if   [ -z "${opt_h}" -a -n "${opt_a}" -a "${opt_a}" == "identity" ] ; then
+      if   [ -z "${opt_h}" -a -n "${opt_t}" -a "${opt_t}" == "identity" ] ; then
         error "not implemented yet, choose optional <all>"
-      elif [ -z "${opt_h}" -a -n "${opt_a}" -a "${opt_a}" == "analytics" ] ; then
+      elif [ -z "${opt_h}" -a -n "${opt_t}" -a "${opt_t}" == "analytics" ] ; then
         remove_oia
-      elif [ -z "${opt_h}" -a -n "${opt_a}" -a "${opt_a}" == "lcm" ] ; then
+      elif [ -z "${opt_h}" -a -n "${opt_t}" -a "${opt_t}" == "lcm" ] ; then
         remove_lcm
-      elif [ -z "${opt_h}" -a -n "${opt_a}" -a "${opt_a}" == "env" ] ; then
+      elif [ -z "${opt_h}" -a -n "${opt_t}" -a "${opt_t}" == "env" ] ; then
         remove_env
-      elif [ -z "${opt_h}" -a -n "${opt_a}" -a "${opt_a}" == "all" ] ; then
+      elif [ -z "${opt_h}" -a -n "${opt_t}" -a "${opt_t}" == "all" ] ; then
         remove_oia ; remover_env ; remove_iam ; remove_lcm
       else
         help_remove
