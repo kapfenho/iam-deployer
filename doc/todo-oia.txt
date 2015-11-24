@@ -1,0 +1,60 @@
+conf/iam.properties
+-------------------
+$RBACX_HOME to /l/ora/products/analytics/oia
+
+oimjdbc.properties
+------------------
+-oim.jdbc.username=oimdbuser
++oim.jdbc.username=VSI_OIM
+
+-#oim.jdbc.password=oimpassword                                                  
++oim.jdbc.password=Montag11 
+
+-oim.jdbc.url=jdbc:oracle:thin:@$SERVER_NAME:$PORT:oim
++oim.jdbc.url = jdbc:oracle:thin:@oradb.iamv2.agoracon.at:1521/iamvs.agoracon.at
+ 
+rbacx/WEB-INF/application-context.xml
+-------------------------------------
+-        <constructor-arg index="0" value="Prod-1-Cluster"/>
++        <constructor-arg index="0" value="VWFS-Instance"/>
+ 
+ 
+
+rbacx/WEB-INF/classes/jasperreports.properties
+----------------------------------------------
+add one line:
+ net.sf.jasperreports.export.xls.max.rows.per.sheet=65534
++net.sf.jasperreports.compiler.classpath=/l/ora/products/analytics/oia/rbacx/WEB-INF/lib/jasperreports-2.0.5-javaflow.jar
+
+rbacx/WEB-INF/classes/oscache.properties
+----------------------------------------
+-#cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener,com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl
++cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener,com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl
+-#cache.cluster.multicast.ip=231.12.21.100
++cache.cluster.multicast.ip=231.12.21.100
+
+rbacx/WEB-INF/conf-context.xml 
+------------------------------
+${RBACX_HOME}
+
+-                <value>file:${RBACX_HOME}/conf/jdbc.properties</value>
++                <!--value>file:/l/ora/products/analytics/oia/conf/jdbc.properties</value-->
+
+
+rbacx/WEB-INF/dataaccess-context.xml
+------------------------------------
+Replace:
+
+-    <bean id="dataSource" parent="abstractDataSource">
++    <!--bean id="dataSource" parent="abstractDataSource">
+         <description>Default datasource that uses Oracle UCP as a pool implementation</description>
+         <property name="connectionFactoryClassName" value="${jdbc.driverClassName}"/>
+         <property name="URL" value="${jdbc.url}"/>
+@@ -76,6 +76,9 @@
+                 <property name="ignoreResourceNotFound" value="true"/>
+             </bean>
+         </property>
++    </bean-->
++    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
++          <property name="jndiName" value="jdbc/OIADataSource" /> 
+     </bean>

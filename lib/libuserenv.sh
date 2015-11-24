@@ -105,6 +105,14 @@ _cp_web()
   cp ${src}/bin/*webtier*                           ${bin}/
   cp ${src}/env/web.env                             ${env}/
   _replace_in_env
+  
+  # get the instance name
+  local _ohspath=$(find ${INSTALL_LOCALCONFIG_DIR}/instances \
+    -maxdepth 1 -type d -a -name 'ohs*')
+  local _ohs=$(basename $_ohspath)
+
+  sed -i "s/ohs1/${_ohs}/" ${env}/*
+
 }
 
 #  ------------------------------------------------

@@ -141,9 +141,25 @@ help_rcu()
          remove       remove Database schema
          
     -t   target product:
-         identity     create schema for Identity Manager
-         access       create schema for Access Manager
-         bip          create schema for BI Publisher
+         identity     Identity Manager
+         access       Access Manager
+         bip          BI Publisher
+         analytics    Identity Analytics
+
+  Schemas and Usernames:
+
+  Identity:     MDS, OPSS, SOAINFRA, ORASDPM, OIM 
+                Prefix: variable iam_oim_prefix
+
+  Access:       MDS, OPSS, IAU, OAM 
+                Prefix: variable iam_oam_prefix
+
+  BI-Publisher: MDS, BIPLATFORM
+                Prefix: variable iam_bip_prefix
+
+  Analytics:    Defined by variable iam_oia_dbuser
+  
+  Variables are defined in file iam.config
 
   "
 }

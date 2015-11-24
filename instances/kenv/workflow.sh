@@ -27,6 +27,8 @@ for h in ${provhosts[@]}; do
   fi
 done
 
+# iam ssh-key -a add -A
+
 # install database
 # database
 iam orainv
@@ -55,45 +57,51 @@ done
 
 # deploy user environment in shared location
 iam userenv -a env -A
+ssh bsul0356 -- sed -i 's/ohs1/ohs2/g' .env/web.env
 # on each host: load in user profile and create easy to reach shortcuts 
 iam userenv -a profile -A
 
 # copy weblogic libraries
-iam weblogic -a wlstlibs -t identity
+iam weblogic -a wlstlibs -t identity -H bsul0355
 
-# generate keyfiles
 iam identity -a keyfile -u ${nmUser}   -p ${nmPwd} -n -H bsul0355
 iam identity -a keyfile -u ${nmUser}   -p ${nmPwd} -n -H bsul0356
 
 iam identity -a keyfile -u ${domiUser} -p ${domiPwd} -H bsul0355
 iam identity -a keyfile -u ${domiUser} -p ${domiPwd} -H bsul0356
 
-iam identity -a config
+iam identity -a config -H bsul0355
 
 # upgrade jdk
-iam jdk -a install7 -O identity
+iam jdk -a install7 -O identity -H bsul0355
 
-ssh bsul0355 -- $SHELL -l ~/bin/stop-all
-ssh bsul0356 -- $SHELL -l ~/bin/stop-all
+ssh bsul0355 -- $SHELL -l ~/bin/stop-identity
+ssh bsul0355 -- $SHELL -l ~/bin/stop-nodemanager
+ssh bsul0356 -- $SHELL -l ~/bin/stop-nodemanager
+ssh bsul0355 -- $SHELL -l ~/bin/stop-webtier
+ssh bsul0356 -- $SHELL -l ~/bin/stop-webtier
 
 
-
-iam jdk -a move6 -O identity
+iam jdk -a move6 -O identity -H bsul0355
 
 # identity domain PSA run
-iam identity -a psa
+iam identity -a psa -H bsul0355
 
-iam weblogic -a jdk7fix -t identity
-iam identity -a jdk7fix -A
+iam weblogic -a jdk7fix -t identity -H bsul0355
+iam identity -a jdk7fix -H bsul0355
+iam identity -a jdk7fix -H bsul0356
 
 
 # identity domain post-install steps
-iam identity -a movelogs -A
+iam identity -a movelogs -H bsul0355
+iam identity -a movelogs -H bsul0356
 
 
 # webgate installation bug fix
-iam webtier -a movelogs -A
-iam webtier -a config -v -A
+iam webtier -a movelogs -H bsul0355
+iam webtier -a movelogs -H bsul0356
+iam webtier -a config -v -H bsul0355
+iam webtier -a config -v -H bsul0356
 
 
 
