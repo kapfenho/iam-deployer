@@ -5,20 +5,29 @@
 set -o errexit
 set -o errtrace
 
+srvoia2=oim2
 export PATH=${DEPLOYER}:${PATH}
 
 iam rcu -a create -t analytics
 
+# /products is shared: install once
 iam jdk -a install7 -O analytics
 
+# install weblogic once
 iam weblogic -a install -t analytics
 
-iam userenv -a env
-iam userenv -a profile
+# since products/analytics is avail: new env
+# cluster: both have -A for all hosts
+iam userenv -a env -A
+iam userenv -a profile -A
 
+# copy lib files
 iam weblogic -a wlstlibs -t analytics
 
-iam analytics -a domcreate -P single
+# create cluster domain and distribute
+iam analytics -a domcreate -P cluster
+iam analytics -a rdeploy -P pack
+iam analytics -a rdeploy -P unpack -H $srvoia2
 
 # unpack OIA application
 iam analytics -a explode
@@ -27,10 +36,11 @@ iam analytics -a explode
 iam analytics -a domconfig
 
 # configure OIA application instance
+# TODO
 iam analytics -a appconfig -P single
 
 # perform OIM-OIA integration steps
 iam analytics -a oimintegrate
 
 # deploy OIA application to WLS
-iam analytics -a wlsdeploy -P single
+iam analytics -a wlsdeploy -P cluster

@@ -5,6 +5,7 @@
 set -o errexit
 set -o errtrace
 
+srvoia2=oim2
 export PATH=${DEPLOYER}:${PATH}
 
 iam rcu -a create -t analytics
@@ -26,7 +27,7 @@ iam weblogic -a wlstlibs -t analytics
 # create cluster domain and distribute
 iam analytics -a domcreate -P cluster
 iam analytics -a rdeploy -P pack
-iam analytics -a rdeploy -P unpack -H oim2
+iam analytics -a rdeploy -P unpack -H $srvoia2
 
 # unpack OIA application
 iam analytics -a explode
@@ -35,6 +36,7 @@ iam analytics -a explode
 iam analytics -a domconfig
 
 # configure OIA application instance
+# TODO
 iam analytics -a appconfig -P single
 
 # perform OIM-OIA integration steps
