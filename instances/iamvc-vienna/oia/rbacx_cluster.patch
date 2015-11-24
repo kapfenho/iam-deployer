@@ -43,7 +43,7 @@ diff -rupN oia/conf/oimjdbc.properties oiaclean/conf/oimjdbc.properties
  
  
  # OIM user credentials
--oim.jdbc.username=VSI_OIM
+-oim.jdbc.username=VCI_OIM
 +oim.jdbc.username=oimdbuser
  
  # For encrypting the password read the documentation and running of the
@@ -55,7 +55,7 @@ diff -rupN oia/conf/oimjdbc.properties oiaclean/conf/oimjdbc.properties
 +#oim.jdbc.password=oimpassword
  
  
--oim.jdbc.url = jdbc:oracle:thin:@oradb.iamv2.agoracon.at:1521/iamvs.agoracon.at
+-oim.jdbc.url = jdbc:oracle:thin:@oradb11.vie.agoracon.at:1521/oradb11.vie.agoracon.at
 +oim.jdbc.url=jdbc:oracle:thin:@$SERVER_NAME:$PORT:oim
  oim.jdbc.driverClassName=oracle.jdbc.OracleDriver
 diff -rupN oia/rbacx/WEB-INF/application-context.xml oiaclean/rbacx/WEB-INF/application-context.xml
