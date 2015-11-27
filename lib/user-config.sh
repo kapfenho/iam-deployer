@@ -56,7 +56,6 @@ getvar WLSADMIN_NAME
 
 :          ${iam_user_umask:="0007"}
 :          ${iam_orainv_grp:="oinstall"}
-:        ${iam_oia_dos2unix:="NO"}
     
 :                 ${iam_pwd:="Montag11"}
 :     ${iam_oim_schema_pass:=${iam_pwd}}

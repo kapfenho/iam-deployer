@@ -136,7 +136,7 @@ oia_appconfig()
 {
   deployment_type=${1}
 
-  if [ "${iam_oia_dos2unix}" == "YES" ] && type dos2unix >/dev/null 2>&1 ; then
+  if type dos2unix >/dev/null 2>&1 ; then
     echo "Tool dos2unix found - converting..."
     for d in conf conf/workflows rbacx/WEB-INF ; do
       echo "Tool dos2unix found - converting in $d"
@@ -164,9 +164,75 @@ oia_appconfig()
     -propertyFile ${RBACX_HOME}/conf/oimjdbc.properties \
     -propertyName oim.jdbc.password
   echo "Encrypted OIM JDBC Password"
+}
 
+# appconfig new version ---------------------------------------
+#
+oia_appconfig2()
+{
+  local _c=${RBACX_HOME}
+  local _prod=${iam_top}/products/analytics
+
+  # conf/iam.properties
+  sed -i -e s/\$RBACX_HOME/${_prod}/g  ${_c}/conf/iam.properties
+
+  # conf/oimjdbc.properties
+  sed -i -e s/oimdbuser/${iam_oim_prefix}_OIM/g \
+         -e s/oimpassword/${iam_oim_schema_pass}/g \
+         -e s/\$SERVER_NAME:\$PORT:oim/${dbs_dbhost}:${dbs_port}\/${dbs_port}/g \
+         ${_c}/conf/oimjdbc.properties
+
+  # rbacx/WEB-INF/application-context.xml
+  sed -i -e s/Prod-1-Cluster/VWFSCluster/g \
+         ${_c}/rbacx/WEB-INF/application-context.xml
+
+
+# rbacx/WEB-INF/classes/jasperreports.properties
+# ----------------------------------------------
+# add one line:
+#  net.sf.jasperreports.export.xls.max.rows.per.sheet=65534
+# +net.sf.jasperreports.compiler.classpath=/l/ora/products/analytics/oia/rbacx/WEB-INF/lib/jasperreports-2.0.5-javaflow.jar
+# 
+# rbacx/WEB-INF/classes/oscache.properties
+# ----------------------------------------
+# sed -i -e s/#cache\.event\.listeners/cache\.event\.listeners/ \
+#        -e s/#cache\.cluster\.multicast\.ip=.*$/cache\.cluster\.multicast\.ip=231.12.21.100/ \
+#        oimjdbc.properties
+# 
+# -#cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener,com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl
+# +cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener,com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl
+# -#cache.cluster.multicast.ip=231.12.21.100
+# +cache.cluster.multicast.ip=231.12.21.100
+# 
+# rbacx/WEB-INF/conf-context.xml 
+# ------------------------------
+# ${RBACX_HOME}
+# 
+# -                <value>file:${RBACX_HOME}/conf/jdbc.properties</value>
+# +                <!--value>file:/l/ora/products/analytics/oia/conf/jdbc.properties</value-->
+# 
+# 
+# rbacx/WEB-INF/dataaccess-context.xml
+# ------------------------------------
+# Replace Datasource definition by JNDI-Name to pre configured Datasource
+# 
+# -    <bean id="dataSource" parent="abstractDataSource">
+# +    <!--bean id="dataSource" parent="abstractDataSource">
+#          <description>Default datasource that uses Oracle UCP as a pool implementation</description>
+#          <property name="connectionFactoryClassName" value="${jdbc.driverClassName}"/>
+#          <property name="URL" value="${jdbc.url}"/>
+# @@ -76,6 +76,9 @@
+#                  <property name="ignoreResourceNotFound" value="true"/>
+#              </bean>
+#          </property>
+# +    </bean-->
+# +    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+# +          <property name="jndiName" value="jdbc/OIADataSource" /> 
+#      </bean>
+# 
 
 }
+
 # OIM-OIA integration steps
 #
 oia_oim_integrate()

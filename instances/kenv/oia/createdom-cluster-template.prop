@@ -107,7 +107,7 @@ datasource.1.password=__IAM_OIA_DBPWD__
 
 datasource.x.usesXA=true
 datasource.1.jndiname=jdbc/OIADataSource
-datasource.1.url=jdbc:oracle:thin:@__DBS_HOSTNAME__:1521/__IAM_SERVICENAME__
+datasource.1.url=jdbc:oracle:thin:@__DBS_HOSTNAME__:5193/__IAM_SERVICENAME__
 
 datasource.1.target=oia_cluster
 datasource.1.targettype=Cluster
