@@ -136,6 +136,14 @@ oia_appconfig()
 {
   deployment_type=${1}
 
+  if [ "${iam_oia_dos2unix}" == "YES" ] && type dos2unix >/dev/null 2>&1 ; then
+    echo "Tool dos2unix found - converting..."
+    for d in conf conf/workflows rbacx/WEB-INF ; do
+      echo "Tool dos2unix found - converting in $d"
+      find ${RBACX_HOME}/${d} -maxdepth 1 -type f -exec dos2unix {} \;
+    done
+  fi
+
   cd ${RBACX_HOME}
   if [ "${deployment_type}" == "single" ]
   then
