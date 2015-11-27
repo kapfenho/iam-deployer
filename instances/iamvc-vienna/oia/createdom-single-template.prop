@@ -63,7 +63,9 @@ managedserver.1.name = wls_oia1
 managedserver.1.machine = oia_machine1
 managedserver.1.maxHeap = 1024m
 managedserver.1.listenerAddress = __IAM_OIA_HOST1__
-managedserver.1.sslEnabled = true
+managedserver.1.relativeListenPort = 1000
+managedserver.1.relativeSslListenPort = 1001
+managedserver.1.sslEnabled = false
 managedserver.1.profileID = None
 managedserver.1.useNodeManager = true
 managedserver.1.additionalVMarguments =
@@ -90,7 +92,7 @@ datasource.1.password=__IAM_OIA_DBPWD__
 
 datasource.x.usesXA=true
 datasource.1.jndiname=jdbc/OIADataSource
-datasource.1.url=jdbc:oracle:thin:@__DBS_HOSTNAME__:1521/__IAM_SERVICENAME__
+datasource.1.url=jdbc:oracle:thin:@__DBS_HOSTNAME__:__DBS_PORT__/__IAM_SERVICENAME__
 
 datasource.1.target=oia_cluster
 datasource.1.targettype=Cluster

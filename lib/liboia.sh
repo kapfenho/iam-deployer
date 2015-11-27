@@ -10,19 +10,22 @@ oia_dom_prop()
       _iam_top=$(echo ${iam_top}     | sed -e 's/[\/&]/\\&/g')
   _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
   
-  sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/"         ${_propfile}
-  sed -i "s/__HOSTENV__/${_iam_hostenv}/"               ${_propfile}
-  sed -i "s/__IAM_TOP__/${_iam_top}/"                   ${_propfile}
-  sed -i "s/__IAM_OIA_HOST1__/${iam_oia_host1}/"        ${_propfile}
-  sed -i "s/__IAM_OIA_HOST2__/${iam_oia_host2}/"        ${_propfile}
-  sed -i "s/__IAM_OIA_DBUSER__/${iam_oia_dbuser}/"      ${_propfile}
-  sed -i "s/__IAM_OIA_DBPWD__/${iam_oia_schema_pass}/"  ${_propfile}
-  sed -i "s/__DBS_HOSTNAME__/${dbs_dbhost}/"            ${_propfile}
-  sed -i "s/__IAM_SERVICENAME__/${iam_servicename}/"    ${_propfile}
+  sed -i -e "s/__DOMAIN_NAME__/${iam_domain_oia}/" \
+         -e "s/__HOSTENV__/${_iam_hostenv}/" \
+         -e "s/__IAM_TOP__/${_iam_top}/" \
+         -e "s/__IAM_OIA_HOST1__/${IDMPROV_OIA_HOST}/" \
+         -e "s/__IAM_OIA_HOST2__/${IDMPROV_SECOND_OIA_HOST}/" \
+         -e "s/__IAM_OIA_DBUSER__/${iam_oia_dbuser}/" \
+         -e "s/__IAM_OIA_DBPWD__/${iam_oia_schema_pass}/" \
+         -e "s/__DBS_HOSTNAME__/${dbs_dbhost}/" \
+         -e "s/__DBS_PORT__/${dbs_port}/" \
+         -e "s/__IAM_SERVICENAME__/${iam_servicename}/" \
+         ${_propfile}
 }
 
-# create weblogic domain for OIA including:
-# nodemanager, boot properties, datasources, managed server
+# create weblogic domain for OIA --------------------------------------
+# with:
+#   nodemanager, boot properties, datasources, managed server
 # 
 oia_wlst_exec()
 {
@@ -59,6 +62,8 @@ oia_wlst_exec()
   set +x
 }
 
+# packing and unpacking of domain dir  --------------------------------
+#
 oia_rdeploy()
 {
   _action=${1}
@@ -86,7 +91,7 @@ oia_rdeploy()
   esac
 }
 
-# unpack OIA instance
+# unpack OIA instance -------------------------------------------------
 #
 oia_explode()
 {
@@ -234,7 +239,7 @@ oia_appconfig2()
 
 }
 
-# OIM-OIA integration steps
+# OIM-OIA integration steps -------------------------------------------
 #
 oia_oim_integrate()
 {
@@ -278,11 +283,20 @@ oia_oim_integrate()
   patch -p0 --silent < ${DEPLOYER}/user-config/oia/rbacx_workflow.patch
 }
 
-# configure OIA weblogic domain
-# 
+# configure OIA weblogic domain -------------------------------------
+# new file with custom env will be sourced by setDomainEnv.sh
+#
 oia_domconfig()
 {
-  # setDomainEnv.sh patch
-  cd ${DOMAIN_HOME}/bin
-  patch -p0 < ${DEPLOYER}/user-config/oia/oia_setdomenv.patch
+  local _s _d
+  _s=${DEPLOYER}/lib/templates/analytics
+  _d=${DOMAIN_HOME}/bin
+
+  # custom domain env file, will be sourced
+  cp ${_s}/setCustDomainEnv.sh ${_d}/
+  chmod 0644 ${_d}/setCustDomainEnv.sh
+
+  # patch will source the custom env file
+  patch ${_d}/setDomainEnv.sh < ${_s}/setDomainEnv.patch
 }
+

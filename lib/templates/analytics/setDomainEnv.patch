@@ -1,0 +1,5 @@
+211a212,215
+> # Custom settings -- start --
+> . ${DOMAIN_HOME}/bin/setCustDomainEnv.sh
+> # custom setting -- end --
+> 
