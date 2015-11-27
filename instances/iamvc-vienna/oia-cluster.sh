@@ -13,6 +13,12 @@ web1=web1
 web2=web2
 
 export PATH=${DEPLOYER}:${PATH}
+set -x
+
+pgrep -f weblogic.NodeManager >/dev/null || start-nodemanager
+
+ssh $oia2 pgrep -f weblogic.NodeManager >/dev/null || \
+  ssh $oia2 -- bash -l ~/bin/start-nodemanager
 
 iam rcu -a create -t analytics
 
@@ -51,3 +57,6 @@ iam analytics -a oimintegrate
 
 # deploy OIA application to WLS
 iam analytics -a wlsdeploy -P cluster
+
+echo "Finished successfully"
+

@@ -348,7 +348,7 @@ remmve_lcm()
 #
 remove_oia()
 {
-  rm -Rf ${iam_top}/products/analytics \
+  rm -Rf ${iam_top}/products/{analytics,oia.jar} \
     ${iam_services}/domains/${iam_domain_oia}
 
   echo "Removing domain from nodemanager"
