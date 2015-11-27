@@ -170,8 +170,9 @@ oia_appconfig()
 #
 oia_appconfig2()
 {
-  local _c=${RBACX_HOME}
-  local _prod=${iam_top}/products/analytics
+  local _c _prod
+     _c=${RBACX_HOME}
+  _prod=${iam_analytics_home}
 
   # conf/iam.properties
   sed -i -e s/\$RBACX_HOME/${_prod}/g  ${_c}/conf/iam.properties

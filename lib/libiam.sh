@@ -350,8 +350,14 @@ remove_oia()
 {
   rm -Rf ${iam_top}/products/analytics \
     ${iam_services}/domains/${iam_domain_oia}
+
+  echo "Removing domain from nodemanager"
+  for f in ${iam_top}/config/nodemanager/${IDMPROV_OIA_HOST}/nodemanager.domains ; do
+    sed -i -e /${iam_domain_oia}/d ${f}
+  done
+
   echo
-  echo "OIA webapp and domain removed. Env kept"
+  echo "OIA webapp and domain removed. Env files not touched."
 }
 
 #  run Oracle patch set assistant
