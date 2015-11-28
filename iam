@@ -296,18 +296,18 @@ else
         create_nodemanager_keyfile 
       elif [ "${opt_a}" == "domconfig"    -a -z "${opt_h}" ] ; then
         oia_domconfig
-      elif [ "${opt_a}" == "rdeploy"      -a "${opt_P}" -a -z "${opt_h}" ] ; then
+      elif [ "${opt_a}" == "rdeploy"      -a -n "${opt_P}" -a -z "${opt_h}" ] ; then
         oia_rdeploy ${opt_P}
       elif [ "${opt_a}" == "explode"      -a -z "${opt_h}" ] ; then
         oia_explode
-      elif [ "${opt_a}" == "appconfig"    -a "${opt_P}" -a -z "${opt_h}" ] ; then
+      elif [ "${opt_a}" == "appconfig"    -a -n "${opt_P}" -a -z "${opt_h}" ] ; then
         oia_appconfig ${opt_P}
       elif [ "${opt_a}" == "oimintegrate" -a -z "${opt_h}" ] ; then
         oia_oim_integrate
-      elif [ "${opt_a}" == "wlsdeploy"    -a "${opt_P}" -a -z "${opt_h}" ] ; then
-        oia_wlst_exec oia ${opt_P}
-        ~/bin/stop-analytics
-        ~/bin/start-analytics
+      elif [ "${opt_a}" == "wlsdeploy"    -a -z "${opt_h}" ] ; then
+        deploy rbacx
+        stop-analytics
+        start-analytics
       else
         help_analytics
         exit $ERROR_SYNTAX_ERROR

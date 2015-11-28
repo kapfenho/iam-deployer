@@ -95,39 +95,31 @@ oia_rdeploy()
 #
 oia_explode()
 {
-  # conflicting libs
-  c_libs[0]=jrf-api.jar
-  c_libs[1]=stax-1.2.0.jar
-  c_libs[2]=stax-api-1.0.1.jar
-  c_libs[3]=tools.jar
-  c_libs[4]=ucp.jar
-  c_libs[5]=xfire-all-1.2.5.jar
+  unzip -q ${s_oia}/app-archive/${oia_name} -d ${RBACX_HOME}
 
+  mv ${RBACX_HOME}/sample/* ${RBACX_HOME}
+  rm -Rf ${RBACX_HOME}/sample
 
-  if [ -a "${MW_HOME}" ]
-  then
-    unzip -q ${s_oia}/app-archive/${oia_name} -d ${RBACX_HOME}
+  mkdir ${RBACX_HOME}/rbacx
+  cd ${RBACX_HOME}/rbacx
+  jar -xf ../rbacx.war
+  rm -f ../rbacx.war
 
-    mv ${RBACX_HOME}/sample/* ${RBACX_HOME}
-    rm -rf ${RBACX_HOME}/sample
+  # copy libraries needed by OIA
+  cp ${s_oia}/ext/*.jar ${RBACX_HOME}/rbacx/WEB-INF/lib/
 
-    mkdir ${RBACX_HOME}/{_rbacx_orig,rbacx}
-    cp ${RBACX_HOME}/rbacx.war ${RBACX_HOME}/_rbacx_orig
-    cd ${RBACX_HOME}/rbacx ; jar -xf ../rbacx.war ; rm ../rbacx.war
+  # remove conflicting libs
+  for lib in jrf-api.jar \
+             stax-1.2.0.jar \
+             stax-api-1.0.1.jar \
+             tools.jar \
+             ucp.jar \
+             xfire-all-1.2.5.jar ; do
+    rm ${RBACX_HOME}/rbacx/WEB-INF/lib/${lib}
+  done
 
-    # copy libraries needed by OIA
-    cp ${s_oia}/ext/*.jar ${RBACX_HOME}/rbacx/WEB-INF/lib/
-
-    # Remove conflicting libs
-    #
-    for lib in ${c_libs[@]}; do
-      rm ${RBACX_HOME}/rbacx/WEB-INF/lib/${lib}
-    done
-    echo "Done unpacking OIA."
-    echo ""
-  else
-    log "Analytics: ${MW_HOME} does not exist. Please install WLS first."
-  fi
+  echo "Done unpacking OIA"
+  echo
 }
 
 # Apply rbacx configurations by patching the OOTB rbacx instance
@@ -150,15 +142,16 @@ oia_appconfig()
   fi
 
   cd ${RBACX_HOME}
-  if [ "${deployment_type}" == "single" ]
-  then
+
+  if [ "${deployment_type}" == "single" ] ; then
     echo "Patching RBACX_HOME for single instance deployment.."
     patch -p1 < ${DEPLOYER}/user-config/oia/rbacx_single.patch
-  elif [ "${deployment_type}" == "cluster" ]
-  then
+
+  elif [ "${deployment_type}" == "cluster" ] ; then
     echo "Patching RBACX_HOME for cluster deployment.."
     patch -R -p1 < ${DEPLOYER}/user-config/oia/rbacx_cluster.patch
   fi
+
   echo "Done patching RBACX_HOME."
   echo ""
 
@@ -175,112 +168,204 @@ oia_appconfig()
 #
 oia_appconfig2()
 {
-  local _c _prod
-     _c=${RBACX_HOME}
-  _prod=${iam_analytics_home}
+  local _c _prod _topo
+
+     _topo=${1}
+        _c=${RBACX_HOME}
+     _prod=${iam_analytics_home}
+  # this variable will be used in sed command and must
+  # be escaped before
+  _iam_log=$(echo ${iam_log} | sed -e 's/[\/&]/\\&/g')
 
   # conf/iam.properties
-  sed -i -e s/\$RBACX_HOME/${_prod}/g  ${_c}/conf/iam.properties
+  echo " * conf/iam.properties"
+  echo "     replacing the variable \$RBACX_HOME with its value"
+  echo
+  sed -i -e "s/\$RBACX_HOME/${_prod}/g" ${_c}/conf/iam.properties
 
   # conf/oimjdbc.properties
-  sed -i -e s/oimdbuser/${iam_oim_prefix}_OIM/g \
-         -e s/oimpassword/${iam_oim_schema_pass}/g \
-         -e s/\$SERVER_NAME:\$PORT:oim/${dbs_dbhost}:${dbs_port}\/${dbs_port}/g \
+  echo " * conf/oimjdbc.properties"
+  echo "     setting OIM database connection properties"
+  sed -i -e "s/oimdbuser/${iam_oim_prefix}_OIM/g" \
+         -e "s/oimpassword/${iam_oim_schema_pass}/g" \
+         -e "s/\$SERVER_NAME:\$PORT:oim/${dbs_dbhost}:${dbs_port}\/${iam_servicename}/g" \
          ${_c}/conf/oimjdbc.properties
+  echo "     encrypting OIM jdbc password"
+  echo
+  java -jar ${_c}/rbacx/WEB-INF/lib/vaau-commons-crypt.jar \
+    -encryptProperty \
+    -cipherKeyProperties ${_c}/conf/cipherKey.properties \
+    -propertyFile ${_c}/conf/oimjdbc.properties \
+    -propertyName oim.jdbc.password
 
   # rbacx/WEB-INF/application-context.xml
-  sed -i -e s/Prod-1-Cluster/VWFSCluster/g \
+  echo " * rbacx/WEB-INF/application-context.xml"
+  echo "     replacing cluster name"
+  echo
+  sed -i -e "341s/Prod-1-Cluster/${iam_domain_oia}-Cluster/g" \
          ${_c}/rbacx/WEB-INF/application-context.xml
 
+  #if [ cluster ] TODO: cluster
+  #  sed -i -e '347s/false/true/g' \
+  #       ${_c}/rbacx/WEB-INF/application-context.xml
+  # <constructor-arg index="1" value="192.168.2.2;192.168.2.2;192.168.2.3;192.168.2.4;192.168.2.5"/-->' \
 
-# rbacx/WEB-INF/classes/jasperreports.properties
-# ----------------------------------------------
-# add one line:
-#  net.sf.jasperreports.export.xls.max.rows.per.sheet=65534
-# +net.sf.jasperreports.compiler.classpath=/l/ora/products/analytics/oia/rbacx/WEB-INF/lib/jasperreports-2.0.5-javaflow.jar
-# 
-# rbacx/WEB-INF/classes/oscache.properties
-# ----------------------------------------
-# sed -i -e s/#cache\.event\.listeners/cache\.event\.listeners/ \
-#        -e s/#cache\.cluster\.multicast\.ip=.*$/cache\.cluster\.multicast\.ip=231.12.21.100/ \
-#        oimjdbc.properties
-# 
-# -#cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener,com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl
-# +cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener,com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl
-# -#cache.cluster.multicast.ip=231.12.21.100
-# +cache.cluster.multicast.ip=231.12.21.100
-# 
-# rbacx/WEB-INF/conf-context.xml 
-# ------------------------------
-# ${RBACX_HOME}
-# 
-# -                <value>file:${RBACX_HOME}/conf/jdbc.properties</value>
-# +                <!--value>file:/l/ora/products/analytics/oia/conf/jdbc.properties</value-->
-# 
-# 
-# rbacx/WEB-INF/dataaccess-context.xml
-# ------------------------------------
-# Replace Datasource definition by JNDI-Name to pre configured Datasource
-# 
-# -    <bean id="dataSource" parent="abstractDataSource">
-# +    <!--bean id="dataSource" parent="abstractDataSource">
-#          <description>Default datasource that uses Oracle UCP as a pool implementation</description>
-#          <property name="connectionFactoryClassName" value="${jdbc.driverClassName}"/>
-#          <property name="URL" value="${jdbc.url}"/>
-# @@ -76,6 +76,9 @@
-#                  <property name="ignoreResourceNotFound" value="true"/>
-#              </bean>
-#          </property>
-# +    </bean-->
-# +    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-# +          <property name="jndiName" value="jdbc/OIADataSource" /> 
-#      </bean>
-# 
+  # rbacx/WEB-INF/classes/jasperreports.properties
+  echo " * rbacx/WEB-INF/classes/jasperreports.properties"
+  echo "     adding jasper reports classpath"
+  echo
+  echo "net.sf.jasperreports.compiler.classpath=${_c}/rbacx/WEB-INF/lib/jasperreports-2.0.5-javaflow.jar" \
+    >> ${_c}/rbacx/WEB-INF/classes/jasperreports.properties
+  
+  # rbacx/WEB-INF/classes/oscache.properties
+  echo " * rbacx/WEB-INF/classes/oscache.properties"
+  echo "     adding cluster cache config, multicast"
+  echo
+  echo "cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener,com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl" >> ${_c}/rbacx/WEB-INF/classes/oscache.properties
+  echo "cache.cluster.multicast.ip=231.12.21.100" >> ${_c}/rbacx/WEB-INF/classes/oscache.properties
+  
+  # rbacx/WEB-INF/conf-context.xml
+  echo " * rbacx/WEB-INF/conf-context.xml"
+  echo "     removing line with jdbc-config file, we use datasource"
+  echo
+  sed -i 12 d ${_c}/rbacx/WEB-INF/conf-context.xml
 
+  # rbacx/WEB-INF/dataaccess-context.xml
+  echo " * rbacx/WEB-INF/dataaccess-context.xml"
+  echo "     replacing jdbc driver with weblogic data source"
+  echo
+  sed -i -e '59s/<bean id/<!-- bean id/g' \
+         -e '79s/<\/bean>/<\/bean -->/g' \
+         -e '80 a \
+            \    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">\
+            \        <property name="jndiName" value="jdbc/OIADataSource" />\
+            \    </bean>\
+            ' ${_c}/rbacx/WEB-INF/dataaccess-context.xml
+
+  # rbacx/WEB-INF/etl-context.xml
+  echo " * rbacx/WEB-INF/etl-context.xml"
+  echo "     activating ETLManager block"
+  sed -i -e '6s/<!-- bean id/<bean id/g' \
+         -e '16s/<\/bean-->/<\/bean>/g' \
+         ${_c}/rbacx/WEB-INF/etl-context.xml
+
+  # rbacx/WEB-INF/iam-context.xml
+  echo " * rbacx/WEB-INF/iam-context.xml"
+  echo "     referencing activated ETLManager"
+  sed -i -e '269s/<!--/</g' \
+         -e '269s/-->/>/g' \
+         ${_c}/rbacx/WEB-INF/iam-context.xml
+
+  # rbacx/WEB-INF/log4j.properties
+  echo " * rbacx/WEB-INF/log4j.properties"
+  echo "     log directory"
+  sed -i -e "s/log4j\.appender\.file\.file=logs\/rbacx.log/log4j\.appender\.file\.file=${_iam_log}\/${iam_domain_oia}\/rbacx.log/g" \
+         ${_c}/rbacx/WEB-INF/log4j.properties
+
+  # rbacx/WEB-INF/scheduling-context.xml
+  echo " * rbacx/WEB-INF/scheduling-context.xml"
+  echo "     referencing activated ETLManager"
+  sed -i -e '145,146s/<prop/<!-- prop/g' \
+         -e '145,146s/prop>/prop -->/g' \
+         -e '146 a \
+            \                        <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.oracle.weblogic.WebLogicOracleDelegate</prop>\
+            \                        <prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ? FOR UPDATE</prop>\
+            ' ${_c}/rbacx/WEB-INF/scheduling-context.xml
+
+  # rbacx/WEB-INF/weblogic.xml
+  echo " * rbacx/WEB-INF/weblogic.xml"
+  echo "     creating new with content"
+  echo
+  cat > ${_c}/rbacx/WEB-INF/weblogic.xml <<-EOS
+	<?xml version="1.0" encoding="UTF-8"?>
+	<weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app">
+	  <container-descriptor>
+	    <prefer-application-packages>
+	      <package-name>javax.wsdl.*</package-name>
+	      <package-name>com.ibm.wsdl.*</package-name>
+	      <package-name>org.springframework.*</package-name>
+	      <package-name>org.aspectj.*</package-name>
+	      <package-name>org.jdom.*</package-name>
+	      <package-name>org.codehaus.xfire.*</package-name>
+	      <package-name>org.jaxen.*</package-name>
+	      <package-name>org.apache.bcel.*</package-name>
+	      <package-name>org.apache.commons.*</package-name>
+	      <package-name>com.ctc.wstx.*</package-name>
+	      <package-name>org.codehaus.stax2.*</package-name>
+	      <package-name>org.openspml.*</package-name>
+	      <package-name>org.quartz.*</package-name>
+	    </prefer-application-packages>
+	  </container-descriptor>
+	</weblogic-web-app>
+EOS
+
+  echo "app config completed"
 }
 
 # OIM-OIA integration steps -------------------------------------------
 #
 oia_oim_integrate()
 {
-  # oim server libs
-  oim_lib[0]=xlCrypto.jar
-  oim_lib[1]=wlXLSecurityProviders.jar
-  oim_lib[2]=xlAuthentication.jar
-  oim_lib[3]=xlLogger.jar
+  local _dest=${RBACX_HOME}/rbacx/WEB-INF/lib
 
-  # design console libs
-  dc_lib[0]=xlAPI.jar
-  dc_lib[1]=xlCache.jar
-  dc_lib[2]=xlDataObjectBeans.jar
-  dc_lib[3]=xlDataObjects.jar
-  dc_lib[4]=xlUtils.jar
-  dc_lib[5]=xlVO.jar
-  dc_lib[6]=oimclient.jar
-  dc_lib[7]=iam-platform-utils.jar
-
-  local _oia_lib=${RBACX_HOME}/rbacx/WEB-INF/lib
-
-  # copy OIM designconsole and server libraries to OIA
-  for lib in ${oim_lib[@]}; do
-    cp ${OIM_MW_HOME}/iam/server/lib/${lib} ${_oia_lib}
+  # copy oim server libs
+  for lib in  xlCrypto.jar \
+              wlXLSecurityProviders.jar \
+              xlAuthentication.jar \
+              xlLogger.jar ; do
+    cp ${OIM_MW_HOME}/iam/server/lib/${lib} ${_dest}/
   done
 
-  for lib in ${dc_lib[@]}; do
-    cp ${OIM_MW_HOME}/iam/designconsole/lib/${lib} ${_oia_lib}
+  # copy design console libs
+  for lib in  xlAPI.jar \
+              xlCache.jar \
+              xlDataObjectBeans.jar \
+              xlDataObjects.jar \
+              xlUtils.jar \
+              xlVO.jar \
+              oimclient.jar \
+              iam-platform-utils.jar ; do
+    cp ${OIM_MW_HOME}/iam/designconsole/lib/${lib} ${_dest}/
   done
 
-  cp ${OIM_MW_HOME}/oracle_common/modules/oracle.jrf_11.1.1/jrf-api.jar ${_oia_lib}
-
-  cp ${OIM_WL_HOME}/server/lib/wlfullclient.jar ${_oia_lib}
+  cp ${OIM_MW_HOME}/oracle_common/modules/oracle.jrf_11.1.1/jrf-api.jar \
+     ${OIM_WL_HOME}/server/lib/wlfullclient.jar \
+     ${_dest}/
 
   # copy designconsole config to OIA
   mkdir -p ${RBACX_HOME}/xellerate
-  cp -R ${OIM_MW_HOME}/iam/designconsole/config ${RBACX_HOME}/xellerate
+  cp -R ${OIM_MW_HOME}/iam/designconsole/config ${RBACX_HOME}/xellerate/
 
   # patching workflow configurations
-  cd ${RBACX_HOME}
-  patch -p0 --silent < ${DEPLOYER}/user-config/oia/rbacx_workflow.patch
+  oia_patch_workflow ${RBACX_HOME}/conf/workflows
+}
+
+# OIM-OIA integration workflow patching -----------------------------------
+# param 1: directory path of workflow definitions
+#
+oia_patch_workflow()
+{
+  sed -i '125 a \
+    \                <function name="exportIAMPolicyFunction" type="spring">\
+    \                      <arg name="bean.name">exportIAMPolicyFunction</arg>\
+    \                      <arg name="OIMServer"/>\
+    \                </function>\
+    ' ${1}/policy-creation-workflow.xml \
+      ${1}/policy-modification-workflow.xml
+
+  sed -i '245 a \
+    \                <function name="exportIAMRoleFunction" type="spring"> \
+    \                      <arg name="bean.name">exportIAMRoleFunction</arg> \
+    \                      <arg name="OIMServer"/> \
+    \                </function> \
+    ' ${1}/role-creation-workflow.xml
+
+  sed -i '279 a \
+    \                <function name="exportIAMRoleFunction" type="spring"> \
+    \                      <arg name="bean.name">exportIAMRoleFunction</arg> \
+    \                      <arg name="OIMServer"/> \
+    \                </function> \
+    ' ${1}/role-modification-workflow.xml
 }
 
 # configure OIA weblogic domain -------------------------------------
