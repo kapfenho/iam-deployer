@@ -31,8 +31,9 @@ def deployApp():
     try:
         deploy(appName=appName,
                 path=appPath,
-                planPath=appPlan,
                 targets=appTargets,
+                upload='false',
+                stageMode='nostage',
                 timeout=360000,
                 block="true")
         startApplication(appName,timeout=360000,block="true")
@@ -47,22 +48,22 @@ if __name__== "main":
     print "*** Weblogic Deployment ***"
     print
 
-    print "> checking for deployment structure..."
-    os.system("mkdir -p "+appDir+"/{new,current,archive}")
+    # print "> checking for deployment structure..."
+    # os.system("mkdir -p "+appDir+"/{new,current,archive}")
 
     acConnect()
     print "> undeploying application..."
     undeployApp()
 
-    print "> archiving current version..."
-    os.system("cp -Rp "+appDir+"/current "+appDir+
-        "/archive/$(date ""+%Y%m%d-%H%M%S"")")
-
-    print "> removing current version..."
-    os.system("rm -f "+appPath)
-
-    print "> moving new version to current..."
-    os.system("mv "+appDir+"/new/* "+appDir+"/current/")
+    # print "> archiving current version..."
+    # os.system("cp -Rp "+appDir+"/current "+appDir+
+    #     "/archive/$(date ""+%Y%m%d-%H%M%S"")")
+    #
+    # print "> removing current version..."
+    # os.system("rm -f "+appPath)
+    #
+    # print "> moving new version to current..."
+    # os.system("mv "+appDir+"/new/* "+appDir+"/current/")
 
     print "> deploying..."
     deployApp()
