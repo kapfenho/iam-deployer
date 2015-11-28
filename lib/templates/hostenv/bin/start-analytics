@@ -3,10 +3,10 @@
 . ~/.env/oia.env
 
 ${WL_HOME}/common/bin/wlst.sh -loadProperties ~/.env/analytics.prop <<EOS
-nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=acGetFQDN(),port=nmPort,domainName=domName,domainDir=admDir,nmType='ssl');
+acNmConnect();
 nmStart('AdminServer');
-connect(userConfigFile=domUC,userKeyFile=domUK,url=domUrl);
-start('wls_oia1');
+acConnect();
+start(name='oia_cluster',type='Cluster');
 exit();
 EOS
 

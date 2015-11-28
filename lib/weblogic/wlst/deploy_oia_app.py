@@ -18,4 +18,3 @@ if __name__== "main":
     connect(adminUserName, adminPassword, connUri);
     print 'Connected';
     deployAllApplications()
-    restartDomain()

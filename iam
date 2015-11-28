@@ -306,6 +306,8 @@ else
         oia_oim_integrate
       elif [ "${opt_a}" == "wlsdeploy"    -a "${opt_P}" -a -z "${opt_h}" ] ; then
         oia_wlst_exec oia ${opt_P}
+        ~/bin/stop-analytics
+        ~/bin/start-analytics
       else
         help_analytics
         exit $ERROR_SYNTAX_ERROR
