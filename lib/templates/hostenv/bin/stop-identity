@@ -3,15 +3,15 @@
 . ~/.env/idm.env
 
 ${WL_HOME}/common/bin/wlst.sh -loadProperties ~/.env/identity.prop <<EOS
-nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=acGetFQDN(),port=nmPort,domainName=domName,domainDir=admDir,nmType='ssl');
-connect(userConfigFile=domUC,userKeyFile=domUK,url=domUrl);
+acNmConnect();
+acConnect();
 try:
-  shutdown('wls_oim1',force='true');
+  shutdown(name='oim_cluster',entityType='Cluster',force='true');
 except:
   pass
 
 try:
-  shutdown('wls_soa1',force='true');
+  shutdown(name='soa_cluster',entityType='Cluster',force='true');
 except:
   pass
 

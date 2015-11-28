@@ -7,6 +7,8 @@ set -o errtrace
 
 export PATH=${DEPLOYER}:${PATH}
 
+pgrep -f '\ weblogic\.NodeManager' >/dev/null || start-nodemanager
+
 iam rcu -a create -t analytics
 
 iam jdk -a install7 -O analytics
@@ -34,3 +36,6 @@ iam analytics -a oimintegrate
 
 # deploy OIA application to WLS
 iam analytics -a wlsdeploy -P single
+
+echo -e "\nFinished successfully"
+

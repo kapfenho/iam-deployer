@@ -5,7 +5,7 @@ oia_dom_prop()
 {
   local _propfile_template=${DEPLOYER}/user-config/oia/createdom-${1}-template.prop
   local _propfile=/tmp/createdom-${1}.prop
-  cp ${_propfile_template} ${_propfile}
+  cp -f ${_propfile_template} ${_propfile}
   
       _iam_top=$(echo ${iam_top}     | sed -e 's/[\/&]/\\&/g')
   _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')

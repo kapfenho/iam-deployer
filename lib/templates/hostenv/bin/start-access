@@ -3,13 +3,12 @@
 . ~/.env/acc.env
 
 ${WL_HOME}/common/bin/wlst.sh -loadProperties ~/.env/access.prop <<EOS
-nmConnect(userConfigFile=nmUC,userKeyFile=nmUK,host=acGetFQDN(),port=nmPort,domainName=domName,domainDir=admDir,nmType='ssl');
+acNmConnect();
 nmStart('AdminServer');
-connect(userConfigFile=domUC,userKeyFile=domUK,url=domUrl);
-start('wls_oam1');
+acConnect();
+start(name='oam_cluster',type='Cluster');
 exit();
 EOS
-
 
 exit 0
 

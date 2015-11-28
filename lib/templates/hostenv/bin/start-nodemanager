@@ -1,9 +1,5 @@
 #!/bin/sh
 
-# dir=__IAM_TOP__/config/nodemanage/__HOSTNAME__
-
-# nohup ${dir}/startNodemanager.sh >${log} 2>&1 &
-
 WLS_HOME=__IAM_TOP__/products/identity/wlserver_10.3
 NM_HOME=__IAM_TOP__/config/nodemanager/$(hostname -f)
 LOG=__IAM_LOG__/nodemanager/nodemanager.log
