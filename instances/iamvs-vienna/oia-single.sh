@@ -1,33 +1,38 @@
 #!/bin/sh
-
-# run IAM Tool steps to deploy OIA
+#
+#  Oracle Identity Analytics - Single Host
 #
 set -o errexit
 set -o errtrace
 
-srvoia2=oim2
 export PATH=${DEPLOYER}:${PATH}
 
+# check nodemanager
+if ! pgrep -f '\ weblogic\.NodeManager' >/dev/null ; then
+  echo "ERROR: nodemanager on node 1 not running!" ; exit 80
+fi
+
+echo "Confirm you have executed >iam remove -t analytics< with ENTER"
+read nil
+
+# create schema
 iam rcu -a create -t analytics
 
-# /products is shared: install once
+# install jdk7 in home analytics
 iam jdk -a install7 -O analytics
 
-# install weblogic once
+# install weblogic
 iam weblogic -a install -t analytics
 
-# since products/analytics is avail: new env
-# cluster: both have -A for all hosts
-iam userenv -a env -A
-iam userenv -a profile -A
+# create env files and scripts
+iam userenv -a env
+iam userenv -a profile
 
 # copy lib files
 iam weblogic -a wlstlibs -t analytics
 
-# create cluster domain and distribute
-iam analytics -a domcreate -P cluster
-iam analytics -a rdeploy -P pack
-iam analytics -a rdeploy -P unpack -H $srvoia2
+# create domain
+iam analytics -a domcreate -P single
 
 # unpack OIA application
 iam analytics -a explode
@@ -36,7 +41,6 @@ iam analytics -a explode
 iam analytics -a domconfig
 
 # configure OIA application instance
-# TODO
 iam analytics -a appconfig -P single
 
 # perform OIM-OIA integration steps
@@ -44,3 +48,6 @@ iam analytics -a oimintegrate
 
 # deploy OIA application to WLS
 iam analytics -a wlsdeploy -P cluster
+
+echo -e "\nFinished successfully"
+
