@@ -1,6 +1,11 @@
 # identity analytics functions
 #
 
+# create the final property file for domain creation ------------------
+# exchanging placeholders with variables from iam.config file.
+# however, template files in user-config are can be used for
+# configuration, as long the placeholders (see below) are not touched.
+#
 oia_dom_prop()
 {
   local _propfile_template=${DEPLOYER}/user-config/oia/createdom-${1}-template.prop
@@ -122,14 +127,10 @@ oia_explode()
   echo
 }
 
-# Apply rbacx configurations by patching the OOTB rbacx instance
-# with the changes from a preconfigured rbacx instance
-# 
-# deployment type:
-# 0 - single instance
-# 1 - clustered
+# configure the OIA weapp config files --------------------------------
+#   param1: single or cluster        
 #
-oia_appconfig()
+_oia_appconfig_old_()
 {
   deployment_type=${1}
 
@@ -164,76 +165,90 @@ oia_appconfig()
   echo "Encrypted OIM JDBC Password"
 }
 
-# appconfig new version ---------------------------------------
+# configure the OIA weapp config files --------------------------------
+#   param1: single or cluster        
 #
-oia_appconfig2()
+oia_appconfig()
 {
   local _c _prod _topo
 
      _topo=${1}
         _c=${RBACX_HOME}
-     _prod=${iam_analytics_home}
-  # this variable will be used in sed command and must
-  # be escaped before
-  _iam_log=$(echo ${iam_log} | sed -e 's/[\/&]/\\&/g')
 
-  # conf/iam.properties
+  # this variable will be used in sed command and must be escaped before
+  _iam_log=$(echo ${iam_log}            | sed -e 's/[\/&]/\\&/g')
+     _prod=$(echo ${iam_analytics_home} | sed -e 's/[\/&]/\\&/g')
+
+  # check if already executed
+  if ! grep -q '$RBACX_HOME' ${_c}/conf/iam.properties ; then
+    echo "OIA appconfig already done - skipping"
+    return 0
+  fi
+
   echo " * conf/iam.properties"
   echo "     replacing the variable \$RBACX_HOME with its value"
-  echo
+
   sed -i -e "s/\$RBACX_HOME/${_prod}/g" ${_c}/conf/iam.properties
 
-  # conf/oimjdbc.properties
+  echo
   echo " * conf/oimjdbc.properties"
   echo "     setting OIM database connection properties"
+  echo "     encrypting OIM jdbc password"
+
   sed -i -e "s/oimdbuser/${iam_oim_prefix}_OIM/g" \
-         -e "s/oimpassword/${iam_oim_schema_pass}/g" \
          -e "s/\$SERVER_NAME:\$PORT:oim/${dbs_dbhost}:${dbs_port}\/${iam_servicename}/g" \
          ${_c}/conf/oimjdbc.properties
-  echo "     encrypting OIM jdbc password"
-  echo
+  echo ""                                         >> ${_c}/conf/oimjdbc.properties
+  echo "oim.jdbc.password=${iam_oim_schema_pass}" >> ${_c}/conf/oimjdbc.properties
+
   java -jar ${_c}/rbacx/WEB-INF/lib/vaau-commons-crypt.jar \
     -encryptProperty \
     -cipherKeyProperties ${_c}/conf/cipherKey.properties \
     -propertyFile ${_c}/conf/oimjdbc.properties \
     -propertyName oim.jdbc.password
 
-  # rbacx/WEB-INF/application-context.xml
+  echo
   echo " * rbacx/WEB-INF/application-context.xml"
   echo "     replacing cluster name"
-  echo
+
   sed -i -e "341s/Prod-1-Cluster/${iam_domain_oia}-Cluster/g" \
          ${_c}/rbacx/WEB-INF/application-context.xml
 
-  #if [ cluster ] TODO: cluster
-  #  sed -i -e '347s/false/true/g' \
-  #       ${_c}/rbacx/WEB-INF/application-context.xml
-  # <constructor-arg index="1" value="192.168.2.2;192.168.2.2;192.168.2.3;192.168.2.4;192.168.2.5"/-->' \
+  if [ ${_topo} == "cluster" ] ; then
+    
+    echo "     CLUSTER: list of service IP addresses"
+    sed -i -e '347s/false/true/g' \
+           -e '347 a \
+              \        <constructor-arg index="1" value="__NY_CLUSTER_IPS__"/>\
+              ' ${_c}/rbacx/WEB-INF/application-context.xml
+    sed -i -e "s/__MY_CLUSTER_IPS__/${IDMPROV_OIA_CLUSTERIP}/g" \
+                ${_c}/rbacx/WEB-INF/application-context.xml
+  fi
 
-  # rbacx/WEB-INF/classes/jasperreports.properties
+  echo
   echo " * rbacx/WEB-INF/classes/jasperreports.properties"
   echo "     adding jasper reports classpath"
-  echo
+
   echo "net.sf.jasperreports.compiler.classpath=${_c}/rbacx/WEB-INF/lib/jasperreports-2.0.5-javaflow.jar" \
     >> ${_c}/rbacx/WEB-INF/classes/jasperreports.properties
   
-  # rbacx/WEB-INF/classes/oscache.properties
+  echo
   echo " * rbacx/WEB-INF/classes/oscache.properties"
   echo "     adding cluster cache config, multicast"
-  echo
+
   echo "cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener,com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl" >> ${_c}/rbacx/WEB-INF/classes/oscache.properties
   echo "cache.cluster.multicast.ip=231.12.21.100" >> ${_c}/rbacx/WEB-INF/classes/oscache.properties
   
-  # rbacx/WEB-INF/conf-context.xml
+  echo
   echo " * rbacx/WEB-INF/conf-context.xml"
   echo "     removing line with jdbc-config file, we use datasource"
-  echo
-  sed -i 12 d ${_c}/rbacx/WEB-INF/conf-context.xml
 
-  # rbacx/WEB-INF/dataaccess-context.xml
+  sed -i '12 d' ${_c}/rbacx/WEB-INF/conf-context.xml
+
+  echo
   echo " * rbacx/WEB-INF/dataaccess-context.xml"
   echo "     replacing jdbc driver with weblogic data source"
-  echo
+
   sed -i -e '59s/<bean id/<!-- bean id/g' \
          -e '79s/<\/bean>/<\/bean -->/g' \
          -e '80 a \
@@ -242,29 +257,33 @@ oia_appconfig2()
             \    </bean>\
             ' ${_c}/rbacx/WEB-INF/dataaccess-context.xml
 
-  # rbacx/WEB-INF/etl-context.xml
+  echo
   echo " * rbacx/WEB-INF/etl-context.xml"
   echo "     activating ETLManager block"
+
   sed -i -e '6s/<!-- bean id/<bean id/g' \
          -e '16s/<\/bean-->/<\/bean>/g' \
          ${_c}/rbacx/WEB-INF/etl-context.xml
 
-  # rbacx/WEB-INF/iam-context.xml
+  echo
   echo " * rbacx/WEB-INF/iam-context.xml"
   echo "     referencing activated ETLManager"
+
   sed -i -e '269s/<!--/</g' \
          -e '269s/-->/>/g' \
          ${_c}/rbacx/WEB-INF/iam-context.xml
 
-  # rbacx/WEB-INF/log4j.properties
+  echo
   echo " * rbacx/WEB-INF/log4j.properties"
   echo "     log directory"
+
   sed -i -e "s/log4j\.appender\.file\.file=logs\/rbacx.log/log4j\.appender\.file\.file=${_iam_log}\/${iam_domain_oia}\/rbacx.log/g" \
          ${_c}/rbacx/WEB-INF/log4j.properties
 
-  # rbacx/WEB-INF/scheduling-context.xml
+  echo
   echo " * rbacx/WEB-INF/scheduling-context.xml"
   echo "     referencing activated ETLManager"
+
   sed -i -e '145,146s/<prop/<!-- prop/g' \
          -e '145,146s/prop>/prop -->/g' \
          -e '146 a \
@@ -272,10 +291,10 @@ oia_appconfig2()
             \                        <prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ? FOR UPDATE</prop>\
             ' ${_c}/rbacx/WEB-INF/scheduling-context.xml
 
-  # rbacx/WEB-INF/weblogic.xml
+  echo
   echo " * rbacx/WEB-INF/weblogic.xml"
   echo "     creating new with content"
-  echo
+
   cat > ${_c}/rbacx/WEB-INF/weblogic.xml <<-EOS
 	<?xml version="1.0" encoding="UTF-8"?>
 	<weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app">
@@ -299,6 +318,7 @@ oia_appconfig2()
 	</weblogic-web-app>
 EOS
 
+  echo
   echo "app config completed"
 }
 
@@ -337,13 +357,13 @@ oia_oim_integrate()
   cp -R ${OIM_MW_HOME}/iam/designconsole/config ${RBACX_HOME}/xellerate/
 
   # patching workflow configurations
-  oia_patch_workflow ${RBACX_HOME}/conf/workflows
+  oia_config_workflows ${RBACX_HOME}/conf/workflows
 }
 
 # OIM-OIA integration workflow patching -----------------------------------
 # param 1: directory path of workflow definitions
 #
-oia_patch_workflow()
+oia_config_workflows()
 {
   sed -i '125 a \
     \                <function name="exportIAMPolicyFunction" type="spring">\

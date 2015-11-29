@@ -32,7 +32,7 @@ iam userenv -a profile
 iam weblogic -a wlstlibs -t analytics
 
 # create domain
-iam analytics -a domcreate -P single
+iam analytics -a domcreate -T single
 
 # unpack OIA application
 iam analytics -a explode
@@ -41,13 +41,16 @@ iam analytics -a explode
 iam analytics -a domconfig
 
 # configure OIA application instance
-iam analytics -a appconfig -P single
+iam analytics -a appconfig -T single
 
 # perform OIM-OIA integration steps
 iam analytics -a oimintegrate
 
 # deploy OIA application to WLS
-iam analytics -a wlsdeploy -P cluster
+iam analytics -a wlsdeploy
+
+~/bin/stop-analytics
+~/bin/start-analytics
 
 echo -e "\nFinished successfully"
 

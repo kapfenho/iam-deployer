@@ -24,20 +24,22 @@ orig_params="${@}"
 
 if   [ $# -lt 1 ] ; then
   iamhelp       # not enough params
+  exit $ERROR_SYNTAX_ERROR
 elif [ $# -ge 1 ] ; then
-  echo -e "\n\n"
+  echo -e "\n"
   log "HOST $(hostname -s) >> IAM >> $*"
   cmd=${1}      # command entered
   shift
 fi
 
 
-while getopts AH:O:P:a:hnp:s:t:u:vw: FLAG; do
+while getopts AH:O:P:T:a:hnp:s:t:u:vw: FLAG; do
   case ${FLAG} in
     A)  opt_A=yes       ;;  # execute on all hosts
     H)  opt_H=${OPTARG} ;;  # execute on host stated
     O)  opt_O=${OPTARG} ;;  # Oracle home to upgrade
     P)  opt_P=${OPTARG} ;;  # pack or unpack (OIA rdeploy)
+    T)  opt_T=${OPTARG} ;;  # topology (OIA)
     a)  opt_a=${OPTARG} ;;  # action to perform
     h)  opt_h=yes       ;;  # help
     n)  opt_n=yes       ;;  # nodemanager (keyfiles)
@@ -281,9 +283,9 @@ else
       load_userenv common
       load_userenv oia
 
-      if   [ "${opt_a}" == "domcreate"    -a "${opt_P}" -a -z "${opt_h}" ] ; then
-        oia_dom_prop ${opt_P}
-        oia_wlst_exec wlstdom ${opt_P}
+      if   [ "${opt_a}" == "domcreate"   -a -n "${opt_T}" -a -z "${opt_h}" ] ; then
+        oia_dom_prop ${opt_T}
+        oia_wlst_exec wlstdom ${opt_T}
       elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" ] ; then
         # nodemanager keyfile
         : ${opt_u:=${nmUser}}
@@ -300,14 +302,12 @@ else
         oia_rdeploy ${opt_P}
       elif [ "${opt_a}" == "explode"      -a -z "${opt_h}" ] ; then
         oia_explode
-      elif [ "${opt_a}" == "appconfig"    -a -n "${opt_P}" -a -z "${opt_h}" ] ; then
-        oia_appconfig ${opt_P}
+      elif [ "${opt_a}" == "appconfig"    -a -n "${opt_T}" -a -z "${opt_h}" ] ; then
+        oia_appconfig ${opt_T}
       elif [ "${opt_a}" == "oimintegrate" -a -z "${opt_h}" ] ; then
         oia_oim_integrate
       elif [ "${opt_a}" == "wlsdeploy"    -a -z "${opt_h}" ] ; then
         deploy rbacx
-        stop-analytics
-        start-analytics
       else
         help_analytics
         exit $ERROR_SYNTAX_ERROR
@@ -374,6 +374,7 @@ else
 
     *) # unrecognized option - show help
       iamhelp
+      exit $ERROR_SYNTAX_ERROR
       ;;
   esac
 

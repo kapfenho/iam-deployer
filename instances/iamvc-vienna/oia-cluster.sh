@@ -43,7 +43,7 @@ iam userenv -a profile -H $oia1
 iam weblogic -a wlstlibs -t analytics
 
 # create cluster domain and distribute
-iam analytics -a domcreate -P cluster
+iam analytics -a domcreate -T cluster
 iam analytics -a rdeploy -P pack   -H $oia1
 iam analytics -a rdeploy -P unpack -H $oia2
 
@@ -55,13 +55,16 @@ iam analytics -a domconfig -H $oia1
 iam analytics -a domconfig -H $oia2
 
 # configure OIA application instance
-iam analytics -a appconfig -P cluster
+iam analytics -a appconfig -T cluster
 
 # perform OIM-OIA integration steps
 iam analytics -a oimintegrate
 
 # deploy OIA application to WLS
-iam analytics -a wlsdeploy -P cluster
+iam analytics -a wlsdeploy
+
+~/bin/stop-analytics
+~/bin/start-analytics
 
 echo -e "\nFinished successfully"
 

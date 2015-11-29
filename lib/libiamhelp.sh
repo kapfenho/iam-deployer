@@ -40,6 +40,7 @@ iamhelp() {
     -p password
     -s source
     -t target
+    -T topology (single or cluster)
     -f filename
     -u username
     -v        verbose
@@ -326,21 +327,22 @@ help_access() {
 # ---------------------------------------------------
 help_analytics() {
   echo "
-  Syntax: ${0} analytics -a {domcreate|explode|appconfig|wlsdeploy
-                            |oimintegrate|domconfig} 
-                         [-P {single|cluster|pack|unpack}]
+  Syntax: ${0} analytics -a {domcreate|explode|appconfig|wlsdeploy|
+                             oimintegrate|domconfig} 
+                         [-P {pack|unpack}]
+                         [-T {single|cluster}]
                          [-w wlst-prop-file] 
                          [-u user] [-p pwd] 
 
-    ${0} analytics -a domcreate -P cluster
+    ${0} analytics -a domcreate -T {single|cluster}
     ${0} analytics -a keyfile -u user -p pwd [-w wlst-prop-file]
     ${0} analytics -a domconfig
     ${0} analytics -a rdeploy -P pack
     ${0} analytics -a rdeploy -P unpack
     ${0} analytics -a explode
-    ${0} analytics -a appconfig -P single
+    ${0} analytics -a appconfig -T {single|cluster}
     ${0} analytics -a oimintegrate
-    ${0} analytics -a wlsdeploy -P cluster
+    ${0} analytics -a wlsdeploy
 
   Changes, fixes and user modifications for installed Identity Analytics
   instance
@@ -349,21 +351,19 @@ help_analytics() {
     -a   action to perform
          domcreate    create weblogic domain, managed servers and nodemanager
          keyfile      create nodemanager keyfiles for user
-         domconfig    configure wls domain # setDomainEnv.sh
-         rdeploy      deploy oia on remote machine
-         explode      unpack OOB Identity Analytics archive
-         appconfig    patch OIA with prepared diff patch
-         oimintegrate integrate OIM and OIA products
+         domconfig    configure wls domain env (setCustDomainEnv.sh)
+         rdeploy      deploy additional WebLogic node 
+         explode      extract OIA webapp archive
+         appconfig    adapt OIA webapp config files
+         oimintegrate integrate OIM and OIA
          wlsdeploy    deploy OIA application to weblogic domain
 
-    -H   hostname: execute on remote host
-    -P   patch instance
-         single       patch for single instance
-         cluster      patch for cluster
-         pack         package the OIA Managed server on current host
-                      (NOTE: when using this option, don't combine with -H)
-         unpack       unpackage the OIA Managed server on the remote machine
-                      (NOTE: when using this option, always combine with -H)
+    -P   pack mode
+         pack         pack the OIA domain on current host
+         unpack       unpack the OIA domain jar file (new host)
+    -T   topology
+         single       single host topology
+         cluster      cluster topology (multihost)
     -w   path         path of WLST properties file to use
                       default: ~/.env/analytics.prop
 
