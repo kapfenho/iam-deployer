@@ -29,11 +29,51 @@ _cp_nodemanager()
 
 _replace_in_env()
 {
+  # general
   sed -i "s/__HOSTENV__/${_iam_hostenv}/" ${env}/*
   sed -i "s/__IAM_TOP__/${_iam_top}/"     ${env}/*
   sed -i "s/__IAM_TOP__/${_iam_top}/"     ${bin}/*
   sed -i "s/__IAM_LOG__/${_iam_log}/"     ${env}/*
   sed -i "s/__IAM_LOG__/${_iam_log}/"     ${bin}/*
+  sed -i "s/__IL_APP_CONFIG__/${IL_APP_CONFIG}/" ${env}/*
+  sed -i "s/__IL_APP_CONFIG__/${IL_APP_CONFIG}/" ${bin}/*
+  # access - acc
+  sed -i "s/__IDMPROV_IDMDOMAIN_ADMINSERVER_HOST__/${IDMPROV_IDMDOMAIN_ADMINSERVER_HOST}/"     ${env}/*
+  sed -i "s/__IDMPROV_IDMDOMAIN_ADMINSERVER_HOST__/${IDMPROV_IDMDOMAIN_ADMINSERVER_HOST}/"     ${bin}/*
+  sed -i "s/__IDMPROV_IDMDOMAIN_ADMINSERVER_PORT__/${IDMPROV_IDMDOMAIN_ADMINSERVER_PORT}/"     ${env}/*
+  sed -i "s/__IDMPROV_IDMDOMAIN_ADMINSERVER_PORT__/${IDMPROV_IDMDOMAIN_ADMINSERVER_PORT}/"     ${bin}/*
+  sed -i "s/__IDMPROV_OAM_PORT__/${IDMPROV_OAM_PORT}/" ${env}/*
+  sed -i "s/__IDMPROV_OAM_PORT__/${IDMPROV_OAM_PORT}/" ${bin}/*
+  # identity - oim
+  sed -i "s/__IDMPROV_OIMDOMAIN_ADMINSERVER_HOST__/${IDMPROV_OIMDOMAIN_ADMINSERVER_HOST}/"     ${env}/*
+  sed -i "s/__IDMPROV_OIMDOMAIN_ADMINSERVER_HOST__/${IDMPROV_OIMDOMAIN_ADMINSERVER_HOST}/"     ${bin}/*
+  sed -i "s/__IDMPROV_OIMDOMAIN_ADMINSERVER_PORT__/${IDMPROV_OIMDOMAIN_ADMINSERVER_PORT}/"     ${env}/*
+  sed -i "s/__IDMPROV_OIMDOMAIN_ADMINSERVER_PORT__/${IDMPROV_OIMDOMAIN_ADMINSERVER_PORT}/"     ${bin}/*
+  sed -i "s/__IDMPROV_OIM_PORT__/${IDMPROV_OIM_PORT}/" ${env}/*
+  sed -i "s/__IDMPROV_OIM_PORT__/${IDMPROV_OIM_PORT}/" ${bin}/*
+  sed -i "s/__IDMPROV_SOA_PORT__/${IDMPROV_SOA_PORT}/" ${env}/*
+  sed -i "s/__IDMPROV_SOA_PORT__/${IDMPROV_SOA_PORT}/" ${bin}/*
+  # analytics - oia
+  sed -i "s/__IDMPROV_OIADOMAIN_ADMINSERVER_HOST__/${IDMPROV_OIADOMAIN_ADMINSERVER_HOST}/"     ${env}/*
+  sed -i "s/__IDMPROV_OIADOMAIN_ADMINSERVER_HOST__/${IDMPROV_OIADOMAIN_ADMINSERVER_HOST}/"     ${bin}/*
+  sed -i "s/__IDMPROV_OIADOMAIN_ADMINSERVER_PORT__/${IDMPROV_OIADOMAIN_ADMINSERVER_PORT}/"     ${env}/*
+  sed -i "s/__IDMPROV_OIADOMAIN_ADMINSERVER_PORT__/${IDMPROV_OIADOMAIN_ADMINSERVER_PORT}/"     ${bin}/*
+  sed -i "s/__IDMPROV_OIA_PORT__/${IDMPROV_OIA_PORT}/" ${env}/*
+  sed -i "s/__IDMPROV_OIA_PORT__/${IDMPROV_OIA_PORT}/" ${bin}/*
+}
+
+_cp_acc()
+{
+  # already done?
+  [ -f ${env}/acc.env ] && return
+
+  cp ${src}/bin/*access*      ${bin}/
+  cp ${src}/bin/*nodemanager* ${bin}/
+  cp ${src}/env/acc.env       ${env}/
+  cp ${src}/env/access.prop   ${env}/
+  sed -i "s/__DOMAIN_NAME__/${iam_domain_acc}/" ${env}/*
+  _cp_nodemanager
+  _replace_in_env
 }
 
 _cp_oim()
@@ -41,15 +81,13 @@ _cp_oim()
   # already done?
   [ -f ${env}/idm.env ] && return
 
-  cp ${src}/bin/*identity*          ${bin}/
-  cp ${src}/bin/*nodemanager*       ${bin}/
-  cp ${src}/env/idm.env             ${env}/
-  cp ${src}/env/idm-deplenv.env     ${env}/
-  cp ${src}/env/identity.prop       ${env}/
-  cp ${src}/lib/deploy.py           ${lib}/
-  sed -i "s/__ADMHOSTNAME__/${IDMPROV_OIMDOMAIN_ADMINSERVER_HOST}/" ${env}/*
-  sed -i "s/__OIMADMINSERVER__/${domiAdminServer}/" ${env}/*
-  sed -i "s/__DOMAIN_NAME__/${iam_domain_oim}/"     ${env}/*
+  cp ${src}/bin/*identity*      ${bin}/
+  cp ${src}/bin/*nodemanager*   ${bin}/
+  cp ${src}/env/idm.env         ${env}/
+  cp ${src}/env/idm-deplenv.env ${env}/
+  cp ${src}/env/identity.prop   ${env}/
+  cp ${src}/lib/deploy.py       ${lib}/
+  sed -i "s/__DOMAIN_NAME__/${iam_domain_oim}/" ${env}/*
   _cp_nodemanager
   _replace_in_env
 }
@@ -59,27 +97,13 @@ _cp_oia()
   # already done?
   [ -f ${env}/oia.env ] && return
 
-  cp ${src}/env/oia.env                             ${env}/
-  cp ${src}/env/analytics.prop                      ${env}/
-  cp ${src}/bin/{start,stop}-analytics              ${bin}/
-  sed -i "s/__ADMHOSTNAME__/${IDMPROV_OIADOMAIN_ADMINSERVER_HOST}/" ${env}/*
-  sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/"     ${env}/*
-  _cp_nodemanager
-  _replace_in_env
-}
-
-_cp_acc()
-{
-  # already done?
-  [ -f ${env}/acc.env ] && return
-
-  cp ${src}/bin/*access*                            ${bin}/
-  cp ${src}/bin/*nodemanager*                       ${bin}/
-  cp ${src}/env/acc.env                             ${env}/
-  cp ${src}/env/access.prop                         ${env}/
-  sed -i "s/__DOMAIN_NAME__/${iam_domain_acc}/"     ${env}/*
-  sed -i "s/__ADMHOSTNAME__/${IDMPROV_IDMDOMAIN_ADMINSERVER_HOST}/" ${env}/*
-  sed -i "s/__OAMADMINSERVER__/${domaAdminServer}/" ${env}/*
+  cp ${src}/bin/*analytics*     ${bin}/
+  cp ${src}/env/oia.env         ${env}/
+  cp ${src}/env/analytics.prop  ${env}/
+  cp ${src}/env/rbacx.prop      ${env}/
+  cp ${src}/lib/deploy-rbacx.py ${lib}/
+  sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/" ${env}/*
+  sed -i "s/__RBACX_HOME__/${iam_rbacx_home}/"  ${env}/*
   _cp_nodemanager
   _replace_in_env
 }
@@ -89,11 +113,11 @@ _cp_oud()
   # already done?
   [ -f ${env}/dir.env ] && return
 
-  cp ${src}/bin/*dir*                               ${bin}/
-  cp ${src}/env/dir.env                             ${env}/
-  cp ${src}/env/tools.properties                    ${env}/
+  cp ${src}/bin/*dir*            ${bin}/
+  cp ${src}/env/dir.env          ${env}/
+  cp ${src}/env/tools.properties ${env}/
   _replace_in_env
-  sed -i "s/__HOSTNAME__/$(hostname -f)/"           ${env}/*
+  sed -i "s/__HOSTNAME__/$(hostname -f)/" ${env}/*
   echo -n ${oudPwd} > ${crd}/oudadmin
 }
 
@@ -102,8 +126,8 @@ _cp_web()
   # already done?
   [ -f ${env}/web.env ] && return
 
-  cp ${src}/bin/*webtier*                           ${bin}/
-  cp ${src}/env/web.env                             ${env}/
+  cp ${src}/bin/*webtier* ${bin}/
+  cp ${src}/env/web.env   ${env}/
   _replace_in_env
   
   # get the instance name
@@ -112,7 +136,6 @@ _cp_web()
   local _ohs=$(basename $_ohspath)
 
   sed -i "s/ohs1/${_ohs}/" ${env}/*
-
 }
 
 #  ------------------------------------------------

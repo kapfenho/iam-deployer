@@ -75,7 +75,7 @@ oia_rdeploy()
 
   pack=$WL_HOME/common/bin/pack.sh
   unpack=$WL_HOME/common/bin/unpack.sh
-  template_loc=/l/ora/products
+  template_loc=${IL_APP_CONFIG}
   template_name=${iam_domain_oia}
 
   case ${_action} in

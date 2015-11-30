@@ -183,7 +183,7 @@ UC_PALN_DESC=Identity Manager
 #Install Locations
 IL_INSTALLERDIR_LOCATION=/mnt/oracle/iam-11.1.2.2/repo
 IL_APP_BASE=/l/ora
-IL_APP_CONFIG=${provisioning.setup.install-location.locations.default.home.top}/config
+IL_APP_CONFIG=/l/ora/config
 IL_ENABLE_LOCALAPP_CONFIG=true
 IL_LOCALAPP_CONFIG=/l/ora/services
 IL_WIN_DOMAIN_USERNAME=

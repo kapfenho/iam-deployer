@@ -1,5 +1,4 @@
-#  deploy applications on weblogic
-#  (c) agoracon.at 2015
+#  deploy analytics applications on weblogic, horst@agoracon.at
 #  
 #  For each application an WLST properties-file shall exists and 
 #  preloaded. Following application variables are needed - sample 
@@ -33,6 +32,7 @@ def deployApp():
                 path=appPath,
                 targets=appTargets,
                 upload='false',
+                stageMode='nostage',
                 timeout=360000,
                 block="true")
         startApplication(appName,timeout=360000,block="true")
@@ -46,29 +46,12 @@ if __name__== "main":
     print 
     print "*** Weblogic Deployment ***"
     print
-
-    print "> checking for deployment structure..."
-    os.system("mkdir -p "+appDir+"/{new,current,archive}")
-
     acConnect()
     print "> undeploying application..."
     undeployApp()
-
-    print "> archiving current version..."
-    os.system("cp -Rp "+appDir+"/current "+appDir+
-        "/archive/$(date ""+%Y%m%d-%H%M%S"")")
-    
-    print "> removing current version..."
-    os.system("rm -f "+appPath)
-    
-    print "> moving new version to current..."
-    os.system("mv "+appDir+"/new/* "+appDir+"/current/")
-
     print "> deploying..."
     deployApp()
-
     print "> successfully finished!"
     print
-
     exit()
 
