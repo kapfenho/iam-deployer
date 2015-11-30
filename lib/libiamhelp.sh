@@ -38,12 +38,12 @@ iamhelp() {
     -a action action
     -n        nodemanager (keyfiles)
     -p password
+    -q        quiet mode (suppress detailed output)
     -s source
     -t target
     -T topology (single or cluster)
     -f filename
     -u username
-    -v        verbose
     -w        wlst property file
 
 "

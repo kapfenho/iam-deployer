@@ -33,7 +33,7 @@ elif [ $# -ge 1 ] ; then
 fi
 
 
-while getopts AH:O:P:T:a:hnp:s:t:u:vw: FLAG; do
+while getopts AH:O:P:T:a:hnp:qs:t:u:w: FLAG; do
   case ${FLAG} in
     A)  opt_A=yes       ;;  # execute on all hosts
     H)  opt_H=${OPTARG} ;;  # execute on host stated
@@ -43,12 +43,12 @@ while getopts AH:O:P:T:a:hnp:s:t:u:vw: FLAG; do
     a)  opt_a=${OPTARG} ;;  # action to perform
     h)  opt_h=yes       ;;  # help
     n)  opt_n=yes       ;;  # nodemanager (keyfiles)
-    p)  opt_p=${OPTARG} ;;  # password
+    p)  opt_p=yes       ;;  # password
+    q)  opt_q=${OPTARG} ;;  # quiet mode
     s)  opt_s=${OPTARG} ;;  # source
     t)  opt_t=${OPTARG} ;;  # target
     f)  opt_f=${OPTARG} ;;  # file name
     u)  opt_u=${OPTARG} ;;  # username
-    v)  opt_v=yes       ;;  # verbose
     w)  opt_w=${OPTARG} ;;  # wlst property file path
     \?) # unrecognized option - show help
       echo -e \\n"Option -${BOLD}${OPTARG}${NORM} not allowed."
@@ -63,7 +63,7 @@ set -o errexit
 set -o errtrace
 
 # verbose output
-[[ -n "${opt_v}" ]] && set -o xtrace
+[[ -z "${opt_q}" ]] && set -o xtrace
 
 
 if   [ -n "${opt_H}" ] ; then

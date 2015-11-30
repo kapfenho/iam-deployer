@@ -25,7 +25,7 @@
 ###########################################################################
 
 # Domain Props                                                                                                                                                                   
-basePortNumber = 7300
+basePortNumber = 7000
 domainName= __DOMAIN_NAME__
 domainsDirectory= __IAM_TOP__/services/domains
 logsDirectory= __IAM_TOP__/IAM/logs
@@ -37,9 +37,9 @@ userEnvHome = __HOSTENV__
 
 # Adminserver                                                                                                                                                            
 adminserver.listenAddress = __IAM_OIA_HOST1__
-adminserver.relativeListenPort = 1
+adminserver.relativeListenPort = 3
 adminserver.enableSSL = false
-adminserver.relativeSslListenPort = 2
+adminserver.relativeSslListenPort = 4
  
 
 # Cluster
@@ -63,6 +63,8 @@ managedserver.1.name = wls_oia1
 managedserver.1.machine = oia_machine1
 managedserver.1.maxHeap = 1024m
 managedserver.1.listenerAddress = __IAM_OIA_HOST1__
+managedserver.1.relativeListenPort = 1003
+managedserver.1.relativeSslListenPort = 1004
 managedserver.1.sslEnabled = true
 managedserver.1.profileID = None
 managedserver.1.useNodeManager = true

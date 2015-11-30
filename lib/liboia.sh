@@ -28,6 +28,43 @@ oia_dom_prop()
          ${_propfile}
 }
 
+# unpack OIA instance -------------------------------------------------
+# creates directories
+#   iam_top/config/analytics
+#   iam_top/products/analytics
+# expodes archive of webapp rbacx
+#
+oia_explode()
+{
+  mkdir -p ${iam_rbacx_home} ${iam_analytics_home}
+
+  unzip -q ${s_oia}/app-archive/${oia_name} -d ${RBACX_HOME}
+
+  mv ${RBACX_HOME}/sample/* ${RBACX_HOME}
+  rm -Rf ${RBACX_HOME}/sample
+
+  mkdir ${RBACX_HOME}/rbacx
+  cd ${RBACX_HOME}/rbacx
+  jar -xf ../rbacx.war
+  rm -f ../rbacx.war
+
+  # copy libraries needed by OIA
+  cp ${s_oia}/ext/*.jar ${RBACX_HOME}/rbacx/WEB-INF/lib/
+
+  # remove conflicting libs
+  for lib in jrf-api.jar \
+             stax-1.2.0.jar \
+             stax-api-1.0.1.jar \
+             tools.jar \
+             ucp.jar \
+             xfire-all-1.2.5.jar ; do
+    rm ${RBACX_HOME}/rbacx/WEB-INF/lib/${lib}
+  done
+
+  echo "Done unpacking OIA"
+  echo
+}
+
 # create weblogic domain for OIA --------------------------------------
 # with:
 #   nodemanager, boot properties, datasources, managed server
@@ -94,37 +131,6 @@ oia_rdeploy()
       exit $ERROR_FILE_NOT_FOUND
       ;;
   esac
-}
-
-# unpack OIA instance -------------------------------------------------
-#
-oia_explode()
-{
-  unzip -q ${s_oia}/app-archive/${oia_name} -d ${RBACX_HOME}
-
-  mv ${RBACX_HOME}/sample/* ${RBACX_HOME}
-  rm -Rf ${RBACX_HOME}/sample
-
-  mkdir ${RBACX_HOME}/rbacx
-  cd ${RBACX_HOME}/rbacx
-  jar -xf ../rbacx.war
-  rm -f ../rbacx.war
-
-  # copy libraries needed by OIA
-  cp ${s_oia}/ext/*.jar ${RBACX_HOME}/rbacx/WEB-INF/lib/
-
-  # remove conflicting libs
-  for lib in jrf-api.jar \
-             stax-1.2.0.jar \
-             stax-api-1.0.1.jar \
-             tools.jar \
-             ucp.jar \
-             xfire-all-1.2.5.jar ; do
-    rm ${RBACX_HOME}/rbacx/WEB-INF/lib/${lib}
-  done
-
-  echo "Done unpacking OIA"
-  echo
 }
 
 # configure the OIA weapp config files --------------------------------
@@ -261,7 +267,7 @@ oia_appconfig()
   echo " * rbacx/WEB-INF/etl-context.xml"
   echo "     activating ETLManager block"
 
-  sed -i -e '6s/<!-- bean id/<bean id/g' \
+  sed -i -e '6s/<!--/</g' \
          -e '16s/<\/bean-->/<\/bean>/g' \
          ${_c}/rbacx/WEB-INF/etl-context.xml
 

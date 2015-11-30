@@ -15,6 +15,9 @@ fi
 echo "Confirm you have executed >iam remove -t analytics< with ENTER"
 read nil
 
+. ${DEPLOYER}/user-config/iam.config
+mkdir -p ${iam_analytics_home}
+
 # create schema
 iam rcu -a create -t analytics
 
@@ -52,5 +55,5 @@ iam analytics -a wlsdeploy
 ~/bin/stop-analytics
 ~/bin/start-analytics
 
-echo -e "\nFinished successfully"
+echo -e "\n >>  Setup finished successfully"
 

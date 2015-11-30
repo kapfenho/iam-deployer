@@ -35,8 +35,8 @@ _replace_in_env()
   sed -i "s/__IAM_TOP__/${_iam_top}/"     ${bin}/*
   sed -i "s/__IAM_LOG__/${_iam_log}/"     ${env}/*
   sed -i "s/__IAM_LOG__/${_iam_log}/"     ${bin}/*
-  sed -i "s/__IL_APP_CONFIG__/${IL_APP_CONFIG}/" ${env}/*
-  sed -i "s/__IL_APP_CONFIG__/${IL_APP_CONFIG}/" ${bin}/*
+  sed -i "s/__IL_APP_CONFIG__/${_IL_APP_CONFIG}/" ${env}/*
+  sed -i "s/__IL_APP_CONFIG__/${_IL_APP_CONFIG}/" ${bin}/*
   # access - acc
   sed -i "s/__IDMPROV_IDMDOMAIN_ADMINSERVER_HOST__/${IDMPROV_IDMDOMAIN_ADMINSERVER_HOST}/"     ${env}/*
   sed -i "s/__IDMPROV_IDMDOMAIN_ADMINSERVER_HOST__/${IDMPROV_IDMDOMAIN_ADMINSERVER_HOST}/"     ${bin}/*
@@ -97,13 +97,17 @@ _cp_oia()
   # already done?
   [ -f ${env}/oia.env ] && return
 
+  # these variables will be used in sed command and must
+  # be escaped before
+  _iam_rbacx_home=$(echo ${iam_rbacx_home} | sed -e 's/[\/&]/\\&/g')
+
   cp ${src}/bin/*analytics*     ${bin}/
   cp ${src}/env/oia.env         ${env}/
   cp ${src}/env/analytics.prop  ${env}/
   cp ${src}/env/rbacx.prop      ${env}/
-  cp ${src}/lib/deploy-rbacx.py ${lib}/
+  cp ${src}/lib/deploy-oia.py   ${lib}/
   sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/" ${env}/*
-  sed -i "s/__RBACX_HOME__/${iam_rbacx_home}/"  ${env}/*
+  sed -i "s/__RBACX_HOME__/${_iam_rbacx_home}/" ${env}/*
   _cp_nodemanager
   _replace_in_env
 }
@@ -155,10 +159,11 @@ init_userenv()
 
   # these variables will be used in sed command and must
   # be escaped before
-    _iam_hostenv=$(echo ${iam_hostenv} | sed -e 's/[\/&]/\\&/g')
-        _iam_top=$(echo ${iam_top}     | sed -e 's/[\/&]/\\&/g')
-        _iam_log=$(echo ${iam_log}     | sed -e 's/[\/&]/\\&/g')
-  _deployer_path=$(echo ${DEPLOYER}    | sed -e 's/[\/&]/\\&/g')
+    _iam_hostenv=$(echo ${iam_hostenv}   | sed -e 's/[\/&]/\\&/g')
+        _iam_top=$(echo ${iam_top}       | sed -e 's/[\/&]/\\&/g')
+        _iam_log=$(echo ${iam_log}       | sed -e 's/[\/&]/\\&/g')
+  _deployer_path=$(echo ${DEPLOYER}      | sed -e 's/[\/&]/\\&/g')
+  _IL_APP_CONFIG=$(echo ${IL_APP_CONFIG} | sed -e 's/[\/&]/\\&/g')
   # also used but scaping not necessary:
   # iam_domain_oim, iam_domain_acc
 

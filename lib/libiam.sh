@@ -349,7 +349,13 @@ remmve_lcm()
 remove_oia()
 {
   rm -Rf ${iam_top}/products/{analytics,oia.jar} \
-    ${iam_services}/domains/${iam_domain_oia}
+    ${iam_rbacx_home} \
+    ${iam_log}/${iam_domain_oia} \
+    ${iam_services}/domains/${iam_domain_oia} \
+    ~/.env/{oia.env,analytics.prop,rbacx.prop} \
+    ~/bin/*analytics* \
+    ~/lib/deploy-oia.py \
+    ~/.cred/${iam_domain_oia}.{key,usr}
 
   echo "Removing domain from nodemanager"
   for f in ${iam_top}/config/nodemanager/${IDMPROV_OIA_HOST}/nodemanager.domains ; do
@@ -357,7 +363,7 @@ remove_oia()
   done
 
   echo
-  echo "OIA webapp and domain removed. Env files not touched."
+  echo "OIA binaries, webapp, domain and environment files removed."
 }
 
 #  run Oracle patch set assistant

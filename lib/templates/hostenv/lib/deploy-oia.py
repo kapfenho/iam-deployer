@@ -20,6 +20,7 @@ from java.util import Date
 from java.text import SimpleDateFormat
 
 def undeployApp():
+    print "Remove application (ignore error not deployed before)..."
     try:
         stopApplication(appName,timeout=360000,block="true")
         undeploy(appName,timeout=360000,block="true")

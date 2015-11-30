@@ -323,11 +323,11 @@ def createManagedServers():
                 # create server
                 cd('/Servers/'+actual_managedserver_name);
                 print 'Configure managedserver';
-                set('ListenAddress',actual_managedserver_listenerAddress)
                 set('ListenPort',int(int(domainProps.getProperty('basePortNumber'))+int(actual_managedserver_relativeListenPort)));
                 set('ListenPortEnabled',true);
                 set('JavaCompiler','javac');
                 set('ClientCertProxyEnabled',false);
+                set('ListenAddress',actual_managedserver_listenerAddress);
 
                 # Add to machine
                 print 'Adding server to machine';
