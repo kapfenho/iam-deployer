@@ -352,7 +352,7 @@ remove_oia()
     ${iam_rbacx_home} \
     ${iam_log}/${iam_domain_oia} \
     ${iam_services}/domains/${iam_domain_oia} \
-    ~/.env/{oia.env,analytics.prop,rbacx.prop} \
+    ~/.env/{oia.env,analytics.prop,oia.prop} \
     ~/bin/*analytics* \
     ~/lib/deploy-oia.py \
     ~/.cred/${iam_domain_oia}.{key,usr}

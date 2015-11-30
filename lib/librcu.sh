@@ -153,14 +153,19 @@ rcu_analytics() {
   exit;
 EOS
   # create objects
+  echo 
+  echo "1 Load OIA 11.1.1.5.5AF schema with removed tablespace"
+  echo "2 Loading migrate-rbacx-11.1.1.5.3To11.1.1.5.4-oracle.sql"
+  echo "3 Loading migrate-rbacx-11.1.1.5.4To11.1.1.5.5-oracle.sql"
+  echo 
   ${ORACLE_HOME}/bin/sqlplus ${iam_oia_dbuser}/${iam_oia_schema_pass}@${dbconn} <<-EOS
-  @${s_oia}/sql/10-create-schema.sql
-  @${s_oia}/sql/20-mig1.sql
-  @${s_oia}/sql/21-mig2.sql
-  @${s_oia}/sql/22-mig3.sql
+  @${s_oia_sql}/rbacx-11.1.1.5.1_oracle_schema-default-tbs.sql
+  @${s_oia_sql}/migrate-rbacx-11.1.1.5.3To11.1.1.5.4-oracle.sql
+  @${s_oia_sql}/migrate-rbacx-11.1.1.5.4To11.1.1.5.5-oracle.sql
   commit;
   exit;
 EOS
+  echo "Schema import completed"
 }
 
 #  drop database schemas of analytics

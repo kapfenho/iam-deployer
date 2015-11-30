@@ -3,8 +3,8 @@
     #
     # vi: ft=apache :
 
-    # rbacx - identity analytics
-    <Location /rbacx>
+    # oia - identity analytics
+    <Location /oia>
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIA__

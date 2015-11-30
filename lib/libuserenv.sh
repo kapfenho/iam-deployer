@@ -104,7 +104,7 @@ _cp_oia()
   cp ${src}/bin/*analytics*     ${bin}/
   cp ${src}/env/oia.env         ${env}/
   cp ${src}/env/analytics.prop  ${env}/
-  cp ${src}/env/rbacx.prop      ${env}/
+  cp ${src}/env/oia.prop        ${env}/
   cp ${src}/lib/deploy-oia.py   ${lib}/
   sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/" ${env}/*
   sed -i "s/__RBACX_HOME__/${_iam_rbacx_home}/" ${env}/*

@@ -1,0 +1,107 @@
+nterim Patch for PSE: 18328247  MLR: 18288987
+===============================
+
+Date : 02/17/2014
+-------------------------------
+
+Platform Patch for : Generic
+Product Patched : Oracle Identity Analytics
+Product Version : 11.1.1.5.5
+Patch Version : 11.1.1.5.5AF
+
+
+
+Bugs Fixed by This Patch
+------------------------
+Bug 13767212 - DWR NULL ERROR WHEN VIEWING POLICY CHANGE REQUEST
+Bug 16170743 - IMPORT OF ROLE WITH STATUSKEY 2 OR 5 IN IMPORT FILE ALWAYS PRODUCES ACTIVE ROLE
+Bug 14641890 - oia-oim integration framework removes [description] field from access policies
+Bug 15894048 - role is not becoming active on the future start date
+Bug 15929090 - inconsistency in role-policy assignments -corruption in role-policy relationship
+Bug 14382354 - oia should support updates in a role 700+ policies
+Bug 16223306 - oim update performance issue on policy change - policy is part of 391 roles
+Bug 16267508 - requirement for independent crud on ida and idw policies
+Bug 15878207 - role remains in composing state rather than moving to inactive
+Bug 16515616 - regression introduced by bug 15929090 fix
+Bug 16370419 - bug 14215394 - multiple role version approvals in oia
+Bug 16622027 - policy should removed from role if policy is decommissioned or inactive 14801578
+Bug 14479456 - OIA ROLE VERSIONING ISSUE DUE TO MULTIPLE SIMULTANEOUS MODIFICATIONS
+Bug 16633631 - fixed
+Bug 17403003 - endpoint should not be created if there is no corresponding application instance
+Bug 16626376 - glossary tooltips don't display properly in ie 8
+Bug 15984846 - clicking role name in the search result switches from display name to role name
+Bug 16701735 - IF IDA RULE CONTAIN 2*RESOURCE CONTITIONS NO VIOLATIONS FOUND
+
+NOTES:
+======
+
+List of modified binaries(provided for information purposes only):
+
+WEB-INF/classes/VERSION.txt
+WEB-INF/classes/com/vaau/rbacx/iam/db/support/OIMDataProvider.class
+WEB-INF/classes/com/vaau/rbacx/iam/db/support/oracle/OIMDataProviderImpl.class
+WEB-INF/classes/com/vaau/rbacx/iam/db/support/oracle/OIMDataProviderImpl$1.class
+WEB-INF/classes/com/vaau/rbacx/iam/db/support/oracle/OIMDataProviderImpl$OimNamespaceDetails.class
+WEB-INF/classes/com/vaau/rbacx/iam/db/helpers/IamDbPolicyImportHelperImpl.class
+WEB-INF/classes/com/vaau/rbacx/iam/db/helpers/IamDbEndpointImporterHelperImpl.class
+WEB-INF/classes/com/vaau/rbacx/idw/manager/utils/RoleModifications.class
+WEB-INF/classes/com/vaau/rbacx/idw/manager/RoleManagerImpl.class
+WEB-INF/classes/com/vaau/rbacx/idw/manager/RoleManager.class
+WEB-INF/classes/com/vaau/rbacx/idw/manager/PolicyManager.class
+WEB-INF/classes/com/vaau/rbacx/idw/manager/PolicyManagerImpl$1.class
+WEB-INF/classes/com/vaau/rbacx/idw/manager/PolicyManagerImpl.class
+WEB-INF/classes/com/vaau/rbacx/idw/service/RbacxIDWService$OwnerPrivilegeMapKeys.class
+WEB-INF/classes/com/vaau/rbacx/idw/service/RbacxIDWService.class
+WEB-INF/classes/com/vaau/rbacx/idw/service/RbacxIDWServiceImpl.class
+WEB-INF/classes/com/vaau/rbacx/idw/web/dwr/DwrRoleService.class
+WEB-INF/classes/com/vaau/rbacx/idw/web/dwr/impl/DwrRoleServiceImpl.class
+WEB-INF/classes/com/vaau/rbacx/idw/web/dwr/DwrPolicyService.class
+WEB-INF/classes/com/vaau/rbacx/idw/web/dwr/impl/DwrPolicyServiceImpl.class
+WEB-INF/classes/com/vaau/rbacx/dao/RolePolicyAssociationDao.class
+WEB-INF/classes/com/vaau/rbacx/dao/ibatis/SqlMapRolePolicyAssociationDao.class
+WEB-INF/classes/com/vaau/rbacx/dao/ibatis/SqlMapRolePolicyAssociationDao$1.class
+WEB-INF/classes/com/vaau/rbacx/dao/ibatis/SqlMapRolePolicyAssociationDao$2.class
+WEB-INF/classes/com/vaau/rbacx/dao/ibatis/SqlMapRolePolicyAssociationDao$3.class
+WEB-INF/classes/com/vaau/rbacx/dao/ibatis/SqlMapRolePolicyAssociationDao$4.class
+WEB-INF/classes/com/vaau/rbacx/dao/ibatis/SqlMapRolePolicyAssociationDao$5.class
+WEB-INF/classes/com/vaau/rbacx/dao/ibatis/maps/Role_Policy.xml
+WEB-INF/classes/com/vaau/rbacx/iam/oracle/AbstractOimIamSolution.class
+WEB-INF/classes/com/vaau/rbacx/idw/manager/utils/RoleUpdateExecutor.class
+WEB-INF/classes/com/vaau/rbacx/core/support/RbacxDataImporterImpl.class
+WEB-INF/idw-context.xml
+WEB-INF/security-context.xml
+WEB-INF/security-privileges-context.xml
+WEB-INF/jsp/audit.jsp
+WEB-INF/jsp/requests.jsp
+WEB-INF/jsp/security.jsp
+WEB-INF/jsp/idwPolicies.jsp
+WEB-INF/jsp/idwRoles.jsp
+WEB-INF/jsp/common/advancedConditionsUI.jsp 
+WEB-INF/classes/rbacxmessages.properties
+scripts/dwrRequestsClient.js
+scripts/dwrIDWPoliciesClient.js
+scripts/dwrIDWRolesClient.js
+scripts/utility.js
+scripts/common/ui/dialog/advancedConditionsUI.js 
+scripts/dwrIdentityAuditClient.js 
+conf/idw.properties
+
+This interim patch is only certified as a full product installation/upgrade.
+Oracle Corporation strongly recommends that you apply this patch as a complete binary
+based replacement of the current product version. 
+
+
+DISCLAIMER:
+===========
+This one-off patch has undergone only basic unit testing. It has not been through the complete
+test cycle that is generally followed for a production patch set. Though the fix in this one-off
+patch rectifies the bug, Oracle Corporation will not be responsible for other issues that may arise
+due to this fix. Oracle Corporation recommends that you upgrade to the next production patch set,
+when it is available. Applying this one-off patch could overwrite other one-off patches applied
+since the last patch set. Customers need to request Oracle Support for a patch that includes those
+fixes as well as inform Oracle Support about all the PSE installed when an SR is opened.
+Please download, test, and provide feedback as soon as possible to assist in the timely resolution
+of this problem.
+
+Copyright � 2014, Oracle and/or its affiliates. All rights reserved. 
+

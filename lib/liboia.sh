@@ -38,18 +38,21 @@ oia_explode()
 {
   mkdir -p ${iam_rbacx_home} ${iam_analytics_home}
 
-  unzip -q ${s_oia}/app-archive/${oia_name} -d ${RBACX_HOME}
+  # unzip in config, used for config and deployment
+  unzip -q ${s_oia_archive} -d ${RBACX_HOME}
+  # keep orginal verson in products
+  unzip -q ${s_oia_archive} -d ${iam_analytics_home}
 
   mv ${RBACX_HOME}/sample/* ${RBACX_HOME}
   rm -Rf ${RBACX_HOME}/sample
 
-  mkdir ${RBACX_HOME}/rbacx
-  cd ${RBACX_HOME}/rbacx
+  mkdir ${RBACX_HOME}/oia
+  cd ${RBACX_HOME}/oia
   jar -xf ../rbacx.war
   rm -f ../rbacx.war
 
   # copy libraries needed by OIA
-  cp ${s_oia}/ext/*.jar ${RBACX_HOME}/rbacx/WEB-INF/lib/
+  cp ${s_oia_ext}/*.jar ${RBACX_HOME}/oia/WEB-INF/lib/
 
   # remove conflicting libs
   for lib in jrf-api.jar \
@@ -58,7 +61,7 @@ oia_explode()
              tools.jar \
              ucp.jar \
              xfire-all-1.2.5.jar ; do
-    rm ${RBACX_HOME}/rbacx/WEB-INF/lib/${lib}
+    rm ${RBACX_HOME}/oia/WEB-INF/lib/${lib}
   done
 
   echo "Done unpacking OIA"
@@ -136,44 +139,6 @@ oia_rdeploy()
 # configure the OIA weapp config files --------------------------------
 #   param1: single or cluster        
 #
-_oia_appconfig_old_()
-{
-  deployment_type=${1}
-
-  if type dos2unix >/dev/null 2>&1 ; then
-    echo "Tool dos2unix found - converting..."
-    for d in conf conf/workflows rbacx/WEB-INF ; do
-      echo "Tool dos2unix found - converting in $d"
-      find ${RBACX_HOME}/${d} -maxdepth 1 -type f -exec dos2unix {} \;
-    done
-  fi
-
-  cd ${RBACX_HOME}
-
-  if [ "${deployment_type}" == "single" ] ; then
-    echo "Patching RBACX_HOME for single instance deployment.."
-    patch -p1 < ${DEPLOYER}/user-config/oia/rbacx_single.patch
-
-  elif [ "${deployment_type}" == "cluster" ] ; then
-    echo "Patching RBACX_HOME for cluster deployment.."
-    patch -R -p1 < ${DEPLOYER}/user-config/oia/rbacx_cluster.patch
-  fi
-
-  echo "Done patching RBACX_HOME."
-  echo ""
-
-  # Encrypt OIMJDBC Password
-  java -jar ${RBACX_HOME}/rbacx/WEB-INF/lib/vaau-commons-crypt.jar \
-    -encryptProperty \
-    -cipherKeyProperties ${RBACX_HOME}/conf/cipherKey.properties \
-    -propertyFile ${RBACX_HOME}/conf/oimjdbc.properties \
-    -propertyName oim.jdbc.password
-  echo "Encrypted OIM JDBC Password"
-}
-
-# configure the OIA weapp config files --------------------------------
-#   param1: single or cluster        
-#
 oia_appconfig()
 {
   local _c _prod _topo
@@ -207,18 +172,18 @@ oia_appconfig()
   echo ""                                         >> ${_c}/conf/oimjdbc.properties
   echo "oim.jdbc.password=${iam_oim_schema_pass}" >> ${_c}/conf/oimjdbc.properties
 
-  java -jar ${_c}/rbacx/WEB-INF/lib/vaau-commons-crypt.jar \
+  java -jar ${_c}/oia/WEB-INF/lib/vaau-commons-crypt.jar \
     -encryptProperty \
     -cipherKeyProperties ${_c}/conf/cipherKey.properties \
     -propertyFile ${_c}/conf/oimjdbc.properties \
     -propertyName oim.jdbc.password
 
   echo
-  echo " * rbacx/WEB-INF/application-context.xml"
+  echo " * oia/WEB-INF/application-context.xml"
   echo "     replacing cluster name"
 
   sed -i -e "341s/Prod-1-Cluster/${iam_domain_oia}-Cluster/g" \
-         ${_c}/rbacx/WEB-INF/application-context.xml
+         ${_c}/oia/WEB-INF/application-context.xml
 
   if [ ${_topo} == "cluster" ] ; then
     
@@ -226,33 +191,33 @@ oia_appconfig()
     sed -i -e '347s/false/true/g' \
            -e '347 a \
               \        <constructor-arg index="1" value="__NY_CLUSTER_IPS__"/>\
-              ' ${_c}/rbacx/WEB-INF/application-context.xml
+              ' ${_c}/oia/WEB-INF/application-context.xml
     sed -i -e "s/__MY_CLUSTER_IPS__/${IDMPROV_OIA_CLUSTERIP}/g" \
-                ${_c}/rbacx/WEB-INF/application-context.xml
+                ${_c}/oia/WEB-INF/application-context.xml
   fi
 
   echo
-  echo " * rbacx/WEB-INF/classes/jasperreports.properties"
+  echo " * oia/WEB-INF/classes/jasperreports.properties"
   echo "     adding jasper reports classpath"
 
-  echo "net.sf.jasperreports.compiler.classpath=${_c}/rbacx/WEB-INF/lib/jasperreports-2.0.5-javaflow.jar" \
-    >> ${_c}/rbacx/WEB-INF/classes/jasperreports.properties
+  echo "net.sf.jasperreports.compiler.classpath=${_c}/oia/WEB-INF/lib/jasperreports-2.0.5-javaflow.jar" \
+    >> ${_c}/oia/WEB-INF/classes/jasperreports.properties
   
   echo
-  echo " * rbacx/WEB-INF/classes/oscache.properties"
+  echo " * oia/WEB-INF/classes/oscache.properties"
   echo "     adding cluster cache config, multicast"
 
-  echo "cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener,com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl" >> ${_c}/rbacx/WEB-INF/classes/oscache.properties
-  echo "cache.cluster.multicast.ip=231.12.21.100" >> ${_c}/rbacx/WEB-INF/classes/oscache.properties
+  echo "cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener,com.opensymphony.oscache.extra.CacheMapAccessEventListenerImpl" >> ${_c}/oia/WEB-INF/classes/oscache.properties
+  echo "cache.cluster.multicast.ip=231.12.21.100" >> ${_c}/oia/WEB-INF/classes/oscache.properties
   
   echo
-  echo " * rbacx/WEB-INF/conf-context.xml"
+  echo " * oia/WEB-INF/conf-context.xml"
   echo "     removing line with jdbc-config file, we use datasource"
 
-  sed -i '12 d' ${_c}/rbacx/WEB-INF/conf-context.xml
+  sed -i '12 d' ${_c}/oia/WEB-INF/conf-context.xml
 
   echo
-  echo " * rbacx/WEB-INF/dataaccess-context.xml"
+  echo " * oia/WEB-INF/dataaccess-context.xml"
   echo "     replacing jdbc driver with weblogic data source"
 
   sed -i -e '59s/<bean id/<!-- bean id/g' \
@@ -261,33 +226,33 @@ oia_appconfig()
             \    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">\
             \        <property name="jndiName" value="jdbc/OIADataSource" />\
             \    </bean>\
-            ' ${_c}/rbacx/WEB-INF/dataaccess-context.xml
+            ' ${_c}/oia/WEB-INF/dataaccess-context.xml
 
   echo
-  echo " * rbacx/WEB-INF/etl-context.xml"
+  echo " * oia/WEB-INF/etl-context.xml"
   echo "     activating ETLManager block"
 
   sed -i -e '6s/<!--/</g' \
          -e '16s/<\/bean-->/<\/bean>/g' \
-         ${_c}/rbacx/WEB-INF/etl-context.xml
+         ${_c}/oia/WEB-INF/etl-context.xml
 
   echo
-  echo " * rbacx/WEB-INF/iam-context.xml"
+  echo " * oia/WEB-INF/iam-context.xml"
   echo "     referencing activated ETLManager"
 
   sed -i -e '269s/<!--/</g' \
          -e '269s/-->/>/g' \
-         ${_c}/rbacx/WEB-INF/iam-context.xml
+         ${_c}/oia/WEB-INF/iam-context.xml
 
   echo
-  echo " * rbacx/WEB-INF/log4j.properties"
+  echo " * oia/WEB-INF/log4j.properties"
   echo "     log directory"
 
-  sed -i -e "s/log4j\.appender\.file\.file=logs\/rbacx.log/log4j\.appender\.file\.file=${_iam_log}\/${iam_domain_oia}\/rbacx.log/g" \
-         ${_c}/rbacx/WEB-INF/log4j.properties
+  sed -i -e "s/log4j\.appender\.file\.file=logs\/oia.log/log4j\.appender\.file\.file=${_iam_log}\/${iam_domain_oia}\/oia.log/g" \
+         ${_c}/oia/WEB-INF/log4j.properties
 
   echo
-  echo " * rbacx/WEB-INF/scheduling-context.xml"
+  echo " * oia/WEB-INF/scheduling-context.xml"
   echo "     referencing activated ETLManager"
 
   sed -i -e '145,146s/<prop/<!-- prop/g' \
@@ -295,13 +260,13 @@ oia_appconfig()
          -e '146 a \
             \                        <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.oracle.weblogic.WebLogicOracleDelegate</prop>\
             \                        <prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ? FOR UPDATE</prop>\
-            ' ${_c}/rbacx/WEB-INF/scheduling-context.xml
+            ' ${_c}/oia/WEB-INF/scheduling-context.xml
 
   echo
-  echo " * rbacx/WEB-INF/weblogic.xml"
+  echo " * oia/WEB-INF/weblogic.xml"
   echo "     creating new with content"
 
-  cat > ${_c}/rbacx/WEB-INF/weblogic.xml <<-EOS
+  cat > ${_c}/oia/WEB-INF/weblogic.xml <<-EOS
 	<?xml version="1.0" encoding="UTF-8"?>
 	<weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app">
 	  <container-descriptor>
@@ -332,7 +297,7 @@ EOS
 #
 oia_oim_integrate()
 {
-  local _dest=${RBACX_HOME}/rbacx/WEB-INF/lib
+  local _dest=${RBACX_HOME}/oia/WEB-INF/lib
 
   # copy oim server libs
   for lib in  xlCrypto.jar \

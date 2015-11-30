@@ -307,7 +307,7 @@ else
       elif [ "${opt_a}" == "oimintegrate" -a -z "${opt_h}" ] ; then
         oia_oim_integrate
       elif [ "${opt_a}" == "wlsdeploy"    -a -z "${opt_h}" ] ; then
-        deploy rbacx
+        deploy oia
       else
         help_analytics
         exit $ERROR_SYNTAX_ERROR

@@ -1,6 +1,6 @@
-# rbacx.prop ----------------------------------------------------------
+# oia.prop ----------------------------------------------------------
 # identity analytics
-# wlst properties file for working with deployed app rbacx
+# wlst properties file for working with deployed app oia
 #
 nmPort=5556
 domName=__DOMAIN_NAME__
@@ -16,7 +16,7 @@ nmUC=__HOSTENV__/.creds/nm.usr
 nmUK=__HOSTENV__/.creds/nm.key
 targetOIA=oia_cluster
 #
-appName=rbacx
-appPath=__IL_APP_CONFIG__/analytics/oia/rbacx
+appName=oia
+appPath=__IL_APP_CONFIG__/analytics/oia/oia
 appTargets=oia_cluster
 

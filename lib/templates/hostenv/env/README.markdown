@@ -12,6 +12,6 @@ Environment Files
     identity.prop   wlst properties file for identity manager domain
     
     idm-deplenv.env deployment env, used by remote deployment
-    rbacx.prop      wlst properties file for OIA rbacx app
+    oia.prop        wlst properties file for OIA oia app (rbacx)
     
     bash_profile    example of ~/.bash_profile
