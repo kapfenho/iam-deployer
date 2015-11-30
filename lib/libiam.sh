@@ -348,8 +348,9 @@ remmve_lcm()
 #
 remove_oia()
 {
-  rm -Rf ${iam_top}/products/{analytics,oia.jar} \
+  rm -Rf ${iam_top}/products/analytics \
     ${iam_rbacx_home} \
+    ${IL_APP_CONFIG}/oia.jar \
     ${iam_log}/${iam_domain_oia} \
     ${iam_services}/domains/${iam_domain_oia} \
     ~/.env/{oia.env,analytics.prop,oia.prop} \
