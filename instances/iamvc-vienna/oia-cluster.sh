@@ -24,6 +24,9 @@ fi
 echo "Confirm you have executed >iam remove -t analytics -A< with ENTER"
 read nil
 
+. ${DEPLOYER}/user-config/iam.config
+mkdir -p ${iam_analytics_home}
+
 # create schema
 iam rcu -a create -t analytics
 

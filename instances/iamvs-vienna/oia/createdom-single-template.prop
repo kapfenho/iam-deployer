@@ -65,7 +65,7 @@ managedserver.1.maxHeap = 1024m
 managedserver.1.listenerAddress = __IAM_OIA_HOST1__
 managedserver.1.relativeListenPort = 1003
 managedserver.1.relativeSslListenPort = 1004
-managedserver.1.sslEnabled = true
+managedserver.1.sslEnabled = false
 managedserver.1.profileID = None
 managedserver.1.useNodeManager = true
 managedserver.1.additionalVMarguments =
@@ -73,8 +73,8 @@ managedserver.1.BeaHome=__IAM_TOP__/products/analytics/wlserver_10.3
 
 # Custom Deloyment
 amountDeployments = 1
-deployment.1.applicationname = rbacx
-deployment.1.sourcepath = __IAM_TOP__/products/analytics/oia/rbacx
+deployment.1.applicationname = oia
+deployment.1.sourcepath = __IAM_TOP__/products/analytics/oia/oia
 deployment.1.targets = oia_cluster
 deployment.order = 100
 
@@ -92,7 +92,7 @@ datasource.1.password=__IAM_OIA_DBPWD__
 
 datasource.x.usesXA=true
 datasource.1.jndiname=jdbc/OIADataSource
-datasource.1.url=jdbc:oracle:thin:@__DBS_HOSTNAME__:1521/__IAM_SERVICENAME__
+datasource.1.url=jdbc:oracle:thin:@__DBS_HOSTNAME__:__DBS_PORT__/__IAM_SERVICENAME__
 
 datasource.1.target=oia_cluster
 datasource.1.targettype=Cluster
