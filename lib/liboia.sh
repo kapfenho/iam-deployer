@@ -182,15 +182,15 @@ oia_appconfig()
   echo " * oia/WEB-INF/application-context.xml"
   echo "     replacing cluster name"
 
-  sed -i -e "341s/Prod-1-Cluster/${iam_domain_oia}-Cluster/g" \
+  sed -i -e "339s/Prod-1-Cluster/${iam_domain_oia}-Cluster/g" \
          ${_c}/oia/WEB-INF/application-context.xml
 
   if [ ${_topo} == "cluster" ] ; then
     
     echo "     CLUSTER: list of service IP addresses"
-    sed -i -e '347s/false/true/g' \
-           -e '347 a \
-              \        <constructor-arg index="1" value="__NY_CLUSTER_IPS__"/>\
+    sed -i -e '345s/false/true/g' \
+           -e '345 a \
+              \        <constructor-arg index="1" value="__MY_CLUSTER_IPS__"/>\
               ' ${_c}/oia/WEB-INF/application-context.xml
     sed -i -e "s/__MY_CLUSTER_IPS__/${IDMPROV_OIA_CLUSTERIP}/g" \
                 ${_c}/oia/WEB-INF/application-context.xml
