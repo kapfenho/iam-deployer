@@ -2,94 +2,72 @@
 
 # run IAM Tool steps to deploy OIA
 #
+set -o errexit
+set -o errtrace
+
+oim1=bsul0355.fs01.vwf.vwfs-ad
+oim2=bsul0356.fs01.vwf.vwfs-ad
+oia1=$oim1
+oia2=$oim2
+web1=$oim1
+web2=$oim2
 
 export PATH=${DEPLOYER}:${PATH}
 
-# # create DB Schemas
-# echo ""
-# echo ""
-# echo "#### OIA DEPLOYMENT: creating DB Schemas"
-# echo ""
-# echo ""
-# ${DEPLOYER}/user-config/oia/fallback/fallback.sh
+# check nodemanager
+if ! ssh $oia2 pgrep -f '\ weblogic\.NodeManager' >/dev/null ; then
+  echo "ERROR: nodemanager on node 2 not running!" ; exit 80
+elif ! pgrep -f '\ weblogic\.NodeManager' >/dev/null ; then
+  echo "ERROR: nodemanager on node 1 not running!" ; exit 80
+fi
 
-# install JDK7 for OIA Domain
-echo ""
-echo ""
-echo "#### OIA DEPLOYMENT: installing JDK7"
-echo ""
-echo ""
-iam jdk -a install7 -O analytics -H iamvs
+echo "Confirm you have executed >iam remove -t analytics -A< with ENTER"
+read nil
 
-# install WLS
-echo ""
-echo ""
-echo "#### OIA DEPLOYMENT: installing WLS"
-echo ""
-echo ""
-iam weblogic -a install -t analytics -H iamvs
+. ${DEPLOYER}/user-config/iam.config
+mkdir -p ${iam_analytics_home}
 
-iam userenv -a env -A
-# on each host: load in user profile and create easy to reach shortcuts 
-iam userenv -a profile -A
+# create schema
+iam rcu -a create -t analytics
 
-iam weblogic -a wlstlibs -t analytics -H iamvs
-# 
-# create OIA domain and managed servers
-echo ""
-echo ""
-echo "#### OIA DEPLOYMENT: Creating WLS Domain and OIA Managed Server."
-echo ""
-echo ""
-#iam analytics -a domcreate -H iamvs
-iam analytics -a domcreate -P cluster -H iamvs
+# install jdk7 in home analytics
+iam jdk -a install7 -O analytics
 
-# deploy remote managed server
-echo ""
-echo ""
-echo "#### OIA DEPLOYMENT: deploying OIA manged server on remote machine"
-echo ""
-echo ""
-iam analytics -a rdeploy -P pack
-iam analytics -a rdeploy -P unpack -H iamva
+# install weblogic
+iam weblogic -a install -t analytics
+
+# create env files and scripts
+iam userenv -a env -H $oia1
+iam userenv -a env -H $oia2
+iam userenv -a profile -H $oia1
+iam userenv -a profile -H $oia1
+
+# copy lib files
+iam weblogic -a wlstlibs -t analytics
+
+# create cluster domain and distribute
+iam analytics -a domcreate -T cluster
+iam analytics -a rdeploy -P pack   -H $oia1
+iam analytics -a rdeploy -P unpack -H $oia2
 
 # unpack OIA application
-echo ""
-echo ""
-echo "#### OIA DEPLOYMENT: unpacking OIA application"
-echo ""
-echo ""
-iam analytics -a explode -H iamvs
+iam analytics -a explode
 
 # configure OIA domain
-echo ""
-echo ""
-echo "#### OIA DEPLOYMENT: Configuring OIA Domain (setDomainEnv.sh)"
-echo ""
-echo ""
-iam analytics -a domconfig -H iamvs
-
+iam analytics -a domconfig -H $oia1
+iam analytics -a domconfig -H $oia2
 
 # configure OIA application instance
-echo ""
-echo ""
-echo "#### OIA DEPLOYMENT: configuring OIA application"
-echo ""
-echo ""
-iam analytics -a appconfig -P single -H iamvs
+iam analytics -a appconfig -T cluster
 
 # perform OIM-OIA integration steps
-echo ""
-echo ""
-echo "#### OIA DEPLOYMENT: performing OIA-OIM integration steps"
-echo ""
-echo ""
-iam analytics -a oimintegrate -H iamvs
+iam analytics -a oimintegrate
 
 # deploy OIA application to WLS
-echo ""
-echo ""
-echo "#### OIA DEPLOYMENT: deploying OIA application to WLS"
-echo ""
-echo ""
-iam analytics -a wlsdeploy -P cluster -H iamvs
+iam analytics -a wlsdeploy
+
+~/bin/stop-analytics
+~/bin/start-analytics
+
+echo -e "\nFinished successfully"
+

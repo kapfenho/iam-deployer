@@ -1,31 +1,9 @@
-# 
-# WebLogic Automation Book Source Code (WLST script collection)
-# 
-# This file is part of the WLS-Automation book sourcecode software distribution. 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE 
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-# POSSIBILITY OF SUCH DAMAGE.
-#
-# @author Martin Heinzl
-# Copyright (C) 2013 MH-EnterpriseConsulting, All rights reserved.
-#
-#
-#
-
 ###########################################################################
-# Test properties for a test domain
+# Properties for OIA Multi Host Domain
 ###########################################################################
 
 # Domain Props                                                                                                                                                                   
-basePortNumber = 7300
+basePortNumber = 7000
 domainName=__DOMAIN_NAME__
 domainsDirectory=__IAM_TOP__/services/domains
 logsDirectory=__IAM_TOP__/IAM/logs
@@ -37,9 +15,9 @@ userEnvHome = __HOSTENV__
 
 # Adminserver                                                                                                                                                            
 adminserver.listenAddress = __IAM_OIA_HOST1__
-adminserver.relativeListenPort = 1
+adminserver.relativeListenPort = 3
 adminserver.enableSSL = false
-adminserver.relativeSslListenPort = 2
+adminserver.relativeSslListenPort = 4
  
 
 # Cluster
@@ -68,6 +46,8 @@ managedserver.1.name = wls_oia1
 managedserver.1.machine = oia_machine1
 managedserver.1.maxHeap = 1024m
 managedserver.1.listenerAddress = __IAM_OIA_HOST1__
+managedserver.1.relativeListenPort = 1003
+managedserver.1.relativeSslListenPort = 1004
 managedserver.1.sslEnabled = true
 managedserver.1.profileID = None
 managedserver.1.useNodeManager = true
@@ -78,6 +58,8 @@ managedserver.2.name = wls_oia2
 managedserver.2.machine = oia_machine2
 managedserver.2.maxHeap = 1024m
 managedserver.2.listenerAddress = __IAM_OIA_HOST2__
+managedserver.2.relativeListenPort = 1003
+managedserver.2.relativeSslListenPort = 1004
 managedserver.2.sslEnabled = true
 managedserver.2.profileID = None
 managedserver.2.useNodeManager = true
@@ -88,8 +70,8 @@ managedserver.2.BeaHome=__IAM_TOP__/products/analytics/wlserver_10.3
 
 # Custom Deloyment
 amountDeployments = 1
-deployment.1.applicationname = rbacx
-deployment.1.sourcepath = __IAM_TOP__/products/analytics/oia/rbacx
+deployment.1.applicationname = oia
+deployment.1.sourcepath = __IAM_TOP__/products/analytics/oia/oia
 deployment.1.targets = oia_cluster
 deployment.order = 100
 
@@ -107,7 +89,7 @@ datasource.1.password=__IAM_OIA_DBPWD__
 
 datasource.x.usesXA=true
 datasource.1.jndiname=jdbc/OIADataSource
-datasource.1.url=jdbc:oracle:thin:@__DBS_HOSTNAME__:5193/__IAM_SERVICENAME__
+datasource.1.url=jdbc:oracle:thin:@__DBS_HOSTNAME__:__DBS_PORT__/__IAM_SERVICENAME__
 
 datasource.1.target=oia_cluster
 datasource.1.targettype=Cluster
