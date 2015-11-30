@@ -14,18 +14,18 @@ set -o nounset
 umask 0002
 
 _DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-. ${_DIR}/user-config/database.config
-. ${_DIR}/lib/libcommon.sh
-. ${_DIR}/lib/libcommon2.sh
-. ${_DIR}/lib/libdb.sh
-. ${_DIR}/lib/libsys.sh
-. ${_DIR}/lib/librcu.sh
+. ${DEPLOYER}/user-config/database.config
+. ${DEPLOYER}/lib/libcommon.sh
+. ${DEPLOYER}/lib/libcommon2.sh
+. ${DEPLOYER}/lib/libdb.sh
+. ${DEPLOYER}/lib/libsys.sh
+. ${DEPLOYER}/lib/librcu.sh
 
 log "Deploying Oracle Database"
 
 # use settings from response files
-ic=${_DIR}/user-config/dbs/db_install.rsp
-cc=${_DIR}/user-config/dbs/db_create.rsp
+ic=${DEPLOYER}/user-config/dbs/db_install.rsp
+cc=${DEPLOYER}/user-config/dbs/db_create.rsp
 
     ORACLE_HOME=$(grep "^ORACLE_HOME="        ${ic} | cut -d= -f2)
         dbs_app=$(grep "^ORACLE_BASE="        ${ic} | cut -d= -f2)
@@ -54,7 +54,7 @@ fi
 
 # create bashrc, bash_profile and source them
 create_and_source_user_profile ORACLE_HOME ${HOME}/.bashrc \
-    ${_DIR}/lib/templates/dbs/
+    ${DEPLOYER}/lib/templates/dbs/
 
 #  oraInventory pointer: /etc/oraInventory and empty inventory dir
 create_orainv ${dbs_orainv_ptr} \
@@ -77,7 +77,7 @@ create_database
 config_database_for_iam
 
 set_db_autostart
-rcd_add oracle ${_DIR}/lib/templates/rcd-sysv/oracle
+rcd_add oracle ${DEPLOYER}/lib/templates/root/rcd-sysv/oracle
 set +o errexit
 rcd_service oracle stop
 set -o errexit
