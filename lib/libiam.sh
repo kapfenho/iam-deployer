@@ -509,6 +509,8 @@ patch_wls_domain()
 
   if ! grep setCustDomainEnv ${ADMIN_HOME}/bin/setDomainEnv.sh >/dev/null 2>&1 ; then
     patch -b ${ADMIN_HOME}/bin/setDomainEnv.sh <${_src}/domain/setDomainEnv.sh.patch
+    sed -i 's/products\/identity\/jdk6/products\/identity\/jdk\/current/g' \
+      ${ADMIN_HOME}/bin/setDomainEnv.sh 
     log "ADMIN_HOME patched: ${ADMIN_HOME}"
   fi
 
@@ -519,6 +521,8 @@ patch_wls_domain()
 
   if ! grep setCustDomainEnv ${WRK_HOME}/bin/setDomainEnv.sh >/dev/null 2>&1 ; then
     patch -b ${WRK_HOME}/bin/setDomainEnv.sh <${_src}/domain/setDomainEnv.sh.patch
+    sed -i 's/products\/identity\/jdk6/products\/identity\/jdk\/current/g' \
+      ${WRK_HOME}/bin/setDomainEnv.sh 
     log "WRK_HOME patched: ${WRK_HOME}"
   fi
 }
