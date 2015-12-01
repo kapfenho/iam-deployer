@@ -43,8 +43,8 @@ while getopts AH:O:P:T:a:hnp:qs:t:u:w: FLAG; do
     a)  opt_a=${OPTARG} ;;  # action to perform
     h)  opt_h=yes       ;;  # help
     n)  opt_n=yes       ;;  # nodemanager (keyfiles)
-    p)  opt_p=yes       ;;  # password
-    q)  opt_q=${OPTARG} ;;  # quiet mode
+    p)  opt_p=${OPTARG} ;;  # password
+    q)  opt_q=yes       ;;  # quiet mode
     s)  opt_s=${OPTARG} ;;  # source
     t)  opt_t=${OPTARG} ;;  # target
     f)  opt_f=${OPTARG} ;;  # file name

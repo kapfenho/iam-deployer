@@ -84,5 +84,5 @@ iam identity -a movelogs
 
 # webgate installation bug fix
 iam webtier -a movelogs
-iam webtier -a config -v
+iam webtier -a config
 
