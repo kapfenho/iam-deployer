@@ -5,8 +5,8 @@
 set -o errexit
 set -o errtrace
 
-oim1=bsul0355.fs01.vwf.vwfs-ad
-oim2=bsul0356.fs01.vwf.vwfs-ad
+oim1=bsul0355
+oim2=bsul0356
 oia1=$oim1
 oia2=$oim2
 web1=$oim1

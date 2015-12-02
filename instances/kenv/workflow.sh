@@ -27,6 +27,7 @@ for h in ${provhosts[@]}; do
   fi
 done
 
+rsync -rtpvl ~/src/LCM/iam-deployer bsul0356:src/LCM/
 # iam ssh-key -a add -A
 
 # install database
@@ -100,8 +101,8 @@ iam identity -a movelogs -H bsul0356
 # webgate installation bug fix
 iam webtier -a movelogs -H bsul0355
 iam webtier -a movelogs -H bsul0356
-iam webtier -a config -v -H bsul0355
-iam webtier -a config -v -H bsul0356
+iam webtier -a config -H bsul0355
+iam webtier -a config -H bsul0356
 
 
 
