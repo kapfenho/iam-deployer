@@ -17,8 +17,8 @@
 #   -XX:ReservedCodeCacheSize=256m
 
 export PRODUCTION_MODE="true"
-export      RBACX_HOME=/l/ora/config/analytics/oia
-export OIM_CLIENT_HOME=/l/ora/config/analytics/oia/xellerate
+export      RBACX_HOME=__IAM_TOP__/config/analytics/oia
+export OIM_CLIENT_HOME=__IAM_TOP__/config/analytics/oia/xellerate
 export  APPSERVER_TYPE=wls
 
 uma=""

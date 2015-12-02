@@ -364,13 +364,15 @@ oia_config_workflows()
 #
 oia_domconfig()
 {
-  local _s _d
+  local _s _d _iam_top
   _s=${DEPLOYER}/lib/templates/analytics
   _d=${DOMAIN_HOME}/bin
+  _iam_top=$(echo ${iam_top} | sed -e 's/[\/&]/\\&/g')
 
   # custom domain env file, will be sourced
   cp ${_s}/setCustDomainEnv.sh ${_d}/
   chmod 0644 ${_d}/setCustDomainEnv.sh
+  sed -i -e "s/__IAM_TOP__/${_iam_top}/" ${_d}/setCustDomainEnv.sh
 
   # patch will source the custom env file
   patch ${_d}/setDomainEnv.sh < ${_s}/setDomainEnv.patch
