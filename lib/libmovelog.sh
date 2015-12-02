@@ -59,10 +59,13 @@ move_logs()
       _mvlog ${iam_services}/instances/${iam_instance_oud}/OUD/logs                     ${dst}/${iam_instance_oud}/logs
       ;;
     webtier)
-      mkdir -p ${dst}/${iam_instance_ohs}
-      _mvlog ${iam_services}/instances/${iam_instance_ohs}/auditlogs                    ${dst}/${iam_instance_ohs}/auditlogs
-      _mvlog ${iam_services}/instances/${iam_instance_ohs}/diagnostics/logs/OHS/${iam_instance_ohs} ${dst}/${iam_instance_ohs}/logs
-      _mvlog ${iam_services}/instances/${iam_instance_ohs}/diagnostics/logs/OPMN/opmn   ${dst}/${iam_instance_ohs}/opmn
+      local _ohspath=$(find ${INSTALL_LOCALCONFIG_DIR}/instances \
+        -maxdepth 1 -type d -a -name 'ohs*')
+      local _ohs=$(basename $_ohspath)
+      mkdir -p ${dst}/${_ohs}
+      _mvlog ${iam_services}/instances/${_ohs}/auditlogs                    ${dst}/${_ohs}/auditlogs
+      _mvlog ${iam_services}/instances/${_ohs}/diagnostics/logs/OHS/${_ohs} ${dst}/${_ohs}/logs
+      _mvlog ${iam_services}/instances/${_ohs}/diagnostics/logs/OPMN/opmn   ${dst}/${_ohs}/opmn
       ;;
     \*)
       error "Move logs: product unkown"
