@@ -25,10 +25,10 @@ $hostfile = "# ...cant touch this
 
 $images = "images:/Volumes/hext01/install/oracle /mnt/oracle nfs rw,bg,rsize=32768,wsize=32768 0 0\n"
 # $exports, $fstab = "", "#{$images}"
-# [ '/l/ora/config',
-#   '/l/ora/products',
-#   '/l/ora/lcm',
-#   '/l/ora/etc' ].each do |d|
+# [ '/opt/fmw/config',
+#   '/opt/fmw/products',
+#   '/opt/fmw/lcm',
+#   '/opt/fmw/etc' ].each do |d|
 #   $exports << "#{d} 192.168.168.0/24(rw,async,no_subtree_check)\n"
 #   $fstab   << "oim1:#{d} #{d} nfs rw,async 0 0\n"
 # end

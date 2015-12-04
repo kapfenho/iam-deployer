@@ -1,9 +1,9 @@
-ant_home=/l/ora/products/identity/modules/org.apache.ant_1.7.1
-java_home=/l/ora/products/identity/jdk/current
-mw_home=/l/ora/products/identity
-oim_oracle_home=/l/ora/products/identity/iam
-soa_home=/l/ora/products/identity/soa
-weblogic.server.dir=/l/ora/products/identity/wlserver_10.3
+ant_home=/opt/fmw/products/identity/modules/org.apache.ant_1.7.1
+java_home=/opt/fmw/products/identity/jdk/current
+mw_home=/opt/fmw/products/identity
+oim_oracle_home=/opt/fmw/products/identity/iam
+soa_home=/opt/fmw/products/identity/soa
+weblogic.server.dir=/opt/fmw/products/identity/wlserver_10.3
 
 weblogic_user=weblogic
 weblogic_password=Montag11

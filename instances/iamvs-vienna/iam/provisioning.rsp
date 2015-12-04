@@ -64,7 +64,7 @@ ARG_IGNORESYSPREREQS=false
 
 #Oracle Inventory File Properties
 INV_USE_LOCAL_OPTION=false
-INV_INVENTORY_DIRECTORY=/l/ora/etc/oraInventory
+INV_INVENTORY_DIRECTORY=/opt/fmw/etc/oraInventory
 
 #Installation Options
 OPTION_INSTALLDB==oracle.isCurrentFlowMode("dbinstall")"
@@ -97,13 +97,13 @@ PROVPLAN_DESC=
 
 #Installation Locations
 INSTALL_INSTALLERS_DIR=/mnt/oracle/iam-11.1.2.2/repo
-INSTALL_APPHOME_DIR=/l/ora
-INSTALL_LCMHOME_DIR=/l/ora/lcm/lcmhome
+INSTALL_APPHOME_DIR=/opt/fmw
+INSTALL_LCMHOME_DIR=/opt/fmw/lcm/lcmhome
 INSTALL_LCMHOME_IS_MOUNTED_IN_DIR_HOSTS=true
 INSTALL_LCMHOME_IS_MOUNTED_IN_WEB_HOSTS=true
 INSTALL_APPCONFIG_DIR=${provisioning.setup.install-location.locations.default.home.top}/config
 INSTALL_LOCALCONFIG_ENABLE=true
-INSTALL_LOCALCONFIG_DIR=/l/ora/services
+INSTALL_LOCALCONFIG_DIR=/opt/fmw/services
 INSTALL_OSWIN_USER=
 INSTALL_OSWIN_PWD=
 IDMPROV_IDMTOP_IS_SHARED=true
@@ -127,7 +127,7 @@ INTERNAL_PLAN_GRVIAM=171
 INTERNAL_PLAN_NACLIAM=M+8n5+9ppOc6UEDdfpyKPA==
 
 #Internal Class B
-INTERNAL_PHASEGUARDS_DIR=/l/ora/lcm/lcmhome/provisioning/phaseguards
+INTERNAL_PHASEGUARDS_DIR=/opt/fmw/lcm/lcmhome/provisioning/phaseguards
 INTERNAL_COMMON_INITCOMP=enterprise
 
 #Internal Class C
@@ -182,10 +182,10 @@ UC_PALN_DESC=Identity Manager
 
 #Install Locations
 IL_INSTALLERDIR_LOCATION=/mnt/oracle/iam-11.1.2.2/repo
-IL_APP_BASE=/l/ora
-IL_APP_CONFIG=/l/ora/config
+IL_APP_BASE=/opt/fmw
+IL_APP_CONFIG=/opt/fmw/config
 IL_ENABLE_LOCALAPP_CONFIG=true
-IL_LOCALAPP_CONFIG=/l/ora/services
+IL_LOCALAPP_CONFIG=/opt/fmw/services
 IL_WIN_DOMAIN_USERNAME=
 IL_WIN_DOMAIN_PSWD=
 IL_STD_LOG_DIR=${provisioning.setup.install-location.locations.default.home.lcm}/provisioning/logs
@@ -196,7 +196,7 @@ COMMON_CONFIG_COMPONENTS=true
 COMMON_STD_ADMIN_NAME=admin
 COMMON_STD_ADMIN_PWD=
 COMMON_STD_ADMIN_PWD_CONFIRM=
-COMMON_FMW_DIR=/l/ora
+COMMON_FMW_DIR=/opt/fmw
 COMMON_FUSION_REPO_INSTALL_DIR=/mnt/oracle/iam-11.1.2.2/repo
 COMMON_STD_PROV_LOGDIR=${provisioning.setup.install-location.locations.default.log.directory}
 
@@ -215,7 +215,7 @@ OHS_OIM_ADMIN_PORT=7777
 OHS_ODSM_ADMIN_PORT=7779
 
 #OIM Configuration
-OIM_MW_HOME=/l/ora/products/identity
+OIM_MW_HOME=/opt/fmw/products/identity
 OIM_EMAIL_CONFIGURE=false
 OIM_EMAIL_SERVER_NAME=email.mycompany.com
 OIM_EMAIL_SERVER_PORT=465

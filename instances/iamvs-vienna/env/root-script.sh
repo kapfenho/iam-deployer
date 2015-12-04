@@ -144,16 +144,15 @@ EOF
 
 # --- directory setup
 #
-install  --owner=oracle  --group=oinstall --mode=0775 --directory /var/log/oracle     # logs (local)
 install  --owner=oracle  --group=oinstall --mode=0775 --directory /opt/oracle         # products, config (shared, rw)
+install  --owner=oracle  --group=oinstall --mode=0775 --directory /var/log/oracle     # logs (local)
 
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora              # base directory
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/lcm          # life cycle manager (shared)
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/etc          # oraInventory (shared)
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/config       # common config (shared)
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/products     # binaires, oracle_home (shared)
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/services     # local instance data
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/IAM/logs     # logs (local)
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /opt/fmw            # base directory
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /opt/fmw/lcm        # life cycle manager (shared)
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /opt/fmw/config     # common config (shared)
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /opt/fmw/products   # binaires, oracle_home (shared)
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /opt/fmw/services   # local instance data
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /opt/fmw/IAM/logs   # logs (local)
 
 install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /mnt/oracle         # images (shared, ro)
 

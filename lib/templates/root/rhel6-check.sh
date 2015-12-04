@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# TODO: check hostname -s, hostname -f
-
 log() {
   if [[ -t 1 ]]; then
     printf "%b>>>%b %b%s%b\n" "\x1b[1m\x1b[32m" "\x1b[0m" \
@@ -98,9 +96,9 @@ issues=0
 IFS="
 "
 
-log "Starting checks..."
-log
-
+echo "Starting checks..."
+echo
+echo "--- checking kernel parameters"
 for c in ${checks[@]} ; do 
 
    cname=$(echo -n ${c} | cut -d : -f 1)
@@ -111,7 +109,7 @@ for c in ${checks[@]} ; do
     warning "${cname} is lower than ${climit}."
     let issues++
   else
-    log "${cname} ok"
+    echo "${cname} ok"
   fi
 
 done
@@ -121,36 +119,36 @@ done
 yums=$(mktemp /tmp/yums-XXXXXXXXX)
 yum list installed >${yums}
 
-log
-log "--- checking 64bit packages..."
+echo
+echo "--- checking 64bit packages..."
 for l in ${fusion64[@]} ; do
   if ! grep -q "${l}.x86_64" ${yums} ; then
     warning "package missing: ${l}.x86_64"
     let issues++
   else
-    log "package <${l}.x86_64> is installed"
+    echo "package <${l}.x86_64> is installed"
   fi
 done
 
-log
-log "--- checking 32bit packages..."
+echo
+echo "--- checking 32bit packages..."
 for l in ${fusion32[@]} ; do
   if ! grep -q "${l}" ${yums} ; then
     warning "package missing: ${l}"
     let issues++
   else
-    log "package <${l}> is installed"
+    echo "package <${l}> is installed"
   fi
 done
 
-log
-log "--- checking additional tools..."
+echo
+echo "--- checking additional tools..."
 for l in ${tools[@]} ; do
   if ! grep -q "${l}" ${yums} ; then
     warning "package missing: ${l}"
     let issues++
   else
-    log "package <${l}> is installed"
+    echo "package <${l}> is installed"
   fi
 done
 rm -f ${yums}
@@ -163,17 +161,15 @@ if [[ "$(hostname -s)" == "$(hostname -f)" ]] ; then
   warning "Hostname problem: hostname -f ... full qualified hostname"
 fi
 
-# TODO: check ipaddress of hostname
-
-log
+echo
 if [ ${issues} -gt 0 ] ; then
   warning "There are ${issues} issues to correct before proceeding"
 else
-  info "No problems found!"
+  echo "No problems found!"
 fi
 
-log
-log "Please check now the date and time:  $(date)"
+echo
+echo "Please check now the date and time:  $(date)"
 
 exit 0
 
