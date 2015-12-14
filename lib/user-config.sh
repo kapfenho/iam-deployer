@@ -99,10 +99,10 @@ getvar WLSADMIN_NAME
 :      ${s_runjdk:="${s_base}/installers/jdk/jdk6"}
 :      ${s_runjre:="${s_runjdk}/jre"}
       
-#        dbs_dbhost=${OIM_SINGLE_DB_HOST}
-#          dbs_port=${OIM_SINGLE_DB_PORT}
-#           iam_sid=${OIM_DB_SERVICENAME}
-#    iam_oim_prefix=${OIM_DB_SCHEMAPREFIX}
+:      ${dbs_dbhost:=${OIM_SINGLE_DB_HOST:-${OIM_RAC_SCAN_ADDRESS}}}
+:        ${dbs_port:=${OIM_SINGLE_DB_PORT:-${OIM_RAC_SCAN_PORT}}}
+: ${iam_servicename:=${OIM_DB_SERVICENAME}}
+:  ${iam_oim_prefix:=${OIM_DB_SCHEMAPREFIX}}
 
      iam_domain_oim=${IDMPROV_PRODUCT_IDENTITY_DOMAIN}
      iam_domain_acc=${IDMPROV_ACCESS_DOMAIN}
@@ -116,13 +116,4 @@ for d in ${iam_services}/instances/* ; do
 done
 
 iam_lcm=$(grep "ORACLE_HOME=" ${lcm_config_rsp} | cut -d= -f2)
-
-
-#    ${iam_oam_prefix:=${OIM_DB_SCHEMAPREFIX}}
-#    ${iam_bip_prefix:=${OIM_DB_SCHEMAPREFIX}}
-#                TOPOLOGY_BASIC_HOST=iam7.agoracon.at
-# IDMPROV_OIMDOMAIN_ADMINSERVER_PORT=7001
-#                   IDMPROV_OIM_PORT=8005
-#                   IDMPROV_OHS_PORT=7777
-#                IDMPROV_OHS_SSLPORT=4443
 
