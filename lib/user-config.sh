@@ -99,10 +99,10 @@ getvar WLSADMIN_NAME
 :      ${s_runjdk:="${s_base}/installers/jdk/jdk6"}
 :      ${s_runjre:="${s_runjdk}/jre"}
       
-         dbs_dbhost=${OIM_SINGLE_DB_HOST}
-           dbs_port=${OIM_SINGLE_DB_PORT}
-            iam_sid=${OIM_DB_SERVICENAME}
-     iam_oim_prefix=${OIM_DB_SCHEMAPREFIX}
+#        dbs_dbhost=${OIM_SINGLE_DB_HOST}
+#          dbs_port=${OIM_SINGLE_DB_PORT}
+#           iam_sid=${OIM_DB_SERVICENAME}
+#    iam_oim_prefix=${OIM_DB_SCHEMAPREFIX}
 
      iam_domain_oim=${IDMPROV_PRODUCT_IDENTITY_DOMAIN}
      iam_domain_acc=${IDMPROV_ACCESS_DOMAIN}
