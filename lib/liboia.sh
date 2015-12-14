@@ -54,15 +54,15 @@ oia_explode()
   # copy libraries needed by OIA
   cp ${s_oia_ext}/*.jar ${RBACX_HOME}/oia/WEB-INF/lib/
 
-  # remove conflicting libs
-  for lib in jrf-api.jar \
-             stax-1.2.0.jar \
-             stax-api-1.0.1.jar \
-             tools.jar \
-             ucp.jar \
-             xfire-all-1.2.5.jar ; do
-    rm ${RBACX_HOME}/oia/WEB-INF/lib/${lib}
-  done
+  # remove conflicting libs !! no need to remove libs
+  #for lib in jrf-api.jar \
+  #           stax-1.2.0.jar \
+  #           stax-api-1.0.1.jar \
+  #           tools.jar \
+  #           ucp.jar \
+  #           xfire-all-1.2.5.jar ; do
+  #  rm ${RBACX_HOME}/oia/WEB-INF/lib/${lib}
+  #done
 
   echo "Done unpacking OIA"
   echo
@@ -185,17 +185,6 @@ oia_appconfig()
   sed -i -e "339s/Prod-1-Cluster/${iam_domain_oia}-Cluster/g" \
          ${_c}/oia/WEB-INF/application-context.xml
 
-  if [ ${_topo} == "cluster" ] ; then
-    
-    echo "     CLUSTER: list of service IP addresses"
-    sed -i -e '345s/false/true/g' \
-           -e '345 a \
-              \        <constructor-arg index="1" value="__MY_CLUSTER_IPS__"/>\
-              ' ${_c}/oia/WEB-INF/application-context.xml
-    sed -i -e "s/__MY_CLUSTER_IPS__/${IDMPROV_OIA_CLUSTERIP}/g" \
-                ${_c}/oia/WEB-INF/application-context.xml
-  fi
-
   echo
   echo " * oia/WEB-INF/classes/jasperreports.properties"
   echo "     adding jasper reports classpath"
@@ -288,6 +277,37 @@ oia_appconfig()
 	  </container-descriptor>
 	</weblogic-web-app>
 EOS
+
+  if [ ${_topo} == "cluster" ] ; then
+    
+    echo
+    echo " CLUSTER CONFIGURATION"
+    echo " * oia/WEB-INF/application-context.xml"
+    echo "     list of service IP addresses"
+    sed -i -e '345s/false/true/g' \
+           -e '345 a \
+              \        <constructor-arg index="1" value="__MY_CLUSTER_IPS__"/>\
+              ' ${_c}/oia/WEB-INF/application-context.xml
+    sed -i -e "s/__MY_CLUSTER_IPS__/${IDMPROV_OIA_CLUSTERIP}/g" \
+                ${_c}/oia/WEB-INF/application-context.xml
+
+    echo
+    echo " * oia/WEB-INF/search-context.xml"
+    echo "     search index on shared storage"
+    sed -i -e '11,13s/value="0"/value="2"/g' \
+      ${_c}/oia/WEB-INF/search-context.xml
+
+    echo
+    echo " * oia/WEB-INF/application-context.xml"
+    echo " * oia/WEB-INF/scheduling-context.xml"
+    echo "     enabling clustering"
+    sed -i -e 's/${jdbc.quartz.isClustered}/true/g' \
+      ${_c}/oia/WEB-INF/{application,scheduling}-context.xml
+
+    rm -f ${_c}/oia/WEB-INF/lib/stax-api-1.0.1.jar
+  else
+    rm -f ${_c}/oia/WEB-INF/lib/stax-api-1.0-2.jar
+  fi
 
   echo
   echo "app config completed"
