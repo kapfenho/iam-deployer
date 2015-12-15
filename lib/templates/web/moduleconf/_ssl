@@ -2,52 +2,26 @@
 #  vi: ft=apache :
 #
   <IfModule ossl_module>
-   #  SSL Engine Switch:
-   #  Enable/Disable SSL for this virtual host.
-   SSLEngine on
 
-   #  Client Authentication (Type):
-   #  Client certificate verification type and depth.  Types are
-   #  none, optional and require.
-   SSLVerifyClient None
+    SSLEngine on
+    SSLVerifyClient None
+    SSLProtocol All -SSLv2
+    SSLCipherSuite SSL_RSA_WITH_AES_256_CBC_SHA,SSL_RSA_WITH_AES_128_CBC_SHA,SSL_RSA_WITH_RC4_128_MD5,SSL_RSA_WITH_RC4_128_SHA,SSL_RSA_WITH_3DES_EDE_CBC_SHA
+    SSLCRLCheck Off
 
-   #  SSL Protocol Support:
-   #  List the supported protocols.
-   # SSLProtocol nzos_Version_1_0 nzos_Version_3_0
+    SSLWallet "${ORACLE_INSTANCE}/config/${COMPONENT_TYPE}/${COMPONENT_NAME}/keystores/default"
+         
+    <FilesMatch "\.(cgi|shtml|phtml|php)$">
+       SSLOptions +StdEnvVars
+    </FilesMatch>
 
-   #  SSL Cipher Suite:
-   #  List the ciphers that the client is permitted to negotiate.
-   # SSLCipherSuite SSL_RSA_WITH_RC4_128_MD5,SSL_RSA_WITH_RC4_128_SHA,SSL_RSA_WITH_3DES_EDE_CBC_SHA,SSL_RSA_WITH_DES_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA
-   # SSLCipherSuite SSL_RSA_WITH_RC4_128_MD5,SSL_RSA_WITH_RC4_128_SHA,SSL_RSA_WITH_3DES_EDE_CBC_SHA,SSL_RSA_WITH_DES_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA
+    <Directory "${ORACLE_INSTANCE}/config/${COMPONENT_TYPE}/${COMPONENT_NAME}/cgi-bin">
+       SSLOptions +StdEnvVars
+    </Directory>
 
-   # new:
-   SSLProtocol nzos_Version_1_0
-   SSLProtocol -All +TLSv1
-
-   # SSLCipherSuite HIGH:MEDIUM:!LOW:!NULL:!aNULL:!eNULL:+SHA1:+MD5:+HIGH:+MEDIUM
-   # Alternatively, enable only the valid ciphers for this release.
-   # SSLCipherSuite SSL_RSA_WITH_RC4_128_MD5,SSL_RSA_WITH_RC4_128_SHA,SSL_RSA_WITH_3DES_EDE_CBC_SHA,SSL_RSA_WITH_AES_128_CBC_SHA,SSL_RSA_WITH_AES_256_CBC_SHA
-
-   # end ----
-
-   # SSL Certificate Revocation List Check
-   # Valid values are On and Off
-   SSLCRLCheck Off
-
-   #Path to the wallet
-   SSLWallet "${ORACLE_INSTANCE}/config/${COMPONENT_TYPE}/${COMPONENT_NAME}/keystores/default"
-        
-   <FilesMatch "\.(cgi|shtml|phtml|php)$">
-      SSLOptions +StdEnvVars
-   </FilesMatch>
-
-   <Directory "${ORACLE_INSTANCE}/config/${COMPONENT_TYPE}/${COMPONENT_NAME}/cgi-bin">
-      SSLOptions +StdEnvVars
-   </Directory>
-
-   BrowserMatch ".*MSIE.*" \
-   nokeepalive ssl-unclean-shutdown \
-   downgrade-1.0 force-response-1.0
+    BrowserMatch ".*MSIE.*" \
+    nokeepalive ssl-unclean-shutdown \
+    downgrade-1.0 force-response-1.0
 
   </IfModule>
 
