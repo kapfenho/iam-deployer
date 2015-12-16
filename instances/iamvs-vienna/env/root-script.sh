@@ -13,7 +13,6 @@ sed -i -e "/kernel.msgmnb/d" /etc/sysctl.conf ; echo "kernel.msgmnb=65536" >> /e
 sed -i -e "/kernel.msgmax/d" /etc/sysctl.conf ; echo "kernel.msgmax=65536" >> /etc/sysctl.conf
 sed -i -e "/kernel.shmall/d" /etc/sysctl.conf ; echo "kernel.shmall=16777216" >> /etc/sysctl.conf
 echo "kernel.shmmni=4096"                      >> /etc/sysctl.conf
-echo "fs.file-max=6815744"                     >> /etc/sysctl.conf
 echo "fs.aio-max-nr=1048576"                   >> /etc/sysctl.conf
 echo "net.ipv4.tcp_keepalive_time=1800"        >> /etc/sysctl.conf
 echo "net.ipv4.tcp_keepalive_intvl=30"         >> /etc/sysctl.conf
