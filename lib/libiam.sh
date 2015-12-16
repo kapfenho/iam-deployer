@@ -169,7 +169,9 @@ lcmstep()
   if [ "${_action}" == "unblock" ] ; then
 
     for d in ${iam_top}/products/* ; do
-      [[ -a ${d}/jdk6 ]] && jdk_patch_config ${d}/jdk6
+      if [ -d "${d}/jdk6" ] ; then
+        jdk_patch_config ${d}/jdk6
+      fi
     done
 
   else
