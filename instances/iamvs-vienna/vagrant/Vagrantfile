@@ -5,25 +5,24 @@
 VAGRANTFILE_API_VERSION = "2"
 
 app_name       = "iamvs.agoracon.at"
-app_ip         = "192.168.168.250"
-app_box        = "centos66min"
-app_box_url    = "https://agoracon.at/boxes/centos66min.box"
-#app_box_sha    = "bce6a99728ceaeb017f475ee734f676390cf8c49b6aed721a3247c204daa507f"
+app_ip         = "192.168.168.10"
+app_box        = "centos67fusion"
+app_box_url    = "https://agoracon.at/boxes/centos67fusion.box"
 
-$frontend_ip = "192.168.168.250"
+$frontend_ip = "192.168.168.10"
 $hostfile = "# ...cant touch this
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1                                         localhost6 localhost6.localdomain6
-192.168.168.250               iamvs.agoracon.at        iamvs
-192.168.168.250         oradb.iamvs.agoracon.at
-#{$frontend_ip}           sso.iamvs.agoracon.at
-#{$frontend_ip}   idminternal.iamvs.agoracon.at
-#{$frontend_ip}      iamadmin.iamvs.agoracon.at
-#{$frontend_ip}      oiaadmin.iamvs.agoracon.at
+192.168.168.10               iamvs.agoracon.at        iamvs
+192.168.168.10         oradb.iamvs.agoracon.at
+#{$frontend_ip}          sso.iamvs.agoracon.at
+#{$frontend_ip}  idminternal.iamvs.agoracon.at
+#{$frontend_ip}     iamadmin.iamvs.agoracon.at
+#{$frontend_ip}     oiaadmin.iamvs.agoracon.at
 192.168.168.1                           images
 "
 
-$images = "images:/Volumes/hext01/install/oracle /mnt/oracle nfs rw,bg,rsize=32768,wsize=32768 0 0\n"
+$images = "images:/Users/horst/Public/install/oracle /mnt/oracle nfs ro,bg 0 0\n"
 # $exports, $fstab = "", "#{$images}"
 # [ '/opt/fmw/config',
 #   '/opt/fmw/products',
@@ -48,10 +47,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       mount /mnt/oracle"
   end
 
-  # config.vm.provision "vbox", type: "shell" do |s|
-  #   s.inline = "/mnt/oracle/vbox5/VBoxLinuxAdditions.run"
-  # end
-
   # config.vm.provision "ssh-key", type: "shell" do |s|
   #   s.inline = "su - fmwuser -c 'mkdir -p ~/.ssh;
   #     chmod 0700 ~/.ssh; 
@@ -65,14 +60,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     app.vm.hostname     = app_name
     app.vm.box_url      = app_box_url
     app.vm.boot_timeout = 120
-    app.ssh.username    = 'vagrant'
+    app.ssh.username    = 'fmwuser'
 
     app.vm.network :private_network, ip: app_ip
     app.vm.provider :virtualbox do |v|
       v.name   = app_name
       v.cpus   = 4
       v.memory = 12288
-      #v.memory = 8192
     end
 
   end

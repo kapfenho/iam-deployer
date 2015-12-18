@@ -1,18 +1,9 @@
 #!/bin/bash
 #
-#  VWFS Post installation steps
+#  IAM single host setup workflow
 #
-#  Prerequisites:
-#  - there should be ssh-key communication available
-#    on hosts on which the deployment should be performed
-#
-
-#  Single host setup workflow
-#
-
-#  we need common.env to be able to execute iam tool locally
-# 
-set -o errexit errtrace
+set -o errexit
+set -o errtrace
 
 export DEPLOYER
 export PATH=${DEPLOYER}:${PATH}
@@ -25,8 +16,7 @@ for h in ${provhosts[@]}; do
   fi
 done
 
-# install database
-# database
+# create inventory, for lcm only
 iam orainv
 
 # rcu: create database schemas
@@ -69,7 +59,10 @@ iam identity -a config
 # upgrade jdk
 iam jdk -a install7 -O identity
 
-$SHELL -l ~/bin/stop-all
+# stop all services
+$SHELL -l ~/bin/stop-identity
+$SHELL -l ~/bin/stop-webtier
+$SHELL -l ~/bin/stop-nodemanager
 
 iam jdk -a move6 -O identity
 
@@ -85,4 +78,6 @@ iam identity -a movelogs
 # webgate installation bug fix
 iam webtier -a movelogs
 iam webtier -a config
+
+echo -e "\nSetup finished successfully!\n"
 

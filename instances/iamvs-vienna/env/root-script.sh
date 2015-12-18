@@ -43,7 +43,7 @@ EOS
 yum check-update
 yum install -y epel-release
 yum check-update
-yum -y upgrade
+# yum -y upgrade
 
 #   64bit packages for all fusion apps
 yum install -y \
@@ -101,7 +101,7 @@ yum install -y \
     vim-enhanced
 
 # rebuild virtualbox guest additions after kernel update
-[ -e /etc/init.d/vboxadd ] && /sbin/service vboxadd setup
+# [ -e /etc/init.d/vboxadd ] && /sbin/service vboxadd setup
 
 service iptables stop
 service ip6tables stop
@@ -110,13 +110,14 @@ chkconfig iptables off
 chkconfig ip6tables off
 
 # --- users group dirs ---
-#
 groupadd -g 6100 fmwgroup
 groupadd -g 6200 oinstall
 groupadd -g 6201 dba
 
-useradd -u 5100 -g 6100 -G vagrant,oinstall      fmwuser
-useradd -u 5200 -g 6200 -G vagrant,oinstall,dba  oracle
+useradd -u 5100 -g 6100 -G oinstall fmwuser
+useradd -u 5200 -g 6200 -G oinstall,dba oracle
+# vagrant: fmwgroup owns /vagrant
+usermod -a -G fmwgroup oracle
 
 # --- let them sudo
 #
