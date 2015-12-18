@@ -147,8 +147,8 @@ oia_appconfig()
         _c=${RBACX_HOME}
 
   # this variable will be used in sed command and must be escaped before
-  _iam_log=$(echo ${iam_log}            | sed -e 's/[\/&]/\\&/g')
-     _prod=$(echo ${iam_analytics_home} | sed -e 's/[\/&]/\\&/g')
+  _iam_log=$(echo ${iam_log}    | sed -e 's/[\/&]/\\&/g')
+     _prod=$(echo ${RBACX_HOME} | sed -e 's/[\/&]/\\&/g')
 
   # check if already executed
   if ! grep -q '$RBACX_HOME' ${_c}/conf/iam.properties ; then

@@ -18,4 +18,5 @@ and optionally extended by the SSL (TLS) features set.
 One virtual host file shall map to one OHS/Apache virtual host
 definition.
 
-The main OHS config includes all files with a "conf" suffix.
+The main OHS config includes all files with a "conf" suffix. Rename 
+unused vhosts files to another suffix.

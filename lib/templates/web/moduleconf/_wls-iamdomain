@@ -18,3 +18,9 @@
         SetHandler weblogic-handler
         __WLS_IAMADMINSERVER__
     </Location>
+
+    # Oracle Entitlements Server, APM
+    <Location /apm>
+        SetHandler weblogic-handler
+        __WLS_IAMADMINSERVER__
+    </Location>
