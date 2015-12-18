@@ -1,0 +1,86 @@
+#  Oracle Identity and Access Management
+#  vi: set ft=ruby :
+#
+
+VAGRANTFILE_API_VERSION = "2"
+
+app_name       = "iamvs.agoracon.at"
+app_ip         = "192.168.168.10"
+app_box        = "centos67fusion"
+app_box_url    = "https://agoracon.at/boxes/centos67fusion.box"
+
+$frontend_ip = "192.168.168.10"
+$hostfile = "# ...cant touch this
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1                                         localhost6 localhost6.localdomain6
+192.168.168.10               iamvs.agoracon.at        iamvs
+192.168.168.10         oradb.iamvs.agoracon.at
+#{$frontend_ip}          sso.iamvs.agoracon.at
+#{$frontend_ip}  idminternal.iamvs.agoracon.at
+#{$frontend_ip}     iamadmin.iamvs.agoracon.at
+#{$frontend_ip}     oiaadmin.iamvs.agoracon.at
+192.168.168.1                           images
+"
+
+$images = "images:/Users/horst/Public/install/oracle /mnt/oracle nfs ro,bg 0 0\n"
+# $exports, $fstab = "", "#{$images}"
+# [ '/opt/fmw/config',
+#   '/opt/fmw/products',
+#   '/opt/fmw/lcm',
+#   '/opt/fmw/etc' ].each do |d|
+#   $exports << "#{d} 192.168.168.0/24(rw,async,no_subtree_check)\n"
+#   $fstab   << "oim1:#{d} #{d} nfs rw,async 0 0\n"
+# end
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.provision "hosts-file", type: "shell" do |s|
+    s.inline = "echo '#{$hostfile}' > /etc/hosts"
+  end
+
+  config.vm.provision "root", type: "shell" do |s|
+    s.inline ="/vagrant/user-config/env/root-script.sh"
+  end
+
+  config.vm.provision "nfs", type: "shell" do |s|
+    s.inline = "echo '#{$images}' >>/etc/fstab;
+      mount /mnt/oracle"
+  end
+
+  # config.vm.provision "ssh-key", type: "shell" do |s|
+  #   s.inline = "su - fmwuser -c 'mkdir -p ~/.ssh;
+  #     chmod 0700 ~/.ssh; 
+  #     cp /vagrant/user-config/hostenv/ssh/* ~/.ssh/; 
+  #     chmod 0644 ~/.ssh/*; 
+  #     chmod 0600 ~/.ssh/id_rsa'"
+  # end
+
+  config.vm.define :app, primary: true do |app|
+    app.vm.box          = app_box
+    app.vm.hostname     = app_name
+    app.vm.box_url      = app_box_url
+    app.vm.boot_timeout = 120
+    app.ssh.username    = 'fmwuser'
+
+    app.vm.network :private_network, ip: app_ip
+    app.vm.provider :virtualbox do |v|
+      v.name   = app_name
+      v.cpus   = 4
+      v.memory = 12288
+    end
+
+  end
+
+  config.vm.provision "database", type: "shell" do |s|
+    s.inline = "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/database  | /usr/bin/tee /tmp/prov-database.log'"
+  end
+
+  config.vm.provision "iam", type: "shell" do |s|
+    s.inline = "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam provision | /usr/bin/tee /tmp/prov-iam.log'"
+  end
+
+  #config.vm.provision "load-balancer", type: "shell" do |s|
+  #  s.inline = "/vagrant/user-config/env/load-balancer.sh #{$frontend_ip}"
+  #end
+end
+
