@@ -50,8 +50,8 @@ by installing 3rd party tools. However we recommend to use Unix/BSD or Linux._
 The currently supported versions of the Oracle Identity and Access
 Management Suite the version specific README files:
 
-    11.1.2.2:  doc/iam-11.1.2.2.markdown
-    11.1.2.3:  doc/iam-11.1.2.3.markdown
+    11.1.2.2:  doc/iam-11.1.2.2.md
+    11.1.2.3:  doc/iam-11.1.2.3.md
 
 You will find information there like how to get the software, the bundle
 patches and used data check sums.
