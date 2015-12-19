@@ -132,15 +132,21 @@ chmod 440 /etc/sudoers.d/oracle
 cat >> /etc/security/limits.d/91-fusion.conf <<-EOF
 @fmwgroup  soft    nofile     150000
 @fmwgroup  hard    nofile     150000
-@fmwgroup  soft    nproc       16384
-@fmwgroup  hard    nproc       16384
 EOF
 
-cat >> /etc/security/limits.d/91-fusion.conf <<-EOF
-oracle     soft    nofile      65536
-oracle     hard    nofile      65536
-oracle     soft    stack       10240
+cat >> /etc/security/limits.d/90-nproc.conf <<-EOF
+@fmwgroup  soft    nproc     16384
+@fmwgroup  hard    nproc     16384
 EOF
+
+cp /etc/security/limits.d/90-nproc.conf /etc/security/limits.d/90-nproc.conf.backup
+sed -i -e 's/1024/16384/g' /etc/security/limits.d/90-nproc.conf 
+
+# cat >> /etc/security/limits.d/91-fusion.conf <<-EOF
+# oracle     soft    nofile      65536
+# oracle     hard    nofile      65536
+# oracle     soft    stack       10240
+# EOF
 
 # --- directory setup
 #

@@ -340,9 +340,9 @@ remove_iam()
 #  remove LCM (life cycle manager) iam_base/lcm
 #  binaries and home
 #
-remmve_lcm()
+remove_lcm()
 {
-  rm -Rf ${iam_top}/lcm/*
+  rm -Rf ${iam_top}/lcm/{lcm,lcmhome}
 }
 
 #  remove OIA installation including including env
@@ -367,6 +367,14 @@ remove_oia()
 
   echo
   echo "OIA binaries, webapp, domain and environment files removed."
+  echo "Restart nodemanager now"
+}
+
+remove_all()
+{
+  remove_iam
+  remove_lcm
+  remove_env
 }
 
 #  run Oracle patch set assistant

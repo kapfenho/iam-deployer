@@ -28,12 +28,16 @@ config_database_for_iam()
   if [ -z ${ORACLE_SID} ] ; then
     ORACLE_SID=${dbs_sid}
   fi
-  ${ORACLE_HOME}/bin/sqlplus -s / as sysdba &> /dev/null << EOF
-  alter system set processes=1500 scope=spfile;
-  alter system set open_cursors=1500 scope=spfile;
-  shutdown immediate;
-  startup;
-  exit;
+  ${ORACLE_HOME}/bin/sqlplus / as sysdba ${ORACLE_HOME}/rdbms/admin/xaview.sql
+  ${ORACLE_HOME}/bin/sqlplus / as sysdba << EOF
+  @?/rdbms/admin/xaview.sql
+  ALTER SYSTEM SET PROCESSES=1600 SCOPE=SPFILE;
+  ALTER SYSTEM SET OPEN_CURSORS=1600 SCOPE=SPFILE;
+  ALTER SYSTEM SET SESSION_CACHED_CURSORS=500 SCOPE=SPFILE;
+  ALTER SYSTEM SET SESSION_MAX_OPEN_FILES=50 SCOPE=SPFILE;
+  SHUTDOWN IMMEDIATE;
+  STARTUP;
+  EXIT;
 EOF
   log "config_database_for_iam" "done"
 }

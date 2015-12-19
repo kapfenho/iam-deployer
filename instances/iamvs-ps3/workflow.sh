@@ -20,7 +20,7 @@ done
 iam orainv
 
 # rcu: create database schemas
-iam rcu -a create -t identity
+#iam rcu -a create -t identity
 
 # install lcm
 iam lcminst
