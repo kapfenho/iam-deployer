@@ -44,9 +44,29 @@ The schemas to remove are identified by the database config in the file
 There is an iam command available for this task.
 
     iam remove -h
-
-    iam remove -a remove -t {identity,analytics,lcm,env,all}
+    # e.g.
+    iam remove -t all
 
 You can call the command with the option -A for executing it on all 
 machines or using -H host_name for running it on a certain host.
+
+
+## Remove Environment Settings
+
+The environment is kept in this directories in $HOME:
+
+    ~/bin
+    ~/lib
+    ~/.env
+    ~/.creds
+
+Additional sourcing is done in
+
+    ~/.bash_profile
+
+You can either remove the directories recursively or call
+
+    iam remove -t env
+
+Important: you need to logout and get a fresh session after this change.
 
