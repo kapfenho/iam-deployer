@@ -117,3 +117,17 @@ done
 
 iam_lcm=$(grep "ORACLE_HOME=" ${lcm_config_rsp} | cut -d= -f2)
 
+# hostname shortnames, used in workflow file
+# IDMPROV variables are set at the end of provisioning.rsp
+#
+oim1=${IDMPROV_OIM_HOST}
+oim2=${IDMPROV_SECOND_OIM_HOST}
+oam1=${IDMPROV_OAM_HOST}
+oam2=${IDMPROV_SECOND_OAM_HOST}
+oud1=${IDMPROV_OVD_HOST}
+oud2=${IDMPROV_SECOND_OVD_HOST}
+web1=${IDMPROV_OHS_HOST}
+web2=${IDMPROV_SECOND_OHS_HOST}
+oia1=${IDMPROV_OIA_HOST}
+oia2=${IDMPROV_SECOND_OIA_HOST}
+
