@@ -13,9 +13,9 @@ IP_OUD1="192.168.168.32"
 IP_OUD2="192.168.168.33"
 IP_WEB1="192.168.168.48"
 IP_WEB2="192.168.168.49"
-IP_DBS1="192.168.168.170"
 
-IP_LBFE="10.80.1.32"        # new public ip, frontend load balancer, bridged
+IP_LBFE="192.168.168.48"    # frontend load balancer
+IP_DBS1="192.168.168.170"   # database server
 IP_NFSI="10.80.1.4"         # existing nfs with install images
 
 BOX="centos67fusion"        # all vms are built using the template. the fusion 

@@ -160,21 +160,20 @@ EOS
 }
 
 #  LCM patches: needed for PS3 cluster installation
+#  param1: oracle patch number
 #
 patch_lcm()
 {
+  patchnr=${1}
   export ORACLE_HOME=${iam_lcm}
 
-  cd ${s_patches}/21761480
-  if ! ${ORACLE_HOME}/OPatch/opatch apply ; then
-    echo "ERROR during patchig of LCM, patch 21761480"
-    exit 80
-  fi
-
-  cd ${s_patches}/21197325
-  if ! ${ORACLE_HOME}/OPatch/opatch apply ; then
-    echo "ERROR during patchig of LCM, patch 21761480"
-    exit 80
+  if ! ${ORACLE_HOME}/OPatch/opatch lsinv | grep ${patchnr} >/dev/null ; then
+    pushd ${s_patches}/${patchnr}
+    if ! ${ORACLE_HOME}/OPatch/opatch apply ; then
+      echo "ERROR patching LCM: patch ${patchnr}"
+      exit 80
+    fi
+    popd
   fi
 }
 
