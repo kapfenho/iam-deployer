@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="IDM Common Task Definitions" basedir=".">
+
+    <description>
+    	 Install, configure and validate the Identity Management component
+    </description>
+	
+   <import file="${provisioning.build.dir}/common-build.xml" />
+
+   <!-- override the path defined in common-build.xml -->
+   <path id="provisioning.base.classpath">
+         <!-- Tasks were built using our Ant distribution, and should be
+              executed using the same. -->
+         <pathelement location="${env.ANT_HOME}/lib/ant.jar"/>
+         <pathelement location="${provisioning.lib.dir}/oracle-idmprovisioning-anttasks.jar"/>
+         <pathelement location="${provisioning.lib.dir}/oracle-idmprovisioning-extension.jar"/>
+         <pathelement location="${provisioning.lib.dir}/oracle-idmprovisioning-tools.jar"/>
+         <pathelement location="${provisioning.lib.dir}/oracle-idmprovisioning-topology.jar"/>
+         <pathelement location="${provisioning.lib.dir}/oracle-idmprovisioning-util.jar"/>
+         <pathelement location="${provisioning.lib.dir}/oracle-idmprovisioning-targetgenerator.jar"/>
+    	 <pathelement location="${provisioning.lib.dir}/oracle-idmprovisioning-flowdesigner.jar"/>
+         <pathelement location="${provisioning.lib.dir}/oracle-provisioning-tools.jar"/>
+         <pathelement location="${provisioning.lib.dir}/oracle-provisioning-anttasks.jar"/>
+         <pathelement location="${provisioning.lib.dir}/oracle-provisioning-apps-metadata.jar"/>
+         <pathelement location="${provisioning.lib.dir}/odi-core.jar"/>
+         <pathelement location="${provisioning.lib.dir}/ant-contrib.jar"/>
+         <pathelement location="${provisioning.lib.dir}/catalina-ant.jar"/>
+         <pathelement location="${provisioning.lib.dir}/httpunit.jar"/>
+         <pathelement location="${provisioning.lib.dir}/idmsuitevalidationservice.jar"/>
+         <pathelement location="${provisioning.lib.dir}/groovy-1.5.7.jar"/>
+         <pathelement location="${provisioning.lib.dir}/spring-beans.jar"/>
+         <pathelement location="${provisioning.lib.dir}/spring-core.jar"/>
+         <pathelement location="${provisioning.lib.dir}/spring-dao.jar"/>
+         <pathelement location="${provisioning.lib.dir}/spring-jdbc.jar"/>
+         <pathelement location="${provisioning.lib.dir}/wlfullclient.jar"/>
+
+        <pathelement location="${provisioning.lib.dir}/oracle.lcm.sdk.jar"/>
+        <pathelement location="${provisioning.lib.dir}/oracle.lcm.sdk.odi.jar"/>
+        <pathelement location="${provisioning.lib.dir}/oracle.lcm.sdk.ibr.jar"/>
+   	
+   		<pathelement location="${basedir}/../../healthcheck/lib/idmhc.jar"/>
+
+      <!-- Below jars are referenced for oim tasks -->
+      <pathelement location="${provisioning.lib.dir}/oracle-idmprovisioning-util.jar"/>
+      <pathelement location="/${provisioning.idmprov.oid.mw_home}/oracle_common/modules/oracle.ldap_11.1.1/ldifloadtool.jar"/>
+      <!--pathelement location="/${provisioning.idmprov.oid.mw_home}/oracle_common/modules/oracle.ldap_11.1.1/ldifloadtool.jar"/-->
+      <!-- End : jars are referenced for oim tasks -->
+   </path>
+
+   <!-- override the common-define-tasks defined in common-build.xml -->
+   <target name="common-define-tasks" depends="common-taskdefs.common-define-tasks" >
+
+      <taskdef name="IDMProvisioningUtil"
+               classname="oracle.idm.provisioning.anttaskdefs.IDMProvisioningUtilTask"
+               classpath="${provisioning.classpath}"/>
+
+      <taskdef name="getSID"
+               classname="oracle.idm.provisioning.anttaskdefs.GetSIDTask"
+               classpath="${provisioning.classpath}"/>
+
+      <taskdef name="getTnsAddressList"
+               classname="oracle.idm.provisioning.anttaskdefs.GetTnsAddressListTask"
+               classpath="${provisioning.classpath}"/>
+
+      <taskdef name="getPrimaryGroup"
+               classname="oracle.idm.provisioning.anttaskdefs.GetPrimaryGroupTask"
+               classpath="${provisioning.classpath}"/>
+
+      <taskdef name="idmConfigTool"
+               classname="oracle.idm.provisioning.anttaskdefs.IdmConfigToolTask"
+               classpath="${provisioning.classpath}"/>
+    
+      <taskdef name="SharedIDMEditIdmConf"
+               classname="oracle.idm.provisioning.anttaskdefs.SharedIDMEditIdmConfTask"
+               classpath="${provisioning.classpath}"/>
+
+      <taskdef name="orclTenantManager"
+               classname="oracle.idm.provisioning.anttaskdefs.OrclTenantManagerTask"
+               classpath="${provisioning.classpath}"/>
+
+      <taskdef name="updateOvdListenerXml"
+               classname="oracle.idm.provisioning.anttaskdefs.UpdateOvdXmlListenerTask"
+               classpath="${provisioning.classpath}"/>
+
+      <taskdef name="setDomainEnvSh"
+               classname="oracle.idm.provisioning.anttaskdefs.SetDomainEnvTask"
+               classpath="${provisioning.classpath}"/>
+
+      <taskdef name="decryptPassword"
+               classname="oracle.idm.provisioning.anttaskdefs.util.DecryptPasswordTask"
+               classpath="${provisioning.classpath}"/>
+
+      <taskdef name="modifyIDMResponseFile"
+               classname="oracle.idm.provisioning.anttaskdefs.util.ModifyIDMResponseFileTask"
+               classpath="${provisioning.classpath}"/>
+
+      <taskdef name="modifyOimNfsPath"
+	       classname="oracle.idm.provisioning.anttaskdefs.OimPathResolver"
+               classpath="${provisioning.classpath}"/>
+
+      <taskdef name="validateDBForSharedIDM"
+               classname="oracle.idm.provisioning.anttaskdefs.ValidateDBForSharedIDMTask"
+               classpath="${provisioning.classpath}"/>
+
+      <taskdef name="ldapModify"
+               classname="oracle.idm.provisioning.anttaskdefs.LDAPModifyTask"
+               classpath="${provisioning.classpath}"/>
+
+      <taskdef name="seedCredentials"
+		classname="oracle.idm.provisioning.anttaskdefs.SeedCredentialsTask"
+		classpath="${provisioning.classpath}"/>                
+      
+ 
+      <taskdef name="setHttpdConf"
+		classname="oracle.idm.provisioning.anttaskdefs.SetHttpdConfTask"
+		classpath="${provisioning.classpath}"/>                
+      
+      <taskdef name="checkKernelValues"
+		classname="oracle.idm.provisioning.anttaskdefs.CheckKernelValuesTask"
+		classpath="${provisioning.classpath}"/>                
+      
+      <taskdef name="checkKernelShmmax"
+		classname="oracle.idm.provisioning.anttaskdefs.CheckKernelShmmaxTask"
+		classpath="${provisioning.classpath}"/>                
+
+      <taskdef name="idmLdapSearchPoll"
+                classname="oracle.idm.provisioning.anttaskdefs.IDMLdapSearchPollTask"
+                classpath="${provisioning.classpath}"/>
+  
+      <taskdef name="dereferencePlanFile"
+		classname="oracle.idm.provisioning.anttaskdefs.DereferencePlanFileTask"
+		classpath="${provisioning.classpath}"/>                
+		      
+ <taskdef name="idmpatchmgr"
+            classname="oracle.idm.provisioning.anttaskdefs.IDMPatchManagerTask"
+            classpath="${provisioning.classpath}"/>   
+
+    <taskdef name="idmpatch"
+            classname="oracle.idm.provisioning.anttaskdefs.IDMPatchTask"
+            classpath="${provisioning.classpath}"/>	
+
+    <taskdef name="isLocalHostOrder"
+            classname="oracle.idm.provisioning.anttaskdefs.IsLocalHostOrderTask"
+            classpath="${provisioning.classpath}"/>	
+
+    <taskdef name="idmProvShell"
+             classname="oracle.idm.provisioning.util.IdmProvShellTask"
+             classpath="${provisioning.classpath}"/>
+    <typedef name="param" classname="org.apache.tools.ant.types.Parameter"/>
+
+    <taskdef name="getTargetsToInvokePhase"
+            classname="oracle.idm.provisioning.targetgenerator.GetTargetsToInvokePhaseTask"
+            classpath="${provisioning.classpath}"/>	
+
+    <taskdef name="findRelPath"
+               classname="oracle.idm.provisioning.anttaskdefs.FindRelativePathTask"
+               classpath="${provisioning.classpath}"/>
+    <taskdef name="tailFile" 
+                         classname="oracle.idm.provisioning.anttaskdefs.TailFileTask"
+                         classpath="${provisioning.classpath}"/>
+       
+     <taskdef name="startNodeManagerInWindows"
+                         classname="oracle.idm.provisioning.anttaskdefs.StartNodeManagerTaskInWindows"
+                         classpath="${provisioning.classpath}"/>
+ 
+     <taskdef name="stopNodeManagerInWindows"
+                        classname="oracle.idm.provisioning.anttaskdefs.StopNodeManagerTaskInWindows"
+                         classpath="${provisioning.classpath}"/> 
+
+   	<taskdef name="rcuCreateSchema"
+   	               classname="oracle.idm.provisioning.anttaskdefs.util.RCUCreateSchemaTask"
+   	               classpath="${provisioning.classpath}"/>
+   	<taskdef name="validateDBSchema"
+	   	               classname="oracle.idm.provisioning.anttaskdefs.ValidateDBSchemaTask"
+	   	               classpath="${provisioning.classpath}"/>
+        <taskdef name="retrieveWebGateAgents"
+               classname="oracle.idm.provisioning.anttaskdefs.util.RetrieveWebGateAgentsTask"
+               classpath="${provisioning.classpath}"/>
+   	<taskdef name="healthCheckInvoker"
+   		   	               classname="oracle.idm.provisioning.anttaskdefs.HealthCheckInvokerTask"
+   		   	               classpath="${provisioning.classpath}"/>   	
+   	
+   	<taskdef 
+   		name="idmProvArgumentsManager" 
+   		classname="oracle.idm.provisioning.anttaskdefs.IdmProvArgumentsManager" 
+   		classpath="${provisioning.classpath}" />
+   	
+   </target>
+   
+  
+   <!--target name="is.plan.valid">
+
+     <condition property="provisioning.dbinstall-plan.valid">
+       <and>
+         <istrue value="${provisioning.setup.choice.core.action.provision.new.database}"/>
+         <isset property="provisioning.setup.common.core.created" />
+         <isset property="provisioning.setup.common.core.default.adminserver.name" />
+         <isset property="provisioning.setup.common.core.modified" />
+         <isset property="provisioning.setup.choice.core.action.provision.new" />
+         <isset property="provisioning.setup.choice.core.action.provision.install" />
+         <isset property="provisioning.setup.common.core.default.home.top" />
+         <isset property="host..home.fusion.repository" />
+       </and>
+     </condition>
+
+     <condition property="provisioning.non-dbinstall-plan.valid">
+       <and>
+         <isfalse value="${provisioning.setup.choice.core.action.provision.new.database}"/>
+       </and>
+     </condition>
+
+   </target-->
+
+
+</project>	

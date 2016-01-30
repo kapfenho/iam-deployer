@@ -159,6 +159,33 @@ EOS
   fi
 }
 
+#  patch lcm build files, removing os checks
+#
+patch_lcm()
+{
+  local pl_path=${iam_lcm}/provisioning/idm-provisioning-build
+  local plist=(
+    idm-common-preverify-build.xml
+    idm-common-taskdefs-build.xml
+    idm-common-validate-build.xml
+    oam-build.xml
+    oim-build.xml
+    oud-build.xml
+  )
+
+  if ! [ -a "${pl_path}/${plist[0]}~" ]
+  then
+    log "Patching provisioning build plan"
+    for f in ${plist[@]}
+    do  
+      cp -b ${DEPLOYER}/lib/templates/prov/${f} ${pl_path}
+    done
+    log "Provisioning file patched"
+  else
+    warning "Skipped: build files already patched"
+  fi  
+}
+
 #  provision step within life cycle manager wizard
 #+ param 1: step name
 #

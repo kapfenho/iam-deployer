@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="Common Preverify Validations" basedir=".">
+	
+	<description>
+		Preverify Validations for the Identity Management Suite
+	</description>
+          <!--
+    =======================================================================
+    TARGET: common-preverify-host [PUBLIC]
+            Preverify tasks that need to be run on every provisioning
+            host.
+Required parameters:
+                None
+    =======================================================================
+    -->
+    <target name="common-preverify-tasks">
+		
+		<!-- Helath Check is yet to support Windows -->
+		<if>
+			<os name="windows"/>
+			<then>
+				<!-- antcall target="private-idm-preverify-os"/ -->
+			</then>
+			<else>
+				<!-- antcall target="private-preverify-health-check-invocation"/  -->
+			</else>
+		</if> 
+    </target>
+
+	
+                
+      <!--
+    =======================================================================
+    TARGET: private-preverify-os [PRIVATE]
+            Preverify tasks that need to be run on every provisioning
+            host. Verifies that OS name,arch,version is supported by provisioning.
+    Required parameters:  None
+    =======================================================================
+    -->
+    <target name="private-idm-preverify-os">
+        <logStatus state="BUILD_STARTED" category="osvalidation" task="validateOs"/>
+        
+        <property name="oracle.prov.validate.os.name1" value="HP-UX"/>
+        <property name="oracle.prov.validate.os.archs1" value="ia64"/>
+        <property name="oracle.prov.validate.os.versions1" value="B.11.31"/>
+        
+        <property name="oracle.prov.validate.os.name2" value="AIX"/>
+        <property name="oracle.prov.validate.os.archs2" value="powerpc"/>
+        <property name="oracle.prov.validate.os.versions2" value="6100-[0-9]{2}::7100-[0-9]{2}"/>
+        
+        <property name="oracle.prov.validate.os.name3" value="Linux"/>
+        <property name="oracle.prov.validate.os.archs3" value="x86_64"/>
+        <property name="oracle.prov.validate.os.versions3" value="Red Hat Enterprise Linux AS release 5.*::Red Hat Enterprise Linux Server release 5.*::Red Hat Enterprise Linux AS release 6.*::Red Hat Enterprise Linux Server release 6.*::SUSE Linux Enterprise Server 11.*::SUSE Linux Enterprise Server 10.*::Enterprise Linux Server release 5.*"/>
+        
+       <property name="oracle.prov.validate.os.name4" value="SunOS"/>
+        <property name="oracle.prov.validate.os.archs4" value="64-bit sparc::64-bit i386"/>
+        <property name="oracle.prov.validate.os.versions4" value="SunOS 5.10 sparc::SunOS 5.11 sparc::SunOS 5.10 i386::SunOS 5.11 i386"/>
+ 
+        <property name="oracle.prov.validate.os.name5" value="microsoft windows server 2008 r2 enterprise"/>
+        <property name="oracle.prov.validate.os.archs5" value="x64"/>
+        <property name="oracle.prov.validate.os.versions5" value="2008 r2"/>
+        
+        <property name="oracle.prov.validate.os.name6" value="microsoft windows server 2012 r2 standard"/>
+        <property name="oracle.prov.validate.os.archs6" value="x64"/>
+		
+		<property name="oracle.prov.validate.os.name7" value="microsoft windows server 2012"/>
+        <property name="oracle.prov.validate.os.archs7" value="x64"/>
+        
+        <validateOs/>
+        <logStatus state="BUILD_COMPLETE" category="osvalidation" task="validateOs"/>
+    </target>
+
+	<target name="private-preverify-kernelValues">
+        	<logStatus state="BUILD_STARTED" category="linuxkernelvalidation" task="CheckKernelValues"/>
+		
+			<if>
+				<os name="Linux"/>
+				<then>
+					<checkKernelValues/> 
+					<checkKernelShmmax/>
+				</then>
+			</if>		
+        	<logStatus state="BUILD_COMPLETE" category="linuxkernelvalidation" task="CheckKernelValues"/>
+	</target>
+
+
+	<target name="private-preverify-health-check-invocation">
+		<logStatus state="BUILD_STARTED" category="healthcheck" task="validateUsingHealthCheck"/>
+		<property name="warning.check.logfile" value="${idm.provisioning.build.dir}${file.separator}config${file.separator}healthchecker-preverify-warning-check.log" />
+		<property name="error.check.logfile" value="${idm.provisioning.build.dir}${file.separator}config${file.separator}healthchecker-preverify-error-check.log" />
+		<property name="error.check.inputFile" value="${idm.provisioning.build.dir}${file.separator}config${file.separator}healthcheck-error-check-input.properties" />
+		<property name="hc.preverify.warning.inputfile" value="${idm.provisioning.build.dir}${file.separator}config${file.separator}healthcheck-preverfiy-warning-input.properties" />
+		<property name="prov.logs.loc" value="${provisioning.setup.install-location.locations.default.log.directory}${file.separator}${localhost.name}" />
+		<property name="execution.phase" value="PREVERIFY"/>
+
+		
+		<!-- Invoking mandatory validations which generates errors--> 
+		<trycatch>
+			<try>
+				<healthCheckInvoker basedir="${basedir}" 
+					 logFile="${error.check.logfile}" 
+					 inputFile="${error.check.inputFile}" 
+					 provLogLoc="${prov.logs.loc}"
+					 topologyLoc = "${provisioning.idmprov.global.topology_dir}/topology.xml"
+					 credConfigLoc = "${provisioning.idmprov.global.credconfig_dir}"
+					 phase = "${execution.phase}"
+					 type="ERROR"/>
+			</try>
+			<catch>
+				<simulateValidationError message="Failed validating using Healthcheck framework." />
+				<failAndLogStatus task="preverify health check" category="Preverify" detail="IDM Health Check"/>
+			</catch>
+			<finally>
+				<modifyIDMResponseFile responseFile="${error.check.logfile}" />
+				<modifyIDMResponseFile responseFile="${error.check.inputFile}" />
+			</finally>
+		</trycatch>
+		
+		<!-- Invoking optional validations which generates warnings -->
+
+		<trycatch>
+			<try>
+				<healthCheckInvoker basedir="${basedir}" 
+					 logFile="${warning.check.logfile}" 
+					 inputFile="${hc.preverify.warning.inputfile}"
+					 provLogLoc="${prov.logs.loc}"
+					 topologyLoc = "${provisioning.idmprov.global.topology_dir}/topology.xml"
+					 credConfigLoc = "${provisioning.idmprov.global.credconfig_dir}"
+					 phase = "${execution.phase}"
+					 type="WARNING"/>
+			</try>
+			<catch>
+				<simulateValidationError message="Warning during Healthcheck framework validation." />									
+			</catch>
+			<finally>
+				<modifyIDMResponseFile responseFile="${warning.check.logfile}" />
+				<modifyIDMResponseFile responseFile="${warning.check.configfile}" />
+				<modifyIDMResponseFile responseFile="${hc.preverify.warning.inputfile}" />
+			</finally>
+		</trycatch>
+		
+		<logStatus state="BUILD_COMPLETE" category="healthcheck" task="validateUsingHealthCheck"/>
+	</target>
+		
+</project>

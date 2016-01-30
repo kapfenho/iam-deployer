@@ -132,6 +132,7 @@ else
     lcminst)
       if [ "${opt_h}" != "yes" ] ; then
         deploy_lcm
+        patch_lcm
       else
         help_lcminst
         exit $ERROR_SYNTAX_ERROR

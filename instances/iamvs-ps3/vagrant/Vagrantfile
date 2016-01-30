@@ -22,7 +22,7 @@ $hostfile = "# ...cant touch this
 192.168.168.1                           images
 "
 
-$images = "images:/Users/horst/Public/install/oracle /mnt/oracle nfs ro,bg 0 0\n"
+$images = "images:/Volumes/hext01/install/oracle /mnt/oracle nfs ro,bg 0 0\n"
 # $exports, $fstab = "", "#{$images}"
 # [ '/opt/fmw/config',
 #   '/opt/fmw/products',

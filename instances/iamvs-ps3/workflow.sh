@@ -41,6 +41,7 @@ do
   iam lcmstep -a ${step}
 done
 
+exit 0
 # deploy user environment in shared location
 iam userenv -a env
 # on each host: load in user profile and create easy to reach shortcuts 
