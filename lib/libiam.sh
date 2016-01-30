@@ -159,9 +159,29 @@ EOS
   fi
 }
 
-#  patch lcm build files, removing os checks
+#  LCM patches: needed for PS3 cluster installation
 #
 patch_lcm()
+{
+  export ORACLE_HOME=${iam_lcm}
+
+  cd ${s_patches}/21761480
+  if ! ${ORACLE_HOME}/OPatch/opatch apply ; then
+    echo "ERROR during patchig of LCM, patch 21761480"
+    exit 80
+  fi
+
+  cd ${s_patches}/21197325
+  if ! ${ORACLE_HOME}/OPatch/opatch apply ; then
+    echo "ERROR during patchig of LCM, patch 21761480"
+    exit 80
+  fi
+}
+
+#  change provisioining profiles to disables healthcheck before 
+#  and after installation
+#
+lcm_modify_profiles()
 {
   local pl_path=${iam_lcm}/provisioning/idm-provisioning-build
   local plist=(

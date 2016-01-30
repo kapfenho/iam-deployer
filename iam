@@ -133,6 +133,7 @@ else
       if [ "${opt_h}" != "yes" ] ; then
         deploy_lcm
         patch_lcm
+        # lcm_modify_profiles
       else
         help_lcminst
         exit $ERROR_SYNTAX_ERROR
