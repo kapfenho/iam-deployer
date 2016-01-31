@@ -168,12 +168,11 @@ patch_lcm()
   export ORACLE_HOME=${iam_lcm}
 
   if ! ${ORACLE_HOME}/OPatch/opatch lsinv | grep ${patchnr} >/dev/null ; then
-    pushd ${s_patches}/${patchnr}
+    cd ${s_patches}/${patchnr}
     if ! ${ORACLE_HOME}/OPatch/opatch apply ; then
       echo "ERROR patching LCM: patch ${patchnr}"
       exit 80
     fi
-    popd
   fi
 }
 
