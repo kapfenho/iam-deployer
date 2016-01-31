@@ -23,6 +23,7 @@ rcu_identity() {
     -component SOAINFRA \
     -component ORASDPM \
     -component OIM \
+    -component BIPLATFORM \
     <<EOF
 ${iam_dba_pass}
 ${iam_oim_schema_pass}
@@ -46,6 +47,7 @@ rcu_drop_identity() {
     -component SOAINFRA \
     -component ORASDPM \
     -component OIM \
+    -component BIPLATFORM \
     <<EOF
 ${iam_dba_pass}
 EOF
@@ -70,6 +72,7 @@ rcu_access() {
     -component IAU \
     -component OPSS \
     -component OAM \
+    -component OMSM \
     <<EOF
 ${iam_dba_pass}
 ${iam_oam_schema_pass}
@@ -92,6 +95,7 @@ rcu_drop_access() {
     -component IAU \
     -component OPSS \
     -component OAM \
+    -component OMSM \
     <<EOF
 ${iam_dba_pass}
 EOF

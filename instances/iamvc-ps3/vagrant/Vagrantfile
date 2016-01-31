@@ -37,13 +37,13 @@ $hostfile = "# ...cant touch this
 #{IP_WEB1}            web1.ps3.agoracon.at             web1
 #{IP_WEB2}            web2.ps3.agoracon.at             web2
 # load balanced
-#{IP_LBFE}        identity.ps3.agoracon.at         identity
 #{IP_LBFE}          access.ps3.agoracon.at           access
-#{IP_LBFE}  identity-admin.ps3.agoracon.at   identity-admin
 #{IP_LBFE}    access-admin.ps3.agoracon.at     access-admin
-#{IP_LBFE}    identity-api.ps3.agoracon.at     identity-api
 #{IP_LBFE}      access-api.ps3.agoracon.at       access-api
 #{IP_LBFE}   access-mobile.ps3.agoracon.at    access-mobile
+#{IP_LBFE}        identity.ps3.agoracon.at         identity
+#{IP_LBFE}  identity-admin.ps3.agoracon.at   identity-admin
+#{IP_LBFE}    identity-api.ps3.agoracon.at     identity-api
 # database
 #{IP_DBS1}         oradb11.vie.agoracon.at          oradb11
 # install images nfs
@@ -87,7 +87,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.provider :virtualbox do |vb|
       vb.name     = name
       vb.cpus     = 4
-      vb.memory   = 8192
+      vb.memory   = 10240
     end
 
     # let oim1 be the nfs server for the common file systems
@@ -121,7 +121,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.provider :virtualbox do |vb|
       vb.name     = name
       vb.cpus     = 4
-      vb.memory   = 6144
+      vb.memory   = 10240
     end
   end
   config.vm.define :oam2 do |m|
@@ -132,7 +132,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.provider :virtualbox do |vb|
       vb.name     = name
       vb.cpus     = 4
-      vb.memory   = 6144
+      vb.memory   = 8192
     end
   end
 
