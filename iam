@@ -132,7 +132,9 @@ else
     lcminst)
       if [ "${opt_h}" != "yes" ] ; then
         deploy_lcm
-        patch_lcm
+        patch_lcm 21761480
+        patch_lcm 21197325
+        # lcm_modify_profiles
       else
         help_lcminst
         exit $ERROR_SYNTAX_ERROR
