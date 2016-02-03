@@ -13,6 +13,11 @@ export PATH=${DEPLOYER}:${PATH}
 source ${DEPLOYER}/lib/user-config.sh
 
 for h in ${provhosts[@]}; do
+  # copy comfortable env for manual installation works
+  cp -f /vagrant/lib/templates/hostenv/env/bash_profile_vagrant_install_temp \
+    ${HOME}/.bash_profile
+  chmod 0644 ${HOME}/.bash_profile
+  # check if all hosts are up
   if ! ping -q -w 1 ${h} >/dev/null 2>&1 ; then
     echo "Postponing provisioning until host ${h} is available"
     exit 0
