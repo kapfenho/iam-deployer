@@ -75,7 +75,7 @@ OPERATION_TYPE = "createDatabase"
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-GDBNAME = "iamvs.agoracon.at"
+GDBNAME = "iamvs"
 
 #-----------------------------------------------------------------------------
 # Name          : RACONENODE
