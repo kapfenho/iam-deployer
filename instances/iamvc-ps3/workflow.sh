@@ -58,7 +58,7 @@ exit 0
 
 # deploy user environment in shared location
 iam userenv -a env -A
-ssh ${web2} -- sed -i 's/ohs1/ohs2/g' .env/web.env
+# ssh ${web2} -- sed -i 's/ohs1/ohs2/g' .env/web.env
 
 # on each host: load in user profile and create easy to reach shortcuts 
 iam userenv -a profile -A
