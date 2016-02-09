@@ -166,16 +166,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.box      = BOX
     m.vm.hostname = name
     m.vm.network  :private_network, ip: ip
-    m.vm.network  :public_network,  ip: IP_LBFE, bridge: "lagg0"
+    # m.vm.network  :public_network,  ip: IP_LBFE, bridge: "lagg0"
     m.vm.provider :virtualbox do |vb|
       vb.name     = name
       vb.cpus     = 2
       vb.memory   = 4096
     end
-    m.vm.provision "load balancer simulation", type: "shell", 
-      preserve_order: true do |s|
-      s.inline = "/vagrant/user-config/env/load-balancer.sh #{IP_LBFE}"
-    end
+    # m.vm.provision "load balancer simulation", type: "shell", 
+    #   preserve_order: true do |s|
+    #   s.inline = "/vagrant/user-config/env/load-balancer.sh #{IP_LBFE}"
+    # end
   end
 
   config.vm.define :web2 do |m|
