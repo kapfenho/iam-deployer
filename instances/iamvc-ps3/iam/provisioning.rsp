@@ -293,12 +293,12 @@ OAM_NODEMANAGER_PORT=${provisioning.setup.common.core.node.manager.port}
 #OAM DB Configuration
 OAM_DB_IS_RAC=false
 OAM_DB_IS_SINGLE=true
-OAM_DB_SERVICENAME=oradb11.vie.agoracon.at
+OAM_DB_SERVICENAME=oradb11
 OAM_RAC_ONS_ADDRESS=${provisioning.idmprov.oam-db.rac.scanaddress}
 OAM_RAC_ONS_PORT=6200
 OAM_RAC_SCAN_ADDRESS=
 OAM_RAC_SCAN_PORT=1521
-OAM_DB_SCHEMAPREFIX=DAM2
+OAM_DB_SCHEMAPREFIX=DAM
 OAM_DB_SCHEMAUSER=${provisioning.idmprov.oam-db.schema_prefix}_OAM
 OAM_DB_SCHEMAPASSWORD=v0Yd+NuDEIrI7ddlKajeyQ==
 OAM_DB_CONFIRM_SCHEMAPASSWORD=v0Yd+NuDEIrI7ddlKajeyQ==
@@ -330,9 +330,9 @@ OIM_DB_IS_RAC=false
 OIM_DB_IS_SINGLE=true
 OIM_SINGLE_DB_HOST=oradb11.vie.agoracon.at
 OIM_SINGLE_DB_PORT=1521
-OIM_DB_SCHEMAPREFIX=DIM2
+OIM_DB_SCHEMAPREFIX=DIM
 OIM_DB_SCHEMAUSER=${provisioning.idmprov.oim-db.schema_prefix}_OIM
-OIM_DB_SERVICENAME=oradb11.vie.agoracon.at
+OIM_DB_SERVICENAME=oradb11
 OIM_RAC_ONS_ADDRESS=${provisioning.idmprov.oim-db.rac.scanaddress}
 OIM_RAC_ONS_PORT=6200
 OIM_RAC_SCAN_ADDRESS=
