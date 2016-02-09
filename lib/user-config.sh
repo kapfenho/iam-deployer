@@ -77,6 +77,7 @@ getvar WLSADMIN_NAME
 : ${IDMPROV_SECOND_OIA_HOST:=${IDMPROV_SECOND_OIM_HOST}}
 :        ${IDMPROV_OIA_PORT:="7310"}
 : ${IDMPROV_SECOND_OIA_PORT:="7310"}
+:         ${shipped_jdk_dir:="jdk"}
 #
 
 # --------- user must not set this

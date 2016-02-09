@@ -214,8 +214,8 @@ lcmstep()
   if [ "${_action}" == "unblock" ] ; then
 
     for d in ${iam_top}/products/* ; do
-      if [ -d "${d}/jdk6" ] ; then
-        jdk_patch_config ${d}/jdk6
+      if [ -d "${d}/${shipped_jdk_dir}" ] ; then
+        jdk_patch_config ${d}/${shipped_jdk_dir}
       fi
     done
 
