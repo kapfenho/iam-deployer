@@ -4,21 +4,28 @@
 
 VAGRANTFILE_API_VERSION = "2"
 
-app_name       = "iamvs.agoracon.at"
-app_ip         = "192.168.168.10"
-app_box        = "centos67fusion"
-app_box_url    = "https://agoracon.at/boxes/centos67fusion.box"
+IP_SRV="192.168.168.10"     # server ip address
+IP_LBFE=IP_SRV              # frontend load balancer                                                                     | 17 192.168.168.10               iamvs.agoracon.at        iamvs                                                              
+IP_DBS1=IP_SRV              # database server                                                                            | 18 192.168.168.10         oradb.iamvs.agoracon.at                                                                           
+IP_NFSI="10.80.1.4"         # existing nfs with install images   
 
-$frontend_ip = "192.168.168.10"
-$hostfile = "# ...cant touch this
+app_name    = "iamvs.agoracon.at"
+app_box     = "centos67fusion"
+app_box_url = "https://agoracon.at/boxes/centos67fusion.box"
+$hostfile   = "# ...cant touch this
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1                                         localhost6 localhost6.localdomain6
-192.168.168.10               iamvs.agoracon.at        iamvs
-192.168.168.10         oradb.iamvs.agoracon.at
-#{$frontend_ip}          sso.iamvs.agoracon.at
-#{$frontend_ip}  idminternal.iamvs.agoracon.at
-#{$frontend_ip}     iamadmin.iamvs.agoracon.at
-#{$frontend_ip}     oiaadmin.iamvs.agoracon.at
+#{IP_SRV}                    iamvs.agoracon.at            iamvs
+#{IP_SRV}              oradb.iamvs.agoracon.at            oradb
+#{IP_LBFE}            access.iamvs.agoracon.at           access
+#{IP_LBFE}      access-admin.iamvs.agoracon.at     access-admin
+#{IP_LBFE}        access-api.iamvs.agoracon.at       access-api
+#{IP_LBFE}     access-mobile.iamvs.agoracon.at    access-mobile
+#{IP_LBFE}          identity.iamvs.agoracon.at         identity
+#{IP_LBFE}    identity-admin.iamvs.agoracon.at   identity-admin
+#{IP_LBFE}      identity-api.iamvs.agoracon.at     identity-api
+#{IP_LBFE}         dir-admin.iamvs.agoracon.at        dir-admin
+#{IP_LBFE}             omsas.iamvs.agoracon.at            omsas
 192.168.168.1                           images
 "
 
@@ -66,7 +73,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     app.vm.provider :virtualbox do |v|
       v.name   = app_name
       v.cpus   = 4
-      v.memory = 12288
+      v.memory = 12 * 1024
     end
 
   end
@@ -80,7 +87,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   #config.vm.provision "load-balancer", type: "shell" do |s|
-  #  s.inline = "/vagrant/user-config/env/load-balancer.sh #{$frontend_ip}"
+  #  s.inline = "/vagrant/user-config/env/load-balancer.sh #{IP_LBFE}"
   #end
 end
 
