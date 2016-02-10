@@ -121,7 +121,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.provider :virtualbox do |vb|
       vb.name     = name
       vb.cpus     = 4
-      vb.memory   = 10240
+      vb.memory   = 8192
     end
   end
   config.vm.define :oam2 do |m|
@@ -132,7 +132,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     m.vm.provider :virtualbox do |vb|
       vb.name     = name
       vb.cpus     = 4
-      vb.memory   = 8192
+      vb.memory   = 7168
     end
   end
 
