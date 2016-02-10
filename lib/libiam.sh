@@ -153,9 +153,9 @@ deploy_lcm()
 78a79
 >                                                    <arg value="-Djava.io.tmpdir=${iam_top}" />
 EOS
-    log "LCM has been patched to use differen tempdir for Weblogic installation"
+    log "LCM has been modified to use different TMPDIR for Weblogic installation"
   else
-    log "LCM patching skipped, already done"
+    log "LCM TMPDIR modification skipped, already done"
   fi
 }
 
@@ -348,6 +348,9 @@ exit()
 #
 remove_env()
 {
+  set -o nounset
+  : ${DEPLOYER:?}
+
   #  bin
   for f in $(ls ${DEPLOYER}/lib/templates/hostenv/bin/) ; do
     rm -f ~/bin/${f}
@@ -373,13 +376,17 @@ remove_env()
 #
 remove_iam()
 {
+  set -o nounset
+  : ${iam_top:?}
+  : ${iam_services:?}
+
   rm -Rf ${iam_top}/products/* \
-    ${iam_top}/config/* \
-    ${iam_services}/* \
-    ${iam_top}/*.lck \
-    ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
-    ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
-    ${iam_top}/lcm/lcmhome/provisioning/logs/
+         ${iam_top}/config/* \
+         ${iam_top}/*.lck \
+         ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
+         ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
+         ${iam_top}/lcm/lcmhome/provisioning/logs/ \
+         ${iam_services}/*
 }
 
 #  remove LCM (life cycle manager) iam_base/lcm
@@ -387,6 +394,9 @@ remove_iam()
 #
 remove_lcm()
 {
+  set -o nounset
+  : ${iam_top:?}
+
   rm -Rf ${iam_top}/lcm/{lcm,lcmhome}
 }
 
@@ -395,15 +405,24 @@ remove_lcm()
 #
 remove_oia()
 {
+  set -o nounset
+  : ${iam_top:?}
+  : ${iam_log:?}
+  : ${iam_services:?}
+  : ${iam_rbacx_home:?}
+  : ${iam_domain_oia:?}
+  : ${IL_APP_CONFIG:?}
+  : ${IDMPROV_OIA_HOST:?}
+
   rm -Rf ${iam_top}/products/analytics \
-    ${iam_rbacx_home} \
-    ${IL_APP_CONFIG}/oia.jar \
-    ${iam_log}/${iam_domain_oia} \
-    ${iam_services}/domains/${iam_domain_oia} \
-    ~/.env/{oia.env,analytics.prop,oia.prop} \
-    ~/bin/*analytics* \
-    ~/lib/deploy-oia.py \
-    ~/.cred/${iam_domain_oia}.{key,usr}
+         ${iam_rbacx_home} \
+         ${IL_APP_CONFIG}/oia.jar \
+         ${iam_log}/${iam_domain_oia} \
+         ${iam_services}/domains/${iam_domain_oia} \
+         ~/.env/{oia.env,analytics.prop,oia.prop} \
+         ~/bin/*analytics* \
+         ~/lib/deploy-oia.py \
+         ~/.cred/${iam_domain_oia}.{key,usr}
 
   echo "Removing domain from nodemanager"
   for f in ${iam_top}/config/nodemanager/${IDMPROV_OIA_HOST}/nodemanager.domains ; do

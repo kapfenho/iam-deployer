@@ -18,12 +18,10 @@ done
 
 # create inventory, for lcm only
 iam orainv
-
-# rcu: create database schemas
-#iam rcu -a create -t identity
-
 # install lcm
 iam lcminst
+# switch off checks
+iam lcmprovmod
 
 # let's do the lcm...
 for step in \

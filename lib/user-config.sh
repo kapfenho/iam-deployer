@@ -99,6 +99,7 @@ getvar WLSADMIN_NAME
 :         ${s_wls:="${s_base}/installers/weblogic/wls_generic.jar"}
 :      ${s_runjdk:="${s_base}/installers/jdk/jdk6"}
 :      ${s_runjre:="${s_runjdk}/jre"}
+:     ${s_patches:?"Set variable s_patches in iam.config (PS3 LCM patches)"}
       
 :      ${dbs_dbhost:=${OIM_SINGLE_DB_HOST:-${OIM_RAC_SCAN_ADDRESS}}}
 :        ${dbs_port:=${OIM_SINGLE_DB_PORT:-${OIM_RAC_SCAN_PORT}}}
