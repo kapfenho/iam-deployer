@@ -77,6 +77,7 @@ getvar WLSADMIN_NAME
 : ${IDMPROV_SECOND_OIA_HOST:=${IDMPROV_SECOND_OIM_HOST}}
 :        ${IDMPROV_OIA_PORT:="7310"}
 : ${IDMPROV_SECOND_OIA_PORT:="7310"}
+:         ${shipped_jdk_dir:="jdk"}
 #
 
 # --------- user must not set this
@@ -98,6 +99,7 @@ getvar WLSADMIN_NAME
 :         ${s_wls:="${s_base}/installers/weblogic/wls_generic.jar"}
 :      ${s_runjdk:="${s_base}/installers/jdk/jdk6"}
 :      ${s_runjre:="${s_runjdk}/jre"}
+:     ${s_patches:?"Set variable s_patches in iam.config (PS3 LCM patches)"}
       
 :      ${dbs_dbhost:=${OIM_SINGLE_DB_HOST:-${OIM_RAC_SCAN_ADDRESS}}}
 :        ${dbs_port:=${OIM_SINGLE_DB_PORT:-${OIM_RAC_SCAN_PORT}}}
@@ -116,4 +118,18 @@ for d in ${iam_services}/instances/* ; do
 done
 
 iam_lcm=$(grep "ORACLE_HOME=" ${lcm_config_rsp} | cut -d= -f2)
+
+# hostname shortnames, used in workflow file
+# IDMPROV variables are set at the end of provisioning.rsp
+#
+oim1=${IDMPROV_OIM_HOST}
+oim2=${IDMPROV_SECOND_OIM_HOST}
+oam1=${IDMPROV_OAM_HOST}
+oam2=${IDMPROV_SECOND_OAM_HOST}
+oud1=${IDMPROV_OVD_HOST}
+oud2=${IDMPROV_SECOND_OVD_HOST}
+web1=${IDMPROV_OHS_HOST}
+web2=${IDMPROV_SECOND_OHS_HOST}
+oia1=${IDMPROV_OIA_HOST}
+oia2=${IDMPROV_SECOND_OIA_HOST}
 

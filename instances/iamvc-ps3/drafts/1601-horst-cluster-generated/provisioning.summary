@@ -1,0 +1,112 @@
+Summary
+  Global Settings
+    Name: IAM PS3 cluster setup
+    Version: Ver 1.0
+    Created By: horst
+    Created Date: 2016-01-29 12:21:05 UTC
+  Installation and configuration directories
+    Software Repository Location: /mnt/oracle/iam-11.1.2.3/repo
+    Software Installation Location: /opt/fmw
+    Shared Configuration Location: /opt/fmw/config
+    Local Applications Configuration: /opt/fmw/services
+  Oracle Identity Manager Configurations
+    OIM Admin Server Host: oim1.ps3.agoracon.at
+    OIM Admin Server Port: 7101
+    OIM Admin Name: xelsysadm
+    OIM Managed Server Host: oim1.ps3.agoracon.at
+    OIM Managed Server Port: 14000
+    OIM Managed Server Host (Second Instance): oim2.ps3.agoracon.at
+    OIM Managed Server Port (Second Instance): 14000
+  Oracle Access Manager Configurations
+    OAM Admin Server Host: oam1.ps3.agoracon.at
+    OAM Admin Server Port: 7001
+    OAM Admin Name: oamadmin
+    OAM Managed Server Host: oam1.ps3.agoracon.at
+    OAM Managed Server Port: 14100
+    OAM Managed Server Host (Second Instance): oam2.ps3.agoracon.at
+    OAM Managed Server Port (Second Instance): 14100
+  Oracle Mobile Security Suite Configurations
+    OMSM Host: oam1.ps3.agoracon.at
+    OMSM Port: ${provisioning.idmprov.omsm.port}
+    OMSM SSL Port: ${provisioning.idmprov.omsm.sslport}
+    OMSM Host (Second Instance): ${provisioning.idmprov.omsm.second.host}
+    OMSM Port (Second Instance): ${provisioning.idmprov.omsm.second.port}
+    OMSM SSL Port (Second Instance): ${provisioning.idmprov.omsm.second.sslport}
+    OMSAS Host: oam1.ps3.agoracon.at
+    OMSAS Port: ${provisioning.idmprov.omsas.port}
+    OMSAS SSL Port: ${provisioning.idmprov.omsas.sslport}
+    OMSAS Host (Second Instance): oam2.ps3.agoracon.at
+    OMSAS Port (Second Instance): ${provisioning.idmprov.omsas.second.port}
+    OMSAS SSL Port (Second Instance): ${provisioning.idmprov.omsas.second.sslport}
+    Gateway Instance: ${provisioning.idmprov.omsas.gateway.id}
+    OAM Policy Manager Host: oam1.ps3.agoracon.at
+    OAM Policy Manager Port: 14150
+    OAM Policy Manager SSL Port: 14151
+    OAM Policy Manager Host (Second Instance): oam2.ps3.agoracon.at
+    OAM Policy Manager Port (Second Instance): 14150
+    OAM Policy Manager SSL Port (Second Instance): 14151
+  Oracle HTTP Server Configurations
+    OHS Host: web1.ps3.agoracon.at
+    OHS Port: 7777
+    OHS Host (Second Instance): web2.ps3.agoracon.at
+    OHS Port (Second Instance): 7777
+  Governance DB Configuration
+    OIM DB Schema Prefix: DIM2
+    OIM DB Service Name: iamvs.agoracon.at
+    OIM DB Hostname: oradb11.vie.agoracon.at
+    OIM DB Listener Port: 1521
+  Access DB Configuration
+    OAM DB Schema Prefix: DAM2
+    OAM DB Service Name: iamvs.agoracon.at
+    OAM DB Hostname: oradb11.vie.agoracon.at
+    OAM DB Listener Port: 1521
+  Directory Configuration
+    Directory Type: New OUD
+    Host: oud1.ps3.agoracon.at
+    Port: 1389
+    Second Host: oud2.ps3.agoracon.at
+    Second Port: 1389
+    Administrator: cn=oudadmin
+    Realm DN: dc=agoracon,dc=at
+    SystemID Container: cn=SystemIDs,dc=agoracon,dc=at
+    Users Container: cn=Users,dc=agoracon,dc=at
+    Groups Container: cn=Groups,dc=agoracon,dc=at
+  SOA Configuration
+    SOA Host: oim1.ps3.agoracon.at
+    SOA Port: 8001
+    SOA Host (Second Instance): oim2.ps3.agoracon.at
+    SOA Port (Second Instance): 8001
+  BIP Configuration
+    BIP Host: oim1.ps3.agoracon.at
+    BIP Port: 9704
+    BIP Host (Second Instance): oim2.ps3.agoracon.at
+    BIP Port (Second Instance): 9704
+  Node Manager Configuration
+    Node Manager Port: 5556
+  Product Installation Details
+    Governance Middleware Home: /opt/fmw/products/identity
+    Governance Domain Home: /opt/fmw/config/domains/identityps3
+    OIM Oracle Home: /opt/fmw/products/identity/iam
+    OIM Oracle Home (Second Instance): /opt/fmw/products/identity/iam
+    Governance Domain Home (Second Instance): /opt/fmw/config/domains/identityps3
+    SOA Oracle Home: /opt/fmw/products/identity/soa
+    BIP Oracle Home: /opt/fmw/products/identity/oracle_bip
+    Access Middleware Home: /opt/fmw/products/access
+    Access Domain Home: /opt/fmw/config/domains/accessps3
+    OAM Oracle Home: /opt/fmw/products/access/iam
+    OAM Oracle Home (Second Instance): /opt/fmw/products/access/iam
+    Access Domain Home (Second Instance): /opt/fmw/config/domains/accessps3
+    OMSM Oracle Home: /opt/fmw/products/access/iam
+    OMSAS Gateway Home: /opt/fmw/products/access/msas
+    OAM Policy Manager Oracle Home: /opt/fmw/products/access/iam
+    OUD Instance Home: /opt/fmw/services/instances/oud1
+    OHS Middleware Home: /opt/fmw/products/web
+    OHS Oracle Home: /opt/fmw/products/web/ohs
+    OHS Instance Home: /opt/fmw/services/instances/ohs1
+    OHS Instance Home (Second Instance): /opt/fmw/services/instances/ohs2
+  Web Application URLs
+    Identity URL: https://identity.ps3.agoracon.at:80/identity
+    Access URL: http://access-admin.ps3.agoracon.at:80/oamconsole
+    Access with Mobile Security URL: http://access-admin.ps3.agoracon.at:80/access
+    Identity with BIP URL using LBR: http://identity-admin.ps3.agoracon.at:80/xmlpserver
+

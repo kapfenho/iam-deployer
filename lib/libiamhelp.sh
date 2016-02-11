@@ -119,6 +119,25 @@ help_lcminst() {
 
   Install LCM (Life Cycle Manager) software
 
+  PS3 patches included:
+      21761480  Health check patch
+      21197325  LCM patch
+
+  Configuration:
+    LCM Binaries:        ${iam_lcm}
+    LCM instance config: ${iam_lcmhome}
+
+  "
+}
+# ---------------------------------------------------
+help_lcmprovmod() {
+  echo "
+  Syntax: ${0} lcmprovmod
+
+  Modify PS3 provisioning profiles of LCM (Life Cycle Manager):
+
+  * Remove health-checks and some pre-install-checks
+
   Configuration:
     LCM Binaries:        ${iam_lcm}
     LCM instance config: ${iam_lcmhome}

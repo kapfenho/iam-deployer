@@ -1,0 +1,1908 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="Oracle Identity Manager" basedir=".">
+
+	<description>
+        Install, configure and validate the Identity Management component
+    </description>
+
+	<import file="${idm.provisioning.build.dir}/idm-base-app-build.xml" />
+	<import file="${idm.provisioning.build.dir}/idm-common-import-build.xml" />
+	<import file="${idm.provisioning.build.dir}/idm-common-build.xml" />
+
+	<target name="application-preverify" >
+		<echoNested message="Starting the preverify process for ${ant.project.name} .... " level="info" />
+		<!--Port availability check and schema validations are present in Healthcheck validation. -->
+		<echoNested message="Completed the preverify process for ${ant.project.name} .... " level="info" />
+	</target>
+
+	<target name="application-instance2-preverify" >
+		<echoNested message="Starting the instance2-preverify process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="preverify" message="Starting instance2-preverify for ${ant.project.name}"/>
+
+		<logStatus state="BUILD_STARTED" category="port" task="validatePortAvailability"/>
+		<portAvailable>
+			<port value="${provisioning.idmprov.oim.second.port}" />
+		</portAvailable>
+		<logStatus state="BUILD_COMPLETE" category="port" task="validatePortAvailability"/>
+
+		<logStatus state="BUILD_STARTED" category="database" task="validateDBConnectivity"/>
+		<if>
+			<equalsNested arg1="${provisioning.idmprov.oim-db.create_schema}" arg2="true"/>
+			<then>
+				<antcall target="validate-schema-presence">
+					<param name="base.property" value="provisioning.idmprov.oim" />
+					<param name="db.schemaList" value="${provisioning.idmprov.oim.db.opss_schema_username},${provisioning.idmprov.oim.db.oim_schema_username},${provisioning.idmprov.oim.db.mds_schema_username},${provisioning.idmprov.oim.db.soainfra_schema_username},${provisioning.idmprov.oim.db.orasdpm_schema_username}" />
+				</antcall>
+			</then>
+			<else>
+				<antcall target="validate-db-schema-connection">
+					<param name="base.property" value="provisioning.idmprov.oim" />
+				</antcall>
+			</else>
+		</if>
+		
+		<logStatus state="BUILD_COMPLETE" category="database" task="validateDBConnectivity"/>
+
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="preverify" message="Completed instance2-preverify for ${ant.project.name}"/>
+		<echoNested message="Completed the instance2-preverify process for ${ant.project.name} .... " level="info" />
+	</target>
+
+	<target name="application-install" >
+		<echoNested message="Starting the install process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="install" message="Starting install for ${ant.project.name}"/>
+
+		<antcall target="install-iam">
+			<param name="component" value="provisioning.idmprov.oim" />
+		</antcall>
+
+		<!-- The Oracle Business Intelligence Publisher gets installed by default with iamsuite installation.The following task copies the OPatch,oui and 'common/bin' contents (contains the wlst,config,etc.. utilities) from IAM oracle home to BIP oracle home -->
+		<copy todir="${provisioning.idmprov.bip.oracle_home}">
+			<fileset dir="${provisioning.idmprov.oim.oracle_home}" includes="OPatch/**"/>
+			<fileset dir="${provisioning.idmprov.oim.oracle_home}" includes="oui/**"/>	
+		</copy>
+		<copy todir="${provisioning.idmprov.bip.oracle_home}/common">
+			<fileset dir="${provisioning.idmprov.oim.oracle_home}/common" includes="bin/**"/>	
+		</copy>
+		<chmod dir="${provisioning.idmprov.bip.oracle_home}/OPatch" perm="755" includes="**/*"/>
+		<chmod dir="${provisioning.idmprov.bip.oracle_home}/oui/bin" perm="755" includes="**/*"/>
+		<chmod dir="${provisioning.idmprov.bip.oracle_home}/common/bin" perm="755" includes="**/*"/>
+
+		
+		<mkdir dir="${provisioning.idmprov.global.keystoresdir}"/>
+
+		<!-- To be able to run "create-indexes-second-host" from OUD2 hosts (which might be in a dedicated tier-->
+		<mkdir dir="${provisioning.idmprov.global.oud_internal_dir}"/>
+		<copy file="${provisioning.idmprov.oim.oracle_home}/oam/server/oim-intg/ldif/ojd/schema/ojd_user_index_generic.ldif"
+			 todir="${provisioning.idmprov.global.oud_internal_dir}"/>
+		<copy file="${provisioning.idmprov.oim.oracle_home}/idmtools/templates/oud/oud_indexes_extn.ldif"
+			 todir="${provisioning.idmprov.global.oud_internal_dir}"/>
+
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="install" message="Completed install for ${ant.project.name}"/>
+		<echoNested message="Completed the install process for ${ant.project.name} .... " level="info" />
+
+	</target>
+
+	<target name="application-preconfigure" >
+		<echoNested message="Starting the preconfigure process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="preconfigure" message="Starting preconfigure for ${ant.project.name}"/>
+
+		<antcall target="extend-oim" />
+		<!-- Ant call for DB externalisation support for OIM -->
+		<!--antcall target="generate-tnsnames" /-->
+		<!-- Due to Bug 20219249 (remove demotrust reference from setdomainenv.sh); AD cert needs to be imported to java keystore cacerts when AD in ssl-->
+		<if>
+			<and>
+				<equals arg1="${provisioning.setup.directory-choice.directory.action.dir.use.existing}" arg2="true"/>
+				<equals arg1="${provisioning.setup.directory-choice.directory.action.dir.use.existing.type}" arg2="AD"/>
+				<equals arg1="${provisioning.idmprov.dir.existing.sslenabled}" arg2="true"/>
+			</and>
+			<then>
+			
+				<antcall target="import_cert_in_jre_cacerts" />
+			</then>
+		</if>
+
+		<antcall target="restart-idmdomain-admin-server">
+			<param name="base.property" value="provisioning.idmprov.oim" />
+		</antcall>
+
+		<!-- wlst Offline update of datasources jdbc url with service name is not working. Hence updating below through online wlst -->
+		<if>
+			<equalsNested arg1="${provisioning.idmprov.oim-db.israc}" arg2="false"/>
+			<then>
+				
+			    <antcall target="update-datasources-db-url" />
+			
+			    <antcall target="restart-idmdomain-admin-server">
+				    <param name="base.property" value="provisioning.idmprov.oim" />
+			    </antcall>
+			</then>
+		</if>
+
+		<if>
+			<and>
+				<equalsNested arg1="${provisioning.setup.oim-choice.oim.install.oim.ldap.mode}" arg2="true"/>
+				<equalsNested arg1="${provisioning.idmprov.dir.existing.sslenabled}" arg2="true"/>
+			</and>
+			<then>
+
+				<antcall target="enable_ssl_for_oimxe" />
+			</then>
+		</if>
+
+		<antcall target="deploy-machine-on-oim-server">
+			<param name="machinename" value="${provisioning.idmprov.oim.host}"/>
+			<param name="listenaddr"  value="${provisioning.idmprov.lbr.vhn.oimserver}"/>
+			<param name="servername"  value="${provisioning.idmprov.oim.managed.server.name}"/>
+		</antcall>
+
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="preconfigure" message="Completed preconfigure for ${ant.project.name}"/>
+		<echoNested message="Completed the preconfigure process for ${ant.project.name} .... " level="info" />
+	</target>
+
+	<target name="application-instance2-preconfigure" >
+		<echoNested message="Starting the preconfigure process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="preconfigure" message="Starting instance2-preconfigure for ${ant.project.name}"/>
+
+		<antcall target="deploy-machine-on-oim-server">
+			<param name="machinename" value="${provisioning.idmprov.oim.second.host}"/>
+			<param name="listenaddr"  value="${provisioning.idmprov.lbr.vhn.second.oimserver}"/>
+			<param name="servername"  value="${provisioning.idmprov.oim.second.managed.server.name}"/>
+		</antcall>
+
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="preconfigure" message="Completed instance2-preconfigure for ${ant.project.name}"/>
+		<echoNested message="Completed the preconfigure process for ${ant.project.name} .... " level="info" />
+	</target>
+
+	<target name="application-configure" >
+		<echoNested message="Starting the configure process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="configure" message="Starting configure for ${ant.project.name}"/>
+
+		<echoNested message="Disabling SSL for oim server for Node Manager .... " level="info" />
+		<antcall target="nodemanager-disable-ssl-server">
+			<param name="base.property" value="provisioning.idmprov.oim" />
+			<param name="servername"      value="${provisioning.idmprov.oim.managed.server.name}" />
+			<param name="nodemanagerhost" value="${provisioning.idmprov.oim.nodemanager_host}" />
+			<param name="nodemanagerport" value="${provisioning.idmprov.oim.nodemanager_port}" />
+		</antcall>
+		<echoNested message="Completed disabling SSL for oim server for Node Manager .... " level="info" />
+
+		<antcall target="extendOimLogging"/>
+
+		<!-- for 'disable-ssl' in SOA to become active -->
+		<antcall target="restart-idmdomain-admin-server">
+			<param name="base.property" value="provisioning.idmprov.oim" />
+		</antcall>
+
+		<antcall target="start-managed-server">
+			<param name="base.property"   value="provisioning.idmprov.soa" />
+			<param name="server"          value="${provisioning.idmprov.soa.managed.server.name}" />
+			<param name="nodemanagerhost" value="${provisioning.idmprov.soa.nodemanager_host}" />
+			<param name="nodemanagerport" value="${provisioning.idmprov.soa.nodemanager_port}" />
+			<param name="domainhome"      value="${provisioning.idmprov.soa.local_domain_home}"/>
+			<param name="domainname"      value="${provisioning.idmprov.soa.domain_name}"/>
+		</antcall>
+             <if>
+              <and>
+               <equalsNested arg1="${provisioning.idmprov.oim.identitystore.directoryserver}"
+                             arg2="true"/>
+
+               <equalsNested arg1="${provisioning.setup.directory-choice.directory.action.dir.install.new}"
+                             arg2="true"/>
+              </and>
+                 <then>
+                        <antcall target="oim-xe-prepare-idstore"/>
+                </then>
+            </if>
+
+            <!-- 
+                 Set prepareidstore.complete:true in idstore-automate-install.properties
+                 Applicable only in case of OIM XE with existing LDAP
+                 Bug# 20430941 
+            -->
+            <if>
+              <and>
+               <equalsNested arg1="${provisioning.idmprov.oim.identitystore.directoryserver}"
+                             arg2="true"/>
+
+               <equalsNested arg1="${provisioning.setup.directory-choice.directory.action.dir.use.existing}"
+                             arg2="true"/>
+              </and>
+                 <then>
+                      <delete file="${provisioning.idmprov.oim.oracle_home}/server/ldif/prepareidstore/idstore-automate-install.properties.bkpbyidmlcm" />
+                      <copy file="${provisioning.idmprov.oim.oracle_home}/server/ldif/prepareidstore/idstore-automate-install.properties" 
+                            tofile="${provisioning.idmprov.oim.oracle_home}/server/ldif/prepareidstore/idstore-automate-install.properties.bkpbyidmlcm"/>
+                      <replaceregexp file="${provisioning.idmprov.oim.oracle_home}/server/ldif/prepareidstore/idstore-automate-install.properties"
+                            match="prepareidstore.complete:false"
+                            replace="prepareidstore.complete:true"
+                            byline="true"
+			    flags="i" />
+                 </then>
+            </if>
+
+		<antcall target="configure-oim" />
+
+		<antcall target="stop-managed-server">
+			<param name="base.property"   value="provisioning.idmprov.soa" />
+			<param name="server"          value="${provisioning.idmprov.soa.managed.server.name}" />
+			<param name="nodemanagerhost" value="${provisioning.idmprov.soa.nodemanager_host}" />
+			<param name="nodemanagerport" value="${provisioning.idmprov.soa.nodemanager_port}" />
+			<param name="domainhome"      value="${provisioning.idmprov.soa.local_domain_home}"/>
+			<param name="domainname"      value="${provisioning.idmprov.soa.domain_name}"/>
+		</antcall>
+		<antcall target="start-managed-server">
+                        <param name="base.property"   value="provisioning.idmprov.oim"/>
+                        <param name="server"          value="${provisioning.idmprov.oim.managed.server.name}" />
+                        <param name="nodemanagerhost" value="${provisioning.idmprov.oim.nodemanager_host}" />
+                        <param name="nodemanagerport" value="${provisioning.idmprov.oim.nodemanager_port}" />
+                        <param name="domainhome"      value="${provisioning.idmprov.oim.local_domain_home}"/>
+                        <param name="domainname"      value="${provisioning.idmprov.oim.domain_name}"/>
+                </antcall>
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="configure" message="Completed configure for ${ant.project.name}"/>
+		<echoNested message="Completed the configure process for ${ant.project.name} .... " level="info" />
+	</target>
+
+	<target name="application-instance2-configure" >
+		<echoNested message="Starting the instance2-configure process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="configure" message="Starting instance2-configure for ${ant.project.name}"/>
+
+		<echoNested message="Disabling SSL for oim server for Node Manager .... " level="info" />
+		<antcall target="nodemanager-disable-ssl-server">
+			<param name="base.property" value="provisioning.idmprov.oim" />
+			<param name="servername"      value="${provisioning.idmprov.oim.second.managed.server.name}" />
+			<param name="nodemanagerhost" value="${provisioning.idmprov.oim.second.nodemanager_host}" />
+			<param name="nodemanagerport" value="${provisioning.idmprov.oim.second.nodemanager_port}" />
+		</antcall>
+		<echoNested message="Completed disabling SSL for oim server for Node Manager .... " level="info" />
+
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="configure" message="Completed instance2-configure for ${ant.project.name}"/>
+		<echoNested message="Completed the instance2-configure process for ${ant.project.name} .... " level="info" />
+
+	</target>
+
+    <target name="application-configure-secondary" >
+		<echoNested message="Starting the configure-secondary process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="configure-secondary" message="Starting configure-secondary for ${ant.project.name}"/>
+        
+		<if>
+			<equals arg1="${provisioning.idmprov.global.omss.is.supported}" arg2="true"/>
+			<then> 
+                             <decryptPassword password="${provisioning.idmprov.oim.keystore.password}" property="provisioning.idmprov.oim.keystore.password.value" />
+                             <decryptPassword password="${provisioning.idmprov.omsm.keystore.password}" property="provisioning.idmprov.omsm.keystore.password.value" />
+                             <!--decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}" property="provisioning.idmprov.oim.wlsadminuser.password.value" /-->
+
+                              <property environment="env" />
+                              <property name="local.PATH" value="${provisioning.idmprov.oim.java_home}/bin:${env.PATH}" />
+
+                  <!-- As part of OIM-OMSS integration, steps to cover exchange of keys between OIM and OMSS vice-versa -->
+                              <IDMProvisioningUtil task="GetOWSMPassword"
+                                                   baseDir="${basedir}"
+                                                   antHome="${env.ANT_HOME}"
+                                                   mwHome="${provisioning.idmprov.oam.mw_home}"
+                                                   oracleHome="${provisioning.idmprov.oam.oracle_home}"
+                                                   wlsHost="${provisioning.idmprov.oam.adminserverhost}"
+                                                   wlsPort="${provisioning.idmprov.oam.adminserverport}"
+                                                   wlsAdmin="${provisioning.idmprov.oam.wlsadminuser}"
+                                                   wlsAdminPassword="${provisioning.idmprov.oam.wlsadminuser.password}"
+                                                   property="owsm.password"/>
+                                
+                               <exec executable="keytool" inputstring="yes" failonerror="true">
+					<env key="PATH" value="${local.PATH}" />
+					<arg line="-exportcert" />
+					<arg line="-file ${provisioning.idmprov.oim.jps_cert_loc}" />
+                                        <arg line="-alias ${provisioning.idmprov.oim.jps_cert_alias}" />
+					<arg line="-keystore ${provisioning.idmprov.oim.keystore.default_loc}" />
+					<arg line="-storepass ${provisioning.idmprov.oim.keystore.password.value}" />
+				</exec>
+                                
+                                <exec executable="keytool" inputstring="yes" failonerror="true">
+					<env key="PATH" value="${local.PATH}" />
+					<arg line="-importcert" />
+					<arg line="-file ${provisioning.idmprov.oim.jps_cert_loc}" />
+                                        <arg line="-alias ${provisioning.idmprov.oim.jps_cert_alias}" />
+					<arg line="-keystore ${provisioning.idmprov.omsm.keystore.default_loc}" />
+					<arg line="-storepass ${owsm.password}" />
+				</exec>
+                               
+                                 <exec executable="keytool" inputstring="yes" failonerror="true">
+					<env key="PATH" value="${local.PATH}" />
+					<arg line="-exportcert" />
+					<arg line="-file ${provisioning.idmprov.omsm.selfsigned_cert_loc}" />
+                                        <arg line="-alias ${provisioning.idmprov.omsm.selfsigned_cert_alias}" />
+					<arg line="-keystore ${provisioning.idmprov.omsm.keystore.wlstrust_loc}" />
+					<arg line="-storepass ${provisioning.idmprov.omsm.keystore.password.value}" />
+				</exec>
+			</then>
+		</if>
+
+                     <echoNested message="Integration of OIM and OAM  " level="info" />
+		         <antcall target="integrate-oim"/>
+                     <echoNested message="Integration of OIM and OAM completed" level="info" />
+		
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="configure-secondary" message="Completed configure-secondary for ${ant.project.name}"/>
+		<echoNested message="Completed the configure-secondary process for ${ant.project.name} .... " level="info" />
+
+	</target>
+
+	<target name="application-instance2-configure-secondary" >
+		<echoNested message="Starting the instance2-configure-secondary process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="configure-secondary" message="Starting instance2-configure-secondary for ${ant.project.name}"/>
+
+		
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="configure" message="Completed instance2-configure for ${ant.project.name}"/>
+		<echoNested message="Completed the instance2-configure-secondary process for ${ant.project.name} .... " level="info" />
+
+	</target>
+	<target name="application-postconfigure" >
+		<echoNested message="Starting the postconfigure process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="postconfigure" message="Starting postconfigure for ${ant.project.name}"/>
+
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}" property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+
+		<antcall target="opss-tuning-settings">
+			<param name="wls.admin" value="${provisioning.idmprov.oim.wlsadminuser}" />
+			<param name="wlsadminuser.password" value="${provisioning.idmprov.oim.wlsadminuser.password.value}" />
+			<param name="adminserver.host" value="${provisioning.idmprov.oim.adminserverhost}" />
+			<param name="adminserver.port" value="${provisioning.idmprov.oim.adminserverport}" />
+			<param name="oracle_home" value="${provisioning.idmprov.oim.oracle_home}" />
+			<param name="server.name" value="${provisioning.idmprov.oim.managed.server.name}" />
+		</antcall>
+
+		<antcall target="add-ip4vstackpreferrer-to-argument">
+			<param name="server_name" value="${provisioning.idmprov.oim.managed.server.name}" />
+		</antcall>
+		<!--Configuring OIM to Reconcile from ID Store-->
+		<!--Disabling LDAPConfigPostSetup invocation - bug 15887324 -->
+		<!--
+        <antcall target="configure-recon-jobs" >
+            <param name="runFullRecon" value="FALSE"/>
+        </antcall>
+        -->
+		<!--antcall target="upgrade-ldap-users" /-->
+		<!--Run full reconciliation job for LDAP user create-->
+		<if>
+                   <and>
+			<equalsNested arg1="${provisioning.idmprov.oim.identitystore.database}" arg2="true" />
+                        <equalsNested arg1="${provisioning.setup.suite.core.action.install.suite.complete}" arg2="true" />
+                    </and>
+			<then>
+				<IDMProvisioningUtil task="RunFullReconJobs"
+		             baseDir="${basedir}"
+		             antHome="${env.ANT_HOME}"
+		             mwHome="${provisioning.idmprov.oim.mw_home}"
+		             oracleHome="${provisioning.idmprov.oim.oracle_home}"
+		             wlsHost="${provisioning.idmprov.oim.adminserverhost}"
+		       	     wlsPort="${provisioning.idmprov.oim.adminserverport}"
+		             wlsAdmin="${provisioning.idmprov.oim.wlsadminuser}"
+		       	     wlsAdminPassword="${provisioning.idmprov.oim.wlsadminuser.password}" />
+
+				<!-- BUG: 16078957 MLS SEEDING ISSUE DURING POST CONFIGURE OF IDM PROV
+			        <IDMProvisioningUtil task="SeedAllMLSLanguages"
+		             baseDir="${basedir}"
+		             antHome="${env.ANT_HOME}"
+		             mwHome="${provisioning.idmprov.oim.mw_home}"
+		             oracleHome="${provisioning.idmprov.oim.oracle_home}"
+		             wlsHost="${provisioning.idmprov.oim.adminserverhost}"
+		             wlsPort="${provisioning.idmprov.oim.adminserverport}"
+		             wlsAdmin="${provisioning.idmprov.oim.wlsadminuser}"
+		             wlsAdminPassword="${provisioning.idmprov.oim.wlsadminuser.password}"
+		             oimServer="${provisioning.idmprov.oim.managed.server.name}" />
+-->
+			<!--Work around to stop soa server reboot during enable oim connect -->
+			<if>
+                        	<os family="windows"/>
+                                <then>
+			     
+			       <antcall target="stop-managed-server">
+		                        <param name="base.property"   value="provisioning.idmprov.oim"/>
+                		        <param name="server"          value="${provisioning.idmprov.soa.managed.server.name}" />
+		                        <param name="nodemanagerhost" value="${nodemanager.host}" />
+                		        <param name="nodemanagerport" value="${nodemanager.port}" />
+		                        <param name="domainhome"      value="${provisioning.idmprov.oim.local_domain_home}"/>
+                		        <param name="domainname"      value="${provisioning.idmprov.oim.domain_name}"/>
+		                </antcall>
+
+                                <!-- Start OIM Managed Server -->
+                		<antcall target="start-managed-server">
+		                        <param name="base.property"   value="provisioning.idmprov.oim"/>
+                		        <param name="server"          value="${provisioning.idmprov.soa.managed.server.name}" />
+        	                	<param name="nodemanagerhost" value="${nodemanager.host}" />
+	                	        <param name="nodemanagerport" value="${nodemanager.port}" />
+		                        <param name="domainhome"      value="${provisioning.idmprov.oim.local_domain_home}"/>
+                		        <param name="domainname"      value="${provisioning.idmprov.oim.domain_name}"/>
+		                </antcall>
+				</then>
+			</if>
+				
+			</then>
+		</if>
+        <antcall target="enable-oim-soa-connect"/>
+
+		<IDMProvisioningUtil task="UpdateOIMDBUrl"
+        	     baseDir="${basedir}"
+               antHome="${env.ANT_HOME}"
+	             mwHome="${provisioning.idmprov.oim.mw_home}"
+        	     oracleHome="${provisioning.idmprov.oim.oracle_home}"
+	             wlsHost="${provisioning.idmprov.oim.adminserverhost}"
+        	     wlsPort="${provisioning.idmprov.oim.adminserverport}"
+	             wlsAdmin="${provisioning.idmprov.oim.wlsadminuser}"
+        	     wlsAdminPassword="${provisioning.idmprov.oim.wlsadminuser.password}"
+	             oimDBAlias="${provisioning.idmprov.oim-db.connect_string}" />
+		<!--Commented out below call because of bug 16027081. Added workaround for it
+		calling sql directly.-->
+
+		<!--IDMProvisioningUtil task="UpdateOIMSysProperty"
+             baseDir="${basedir}"
+             antHome="${env.ANT_HOME}"
+             mwHome="${provisioning.idmprov.oim.mw_home}"
+             oracleHome="${provisioning.idmprov.oim.oracle_home}"
+             wlsHost="${provisioning.idmprov.oim.adminserverhost}"
+             wlsPort="${provisioning.idmprov.oim.adminserverport}"
+             wlsAdmin="${provisioning.idmprov.oim.wlsadminuser}"
+             wlsAdminPassword="${provisioning.idmprov.oim.wlsadminuser.password}"
+			 mbeanOperation="updateSchedulerJobStatus"
+			 propertyName="XL.NotifyPasswordGenerationToOther"
+			 keyword="Notify other recipients with the password reset email if email of user is null"
+			 value="true"/-->
+
+		<!--Remove below sql call once above task works-->
+
+		<propertyNested name="db.jdbc.path" value="${provisioning.idmprov.oim.wls_home}/server/lib/ojdbc6.jar"/>
+		<sqlSecure
+		 driver="oracle.jdbc.driver.OracleDriver"
+		 url="${provisioning.idmprov.oim-db.connect_string}"
+		 userid="${provisioning.idmprov.oim.db.oim_schema_username}"
+		 password="${provisioning.idmprov.oim.db.oim_schema_username.password}"
+		 print="yes">
+			update pty set pty_value='true' where pty_keyword='XL.NotifyPasswordGenerationToOther' ;
+			commit;
+
+			
+	<classpath>
+				<pathelement location="${db.jdbc.path}"/>
+			</classpath>
+		</sqlSecure>
+		<if>
+			<equalsNested arg1="${provisioning.idmprov.lbr.oiminternal.port.is_ssl}" arg2="false"/>
+			<then>
+				<property name="provisioning.idmprov.lbr.oiminternal.protocol" value="http"/>
+			</then>
+			<else>
+				<property name="provisioning.idmprov.lbr.oiminternal.protocol" value="https"/>
+			</else>
+		</if>
+
+		<IDMProvisioningUtil task="ConfigureUMS"
+             baseDir="${basedir}"
+             antHome="${env.ANT_HOME}"
+             mwHome="${provisioning.idmprov.oim.mw_home}"
+             oracleHome="${provisioning.idmprov.oim.oracle_home}"
+             wlsHost="${provisioning.idmprov.oim.adminserverhost}"
+             wlsPort="${provisioning.idmprov.oim.adminserverport}"
+             wlsAdmin="${provisioning.idmprov.oim.wlsadminuser}"
+             wlsAdminPassword="${provisioning.idmprov.oim.wlsadminuser.password}"
+             soaServerName="${provisioning.idmprov.soa.managed.server.name}"
+             soaAdmin="${provisioning.idmprov.oim.weblogicuser}"
+             soaAdminPassword="${provisioning.idmprov.oim.weblogicuser.password}" 
+             soaHost="${provisioning.idmprov.lbr.oiminternal.host}"
+             soaPort="${provisioning.idmprov.lbr.oiminternal.port}"
+             soaProtocol="${provisioning.idmprov.lbr.oiminternal.protocol}"
+             configureEmailServer="${provisioning.idmprov.oim.configure_email_server}"
+             umsEmailServer="${provisioning.idmprov.oim.outgoing_email_server_name}"
+             umsEmailServerPort="${provisioning.idmprov.oim.outgoing_server_port}"
+             umsEmailServerSecurity="${provisioning.idmprov.oim.outgoing_email_security}"
+             umsEmailServerUsername="${provisioning.idmprov.oim.outgoing_email_username}"
+             umsEmailServerPassword="${provisioning.idmprov.oim.outgoing_email_password}"
+             governanceDomainName="${provisioning.idmprov.oim.domain_name}" />
+
+		<antcall target="seed-default-monitoring-cred-keystore" />
+		<!--antcall target="ipv4-config" /-->
+		<!--Adding new targets to fine tune wls & soa servers.  Modifying domain env script to reflect the changes -->
+		<antcall target="server-parameters-tuning" />
+		<!--tuning script ends -->
+
+		<!-- dump the idmsetup.properties file -->
+		<!--TBD-->
+		<!--antcall target="dump-properties"/-->
+		<!-- Add proxy values and remove DemoTrust.jks-->
+
+		<if>
+			<and>
+	                        <equalsNested arg1="${provisioning.idmprov.oim.configure_email_server}" arg2="true"/>
+	                        <equalsNested arg1="${provisioning.idmprov.oim.outgoing_email_security}" arg2="SSL"/>
+			</and>
+                        <then>
+				<antcall target="add-server-start-webproxy-params">
+					<param name="server.name" value="${provisioning.idmprov.oim.managed.server.name}"/>
+					<param name="nodemanager.host" value="${provisioning.idmprov.oim.nodemanager_host}"/>
+					<param name="nodemanager.port" value="${provisioning.idmprov.oim.nodemanager_port}"/>
+				</antcall>
+                        </then>
+		</if>
+
+		<if>
+			<and>
+				<equalsNested arg1="${provisioning.setup.common.core.multitenant}" arg2="true"/>
+				<equalsNested arg1="${provisioning.setup.install-location.locations.local.domain.configuration.enabled}" arg2="true"/>
+				<not>
+					<os family="windows"/>
+				</not>
+			</and>
+			<then>
+				<property name="idm.oim.replace.var.extra" value="EXTRA_JAVA_PROPERTIES=" />
+				<property name="idm.oim.replace.var.value" value="&quot;${EXTRA_JAVA_PROPERTIES}" />
+				<property name="idm.oim.replace.var.export" value="export EXTRA_JAVA_PROPERTIES" />
+				<property name="sharedidm.multitenant.option" value=" -Doracle.multitenant.enabled=true -Dweblogic.security.identityAssertionTTL=-1&quot;" />
+				<setDomainEnvSh domainFile="${provisioning.idmprov.oim.local_domain_home}/bin/setDomainEnv.sh" 		
+			 replaceString="${line.separator}${idm.oim.replace.var.extra}${idm.oim.replace.var.value}${sharedidm.multitenant.option}${line.separator}${idm.oim.replace.var.export}${line.separator}" />
+				<!-- stop OIM Managed Server -->
+				<antcall target="stop-managed-server">
+					<param name="base.property"   value="provisioning.idmprov.oim"/>
+					<param name="server"          value="${provisioning.idmprov.oim.managed.server.name}" />
+					<param name="nodemanagerhost" value="${provisioning.idmprov.oim.nodemanager_host}" />
+					<param name="nodemanagerport" value="${provisioning.idmprov.oim.nodemanager_port}" />
+					<param name="domainhome"      value="${provisioning.idmprov.oim.local_domain_home}"/>
+					<param name="domainname"      value="${provisioning.idmprov.oim.domain_name}"/>
+				</antcall>
+
+				<!-- Start OIM Managed Server -->
+				<antcall target="start-managed-server">
+					<param name="base.property"   value="provisioning.idmprov.oim"/>
+					<param name="server"          value="${provisioning.idmprov.oim.managed.server.name}" />
+					<param name="nodemanagerhost" value="${provisioning.idmprov.oim.nodemanager_host}" />
+					<param name="nodemanagerport" value="${provisioning.idmprov.oim.nodemanager_port}" />
+					<param name="domainhome"      value="${provisioning.idmprov.oim.local_domain_home}"/>
+					<param name="domainname"      value="${provisioning.idmprov.oim.domain_name}"/>
+				</antcall>
+			</then>
+		</if>
+
+		<antcall target="server-parameters-tuning" />
+		<!--    <antcall target="oim-server-jms-params-tuning">
+        	        <param name="jmsServerName" value="OIMJMSServer_auto_1"/>
+                	<param name="oimServerName" value="${provisioning.idmprov.oim.managed.server.name}"/>
+	        </antcall> -->
+
+		<!--  Configurable LoginID Support for SSO Integration. Applicable only for complete suite with AD as existing directory -->
+                  <if>
+                        <and>
+                                <equals arg1="${provisioning.setup.suite.core.action.install.suite.complete}" arg2="true"/>
+                                <equals arg1="${provisioning.setup.directory-choice.directory.action.dir.use.existing.type}" arg2="AD"/>
+                        </and>
+                        <then>
+                                <antcall target="configure-loginattr-to-upn"/>
+
+                        </then>
+                  </if>
+
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="postconfigure" message="Completed postconfigure for ${ant.project.name}"/>
+
+	</target>
+
+	<target name="application-instance2-postconfigure" >
+		<echoNested message="Starting the instance2-postconfigure process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="postconfigure" message="Starting instance2-postconfigure for ${ant.project.name}"/>
+
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+             property="wlsadminuser.password" />
+
+		<antcall target="opss-tuning-settings">
+			<param name="wls.admin" value="${provisioning.idmprov.oim.wlsadminuser}" />
+			<param name="wlsadminuser.password" value="${wlsadminuser.password}" />
+			<param name="adminserver.host" value="${provisioning.idmprov.oim.adminserverhost}" />
+			<param name="adminserver.port" value="${provisioning.idmprov.oim.adminserverport}" />
+			<param name="oracle_home" value="${provisioning.idmprov.oim.oracle_home}" />
+			<param name="server.name" value="${provisioning.idmprov.oim.second.managed.server.name}" />
+		</antcall>
+		 <antcall target="add-ip4vstackpreferrer-to-argument">
+                        <param name="server_name" value="${provisioning.idmprov.oim.second.managed.server.name}" />
+                </antcall>
+                <!-- Add proxy values to and remove DemoTrust.jks from setDomainEnv.sh-->
+
+		<if>
+			<and>
+                                <equalsNested arg1="${provisioning.idmprov.oim.configure_email_server}" arg2="true"/>
+                                <equalsNested arg1="${provisioning.idmprov.oim.outgoing_email_security}" arg2="SSL"/>
+				
+<equalsNested arg1="${provisioning.setup.install-location.locations.local.domain.configuration.enabled}" arg2="true"/>
+			</and>
+                        <then>
+                                <antcall target="add-server-start-webproxy-params">
+					<param name="server.name" value="${provisioning.idmprov.oim.second.managed.server.name}"/>
+					<param name="nodemanager.host" value="${provisioning.idmprov.oim.second.nodemanager_host}"/>
+					<param name="nodemanager.port" value="${provisioning.idmprov.oim.second.nodemanager_port}"/>
+				</antcall>
+
+                        </then>
+		</if>
+
+		<if>
+			<and>
+				<equalsNested arg1="${provisioning.setup.common.core.multitenant}" arg2="true"/>
+				<equalsNested arg1="${provisioning.setup.install-location.locations.local.domain.configuration.enabled}" arg2="true"/>
+				<not>
+					<os family="windows"/>
+				</not>
+			</and>
+			<then>
+				<property name="idm.oim.replace.var.extra" value="EXTRA_JAVA_PROPERTIES=" />
+				<property name="idm.oim.replace.var.value" value="&quot;${EXTRA_JAVA_PROPERTIES}" />
+				<property name="idm.oim.replace.var.export" value="export EXTRA_JAVA_PROPERTIES" />
+				<property name="sharedidm.multitenant.option" value=" -Doracle.multitenant.enabled=true -Dweblogic.security.identityAssertionTTL=-1&quot;" />
+				<setDomainEnvSh domainFile="${provisioning.idmprov.oim.local_domain_home}/bin/setDomainEnv.sh" 		
+			 replaceString="${line.separator}${idm.oim.replace.var.extra}${idm.oim.replace.var.value}${sharedidm.multitenant.option}${line.separator}${idm.oim.replace.var.export}${line.separator}" />
+			</then>
+		</if>
+		<!-- stopping soa second instance for artifact patching invocation in startup phase. -->
+		<antcall target="stop-managed-server">
+			<param name="base.property" value="provisioning.idmprov.soa" />
+			<param name="server" value="${provisioning.idmprov.soa.second.managed.server.name}" />
+			<param name="nodemanagerhost" value="${provisioning.idmprov.soa.second.nodemanager_host}" />
+			<param name="nodemanagerport" value="${provisioning.idmprov.soa.second.nodemanager_port}" />
+			<param name="domainhome" value="${provisioning.idmprov.soa.local_domain_home}" />
+			<param name="domainname" value="${provisioning.idmprov.soa.domain_name}" />
+		</antcall>
+		<!--	<antcall target="oim-server-jms-params-tuning">
+                <param name="jmsServerName" value="OIMJMSServer_auto_2"/>
+                <param name="oimServerName" value="${provisioning.idmprov.oim.second.managed.server.name}"/>
+        </antcall>
+-->
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="postconfigure" message="Completed instance2-postconfigure for ${ant.project.name}"/>
+		<echoNested message="Completed the instance2-postconfigure process for ${ant.project.name} .... " level="info" />
+	</target>
+
+	<target name="application-validate" >
+		<echoNested message="Starting the validate process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="validate" message="Starting validate for ${ant.project.name}"/>
+
+		<!--<property name="idm.home.wls" value="${provisioning.idmprov.oim.mw_home}/wlserver_10.3"/>
+		<antcall target="common-validate-server-state">
+			<param name="wls.home"       value="${provisioning.idmprov.oim.mw_home}/wlserver_10.3"/>
+			<param name="admin.host"     value="${provisioning.idmprov.oim.adminserverhost}" />
+			<param name="admin.port"     value="${provisioning.idmprov.oim.adminserverport}" />
+			<param name="admin.username" value="${provisioning.idmprov.oim.wlsadminuser}" />
+			<param name="admin.password" value="${provisioning.idmprov.oim.wlsadminuser.password}" />
+			<param name="server.names"   value="${provisioning.idmprov.oim.managed.server.name}" />
+		</antcall>-->
+
+		<logStatus state="BUILD_STARTED" category="healthcheck" task="validatePostInstallUsingHealthCheck"/>
+		<property name="postinstall.check.logfile" value="${idm.provisioning.build.dir}${file.separator}config${file.separator}healthcheck-postinstall-check-oim.log" />
+		<property name="hc.postinstall.oim.inputfile" value="${idm.provisioning.build.dir}${file.separator}config${file.separator}healthcheck-postinstall-oim-input.properties" />
+		<property name="prov.logs.loc" value="${provisioning.setup.install-location.locations.default.log.directory}${file.separator}${localhost.name}" />
+		<property name="execution.phase" value="POSTINSTALL" />
+		
+		<!-- trycatch>
+			<try>
+				<healthCheckInvoker
+					basedir = "${provisioning.idmprov.oim.oracle_home}"			
+					logFile = "${postinstall.check.logfile}"
+					inputFile = "${hc.postinstall.oim.inputfile}"
+					provLogLoc = "${prov.logs.loc}"
+					topologyLoc = "${provisioning.idmprov.global.topology_dir}/topology.xml"
+					credConfigLoc = "${provisioning.idmprov.global.credconfig_dir}"
+					phase = "${execution.phase}"
+					postInstallCheck = "OIM"
+					type = "ERROR" />									
+			</try>
+			<catch>
+				<simulateValidationError message="Failed validating using Healthcheck framework." />
+				<failAndLogStatus task="post install health check" category="Validate" detail="IDM Health Check"/>
+			</catch>
+			<finally>
+				<modifyIDMResponseFile responseFile="${postinstall.check.logfile}" />
+				<modifyIDMResponseFile responseFile="${hc.postinstall.oim.inputfile}" />
+			</finally>
+		</trycatch  -->
+		<logStatus state="BUILD_COMPLETE" category="healthcheck" task="validatePostInstallUsingHealthCheck"/>
+		
+		<!--antcall target ="run-idmconfigtool-validate">
+			<param name="component" value="OIM11G"/>
+		</antcall-->
+
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="validate" message="Completed validate for ${ant.project.name}"/>
+		<echoNested message="Completed the validate process for ${ant.project.name} .... " level="info" />
+	</target>
+
+	<target name="application-instance2-validate" >
+		<echoNested message="Starting the instance2-validate process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="validate" message="Starting instance2-validate for ${ant.project.name}"/>
+
+		<property name="idm.home.wls" value="${provisioning.idmprov.oim.mw_home}/wlserver_10.3"/>
+		<antcall target="common-validate-server-state">
+			<param name="wls.home"       value="${provisioning.idmprov.oim.mw_home}/wlserver_10.3"/>
+			<param name="admin.host"     value="${provisioning.idmprov.oim.adminserverhost}" />
+			<param name="admin.port"     value="${provisioning.idmprov.oim.adminserverport}" />
+			<param name="admin.username" value="${provisioning.idmprov.oim.wlsadminuser}" />
+			<param name="admin.password" value="${provisioning.idmprov.oim.wlsadminuser.password}" />
+			<param name="server.names"   value="${provisioning.idmprov.oim.second.managed.server.name}" />
+		</antcall>
+
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="validate" message="Completed instance2-validate for ${ant.project.name}"/>
+		<echoNested message="Completed the instance2-validate process for ${ant.project.name} .... " level="info" />
+	</target>
+
+	<target name="application-startup" >
+		<echoNested message="Starting the startup process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="startup" message="${provisioning.idmprov.oim.managed.server.name} : Starting OIM server..."/>
+
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+             property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+
+		<antcall target="start-managed-server">
+			<param name="base.property"   value="provisioning.idmprov.oim"/>
+			<param name="server"          value="${provisioning.idmprov.oim.managed.server.name}" />
+			<param name="nodemanagerhost" value="${provisioning.idmprov.oim.nodemanager_host}" />
+			<param name="nodemanagerport" value="${provisioning.idmprov.oim.nodemanager_port}" />
+			<param name="domainhome"      value="${provisioning.idmprov.oim.local_domain_home}"/>
+			<param name="domainname"      value="${provisioning.idmprov.oim.domain_name}"/>
+		</antcall>
+
+		<antcall target="copy-boot-properties">
+			<param name="domain.home" value="${provisioning.idmprov.oim.local_domain_home}" />
+			<param name="server.name" value="${provisioning.idmprov.oim.managed.server.name}" />
+		</antcall>
+
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="startup" message="${provisioning.idmprov.oim.managed.server.name} : Successfully started up"/>
+		<echoNested message="Completed the startup process for ${ant.project.name} .... " level="info" />
+	</target>
+
+	<target name="application-instance2-startup" >
+		<echoNested message="Starting the instance2-startup process for ${ant.project.name} .... " level="info" />
+		<logStatus state="BUILD_STARTED" category="OIM" task="startup" message="${provisioning.idmprov.oim.second.managed.server.name} : Starting OIM server..."/>
+
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}" property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+
+		<antcall target="start-managed-server">
+			<param name="base.property"   value="provisioning.idmprov.oim"/>
+			<param name="server"          value="${provisioning.idmprov.oim.second.managed.server.name}" />
+			<param name="nodemanagerhost" value="${provisioning.idmprov.oim.second.nodemanager_host}" />
+			<param name="nodemanagerport" value="${provisioning.idmprov.oim.second.nodemanager_port}" />
+			<param name="domainhome"      value="${provisioning.idmprov.oim.local_domain_home}"/>
+			<param name="domainname"      value="${provisioning.idmprov.oim.domain_name}"/>
+		</antcall>
+
+		<antcall target="copy-boot-properties">
+			<param name="domain.home" value="${provisioning.idmprov.oim.local_domain_home}" />
+			<param name="server.name" value="${provisioning.idmprov.oim.second.managed.server.name}" />
+		</antcall>
+
+		<logStatus state="BUILD_COMPLETE" category="OIM" task="startup" message="${provisioning.idmprov.oim.second.managed.server.name} : Successfully started up"/>
+		<echoNested message="Completed the instance2-startup process for ${ant.project.name} .... " level="info" />
+	</target>
+
+	<target name="extend-oim" >
+		<property name="iam.file.edg.config.oim.template" value="${idm.provisioning.build.dir}/templates/edg_config_oim_template.py"/>
+		<property name="iam.file.edg.config.oim" value="${idm.provisioning.build.dir}/config/edg_config_oim.py"/>
+		<property name="product.config.util.template" value="${idm.provisioning.build.dir}/templates/product_config_util.py" />
+		<property name="product.config.util" value="${idm.provisioning.build.dir}/config/product_config_util.py" />
+		<!--getSID serviceName="${provisioning.idmprov.oim.db.servicename}"
+            property="db.sid" /-->
+		<decryptPassword password="${provisioning.idmprov.oim.db.oim_schema_username.password}"
+             property="provisioning.idmprov.oim.db.oim_schema_username.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oim.db.mds_schema_username.password}"
+             property="provisioning.idmprov.oim.db.mds_schema_username.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oim.db.opss_schema_username.password}"
+             property="provisioning.idmprov.oim.db.opss_schema_username.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oim.db.bipublisher_schema_username.password}"
+             property="provisioning.idmprov.oim.db.bipublisher_schema_username.password.value" />
+
+		<delete file="${iam.file.edg.config.oim}"/>
+		<copy file="${iam.file.edg.config.oim.template}"
+            tofile="${iam.file.edg.config.oim}"/>
+		<copy file="${product.config.util.template}" tofile="${product.config.util}" />
+		<replace file="${iam.file.edg.config.oim}">
+			<replacefilter token="%PRODUCT.CONFIG.UTILITY%" value="${product.config.util}" />
+			<replacefilter token="%SERVER_LISTEN_HOST%"  value="${provisioning.idmprov.lbr.vhn.oimserver}"/>
+			<replacefilter token="%SERVER_LISTEN_PORT%"  value="${provisioning.idmprov.oim.port}"/>
+			<replacefilter token="%SERVER2_LISTEN_HOST%" value="${provisioning.idmprov.lbr.vhn.second.oimserver}"/>
+			<replacefilter token="%SERVER2_LISTEN_PORT%" value="${provisioning.idmprov.oim.second.port}"/>
+			<replacefilter token="%BIP_SERVER_LISTEN_HOST%"  value="${provisioning.idmprov.lbr.vhn.oimserver}"/>
+			<replacefilter token="%BIP_SERVER_LISTEN_PORT%"  value="${provisioning.idmprov.bip.port}"/>
+			<replacefilter token="%BIP_SERVER2_LISTEN_HOST%" value="${provisioning.idmprov.lbr.vhn.second.oimserver}"/>
+			<replacefilter token="%BIP_SERVER2_LISTEN_PORT%" value="${provisioning.idmprov.bip.second.port}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.MANAGED.SERVER.NAME%"        value="${provisioning.idmprov.oim.managed.server.name}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.BIP.MANAGED.SERVER.NAME%"        value="${provisioning.idmprov.bip.managed.server.name}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.SECOND.MANAGED.SERVER.NAME%" value="${provisioning.idmprov.oim.second.managed.server.name}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.BIP.SECOND.MANAGED.SERVER.NAME%" value="${provisioning.idmprov.bip.second.managed.server.name}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.ORACLE_HOME%" value="${provisioning.idmprov.oim.oracle_home}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.MW_HOME%" value="${provisioning.idmprov.oim.mw_home}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DOMAIN_HOME%" value="${provisioning.idmprov.oim.domain_home}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.HOST%" value="${provisioning.idmprov.oim.db.host}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.PORT%" value="${provisioning.idmprov.oim.db.port}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.SERVICENAME%" value="${provisioning.idmprov.oim.db.servicename}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.RAC.ONS.ADDRESS%" value="${provisioning.idmprov.oim.db.rac.onsaddress}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.RAC.ONS.PORT%" value="${provisioning.idmprov.oim.db.rac.onsport}"/>
+                        <replacefilter token="%IS_RAC%" value="${provisioning.idmprov.oim.db.israc}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.OIM_SCHEMA_USERNAME%" value="${provisioning.idmprov.oim.db.oim_schema_username}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.OIM_SCHEMA_USERNAME.PASSWORD%" value="${provisioning.idmprov.oim.db.oim_schema_username.password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.MDS_SCHEMA_USERNAME%" value="${provisioning.idmprov.oim.db.mds_schema_username}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.MDS_SCHEMA_USERNAME.PASSWORD%" value="${provisioning.idmprov.oim.db.mds_schema_username.password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.BIP_SCHEMA_USERNAME%" value="${provisioning.idmprov.oim.db.bipublisher_schema_username}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.BIP_SCHEMA_USERNAME.PASSWORD%" value="${provisioning.idmprov.oim.db.bipublisher_schema_username.password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.OPSS_SCHEMA_USERNAME%" value="${provisioning.idmprov.oim.db.opss_schema_username}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.OPSS_SCHEMA_USERNAME.PASSWORD%" value="${provisioning.idmprov.oim.db.opss_schema_username.password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.CONN.STRING%" value="${provisioning.idmprov.oim-db.connect_string}" />
+		</replace>
+
+		<antcall target="execute-wlst-script">
+			<param name="wlst.inputscript" value="${iam.file.edg.config.oim}"/>
+			<param name="wlst.executable.filepath" value="${provisioning.idmprov.oim.oracle_home}"/>
+			<param name="password.string" value="${provisioning.idmprov.oim.db.oim_schema_username.password.value},${provisioning.idmprov.oim.db.mds_schema_username.password.value}"/>	
+		</antcall>
+		<antcall target="execute-wlst-script">
+			<param name="wlst.inputscript" value="${product.config.util}"/>
+			<param name="wlst.executable.filepath" value="${provisioning.idmprov.oim.oracle_home}"/>
+		</antcall>
+	
+	</target>
+	<target name="update-datasources-db-url" >
+			<property name="iam.file.update.oim.datasource.template" value="${idm.provisioning.build.dir}/templates/datasource_update_template.py"/>
+			<property name="iam.file.update.oim.datasource" value="${idm.provisioning.build.dir}/config/datasource_update.py"/>
+		
+			<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+		             property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+
+			<delete file="${iam.file.update.oim.datasource}"/>
+			<copy file="${iam.file.update.oim.datasource.template}"
+	            tofile="${iam.file.update.oim.datasource}"/>
+			<replace file="${iam.file.update.oim.datasource}">
+	                        <replacefilter token="%IS_RAC%" value="${provisioning.idmprov.oim.db.israc}"/>
+				<replacefilter token="%DB.CONN.STRING%" value="${provisioning.idmprov.oim-db.connect_string}" />
+				<replacefilter token="%WLSADMINUSER%" value="${provisioning.idmprov.oim.wlsadminuser}" />
+				<replacefilter token="%WLSADMINUSER.PASSWORD.VALUE%" value="${provisioning.idmprov.oim.wlsadminuser.password.value}" />
+				<replacefilter token="%WLSADMINSERVERHOST%" value="${provisioning.idmprov.oim.adminserverhost}" />
+				<replacefilter token="%WLSADMINSERVERPORT%" value="${provisioning.idmprov.oim.adminserverport}" />
+				<replacefilter token="%DATASOURCE_LIST%" value="mds-owsm,OraSDPMDataSource,SOADataSource,SOALocalTxDataSource,EDNDataSource,EDNLocalTxDataSource,mds-soa,opss-DBDS,oimOperationsDB,mds-oim,bip_datasource,oimJMSStoreDS,soaOIMLookupDB,ApplicationDB" />
+			</replace>
+
+			<antcall target="execute-wlst-script">
+				<param name="wlst.inputscript" value="${iam.file.update.oim.datasource}"/>
+				<param name="wlst.executable.filepath" value="${provisioning.idmprov.oim.oracle_home}"/>
+				<param name="password.string" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>	
+			</antcall>
+
+	</target>
+
+
+	<target name="oim-config-params-tuning" >
+
+		<IDMProvisioningUtil task="UpdateOIMConfigurationXml"
+             antHome="${env.ANT_HOME}"
+             mwHome="${provisioning.idmprov.oim.mw_home}"
+             oracleHome="${provisioning.idmprov.oim.oracle_home}"
+	     wlsHost="${provisioning.idmprov.oim.adminserverhost}"
+             wlsPort="${provisioning.idmprov.oim.adminserverport}"
+             wlsAdmin="${provisioning.idmprov.oim.wlsadminuser}"
+             wlsAdminPassword="${provisioning.idmprov.oim.wlsadminuser.password}"
+             oimServer="${provisioning.idmprov.oim.managed.server.name}"
+             baseDir="${basedir}"
+             oimCluster="${provisioning.setup.domain-topology.topology.domain.topology.advanced.second.instances}" />
+
+		<!--	<IDMProvisioningUtil task="UpdateSchedulerJobs"
+             baseDir="${basedir}"
+             antHome="${env.ANT_HOME}"
+             mwHome="${provisioning.idmprov.oim.mw_home}"
+             oracleHome="${provisioning.idmprov.oim.oracle_home}"
+             oimBinddn="${provisioning.idmprov.oim.adminuser}"
+             oimPassword="${provisioning.idmprov.oim.adminuser.password}"
+             oimUrl="t3://${provisioning.idmprov.lbr.vhn.oimserver}:${provisioning.idmprov.oim.port}"/>
+-->
+
+
+
+	</target>
+	<target name="oim-server-params-tuning" >
+		<property name="iam.file.edg.oim.tune.params.template" value="${idm.provisioning.build.dir}/templates/edg_oim_params_tuning_template.py"/>
+		<property name="iam.file.edg.oim.tune.params" value="${idm.provisioning.build.dir}/config/edg_oim_params_tuning.py"/>
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+             property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+		<delete file="${iam.file.edg.oim.tune.params}"/>
+		<copy file="${iam.file.edg.oim.tune.params.template}"
+            tofile="${iam.file.edg.oim.tune.params}"/>
+		<replace file="${iam.file.edg.oim.tune.params}">
+			<replacefilter token="%WLS_USER%" value="${provisioning.idmprov.oim.wlsadminuser}"/>
+			<replacefilter token="%WLS_PW%" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>
+			<replacefilter token="%WLS_HOSTNAME%" value="${provisioning.idmprov.oim.adminserverhost}"/>
+			<replacefilter token="%WLS_PORT%" value="${provisioning.idmprov.oim.adminserverport}"/>
+			<replacefilter token="%DOMAIN_NAME%" value="${provisioning.idmprov.oim.domain_name}"/>
+		</replace>
+		<antcall target="execute-wlst-script">
+			<param name="wlst.inputscript" value="${iam.file.edg.oim.tune.params}"/>
+			<param name="wlst.executable.filepath" value="${provisioning.idmprov.oim.oracle_home}"/>
+			<param name="password.string" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>	
+		</antcall>
+	</target>
+
+
+	<target name="oim-server-jms-params-tuning" >
+		<property name="iam.file.edg.oim.jms.tune.params.template" value="${idm.provisioning.build.dir}/templates/edg_oim_jms_params_tuning_template.py"/>
+		<property name="iam.file.edg.oim.jms.tune.params" value="${idm.provisioning.build.dir}/config/edg_oim_jms_params_tuning.py"/>
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+             property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+		<delete file="${iam.file.edg.oim.jms.tune.params}"/>
+		<copy file="${iam.file.edg.oim.jms.tune.params.template}"
+            tofile="${iam.file.edg.oim.jms.tune.params}"/>
+		<replace file="${iam.file.edg.oim.jms.tune.params}">
+			<replacefilter token="%WLS_USER%" value="${provisioning.idmprov.oim.wlsadminuser}"/>
+			<replacefilter token="%WLS_PW%" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>
+			<replacefilter token="%WLS_HOSTNAME%" value="${provisioning.idmprov.oim.adminserverhost}"/>
+			<replacefilter token="%WLS_PORT%" value="${provisioning.idmprov.oim.adminserverport}"/>
+			<replacefilter token="%DOMAIN_NAME%" value="${provisioning.idmprov.oim.domain_name}"/>
+			<replacefilter token="%OIM_SERVER_NAME%" value="${oimServerName}"/>
+			<replacefilter token="%JMS_SERVER_NAME%" value="${jmsServerName}"/>
+		</replace>
+		<antcall target="execute-wlst-script">
+			<param name="wlst.inputscript" value="${iam.file.edg.oim.jms.tune.params}"/>
+			<param name="wlst.executable.filepath" value="${provisioning.idmprov.oim.oracle_home}"/>
+			<param name="password.string" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>	
+		</antcall>
+	</target>
+
+	<target name="configure-oim">
+		<property name="absolute.idm.dir" location="${idm.provisioning.build.dir}" />
+		<property name="inv.file.global" value="${absolute.idm.dir}/config/oraInst.loc"/>
+		<if>
+
+			<equalsNested arg1="${provisioning.idmprov.oim.identitystore.database}" arg2="true" />
+
+			<then>
+				<property name="oim.enable.ldapsync" value="true"/>
+				<property name="oim.enable.designconsole" value="true"/>
+			</then>
+			<else>
+				<property name="oim.enable.ldapsync" value="false"/>
+				<property name="oim.enable.designconsole" value="false"/>
+			</else>
+		</if>
+
+                <if>
+                     <and>
+                        <equals arg1="${provisioning.setup.suite.core.action.install.suite.identity}" arg2="true" />
+                        <equals arg1="${provisioning.idmprov.oim.identitystore.database}" arg2="true" />
+                     </and>
+                        <then>
+                                <property name="idm.file.configure.oim.template" value="${idm.provisioning.build.dir}/templates/oim_silent_template.rsp"/>
+                        </then>
+                        <else>
+                                <property name="idm.file.configure.oim.template" value="${idm.provisioning.build.dir}/templates/oim_silent_ldapsync_template.rsp"/>
+                        </else>
+                </if>
+
+		<property name="idm.file.configure.oim" value="${idm.provisioning.build.dir}/config/oim_silent_configuration.rsp"/>
+
+		<decryptPassword password="${provisioning.idmprov.oim.db.oim_schema_username.password}"
+             property="provisioning.idmprov.oim.db.oim_schema_username.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oim.db.mds_schema_username.password}"
+             property="provisioning.idmprov.oim.db.mds_schema_username.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+             property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oim.adminuser.password}"
+             property="provisioning.idmprov.oim.adminuser.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oim.keystore.password}"
+             property="provisioning.idmprov.oim.keystore.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oim.access_gate_password}"
+             property="provisioning.idmprov.oim.access_gate_password.value" />
+		<decryptPassword password="${provisioning.idmprov.common-pwds.oim_ldap_user.password}"
+             property="provisioning.idmprov.common-pwds.oim_ldap_user.password.value" />
+		<decryptPassword password="${provisioning.idmprov.common-pwds.dir_admin.password}"
+             property="provisioning.idmprov.common-pwds.dir_admin.password.value" />
+
+               <if>
+                      <or>
+                        <equalsNested arg1="${provisioning.idmprov.oim.identitystore.directoryserver}" arg2="true" />
+                        <equalsNested arg1="${provisioning.setup.suite.core.action.install.suite.complete}" arg2="true" />
+                      </or>
+                        <then>
+                                <property name="dir.idstore.admindn" value="${provisioning.idmprov.common-pwds.oim_ldap_user.dn}"/>
+                                <property name="dir.idstore.admindn.password" value="${provisioning.idmprov.common-pwds.oim_ldap_user.password.value}"/>
+                        </then>
+
+                       
+                </if>
+
+
+		<delete file="${idm.file.configure.oim}"/>
+		<copy file="${idm.file.configure.oim.template}"
+            tofile="${idm.file.configure.oim}"/>
+		<replace file="${idm.file.configure.oim}">
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.ORACLE_HOME%" value="${provisioning.idmprov.oim.oracle_home}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.HOST%" value="${provisioning.idmprov.oim.db.host}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.PORT%" value="${provisioning.idmprov.oim.db.port}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.SERVICE_NAME%" value="${provisioning.idmprov.oim.db.servicename}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.OIM_SCHEMA_USERNAME%" value="${provisioning.idmprov.oim.db.oim_schema_username}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.OIM_SCHEMA_USERNAME.PASSWORD%" value="${provisioning.idmprov.oim.db.oim_schema_username.password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.MDS_SCHEMA_USERNAME%" value="${provisioning.idmprov.oim.db.mds_schema_username}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.MDS_SCHEMA_USERNAME.PASSWORD%" value="${provisioning.idmprov.oim.db.mds_schema_username.password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.WLSADMINUSER%" value="${provisioning.idmprov.oim.wlsadminuser}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.WLSADMINUSER.PASSWORD%" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.HOST%" value="${provisioning.idmprov.oim.host}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.PORT%" value="${provisioning.idmprov.oim.port}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.COOKIE.DOMAIN%" value="${provisioning.idmprov.oam.cookie_domain}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.ADMINSERVERHOST%" value="${provisioning.idmprov.oim.adminserverhost}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.ADMINSERVERPORT%" value="${provisioning.idmprov.oim.adminserverport}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.ADMINUSER.PASSWORD%" value="${provisioning.idmprov.oim.adminuser.password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.IDENTITY_STORE_TYPE%" value="${provisioning.idmprov.oim.identity_store_type}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.ENABLE.LDAPSYNC%" value="${oim.enable.ldapsync}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.ENABLE.DESIGN_CONSOLE%" value="${oim.enable.designconsole}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.KEYSTORE.PASSWORD%" value="${provisioning.idmprov.oim.keystore.password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.ACCESS_GATE_PASSWORD%" value="${provisioning.idmprov.oim.access_gate_password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.HOST%" value="${provisioning.idmprov.dir.authenticator_directory_server_host}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.ADMINDN%" value="${dir.idstore.admindn}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.ADMINDN.PASSWORD%" value="${dir.idstore.admindn.password}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.IDSTORE_SEARCH_DN%" value="${provisioning.idmprov.dir.realm.dn}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DIRECTORY_SERVER_ID%" value="${provisioning.idmprov.oim.directory_server_id}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.IDSTORE_ROLE_CONTAINER%" value="${provisioning.idmprov.dir.groups.container}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.IDSTORE_USER_CONTAINER%" value="${provisioning.idmprov.dir.users.container}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.IDSTORE_RESERVATION_CONTAINER%" value="${provisioning.idmprov.dir.reserve.container}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.LBR.OIMINTERNAL.HOST%" value="${provisioning.idmprov.lbr.oiminternal.host}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.LBR.OIMINTERNAL.PORT%" value="${provisioning.idmprov.lbr.oiminternal.port}"/>
+		</replace>
+
+		<condition property="oimadmin.protocol" value="https" else="http">
+			<equals arg1="${provisioning.idmprov.lbr.oimadmin.port.is_ssl}" arg2="true"/>
+		</condition>
+
+		<condition property="sso.protocol" value="https" else="http">
+                        <equals arg1="${provisioning.idmprov.lbr.sso.identity.port.is_ssl}" arg2="true"/>
+                </condition>
+
+		<if>
+			<equals arg1="${provisioning.setup.directory-choice.directory.action.dir.use.existing.type}" arg2="AD"/>
+			<then>
+				<replace file="${idm.file.configure.oim}">
+					<replacefilter token="%PROVISIONING.IDMPROV.OIM.DIRECTORY_SERVER_TYPE%" value="ACTIVE_DIRECTORY"/>	
+				</replace>
+			</then>
+			<else>
+				<replace file="${idm.file.configure.oim}">
+					<replacefilter token="%PROVISIONING.IDMPROV.OIM.DIRECTORY_SERVER_TYPE%" value="${provisioning.idmprov.oim.directory_server_type}"/>	
+				</replace>
+			</else>
+		</if>
+
+		<if>
+			<equals arg1="${provisioning.idmprov.dir.existing.sslenabled}" arg2="true"/>
+			<then>
+				<replace file="${idm.file.configure.oim}">
+					<replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.PORT%" value="${provisioning.idmprov.dir.authenticator_directory_server_sslport}"/>
+					<replacefilter token="%PROVISIONING.IDMPROV.DIR.PROTOCOL%" value="ldaps"/>
+				</replace>
+			</then>	
+			<else>
+				<replace file="${idm.file.configure.oim}">
+					<replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.PORT%" value="${provisioning.idmprov.dir.authenticator_directory_server_port}"/>
+					<replacefilter token="%PROVISIONING.IDMPROV.DIR.PROTOCOL%" value="ldap"/>
+				</replace>
+			</else>
+		</if>
+
+		<if>
+			<equals arg1="${provisioning.setup.domain-topology.topology.domain.topology.basic}" arg2="true"/>
+			<then>
+				<replace file="${idm.file.configure.oim}">
+					<replacefilter token="%PROVISIONING.IDMPROV.OIM.EXTERNALFRONTEND.URL%" value="http://${provisioning.idmprov.lbr.oiminternal.host}:${provisioning.idmprov.lbr.oiminternal.port}"/>
+				</replace>					
+			</then>
+			<else>
+				<replace file="${idm.file.configure.oim}">
+                                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.EXTERNALFRONTEND.URL%" value="${sso.protocol}://${provisioning.idmprov.lbr.sso.identity.host}:${provisioning.idmprov.lbr.sso.identity.port}"/>
+				</replace>
+			</else>
+		</if>
+
+		<trycatch>
+			<try>
+				<if>
+					<os family="windows"/>
+					<then>
+						<exec executable="cmd" failonerror="true" >
+							<env key="JAVA_HOME" value="${provisioning.idmprov.oim.java_home}" />
+							<arg value="/c" />
+							<arg value="${provisioning.idmprov.oim.oracle_home}\bin\config.bat" />
+							<arg value="-silent" />
+							<arg value="-jreLoc" />
+							<arg value="${provisioning.idmprov.oim.java_home}\jre"/>
+							<arg value="-printtime"/>
+							<arg value="-printdiskusage"/>
+							<arg value="-longterm" />
+							<arg value="-ignoreSysPrereqs"/>
+							<arg value="-force"/>
+							<arg value="-response" />
+							<arg value="${idm.file.configure.oim}"/>
+							<arg value="-waitforcompletion"/>
+						</exec>
+					</then>
+					<else>
+						<getPrimaryGroup property="primary.user.group" />
+						<delete file="${inv.file.global}"/>
+						<echo file="${inv.file.global}" append="false">inventory_loc=${provisioning.idmprov.oim.mw_home}/oraInventory
+		inst_group=${primary.user.group}
+		        </echo>
+						<exec executable="/bin/bash" failonerror="true" >
+							<env key="JAVA_HOME" value="${provisioning.idmprov.oim.java_home}" />
+							<arg value="${provisioning.idmprov.oim.oracle_home}/bin/config.sh" />
+							<arg value="-silent" />
+							<arg value="-jreLoc" />
+							<arg value="${provisioning.idmprov.oim.java_home}/jre"/>
+							<arg value="-printtime"/>
+							<arg value="-printmemory"/>
+							<arg value="-printdiskusage"/>
+							<arg value="-invPtrLoc"/>
+							<arg value="${inv.file.global}"/>
+							<arg value="-longterm" />
+							<arg value="-ignoreSysPrereqs"/>
+							<arg value="-force"/>
+							<arg value="-response" />
+							<arg value="${idm.file.configure.oim}"/>
+							<arg value="-waitforcompletion"/>
+						</exec>
+					</else>
+				</if>
+			</try>
+			<catch>
+				<failAndLogStatus task="OIM Configuration" category="OIM" detail="OIM Configuration is unsuccessful. Please find latest log file at ${provisioning.idmprov.oim.mw_home}/oraInventory/logs for the cause of failure"/>
+			</catch>
+			<finally>
+				<modifyIDMResponseFile responseFile="${idm.file.configure.oim}"
+                    password="${provisioning.idmprov.oim.db.oim_schema_username.password.value},${provisioning.idmprov.oim.db.mds_schema_username.password.value},${provisioning.idmprov.oim.wlsadminuser.password.value},${provisioning.idmprov.oim.adminuser.password.value},${provisioning.idmprov.oim.keystore.password.value},${provisioning.idmprov.oim.access_gate_password.value},${provisioning.idmprov.common-pwds.oim_ldap_user.password.value}" />
+			</finally>
+		</trycatch>
+	</target>
+
+	<target name="integrate-oim">
+		<property name="idm.file.integrate.oim.template" value="${idm.provisioning.build.dir}/templates/config_oim_templates.properties"/>
+		<property name="idm.file.integrate.oim" value="${idm.provisioning.build.dir}/config/config_oim.properties"/>
+		<!--getSID serviceName="${provisioning.idmprov.oim.db.servicename}"
+            property="db.sid" /-->
+		<decryptPassword password="${provisioning.idmprov.oim.access_gate_password}"
+             property="provisioning.idmprov.oim.access_gate_password.value" />
+		<decryptPassword password="${provisioning.idmprov.oim.keystore.password}"
+             property="provisioning.idmprov.oim.keystore.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oim.db.mds_schema_username.password}"
+             property="provisioning.idmprov.oim.db.mds_schema_username.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+             property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oam.wlsadminuser.password}"
+             property="provisioning.idmprov.oam.wlsadminuser.password.value" />
+		<decryptPassword password="${provisioning.idmprov.common-pwds.oamldap.password}"
+             property="provisioning.idmprov.common-pwds.oamldap.password.value" />
+		<decryptPassword password="${provisioning.idmprov.common-pwds.wlsadminuser.password}"
+             property="provisioning.idmprov.common-pwds.wlsadminuser.password.value" />
+		<delete file="${idm.file.integrate.oim}"/>
+		<copy file="${idm.file.integrate.oim.template}" tofile="${idm.file.integrate.oim}" />
+
+		<IDMProvisioningUtil task="GetOAMGlobalPassphrase"
+             baseDir="${basedir}"
+             mwHome="${provisioning.idmprov.oam.mw_home}"
+             oracleHome="${provisioning.idmprov.oam.oracle_home}"
+             wlsHost="${provisioning.idmprov.oam.adminserverhost}"
+             wlsPort="${provisioning.idmprov.oam.adminserverport}"
+             wlsAdmin="${provisioning.idmprov.oam.wlsadminuser}"
+             wlsAdminPassword="${provisioning.idmprov.oam.wlsadminuser.password}"
+             property="oam.globalpassphrase" />
+
+		<replace file="${idm.file.integrate.oim}">
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.HOST%" value="${provisioning.idmprov.oam.host}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.ACCESS.SERVER.PORT%" value="${provisioning.idmprov.oam.access_server_port}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.ACCESS_GATE_ID%" value="${provisioning.idmprov.oam.access_gate_id}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.COOKIE_DOMAIN%" value="${provisioning.idmprov.oam.cookie_domain}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.COOKIE_EXPIRY_INTERVAL%" value="${provisioning.idmprov.oam.cookie_expiry_interval}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.IDSTORE_USER_LOGINATTR%" value="${provisioning.idmprov.dir.userloginattr}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.OAM_TRANSFER_MODE%" value="${provisioning.idmprov.oam.oam_transfer_mode}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.WEBGATE_TYPE%" value="${provisioning.idmprov.oam.webgate_type}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.SSO_ONLY_FLAG%" value="${provisioning.idmprov.oim.sso_only_flag}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DIRECTORY_SERVER_TYPE%" value="${provisioning.idmprov.dir.authenticator_directory_server_type}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.OAMSOFTWAREUSER%" value="${provisioning.idmprov.common-pwds.oamldap.dn}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.OAMSOFTWAREUSER.PASSWORD%" value="${provisioning.idmprov.common-pwds.oamldap.password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.IDSTORE_USER_CONTAINER%" value="${provisioning.idmprov.dir.users.container}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.IDSTORE_ROLE_CONTAINER%" value="${provisioning.idmprov.dir.groups.container}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.DIR.EXISTING.SSLENABLED%" value="${provisioning.idmprov.dir.existing.sslenabled}" />
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.HOST%" value="${provisioning.idmprov.oim.db.host}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.PORT%" value="${provisioning.idmprov.oim.db.port}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.CONNECT_STRING%" value="${provisioning.idmprov.oim-db.connect_string}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.MDS_SCHEMA_USERNAME%" value="${provisioning.idmprov.oim.db.mds_schema_username}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.HOST%" value="${provisioning.idmprov.oim.host}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.ADMINSERVERHOST%" value="${provisioning.idmprov.oim.vhn.adminserver}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.ADMINSERVERPORT%" value="${provisioning.idmprov.oim.adminserverport}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.WLSADMINUSER%" value="${provisioning.idmprov.oim.wlsadminuser}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.HOST%" value="${provisioning.idmprov.oam.host}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.ADMINSERVERHOST%" value="${provisioning.idmprov.oam.vhn.adminserver}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.ADMINSERVERPORT%" value="${provisioning.idmprov.oam.adminserverport}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.WLSADMINUSER%" value="${provisioning.idmprov.oam.wlsadminuser}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.DOMAIN_NAME%" value="${provisioning.idmprov.oim.domain_name}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OAM.HOST%" value="${provisioning.idmprov.oam.host}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.MANAGED.SERVER.NAME%" value="${provisioning.idmprov.oim.managed.server.name}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DOMAIN_HOME%" value="${provisioning.idmprov.oim.domain_home}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.ACCESS_GATE_PASSWORD%" value="${provisioning.idmprov.oim.access_gate_password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.KEYSTORE.PASSWORD%" value="${provisioning.idmprov.oim.keystore.password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.GLOBAL.PASSPHRASE%" value="${oam.globalpassphrase}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DB.MDS_SCHEMA_USERNAME.PASSWORD%" value="${provisioning.idmprov.oim.db.mds_schema_username.password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.WLSADMINUSER.PASSWORD%" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.LBR.DIR.HOST%" value="${provisioning.idmprov.dir.authenticator_directory_server_host}"/>
+			<replacefilter token="%IS.SPLIT.DOMAIN%" value="${provisioning.setup.common.core.issplitdomain}" />
+                        <replacefilter token="%PROVISIONING.IDMPROV.IDSTORE.WLSADMINUSER.PASSWORD%" value="${provisioning.idmprov.common-pwds.wlsadminuser.password.value}"/>
+		</replace>
+               <if>
+                <equals arg1="${provisioning.idmprov.global.omss.is.supported}" arg2="true"/>
+	        <then>
+                   <replace file="${idm.file.integrate.oim}">
+		       <replacefilter token="%PROVISIONING.IDMPROV.OIM.MSM.REST_SERVER_URL%" value="http://${provisioning.idmprov.omsm.host}:${provisioning.idmprov.omsm.port}"/>			
+	           </replace>  
+                </then>
+	        <else>
+                   <replace file="${idm.file.integrate.oim}">
+		       <replacefilter token="%PROVISIONING.IDMPROV.OIM.MSM.REST_SERVER_URL%" value="%REMOVABLE_LINE%"/>			
+	           </replace>
+                </else>	
+               </if>
+              
+                <replaceregexp file="${idm.file.integrate.oim}" match="^.*%REMOVABLE_LINE%.*$" replace="" byline="true"/>      
+	       
+                <if>
+                        <equalsNested arg1="${provisioning.idmprov.dir.existing.sslenabled}" arg2="true" />
+                        <then>
+                                <replace file="${idm.file.integrate.oim}">
+                                        <replacefilter token="%PROVISIONING.IDMPROV.LBR.DIR.PORT%" value="${provisioning.idmprov.dir.authenticator_directory_server_sslport}" />
+                                </replace>
+                        </then>
+                        <else>
+                                <replace file="${idm.file.integrate.oim}">
+                                        <replacefilter token="%PROVISIONING.IDMPROV.LBR.DIR.PORT%" value="${provisioning.idmprov.dir.authenticator_directory_server_port}" />
+                                </replace>
+                        </else>
+                </if>
+		<if>
+                        <equalsNested arg1="${provisioning.setup.directory-choice.directory.action.dir.use.existing.type}" arg2="AD" />
+                        <then>
+                                <replace file="${idm.file.integrate.oim}">
+                                        <replacefilter token="%PROVISIONING.IDMPROV.IDSTORE.WLSADMINUSER%" value="${provisioning.idmprov.common-pwds.wlsadminuser.upn}" />
+                                </replace>
+                        </then>
+                        <else>
+                                <replace file="${idm.file.integrate.oim}">
+                                        <replacefilter token="%PROVISIONING.IDMPROV.IDSTORE.WLSADMINUSER%" value="${provisioning.idmprov.common-pwds.wlsadminuser.name}" />
+                                </replace>
+                        </else>
+                </if>
+
+		<trycatch>
+			<try>
+				<idmConfigTool oracleHome="${provisioning.idmprov.oim.oracle_home}"
+			                        mwHome="${provisioning.idmprov.oim.mw_home}"
+	                        		javaHome="${provisioning.idmprov.oim.java_home}"
+                        			option="configOIM"
+			                        inputFile="${idm.file.integrate.oim}" />
+			</try>
+			<catch>
+				<failAndLogStatus task="IdmConfigTool OIM integration" category="OIM" detail="IDM Automation Tool OIM integration is unsuccessful."/>
+			</catch>
+
+			<finally>
+				<modifyIDMResponseFile responseFile="${idm.file.integrate.oim}"
+                    password="${provisioning.idmprov.oim.access_gate_password.value},${provisioning.idmprov.oim.keystore.password.value},${oam.globalpassphrase},${provisioning.idmprov.oim.db.mds_schema_username.password.value},${provisioning.idmprov.oim.wlsadminuser.password.value},${provisioning.idmprov.common-pwds.oamldap.password.value},${provisioning.idmprov.common-pwds.wlsadminuser.password.value}" />
+			</finally>
+		</trycatch>
+	</target>
+
+	<target name="replace-idmtools" >
+		<exec executable="mv" >
+			<arg value="${provisioning.idmprov.oim.oracle_home}/idmtools/jlib/ovdcommon.jar" />
+			<arg value="${provisioning.idmprov.oim.oracle_home}/idmtools/jlib/ovdcommon.jar.bk" />
+		</exec>
+
+		<exec executable="cp" >
+			<arg value="${provisioning.idmprov.global.installers}/idmtools/jlib/ovdcommon.jar" />
+			<arg value="${provisioning.idmprov.oim.oracle_home}/idmtools/jlib" />
+		</exec>
+	</target>
+
+	<target name="upgrade-ldap-users">
+		<property name="idm.file.upgrade.users.template" value="${idm.provisioning.build.dir}/templates/upgrade_ldap_users_template.properties"/>
+		<property name="idm.file.upgrade.users" value="${idm.provisioning.build.dir}/config/upgrade_ldap_users.properties"/>
+		<decryptPassword password="${provisioning.idmprov.ovd.admindn.password}"
+            property="provisioning.idmprov.ovd.admindn.password.value" />
+		<delete file="${idm.file.upgrade.users}"/>
+		<copy file="${idm.file.upgrade.users.template}"
+            tofile="${idm.file.upgrade.users}"/>
+		<replace file="${idm.file.upgrade.users}">
+			<replacefilter token="%PROVISIONING.IDMPROV.OVD.HOST%" value="${provisioning.idmprov.ovd.host}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OVD.PORT%" value="${provisioning.idmprov.ovd.port}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OVD.ADMINDN%" value="${provisioning.idmprov.ovd.admindn}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.USERNAMEATTR%" value="${provisioning.idmprov.dir.usernameattr}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.USERLOGINATTR%" value="${provisioning.idmprov.dir.userloginattr}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.USERSEARCHBASE%" value="${provisioning.idmprov.dir.users.container}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.GROUPSEARCHBASE%" value="${provisioning.idmprov.dir.groups.container}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OIM.DIRECTORY_SERVER_TYPE%" value="${provisioning.idmprov.oim.directory_server_type}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OVD.ADMINDN.PASSWORD%" value="${provisioning.idmprov.ovd.admindn.password.value}"/>
+		</replace>
+
+		<trycatch>
+			<try>
+				<idmConfigTool oracleHome="${provisioning.idmprov.oim.oracle_home}"
+			                	    mwHome="${provisioning.idmprov.oim.mw_home}"
+			                	    javaHome="${provisioning.idmprov.oim.java_home}"
+			        	            option="upgradeLDAPUsersForSSO"
+				                    inputFile="${idm.file.upgrade.users}" />
+			</try>
+			<finally>
+				<modifyIDMResponseFile responseFile="${idm.file.upgrade.users}"
+                    password="${provisioning.idmprov.ovd.admindn.password.value}" />
+			</finally>
+		</trycatch>
+	</target>
+
+	<target name="deploy-machine-on-oim-server">
+		<echo message="Deploying machine on OIM managed server... "/>
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+             property="wlsadminuser.password" />
+
+		<antcall target="deploy-machine-on-server">
+			<param name="wls.admin" value="${provisioning.idmprov.oim.wlsadminuser}" />
+			<param name="wlsadminuser.password" value="${wlsadminuser.password}" />
+			<param name="adminserver.host" value="${provisioning.idmprov.oim.adminserverhost}" />
+			<param name="adminserver.port" value="${provisioning.idmprov.oim.adminserverport}" />
+			<param name="domain.name" value="${provisioning.idmprov.oim.domain_name}" />
+			<param name="managed.server.name" value="${servername}" />
+			<param name="managed.server.host" value="${machinename}" />
+			<param name="listen.address"      value="${listenaddr}" />
+			<param name="oracle_home" value="${provisioning.idmprov.oim.oracle_home}" />
+		</antcall>
+	</target>
+
+	<target name="extendOimLogging">
+		<echo message="Configuring OIM managed server... "/>
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+             property="wlsadminuser.password" />
+
+		<antcall target="extendLogging">
+			<param name="wls.admin" value="${provisioning.idmprov.oim.wlsadminuser}" />
+			<param name="wlsadminuser.password" value="${wlsadminuser.password}" />
+			<param name="adminserver.host" value="${provisioning.idmprov.oim.adminserverhost}" />
+			<param name="adminserver.port" value="${provisioning.idmprov.oim.adminserverport}" />
+			<param name="oracle_home" value="${provisioning.idmprov.oim.oracle_home}" />
+			<param name="managedserver.name" value="${provisioning.idmprov.oim.managed.server.name}" />
+		</antcall>
+	</target>
+
+	<!-- Target to upload notification templates to OIM and is executed only for SAAS topology -->
+	<target name="runUploadNotificationTemplates">
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+                         property="provisioning.idmprov.oim.wlsadminuser.password.value"/>
+		<property name="oim.uploadnotification.script.loc"
+                  value="${provisioning.idmprov.oim.mw_home}/iam/server/bin"/>
+		<property name="oim.uploadnotifications.file.template"
+                  value="${idm.provisioning.build.dir}/templates/upload_notification_templates.properties"/>
+		<property name="oim.uploadnotifications.file"
+                  value="${idm.provisioning.build.dir}/templates/upload_notifications.properties"/>
+		<property name="oim.uploadnotifications.log.file"
+                  value="${provisioning.idmprov.oim.mw_home}/iam/server/bin/uploadartifacts.log"/>
+
+		<!--  For now commenting this as this requires fix from the utility side -->
+		<!--delete file="${oim.uploadnotifications.file}"/>
+        <copy file="${oim.uploadnotifications.file.template}"
+              tofile="${oim.uploadnotifications.file}"/>
+        <replace file="${oim.uploadnotifications.file}">
+            <replacefilter token="%OIM_SERVER_HOST%"
+                           value="${provisioning.idmprov.lbr.vhn.oimserver}"/>
+            <replacefilter token="%OIM_SERVER_PORT%"
+                           value="${provisioning.idmprov.oim.port}"/>
+            <replacefilter token="%WLS_ADMIN_USER_NAME%"
+                           value="${provisioning.idmprov.oim.wlsadminuser}"/>
+            <replacefilter token="%WLS_ADMIN_PASSWORD%"
+                           value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>
+            <replacefilter token="%OIM_MWHOME%"
+                           value="${provisioning.idmprov.oim.mw_home}"/>
+        </replace-->
+		<trycatch>
+			<try>
+				<exec executable="bash" failonerror="true"
+                      dir="${oim.uploadnotification.script.loc}">
+					<env key="ORACLE_HOME"
+                         value="${provisioning.idmprov.oim.oracle_home}"/>
+					<env key="MW_HOME"
+                         value="${provisioning.idmprov.oim.mw_home}"/>
+					<env key="JAVA_HOME"
+                         value="${provisioning.idmprov.oim.java_home}"/>
+					<arg value="${oim.uploadnotification.script.loc}/uploadNotificationTemplates.sh"/>
+					<arg value="OIM_SERVER_HOST=${provisioning.idmprov.lbr.vhn.oimserver}"/>
+					<arg value="OIM_SERVER_PORT=${provisioning.idmprov.oim.port}"/>
+					<arg value="WLS_ADMIN_USER_NAME=${provisioning.idmprov.oim.wlsadminuser}"/>
+					<arg value="WLS_ADMIN_PASSWORD=${provisioning.idmprov.oim.wlsadminuser.password.value}"/>
+					<arg value="ARTIFACTS_BASE_LOCATION=${provisioning.idmprov.oim.mw_home}/iam/server/patching"/>
+					<arg value="ARTIFACTS_FILES=internalNotificationTemplates.zip"/>
+					<arg value="ARTIFACT_TYPE=TEMPLATE"/>
+					<arg value="LOG_FILE=${oim.uploadnotifications.log.file}"/>
+				</exec>
+				<echo> Upload of Notification Templates is successful </echo>
+			</try>
+			<catch>
+				<failAndLogStatus task="OIM Upload Notification Templates"
+                                  category="OIM"
+                                  detail="Upload of Notification Templates to OIM server is unsuccessful."/>
+			</catch>
+			<finally>
+				<!--modifyIDMResponseFile responsefile="${oim.uploadnotifications.file}"
+                                       password="${provisioning.idmprov.oim.wlsadminuser.password.value}"/-->
+				<getLogDir property="logs.dir" />
+				<copy file="${oim.uploadnotifications.log.file}"
+                      tofile="${logs.dir}/uploadartifacts.log"/>
+
+			</finally>
+		</trycatch>
+	</target>
+
+
+
+	<!--
+====================================================================================================================
+         TARGET: ipv4-config [PRIVATE]
+
+         Modifies the setDomainEnv.sh for ipv4 configuration ( Servers would use ipv4 addresses ).
+         Note : This is currently part of OIM post configure as OIM is the premordial host.
+                Please replace this if required.
+====================================================================================================================
+-->
+	<target name="ipv4-config">
+		<property name="domain" value="${provisioning.idmprov.oim.domain_home}" />
+		<property name="domain.replace.var.extra" value="EXTRA_JAVA_PROPERTIES=" />
+		<property name="domain.replace.var.value" value="&quot;${EXTRA_JAVA_PROPERTIES}" />
+		<property name="domain.replace.var.option" value=" -Djava.net.preferIPv4Stack=true" />
+		<property name="domain.replace.var.export" value="export EXTRA_JAVA_PROPERTIES" />
+		<setDomainEnvSh domainFile="${domain}/bin/setDomainEnv.sh" replaceString="${line.separator}${domain.replace.var.extra}${domain.replace.var.value}${domain.replace.var.option}&quot;${line.separator}${domain.replace.var.export}${line.separator}" />
+	</target>
+	<target name="server-parameters-tuning">
+		<!--        <antcall target="oim-server-params-tuning"/> -->
+		<antcall target="oim-config-params-tuning"/>
+	</target>
+	<target name="add-ip4vstackpreferrer-to-argument">
+		<property name="oim.add.ipv4stack.template" value="${idm.provisioning.build.dir}/templates/oim_add_ipv4stack_template.py"/>
+                <property name="oim.add.ipv4stack" value="${idm.provisioning.build.dir}/config/oim_add_ipv4stack.py"/>
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+             property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+
+                <delete file="${oim.add.ipv4stack}"/>
+                <copy file="${oim.add.ipv4stack.template}" tofile="${oim.add.ipv4stack}"/>
+                <replace file="${oim.add.ipv4stack}">
+			<replacefilter token="%WLS_USER%" value="${provisioning.idmprov.oim.wlsadminuser}"/>
+			<replacefilter token="%WLS_PW%" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>
+                        <replacefilter token="%SERVER_NAME%" value="${server_name}"/>
+			<replacefilter token="%WLS_HOSTNAME%" value="${provisioning.idmprov.oim.adminserverhost}"/>
+			<replacefilter token="%WLS_PORT%" value="${provisioning.idmprov.oim.adminserverport}"/>
+		</replace>
+		
+		<antcall target="execute-wlst-script">
+			<param name="wlst.inputscript" value="${oim.add.ipv4stack}"/>
+			<param name="wlst.executable.filepath" value="${provisioning.idmprov.oim.oracle_home}"/>
+			<param name="password.string" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>	
+		</antcall>
+	</target>
+
+	<target name="seed-default-monitoring-cred-keystore">
+		<property name="idm.file.seed.keystore.template" value="${idm.provisioning.build.dir}/templates/seed_keystore_template.py"/>
+		<property name="idm.file.seed.keystore" value="${idm.provisioning.build.dir}/config/seed_keystore.py"/>
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+		 property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+
+		<delete file="${idm.file.seed.keystore}"/>
+		<copy file="${idm.file.seed.keystore.template}"
+             tofile="${idm.file.seed.keystore}"/>
+		<replace file="${idm.file.seed.keystore}">
+			<replacefilter token="%WLS_USER%" value="${provisioning.idmprov.oim.wlsadminuser}"/>
+			<replacefilter token="%WLS_PW%" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>
+			<replacefilter token="%OIM_DOMAIN%" value="${provisioning.idmprov.oim.domain_name}"/>
+			<replacefilter token="%WLS_HOSTNAME%" value="${provisioning.idmprov.oim.adminserverhost}"/>
+			<replacefilter token="%WLS_PORT%" value="${provisioning.idmprov.oim.adminserverport}"/>
+		</replace>
+
+		<antcall target="execute-wlst-script">
+			<param name="wlst.inputscript" value="${idm.file.seed.keystore}"/>
+			<param name="wlst.executable.filepath" value="${provisioning.idmprov.oim.oracle_home}"/>
+			<param name="password.string" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>	
+		</antcall>
+	</target>
+
+	<target name="enable-oim-soa-connect">
+
+		<if>
+			 <and>
+				<equalsNested arg1="${provisioning.setup.directory-choice.directory.action.dir.use.existing.type}" arg2="AD" />
+				<equalsNested arg1="${provisioning.setup.suite.core.action.install.suite.complete}" arg2="true"/>
+                         </and>	
+			<then>
+				<property name="wlsadminuser" value="${provisioning.idmprov.common-pwds.wlsadminuser.upn}" />
+			</then>
+			<else>
+				<property name="wlsadminuser" value="${provisioning.idmprov.oim.weblogicuser}" />    
+			</else>		
+		</if>
+		<IDMProvisioningUtil task="EnableOIMSOAConnect"
+				 baseDir="${basedir}"
+				 mwHome="${provisioning.idmprov.oim.mw_home}"
+				 oracleHome="${provisioning.idmprov.oim.oracle_home}"
+				 wlsHost="${provisioning.idmprov.oim.adminserverhost}"
+				 wlsPort="${provisioning.idmprov.oim.adminserverport}"
+				 wlsAdmin="${provisioning.idmprov.oim.wlsadminuser}"
+				 wlsAdminPassword="${provisioning.idmprov.oim.wlsadminuser.password}"
+				 soaAdmin="${wlsadminuser}"
+				 soaAdminPassword="${provisioning.idmprov.oim.weblogicuser.password}" 
+				 soaRmiUrl="${provisioning.idmprov.oim.soa_rmi_url}"
+				 soaServerUrl="${provisioning.idmprov.oim.oiminternal.url}"
+				 soaCallBackUrl="${provisioning.idmprov.oim.oiminternal.url}"
+				 soaHttpServerUrl="${provisioning.idmprov.oim.oiminternal.url}"/>
+		
+		
+		<if>
+			<or>
+                                <equals arg1="${provisioning.setup.suite.core.action.install.suite.complete}" arg2="true"/>
+				<and>
+					<equals arg1="${provisioning.setup.suite.core.action.install.suite.identity}" arg2="true" />
+					<equals arg1="${provisioning.idmprov.oim.identitystore.directoryserver}" arg2="true" />
+				</and> 
+			</or>
+			 <then>
+				<property name="enable.oim.soa.connect.template" value="${idm.provisioning.build.dir}/templates/enable_oim_soa_connect_template.py"/>
+				<property name="enable.oim.soa.connect" value="${idm.provisioning.build.dir}/config/enable_oim_soa_connect_template.py"/>
+				<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+				 property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+				<decryptPassword password="${provisioning.idmprov.oim.weblogicuser.password}"
+				 property="provisioning.idmprov.oim.weblogicuser.password.value" />
+				
+				<delete file="${enable.oim.soa.connect}"/>
+				<copy file="${enable.oim.soa.connect.template}"
+				 tofile="${enable.oim.soa.connect}"/>
+				<replace file="${enable.oim.soa.connect}">
+					<replacefilter token="%PROVISIONING.IDMPROV.OIM.WLSADMINUSER.PASSWORD%" value="${provisioning.idmprov.oim.weblogicuser.password.value}"/>
+					<replacefilter token="%PROVISIONING.IDMPROV.OIM.ADMINSERVERHOST%" value="${provisioning.idmprov.oim.adminserverhost}"/>
+					<replacefilter token="%PROVISIONING.IDMPROV.OIM.ADMINSERVERPORT%" value="${provisioning.idmprov.oim.adminserverport}"/>
+					<replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.WLSADMINGROUP%" value="${provisioning.idmprov.dir.wlsadmingroup}"/>
+					<replacefilter token="%PROVISIONING.IDMPROV.OIM.WLSADMINUSER.PASSWORD%" value="${provisioning.idmprov.oim.weblogicuser.password.value}"/>
+					<replacefilter token="%PROVISIONING.IDMPROV.OIM.WLSADMINUSER%" value="${wlsadminuser}"/>
+				</replace>
+				<antcall target="execute-wlst-script">
+				<param name="wlst.inputscript" value="${enable.oim.soa.connect}"/>
+				<param name="wlst.executable.filepath" value="${provisioning.idmprov.oim.oracle_home}"/>
+				<param name="password.string" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>	
+				</antcall>
+			 </then>	
+
+		</if>
+	</target>
+
+	<target name="copy-oam-keystore">
+              <if>
+                <not>
+                    <equalsNested arg1="${provisioning.idmprov.oam.oam_transfer_mode}" arg2="open" />
+                </not>
+              <then>
+                     <copy file="${provisioning.idmprov.global.keystoresdir}/${provisioning.idmprov.oam.keystore.ssokeystore_file}"
+                      tofile="${provisioning.idmprov.oim.domain_home}/config/fmwconfig/${provisioning.idmprov.oam.keystore.ssokeystore_file}" />
+              </then>
+              </if>
+	</target>		  
+
+	<target name="add-server-start-webproxy-params">
+		<if>
+                        <os family="windows"/>
+                        <then>
+                                <property name="setdomain.env.path" value="${provisioning.idmprov.oim.local_domain_home}/bin/setDomainEnv.cmd"/>
+                                <property name="setdomain.env.path.bakup" value="${provisioning.idmprov.oim.local_domain_home}/bin/setDomainEnv.cmd.backup"/>
+                     		<copy file="${setdomain.env.path}" tofile="${setdomain.env.path.bakup}" />
+                                <replaceregexp file="${setdomain.env.path}"
+                                               match="-Djavax.net.ssl.trustStore=(.*?)\\server\\lib\\DemoTrust.jks"
+                                               replace=""
+                                               byline="true"/>
+                        </then>
+                        <else>
+                                <property name="setdomain.env.path" value="${provisioning.idmprov.oim.local_domain_home}/bin/setDomainEnv.sh"/>
+                                <property name="setdomain.env.path.bakup" value="${provisioning.idmprov.oim.local_domain_home}/bin/setDomainEnv.sh.backup"/>
+                     		<copy file="${setdomain.env.path}" tofile="${setdomain.env.path.bakup}" />
+                                <replaceregexp file="${setdomain.env.path}"
+                                               match="-Djavax.net.ssl.trustStore=(.*?)/server/lib/DemoTrust.jks"
+                                               replace=""
+                                               byline="true"/>
+                        </else>
+                </if>
+	 <!-- If this property is already set it will NOT be overwritten, else setting it now with empty value-->
+	        <property name="provisioning.idmprov.oim.webproxy.bypass.addresses" value="" />
+                <if>
+        	        <equalsNested arg1="${provisioning.idmprov.oim.webproxy.bypass.addresses}" arg2=""/>
+                         <then>
+                	         <property name="webproxyparams" value="-Dhttp.proxySet=true -Dhttp.proxyHost=${provisioning.idmprov.oim.webproxy.host} -Dhttp.proxyPort=${provisioning.idmprov.oim.webproxy.port}"/>
+                        </then>
+			<else>
+				<if>
+		                        <os family="windows"/>
+                		        <then>
+		                        	<property name="webproxyparams" value="-Dhttp.proxySet=true -Dhttp.proxyHost=${provisioning.idmprov.oim.webproxy.host} -Dhttp.proxyPort=${provisioning.idmprov.oim.webproxy.port} -Dhttp.nonProxyHosts=&quot;${provisioning.idmprov.oim.webproxy.bypass.addresses}&quot;"/>
+					</then>
+					<else>
+		                        	<property name="webproxyparams" value="-Dhttp.proxySet=true -Dhttp.proxyHost=${provisioning.idmprov.oim.webproxy.host} -Dhttp.proxyPort=${provisioning.idmprov.oim.webproxy.port} -Dhttp.nonProxyHosts=${provisioning.idmprov.oim.webproxy.bypass.addresses}"/>
+					</else>
+				</if>
+                	</else>
+                </if>
+		<if>
+                        <os family="windows"/>
+                        <then>
+                                <property name="idm.oim.webproxy.param.export" value="set PROXY_SETTINGS=${webproxyparams}" />
+                        	<concat destfile="${setdomain.env.path}" eol="dos" append="true">${line.separator}${idm.oim.webproxy.param.export}</concat>
+                        </then>
+         		<else>
+                                  <property name="idm.oim.webproxy.param.export" value="export PROXY_SETTINGS=&quot;${webproxyparams}&quot;" />
+	                          <concat destfile="${setdomain.env.path}" eol="unix" append="true">${line.separator}${idm.oim.webproxy.param.export}</concat>
+                	</else>
+                </if>
+                                <!-- stop OIM Managed Server -->
+                <antcall target="stop-managed-server">
+                        <param name="base.property"   value="provisioning.idmprov.oim"/>
+                        <param name="server"          value="${server.name}" />
+                        <param name="nodemanagerhost" value="${nodemanager.host}" />
+                        <param name="nodemanagerport" value="${nodemanager.port}" />
+                        <param name="domainhome"      value="${provisioning.idmprov.oim.local_domain_home}"/>
+                	<param name="domainname"      value="${provisioning.idmprov.oim.domain_name}"/>
+                </antcall>
+
+                                <!-- Start OIM Managed Server -->
+                <antcall target="start-managed-server">
+			<param name="base.property"   value="provisioning.idmprov.oim"/>
+                        <param name="server"          value="${server.name}" />
+                        <param name="nodemanagerhost" value="${nodemanager.host}" />
+                        <param name="nodemanagerport" value="${nodemanager.port}" />
+                        <param name="domainhome"      value="${provisioning.idmprov.oim.local_domain_home}"/>
+                        <param name="domainname"      value="${provisioning.idmprov.oim.domain_name}"/>
+        	</antcall>
+
+		<antcall target="restart-idmdomain-admin-server">
+                        <param name="base.property" value="provisioning.idmprov.oim" />
+                </antcall>
+
+	</target>
+
+ <target name="oim-xe-prepare-idstore">
+ 
+		<property name="idm.config.script"
+                  value="${provisioning.idmprov.oim.oracle_home}/server/ldif/prepareidstore/ldapConfigTool.sh"/>
+		<property name="idm.oimxe.ldaptool.template"
+                  value="${idm.provisioning.build.dir}/templates/oim_xe_ldaptool_template.properties"/>
+		<property name="idm.oimxe.ldaptool"
+                  value="${idm.provisioning.build.dir}/config/oim_xe_ldaptool.properties"/>
+                <property name="idm.oimxe.ldaptool.loc"
+                  value="${provisioning.idmprov.oim.oracle_home}/server/ldif/prepareidstore/idstore-automate-install.properties"/>
+                <property name="idm.oimxe.ldaptool.pwd.template"
+                  value="${idm.provisioning.build.dir}/templates/xe_pwd_template.properties"/>
+                <property name="idm.oimxe.ldaptool.pwd.loc"
+                  value="${provisioning.idmprov.oim.oracle_home}/server/ldif/prepareidstore/pwd.txt"/>
+                  
+         <if>
+              <equalsNested arg1="${provisioning.idmprov.directory-choice.action.dir.use.existing}"
+                 arg2="true"/>
+          <then>
+              <property name="oim.xe.is_prepareidstore" value="true"/>
+          </then>
+          <else>
+             <property name="oim.xe.is_prepareidstore" value="false"/>
+          </else>
+       </if>
+      <if>
+            <equals arg1="${provisioning.idmprov.dir.existing.sslenabled}" arg2="true"/>
+       <then>
+            <property name="oim.idstore.port" value="${provisioning.idmprov.dir.authenticator_directory_server_sslport}"/>
+       </then>
+       <else>
+            <property name="oim.idstore.port" value="${provisioning.idmprov.dir.authenticator_directory_server_port}"/>
+       </else>
+      </if>
+                  
+                <decryptPassword password="${provisioning.idmprov.oim.adminuser.password}"
+                         property="provisioning.idmprov.oim.adminuser.password.value"/>
+                <decryptPassword password="${provisioning.idmprov.common-pwds.oim_ldap_user.password}"
+                         property="provisioning.idmprov.common-pwds.oim_ldap_user.password.value"/>
+                <decryptPassword password="${provisioning.idmprov.oim.weblogicuser.password}"
+                         property="provisioning.idmprov.oim.weblogicuser.password.value"/>
+                <decryptPassword password="${provisioning.idmprov.common-pwds.dir_admin.password}"
+                         property="provisioning.idmprov.common-pwds.dir_admin.password.value"/>
+		<delete file="${idm.oimxe.ldaptool}"/>
+		<copy file="${idm.oimxe.ldaptool.template}"
+              tofile="${idm.oimxe.ldaptool}"/>
+		<replace file="${idm.oimxe.ldaptool}">
+			<replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.HOST%"
+                           value="${provisioning.idmprov.dir.authenticator_directory_server_host}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.PORT%"
+                           value="${oim.idstore.port}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.ADMIN_DN%"
+                           value="${provisioning.idmprov.common-pwds.dir_admin.dn}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.SEARCH_BASE%"
+                           value="${provisioning.idmprov.dir.realm.dn}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.IDSTORE.USER_SEARCH_BASE%"
+                           value="${provisioning.idmprov.dir.users.container}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.IDSTORE.GRP_SEARCH_BASE%"
+                           value="${provisioning.idmprov.dir.groups.container}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.IDSTORE.RESERVE_BASE%"
+                           value="${provisioning.idmprov.dir.reserve.container}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.IDSTORE.SYSTEMID_BASE%"
+                           value="${provisioning.idmprov.dir.systemids.container}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.LDAP_USER%"
+                           value="${provisioning.idmprov.dir.usernameattr}=${provisioning.idmprov.common-pwds.oim_ldap_user.name}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.ADMIN_GROUP%"
+                           value="${provisioning.idmprov.dir.groupnameattr}=${provisioning.idmprov.dir.oimadmingroup}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.DIR.TYPE%"
+                           value="${provisioning.idmprov.oim.directory_server_type}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.WLS_ADMIN_USER%"
+                           value="${provisioning.idmprov.dir.usernameattr}=${provisioning.idmprov.oim.weblogicuser}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.WLS_ADMIN_GROUP%"
+                           value="${provisioning.idmprov.dir.groupnameattr}=${provisioning.idmprov.dir.wlsadmingroup}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.IS_PREPARE_IDSTORE%"
+                           value="${oim.xe.is_prepareidstore}"/>
+		</replace>
+
+                <delete file="${idm.oimxe.ldaptool.pwd.loc}"/>
+                <copy file="${idm.oimxe.ldaptool.pwd.template}"
+              tofile="${idm.oimxe.ldaptool.pwd.loc}"/>
+                <replace file="${idm.oimxe.ldaptool.pwd.loc}">
+                        <replacefilter token="%PROVISIONING.IDMPROV.DIR.IDSTORE.ADMIN_DN.PASSWORD%"
+                           value="${provisioning.idmprov.common-pwds.dir_admin.password.value}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.LDAP_USER.PASSWORD%"
+                           value="${provisioning.idmprov.common-pwds.oim_ldap_user.password.value}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.WLS_ADMIN_USER.PASSWORD%"
+                           value="${provisioning.idmprov.oim.weblogicuser.password.value}"/>
+                        <replacefilter token="%PROVISIONING.IDMPROV.OIM.XELSYSADM_USER.PASSWORD%"
+                           value="${provisioning.idmprov.oim.adminuser.password.value}"/>
+                </replace>
+
+
+               <!-- To be removed with changes for bug 20289919  -->
+                 <move file="${idm.oimxe.ldaptool.loc}" tofile="${idm.oimxe.ldaptool.loc}.bak"/>
+		 <copy file="${idm.oimxe.ldaptool}"
+                       tofile="${idm.oimxe.ldaptool.loc}"/>
+
+		 <property environment="env"/>
+
+		<trycatch>
+			<try>
+				
+				<exec executable="/bin/bash" failonerror="true">
+                         		<env key="ORACLE_HOME" value="${provisioning.idmprov.oim.oracle_home}/server"/>
+                                        <env key="MW_HOME" value="${provisioning.idmprov.oim.mw_home}"/>
+                                        <env key="JAVA_HOME" value="${provisioning.idmprov.oim.java_home}"/>
+                                        <env key="APPSERVER_TYPE" value="wls"/>
+					<arg value="${idm.config.script}"/>
+					<arg value="-prepareIDStore"/>
+					<arg value="pwd_file=${idm.oimxe.ldaptool.pwd.loc}"/>
+					
+				</exec>
+			</try>
+			<catch>
+				<failAndLogStatus task="OIM XE prepareIDStore" category="OIM"
+                                  detail="OIM XE prepareIDStore using ldapConfigTool unsuccessful."/>
+			</catch>
+			<finally>
+				<delete file="${idm.oimxe.ldaptool.pwd.loc}"/>
+                                <modifyIDMResponseFile responseFile="${idm.oimxe.ldaptool}" />
+			</finally>
+		</trycatch>
+
+	</target>		  
+
+	<target name="import_cert_in_jre_cacerts">
+		<property name="oim.cacerts.keystore.password" value="changeit" />
+
+		<exec executable="cp" >
+        	        <arg value="${provisioning.idmprov.oim.cacerts.keystore.location}" />
+                	<arg value="${provisioning.idmprov.oim.cacerts.keystore.location}.bk" />
+		</exec>
+
+		<exec executable="keytool" dir="${provisioning.idmprov.oim.java_home}/bin" inputstring="yes" failonerror="true">
+			<env key="PATH" value="${local.PATH}" />
+			<arg line="-import" />
+                        <arg line="-keystore ${provisioning.idmprov.oim.cacerts.keystore.location}" />
+                        <arg line="-file ${provisioning.idmprov.dir.rootca}" />
+                        <arg line="-storepass ${oim.cacerts.keystore.password}" />
+                </exec>	
+	</target>
+	
+	<target name="enable_ssl_for_oimxe">
+		<property name="iam.file.oimxe.libovdids.ssl.template" value="${idm.provisioning.build.dir}/templates/enable_ssl_for_oimxe_template.py" />
+		<property name="iam.file.oimxe.libovdids.ssl" value="${idm.provisioning.build.dir}/config/enable_ssl_for_oimxe.py" />
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}" property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+		<decryptPassword password="${provisioning.idmprov.common-pwds.oim_keystore.password}" property="provisioning.idmprov.common-pwds.oim_keystore.password.value" />
+
+		<delete file="${iam.file.oimxe.libovdids.ssl}" />
+		<copy file="${iam.file.oimxe.libovdids.ssl.template}" tofile="${iam.file.oimxe.libovdids.ssl}" />
+		<replace file="${iam.file.oimxe.libovdids.ssl}">
+			<replacefilter token="%WLS_USER%" value="${provisioning.idmprov.oim.wlsadminuser}" />
+			<replacefilter token="%WLS_PW%" value="${provisioning.idmprov.oim.wlsadminuser.password.value}" />
+			<replacefilter token="%WLS_HOSTNAME%" value="${provisioning.idmprov.oim.adminserverhost}" />
+			<replacefilter token="%WLS_PORT%" value="${provisioning.idmprov.oim.adminserverport}" />
+			<replacefilter token="%CERT_FILE%" value="${provisioning.idmprov.dir.rootca}" />
+			<replacefilter token="%KEYSTORE_PWD%" value="${provisioning.idmprov.common-pwds.oim_keystore.password.value}" />
+		</replace>
+
+		<antcall target="execute-wlst-script">
+			<param name="wlst.inputscript" value="${iam.file.oimxe.libovdids.ssl}"/>
+			<param name="wlst.executable.filepath" value="${provisioning.idmprov.oim.oracle_home}"/>
+			<param name="password.string" value="${provisioning.idmprov.oim.wlsadminuser.password.value},${provisioning.idmprov.common-pwds.oim_keystore.password.value}"/>
+		</antcall>
+	</target>	
+	<!-- Steps for using the OIM login id mapper approach and configure OIM/SOA to work with UPN as loginIDAttribute -->	
+	<target name="configure-loginattr-to-upn">
+		<!-- Step 1: Modifying 4 "Application Defined MBeans" on Oracle Enterprise Manager console of Governance domain -->
+		<IDMProvisioningUtil task="UpdateOIMLoginIDForUPNSupport"
+				     baseDir="${basedir}"
+			             antHome="${env.ANT_HOME}"
+			             mwHome="${provisioning.idmprov.oim.mw_home}"
+			             oracleHome="${provisioning.idmprov.oim.oracle_home}"
+			             wlsHost="${provisioning.idmprov.oim.adminserverhost}"
+			             wlsPort="${provisioning.idmprov.oim.adminserverport}"
+			             wlsAdmin="${provisioning.idmprov.oim.wlsadminuser}"
+			             wlsAdminPassword="${provisioning.idmprov.oim.wlsadminuser.password}" 
+				     oimServer="${provisioning.idmprov.oim.managed.server.name}"/>
+		
+		<!-- Step 2: For OIM default users, ensure that the value of loginIdAttribute is the same as that of USR_LOGIN -->
+		<propertyNested name="db.jdbc.path" value="${provisioning.idmprov.oim.wls_home}/server/lib/ojdbc6.jar"/>
+
+		<sqlSecure
+			 driver="oracle.jdbc.driver.OracleDriver"
+			 url="${provisioning.idmprov.oim-db.connect_string}"
+			 userid="${provisioning.idmprov.oim.db.oim_schema_username}"
+			 password="${provisioning.idmprov.oim.db.oim_schema_username.password}"
+			 print="yes">
+				update usr SET usr_email='OIMINTERNAL' where usr_login='OIMINTERNAL';
+				update usr SET usr_email='XELSYSADM' where usr_login='XELSYSADM';
+				update usr SET usr_email='WEBLOGIC' where usr_login='WEBLOGIC';
+				update usr SET usr_email='XELOPERATOR' where usr_login='XELOPERATOR';
+				commit;
+			
+			<classpath>
+				<pathelement location="${db.jdbc.path}"/>
+			</classpath>
+		</sqlSecure>
+
+		<!-- Step 3: Configure OIMDBProvider to handle user lookups based on the SSO Login ID, instead of the default User Login.
+		 This can be done by modifying the idstore.oim service instance in the jps-config.xml with the below KEY,VALUE-->
+		<property name="iam.update.jpsconfig.template" value="${idm.provisioning.build.dir}/templates/update_server_instance_in_jpsconfig_template.py" />
+                <property name="iam.update.jpsconfig" value="${idm.provisioning.build.dir}/config/update_server_instance_in_jpsconfig.py" />
+                <decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}" property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+
+                <delete file="${iam.update.jpsconfig}" />
+                <copy file="${iam.update.jpsconfig.template}" tofile="${iam.update.jpsconfig}" />
+                <replace file="${iam.update.jpsconfig}">
+                        <replacefilter token="%WLS_USER%" value="${provisioning.idmprov.oim.wlsadminuser}" />
+                        <replacefilter token="%WLS_PW%" value="${provisioning.idmprov.oim.wlsadminuser.password.value}" />
+                        <replacefilter token="%WLS_HOSTNAME%" value="${provisioning.idmprov.oim.adminserverhost}" />
+                        <replacefilter token="%WLS_PORT%" value="${provisioning.idmprov.oim.adminserverport}" />
+			<replacefilter token="%SERVER_INST%" value="idstore.oim" />
+			<replacefilter token="%KEY%" value="PROPERTY_ATTRIBUTE_MAPPING" />
+			<replacefilter token="%VALUE%" value="USER_NAME=USR_EMAIL:USER_ID=USR_EMAIL" />
+		</replace>
+		
+		<antcall target="execute-wlst-script">
+                        <param name="wlst.inputscript" value="${iam.update.jpsconfig}"/>
+                        <param name="wlst.executable.filepath" value="${provisioning.idmprov.oim.oracle_home}"/>
+                        <param name="password.string" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>
+                </antcall>
+
+		<!--Step 4: Modify AD authenticator configuration to use the appropriate value for User From Name Filter-->
+                <property name="iam.modify.adauthenticator.template" value="${idm.provisioning.build.dir}/templates/modify_adauthenticator_template.py" />
+                <property name="iam.modify.adauthenticator" value="${idm.provisioning.build.dir}/config/modify_adauthenticator.py" />
+                <decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}" property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+
+                <delete file="${iam.modify.adauthenticator}" />
+                <copy file="${iam.modify.adauthenticator.template}" tofile="${iam.modify.adauthenticator}" />
+                <replace file="${iam.modify.adauthenticator}">
+                        <replacefilter token="%WLS_USER%" value="${provisioning.idmprov.oim.wlsadminuser}" />
+                        <replacefilter token="%WLS_PWD%" value="${provisioning.idmprov.oim.wlsadminuser.password.value}" />
+                        <replacefilter token="%WLS_HOSTNAME%" value="${provisioning.idmprov.oim.adminserverhost}" />
+                        <replacefilter token="%WLS_PORT%" value="${provisioning.idmprov.oim.adminserverport}" />
+                        <replacefilter token="%DOMAIN_NAME%" value="${provisioning.idmprov.oim.domain_name}" />
+                </replace>
+
+                <antcall target="execute-wlst-script">
+                        <param name="wlst.inputscript" value="${iam.modify.adauthenticator}"/>
+                        <param name="wlst.executable.filepath" value="${provisioning.idmprov.oim.oracle_home}"/>
+                        <param name="password.string" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>
+                </antcall>
+
+	</target>	
+
+</project>

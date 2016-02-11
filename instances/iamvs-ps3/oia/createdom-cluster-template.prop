@@ -1,0 +1,100 @@
+###########################################################################
+# Properties for OIA Multi Host Domain
+###########################################################################
+
+# Domain Props                                                                                                                                                                   
+basePortNumber = 7000
+domainName=__DOMAIN_NAME__
+domainsDirectory=__IAM_TOP__/services/domains
+logsDirectory=__IAM_TOP__/IAM/logs
+walletsDirectory=__IAM_TOP__/products/analytics/wallets
+jvmLocation=__IAM_TOP__/products/analytics/jdk
+JTATimeout = 3700
+userEnvHome = __HOSTENV__
+
+
+# Adminserver                                                                                                                                                            
+adminserver.listenAddress = __IAM_OIA_HOST1__
+adminserver.relativeListenPort = 3
+adminserver.enableSSL = false
+adminserver.relativeSslListenPort = 4
+ 
+
+# Cluster
+amountCluster = 1
+cluster.1.name = oia_cluster
+cluster.1.clusterMessagingMode = unicast
+                
+ 
+
+# Machine
+amountMachine = 2
+machine.1.name = oia_machine1
+machine.1.listenerAddress = __IAM_OIA_HOST1__
+machine.1.nodemanagerPort = 5556
+machine.1.nmDir=__IAM_TOP__/config/nodemanager/__IAM_OIA_HOST1__
+machine.2.name = oia_machine2
+machine.2.listenerAddress = __IAM_OIA_HOST2__
+machine.2.nodemanagerPort = 5556
+machine.2.nmDir=__IAM_TOP__/config/nodemanager/__IAM_OIA_HOST2__
+
+
+# ManagedServer
+amountManagedServer = 2 
+managedserver.1.addToCluster = oia_cluster
+managedserver.1.name = wls_oia1
+managedserver.1.machine = oia_machine1
+managedserver.1.maxHeap = 1024m
+managedserver.1.listenerAddress = __IAM_OIA_HOST1__
+managedserver.1.relativeListenPort = 1003
+managedserver.1.relativeSslListenPort = 1004
+managedserver.1.sslEnabled = true
+managedserver.1.profileID = None
+managedserver.1.useNodeManager = true
+managedserver.1.additionalVMarguments =
+managedserver.1.BeaHome=__IAM_TOP__/products/analytics/wlserver_10.3
+managedserver.2.addToCluster = oia_cluster
+managedserver.2.name = wls_oia2
+managedserver.2.machine = oia_machine2
+managedserver.2.maxHeap = 1024m
+managedserver.2.listenerAddress = __IAM_OIA_HOST2__
+managedserver.2.relativeListenPort = 1003
+managedserver.2.relativeSslListenPort = 1004
+managedserver.2.sslEnabled = true
+managedserver.2.profileID = None
+managedserver.2.useNodeManager = true
+managedserver.2.additionalVMarguments =
+managedserver.2.BeaHome=__IAM_TOP__/products/analytics/wlserver_10.3
+
+
+
+# Custom Deloyment
+amountDeployments = 1
+deployment.1.applicationname = oia
+deployment.1.sourcepath = __IAM_TOP__/products/analytics/oia/oia
+deployment.1.targets = oia_cluster
+deployment.order = 100
+
+##############################################################
+# Datasource configuration
+# IMPORTANT:  if this value is >0 then you must define all datasource properties for the mentioned number of DS
+amountDatasources = 1
+
+datasource.1.name=OIADataSource
+
+# MUST BE WALLET or USERPASSWORD
+datasource.1.securityType=USERPASSWORD
+datasource.1.username=__IAM_OIA_DBUSER__
+datasource.1.password=__IAM_OIA_DBPWD__
+
+datasource.x.usesXA=true
+datasource.1.jndiname=jdbc/OIADataSource
+datasource.1.url=jdbc:oracle:thin:@__DBS_HOSTNAME__:__DBS_PORT__/__IAM_SERVICENAME__
+
+datasource.1.target=oia_cluster
+datasource.1.targettype=Cluster
+datasource.1.driver_class=oracle.jdbc.xa.client.OracleXADataSource
+datasource.1.maxcapacity=50
+datasource.1.testquery=SQL SELECT * FROM DUAL
+# GlobalTransactionsProtocol ONLY for NON-XA datasources possible !!!!   values possible: 'None' and 'OnePhaseCommit'
+datasource.1.globalTransactionsProtocol=None

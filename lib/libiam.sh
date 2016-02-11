@@ -153,10 +153,55 @@ deploy_lcm()
 78a79
 >                                                    <arg value="-Djava.io.tmpdir=${iam_top}" />
 EOS
-    log "LCM has been patched to use differen tempdir for Weblogic installation"
+    log "LCM has been modified to use different TMPDIR for Weblogic installation"
   else
-    log "LCM patching skipped, already done"
+    log "LCM TMPDIR modification skipped, already done"
   fi
+}
+
+#  LCM patches: needed for PS3 cluster installation
+#  param1: oracle patch number
+#
+patch_lcm()
+{
+  patchnr=${1}
+  export ORACLE_HOME=${iam_lcm}
+
+  if ! ${ORACLE_HOME}/OPatch/opatch lsinv | grep ${patchnr} >/dev/null ; then
+    cd ${s_patches}/${patchnr}
+    if ! ${ORACLE_HOME}/OPatch/opatch apply ; then
+      echo "ERROR patching LCM: patch ${patchnr}"
+      exit 80
+    fi
+  fi
+}
+
+#  change provisioining profiles to disables healthcheck before 
+#  and after installation
+#
+lcm_modify_profiles()
+{
+  local pl_path=${iam_lcm}/provisioning/idm-provisioning-build
+  local plist=(
+    idm-common-preverify-build.xml
+    idm-common-taskdefs-build.xml
+    idm-common-validate-build.xml
+    oam-build.xml
+    oim-build.xml
+    oud-build.xml
+  )
+
+  if ! [ -a "${pl_path}/${plist[0]}~" ]
+  then
+    log "Patching provisioning build plan"
+    for f in ${plist[@]}
+    do  
+      cp -b ${DEPLOYER}/lib/templates/prov/${f} ${pl_path}
+    done
+    log "Provisioning file patched"
+  else
+    warning "Skipped: build files already patched"
+  fi  
 }
 
 #  provision step within life cycle manager wizard
@@ -169,8 +214,8 @@ lcmstep()
   if [ "${_action}" == "unblock" ] ; then
 
     for d in ${iam_top}/products/* ; do
-      if [ -d "${d}/jdk6" ] ; then
-        jdk_patch_config ${d}/jdk6
+      if [ -d "${d}/${shipped_jdk_dir}" ] ; then
+        jdk_patch_config ${d}/${shipped_jdk_dir}
       fi
     done
 
@@ -303,6 +348,9 @@ exit()
 #
 remove_env()
 {
+  set -o nounset
+  : ${DEPLOYER:?}
+
   #  bin
   for f in $(ls ${DEPLOYER}/lib/templates/hostenv/bin/) ; do
     rm -f ~/bin/${f}
@@ -328,21 +376,28 @@ remove_env()
 #
 remove_iam()
 {
+  set -o nounset
+  : ${iam_top:?}
+  : ${iam_services:?}
+
   rm -Rf ${iam_top}/products/* \
-    ${iam_top}/config/* \
-    ${iam_services}/* \
-    ${iam_top}/*.lck \
-    ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
-    ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
-    ${iam_top}/lcm/lcmhome/provisioning/logs/
+         ${iam_top}/config/* \
+         ${iam_top}/*.lck \
+         ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
+         ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
+         ${iam_top}/lcm/lcmhome/provisioning/logs/ \
+         ${iam_services}/*
 }
 
 #  remove LCM (life cycle manager) iam_base/lcm
 #  binaries and home
 #
-remmve_lcm()
+remove_lcm()
 {
-  rm -Rf ${iam_top}/lcm/*
+  set -o nounset
+  : ${iam_top:?}
+
+  rm -Rf ${iam_top}/lcm/{lcm,lcmhome}
 }
 
 #  remove OIA installation including including env
@@ -350,15 +405,24 @@ remmve_lcm()
 #
 remove_oia()
 {
+  set -o nounset
+  : ${iam_top:?}
+  : ${iam_log:?}
+  : ${iam_services:?}
+  : ${iam_rbacx_home:?}
+  : ${iam_domain_oia:?}
+  : ${IL_APP_CONFIG:?}
+  : ${IDMPROV_OIA_HOST:?}
+
   rm -Rf ${iam_top}/products/analytics \
-    ${iam_rbacx_home} \
-    ${IL_APP_CONFIG}/oia.jar \
-    ${iam_log}/${iam_domain_oia} \
-    ${iam_services}/domains/${iam_domain_oia} \
-    ~/.env/{oia.env,analytics.prop,oia.prop} \
-    ~/bin/*analytics* \
-    ~/lib/deploy-oia.py \
-    ~/.cred/${iam_domain_oia}.{key,usr}
+         ${iam_rbacx_home} \
+         ${IL_APP_CONFIG}/oia.jar \
+         ${iam_log}/${iam_domain_oia} \
+         ${iam_services}/domains/${iam_domain_oia} \
+         ~/.env/{oia.env,analytics.prop,oia.prop} \
+         ~/bin/*analytics* \
+         ~/lib/deploy-oia.py \
+         ~/.cred/${iam_domain_oia}.{key,usr}
 
   echo "Removing domain from nodemanager"
   for f in ${iam_top}/config/nodemanager/${IDMPROV_OIA_HOST}/nodemanager.domains ; do
@@ -367,6 +431,14 @@ remove_oia()
 
   echo
   echo "OIA binaries, webapp, domain and environment files removed."
+  echo "Restart nodemanager now"
+}
+
+remove_all()
+{
+  remove_iam
+  remove_lcm
+  remove_env
 }
 
 #  run Oracle patch set assistant

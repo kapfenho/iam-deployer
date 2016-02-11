@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+
+
+
+<!--  $Header: idmlcm/idmprov/idm-provisioning-build/idm-common-validate-build.xml /main/24 2014/11/26 22:57:04 kopsinh Exp $ -->
+
+
+
+
+
+
+<!-- 
+ Copyright (c) 2012, 2014, Oracle and/or its affiliates. All rights reserved.
+
+   NAME
+     idm-common-validate-build.xml - <one-line expansion of the name>
+
+   DESCRIPTION
+     <short description of component this file declares/defines>
+
+   NOTES
+     <other useful comments, qualifications, etc.>
+
+   MODIFIED   (MM/DD/YY)
+   nagakula    07/10/13 - XbranchMerge nagakula_oud_pstore_clean from
+                          st_idmlcm_pt-r2ps2
+   kopsinh     07/10/13 - XbranchMerge kopsinh_idmlcm_deployemnt_options from
+                          st_idmlcm_pt-r2ps2
+   nagakula    04/08/13 - Fix for bug 16593847
+   nagakula    09/07/12 - Validations for the Identity Management Suite
+   nagakula    09/07/12 - Creation
+
+-->
+<project name="Common Validations" basedir=".">
+	<description>
+		Validations for the Identity Management Suite
+	</description>
+	<!--
+    =======================================================================
+    TARGET: common-validate-idm-opmn-proc-status [PUBLIC]
+            Use to validate that an OPMN process has a particular status.
+            For instance, you can use it to verify that the OHS OPMN
+            process is Alive.
+
+            Required parameters:
+                opmnctl_loc - Path to the opmnctl file
+                component_name - The OPMN component name. example: "ohs1"
+                process_type - The OPMN process type.  example: "OHS" 
+                validate_status - The OPMN status to validate.  example: "Alive"
+    =======================================================================
+    -->
+	<target name="common-validate-idm-opmn-proc-status">
+
+		<logStatus state="BUILD_STARTED" category="port"
+			task="opmn-proc"/>
+		<property name="opmn.pattern" 
+                  value="${component_name}(\s)*\|(\s)*${process_type}(\s)*\|(\s)*${validate_status}"/>
+
+		<if>
+			<os family="windows"/>
+			<then>
+				<exec failonerror="true"
+						executable="cmd" >
+					<arg value="/c"/>
+					<arg value="${opmnctl_loc}/opmnctl.bat" />
+					<arg value="status"/>
+					<arg value="-fmt"/>
+					<arg value="%cmp32%prt18%sta8"/>
+					<arg value="-noheaders"/>
+					<redirector outputproperty="opmn.out"/>
+				</exec>
+			</then>
+			<else>
+				<exec failonerror="true" 
+					  executable="${opmnctl_loc}/opmnctl">
+					<arg value="status"/>
+					<arg value="-fmt"/>
+					<arg value="%cmp32%prt18%sta8"/>
+					<arg value="-noheaders"/>
+					<redirector outputproperty="opmn.out"/>
+				</exec>
+			</else>
+		</if>
+
+		<propertyregex 
+            property="match"
+            input="${opmn.out}"
+            regexp="${opmn.pattern}"
+            select="\0"
+            casesensitive="true"/>
+
+		<logStatus state="BUILD_COMPLETE" category="port"
+			task="opmn-proc"/>
+	</target>
+
+	<target name="validateDBConnectivity-oid-idstore">
+		<if>
+			<equalsNested arg1="${provisioning.idmprov.oid-idstore-db.israc}" arg2="true"/>
+			<then>
+				<validateDBConnectivity host="${provisioning.idmprov.oid-idstore-db.rac.host1}"
+                                        port="${provisioning.idmprov.oid-idstore-db.rac.port1}"
+                                        serviceName="${provisioning.idmprov.oid-idstore-db.servicename}"
+                                        username="${db-username}"
+                                        password="${db-password}"/>
+
+				<validateDBConnectivity host="${provisioning.idmprov.oid-idstore-db.rac.host2}"
+                                        port="${provisioning.idmprov.oid-idstore-db.rac.port2}"
+                                        serviceName="${provisioning.idmprov.oid-idstore-db.servicename}"
+                                        username="${db-username}"
+                                        password="${db-password}"/>
+			</then>
+			<else>
+				<validateDBConnectivity host="${provisioning.idmprov.oid-idstore-db.single.host}"
+                                        port="${provisioning.idmprov.oid-idstore-db.single.port}"
+                                        serviceName="${provisioning.idmprov.oid-idstore-db.servicename}"
+                                        username="${db-username}"
+                                        password="${db-password}"/>
+			</else>
+		</if>
+	</target>
+	<target name="validateDBConnectivity">
+		
+		<propertycopy name="db.servicename" from="${base.property}.db.servicename" override="true" />
+		<propertycopy name="db.israc" from="${base.property}.db.israc" override="true" />
+		
+		<if>
+			<equalsNested arg1="${db.israc}" arg2="true"/>
+			<then>
+				<propertycopy name="db.host" from="${base.property}.db.rac.scanaddress" override="true" />
+				<propertycopy name="db.port" from="${base.property}.db.rac.scanport" override="true" />
+
+			</then>
+			<else>
+				<propertycopy name="db.host" from="${base.property}.db.host" override="true" />
+				<propertycopy name="db.port" from="${base.property}.db.port" override="true" />
+			</else>
+		</if>
+		<validateDBConnectivity host="${db.host}"
+                                port="${db.port}"
+                                serviceName="${db.servicename}"
+                                username="${db-username}"
+                                password="${db-password}"/>
+
+	</target>
+
+	<target name="validate-schema-presence">
+		
+		<propertycopy name="db.servicename" from="${base.property}.db.servicename" override="true" />
+		<propertycopy name="db.israc" from="${base.property}.db.israc" override="true" />
+		<propertycopy name="db-username" from="${base.property}.db.sysdba.username" override="true" />
+		<propertycopy name="db-password" from="${base.property}.db.sysdba.password" override="true" />
+		
+		<if>
+			<equalsNested arg1="${db.israc}" arg2="true"/>
+			<then>
+				<propertycopy name="db.host" from="${base.property}.db.rac.scanaddress" override="true" />
+				<propertycopy name="db.port" from="${base.property}.db.rac.scanport" override="true" />
+
+			</then>
+			<else>
+				<propertycopy name="db.host" from="${base.property}.db.host" override="true" />
+				<propertycopy name="db.port" from="${base.property}.db.port" override="true" />
+			</else>
+		</if>
+		<validateDBConnectivity host="${db.host}"
+                                port="${db.port}"
+                                serviceName="${db.servicename}"
+                                username="${db-username}"
+                                password="${db-password}"
+								 role="sysdba"/>
+		
+		<validateDBSchema
+			 dbHost = "${db.host}"
+			 dbPort = "${db.port}"
+			 dbServiceName = "${db.servicename}"
+			 sysDbaUsername = "${db-username}"
+			 sysDbaPassword = "${db-password}"
+			 schemaList = "${db.schemaList}" />
+		
+	</target>
+
+
+	<target name="create-validate-params-file">
+		<property name="idm.file.validate.params.template" value="${idm.provisioning.build.dir}/templates/validate_params_template.properties"/>
+		<property name="idm.file.validate.params" value="${idm.provisioning.build.dir}/config/validate_params.properties"/>
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+                property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oid.idstore.oamadminuser.password}"
+                property="provisioning.idmprov.oid.idstore.oamadminuser.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oid.idstore.fareadwriteuser.password}"
+                property="provisioning.idmprov.oid.idstore.fareadwriteuser.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oid.idstore.fareadonlyuser.password}"
+                property="provisioning.idmprov.oid.idstore.fareadonlyuser.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oid.pstore.policyrwuser.password}"
+                property="provisioning.idmprov.oid.pstore.policyrwuser.password.value" />
+
+		<property name="oim.frontend.url" value="http://${provisioning.idmprov.ohs.host}:${provisioning.idmprov.ohs.port}"/>
+
+		<if>
+			<equalsNested arg1="${provisioning.setup.domain-topology.topology.domain.topology.basic}" arg2="true"/>
+			<then>
+				<property name="oam.oim.ohs.url" value="http://${provisioning.idmprov.ohs.host}:${provisioning.idmprov.ohs.port}"/>
+				<property name="oam.sso.only.flag" value="false"/>
+			</then>
+			<else>
+				<property name="oam.oim.ohs.url" value="https://${provisioning.idmprov.lbr.sso.access.host}:${provisioning.idmprov.lbr.sso.access.port}"/>
+				<property name="oam.sso.only.flag" value="true"/>
+			</else>
+		</if>
+
+		<delete file="${idm.file.validate.params}"/>
+		<copy file="${idm.file.validate.params.template}" tofile="${idm.file.validate.params}"/>
+		<replace file="${idm.file.validate.params}">
+			<replacefilter token="%WLS_HOST%" value="${provisioning.idmprov.oim.adminserverhost}"/>
+			<replacefilter token="%WLS_PORT%" value="${provisioning.idmprov.oim.adminserverport}"/>
+			<replacefilter token="%WLS_ADMIN_USER%" value="${provisioning.idmprov.oim.wlsadminuser}"/>
+			<replacefilter token="%WLS_ADMIN_USER_PASSWORD%" value="${provisioning.idmprov.oim.wlsadminuser.password.value}"/>
+			<replacefilter token="%OIM_FRONT_END_URL%" value="${oim.frontend.url}"/>
+			<replacefilter token="%OIM_HOST%" value="${provisioning.idmprov.oim.host}"/>
+			<replacefilter token="%OIM_PORT%" value="${provisioning.idmprov.oim.port}"/>
+			<replacefilter token="%IDSTORE_HOST%" value="${provisioning.idmprov.dir.authenticator_directory_server_host}"/>
+			<replacefilter token="%IDSTORE_PORT%" value="${provisioning.idmprov.dir.authenticator_directory_server_port}"/>
+			<replacefilter token="%IDSTORE_DIR_TYPE%" value="${provisioning.idmprov.dir.authenticator_directory_server_type}"/>
+			<replacefilter token="%OAM11G_ACCESS_SERVER_HOST%" value="${provisioning.idmprov.oam.access_server_host}"/>
+			<replacefilter token="%OAM11G_ACCESS_SERVER_PORT%" value="${provisioning.idmprov.oam.access_server_port}"/>
+			<replacefilter token="%OAM11G_IDSTORE_ROLE_SECURITY_ADMIN%" value="${provisioning.idmprov.oam.role_security_admin}"/>
+			<replacefilter token="%OAM11G_OIM_OHS_URL%" value="${oam.oim.ohs.url}"/>
+			<replacefilter token="%OAM_ADMIN_USER%" value="${provisioning.idmprov.oid.idstore.oamadminuser}"/>
+			<replacefilter token="%OAM_ADMIN_USER_PASSWORD%" value="${provisioning.idmprov.oid.idstore.oamadminuser.password.value}"/>
+			<replacefilter token="%OAM11G_SSO_ONLY_FLAG%" value="${oam.sso.only.flag}"/>
+			<replacefilter token="%IDSTORE_SSLPORT%" value="${provisioning.idmprov.dir.authenticator_directory_server_sslport}"/>
+			<replacefilter token="%IDSTORE_SUPER_USER%" value="${provisioning.idmprov.oid.idstore.usernameattr}=${provisioning.idmprov.oid.idstore.fasuperuser},${provisioning.idmprov.oid.idstore.usersearchbase}"/>
+			<replacefilter token="%IDSTORE_RW_USER%" value="${provisioning.idmprov.oid.idstore.readwriteuserdn}"/>
+			<replacefilter token="%IDSTORE_RO_USER%" value="${provisioning.idmprov.oid.idstore.readonlyuserdn}"/>
+			<replacefilter token="%IDSTORE_USERBASE%" value="${provisioning.idmprov.oid.idstore.usersearchbase}"/>
+			<replacefilter token="%IDSTORE_GROUPBASE%" value="${provisioning.idmprov.oid.idstore.groupsearchbase}"/>
+			<replacefilter token="%IDSTORE_WLS_ADMIN_GROUP%" value="${provisioning.idmprov.oid.idstore.wlsadmingroupdn}"/>
+			<replacefilter token="%IDSTORE_RW_USER_PASSWORD%" value="${provisioning.idmprov.oid.idstore.fareadwriteuser.password.value}"/>
+			<replacefilter token="%IDSTORE_RO_USER_PASSWORD%" value="${provisioning.idmprov.oid.idstore.fareadonlyuser.password.value}"/>
+			<replacefilter token="%POLICYSTORE_HOST%" value="${provisioning.idmprov.dir-lbr.policy.host}"/>
+			<replacefilter token="%POLICYSTORE_PORT%" value="${provisioning.idmprov.dir-lbr.policy.port}"/>
+			<replacefilter token="%POLICYSTORE_SSLPORT%" value="${provisioning.idmprov.dir-lbr.policy.sslport}"/>
+			<replacefilter token="%POLICYSTORE_RW_USER%" value="${provisioning.idmprov.oid.pstore.policyrwuserdn}"/>
+			<replacefilter token="%POLICYSTORE_RW_USER_PASSWORD%" value="${provisioning.idmprov.oid.pstore.policyrwuser.password.value}"/>
+			<replacefilter token="%POLICYSTORE_POLICYCONTAINER%" value="${provisioning.idmprov.oid.pstore.policycontainer}"/>
+			<replacefilter token="%POLICYSTORE_REALM_DN%" value="${provisioning.idmprov.oid.pstore.realm_dn}"/>
+		</replace>
+	</target>
+
+	<target name="run-idmconfigtool-validate">
+		<property name="idm.file.validate.params" value="${idm.provisioning.build.dir}/config/validate_params.properties"/>
+		<decryptPassword password="${provisioning.idmprov.oim.wlsadminuser.password}"
+                property="provisioning.idmprov.oim.wlsadminuser.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oid.idstore.oamadminuser.password}"
+                property="provisioning.idmprov.oid.idstore.oamadminuser.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oid.idstore.fareadwriteuser.password}"
+                property="provisioning.idmprov.oid.idstore.fareadwriteuser.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oid.idstore.fareadonlyuser.password}"
+                property="provisioning.idmprov.oid.idstore.fareadonlyuser.password.value" />
+		<decryptPassword password="${provisioning.idmprov.oid.pstore.policyrwuser.password}"
+                property="provisioning.idmprov.oid.pstore.policyrwuser.password.value" />
+
+		<antcall target="create-validate-params-file"/>
+		<trycatch>
+			<try>
+				<idmConfigTool oracleHome="${provisioning.idmprov.oim.oracle_home}"
+			                        mwHome="${provisioning.idmprov.oim.mw_home}"
+                        			javaHome="${provisioning.idmprov.oim.java_home}"
+			                        option="validate"
+                        			component="${component}"
+			                        inputFile="${idm.file.validate.params}" />
+			</try>
+			<catch>
+				<failAndLogStatus task="IdmConfigTool validate" category="OIM" detail="IDM Automation Tool validate"/>
+			</catch>
+
+			<finally>
+				<modifyIDMResponseFile responseFile="${idm.file.validate.params}"  password="${provisioning.idmprov.oim.wlsadminuser.password.value},${provisioning.idmprov.oid.idstore.oamadminuser.password.value},${provisioning.idmprov.oid.idstore.fareadwriteuser.password.value},${provisioning.idmprov.oid.idstore.fareadonlyuser.password.value},${provisioning.idmprov.oid.pstore.policyrwuser.password.value}" />
+			</finally>
+		</trycatch>
+	</target>
+
+
+	<target name="private-validate-healthcheck-invocation">
+		<logStatus state="BUILD_STARTED" category="healthcheck" task="validatePostInstallUsingHealthCheck"/>
+		<property name="postinstall.check.logfile" value="${idm.provisioning.build.dir}${file.separator}config${file.separator}healthcheck-postinstall-check.log" />
+		<property name="hc.postinstall.generic.inputfile" value="${idm.provisioning.build.dir}${file.separator}config${file.separator}healthcheck-postinstall-generic-input.properties" />
+		<property name="prov.logs.loc" value="${provisioning.setup.install-location.locations.default.log.directory}${file.separator}${localhost.name}" />
+		<property name="execution.phase" value="POSTINSTALL" />
+		<if>
+			<equalsNested arg1="${provisioning.setup.products.core.action.install.oim}" arg2="true" />
+				<then>
+					<property name="idmhc.base.dir" value="${provisioning.idmprov.oim.oracle_home}" />
+				</then>
+				<else>
+					<property name="idmhc.base.dir" value="${provisioning.idmprov.oam.oracle_home}" />
+				</else>
+		</if>
+		
+		<!--  trycatch>
+			<try>
+				<healthCheckInvoker
+					basedir = "${idmhc.base.dir}"
+					logFile = "${postinstall.check.logfile}"
+					inputFile = "${hc.postinstall.generic.inputfile}"
+					provLogLoc = "${prov.logs.loc}"
+					topologyLoc = "${provisioning.idmprov.global.topology_dir}/topology.xml"
+					credConfigLoc = "${provisioning.idmprov.global.credconfig_dir}"
+					phase = "${execution.phase}"
+					postInstallCheck = "GENERIC"
+					type = "ERROR" />									
+			</try>
+			<catch>
+				<simulateValidationError message="Failed validating using Healthcheck framework." />
+				<failAndLogStatus task="post install health check" category="Validate" detail="IDM Health Check"/>
+			</catch>
+			<finally>
+				<modifyIDMResponseFile responseFile="${postinstall.check.logfile}" />
+				<modifyIDMResponseFile responseFile="${hc.postinstall.generic.inputfile}" />
+			</finally>
+		</trycatch  -->
+		<logStatus state="BUILD_COMPLETE" category="healthcheck" task="validatePostInstallUsingHealthCheck"/>
+	</target>
+
+</project>

@@ -1,0 +1,208 @@
+#  Oracle Identity and Access Management - Cluster Version
+#                                                            vi: set ft=ruby :
+#
+#  Automatical cluster deployment. Database system setup is not included.
+#  Shared Storage is implemented as NFS service with three mount points 
+#  delivered by host oim1. 
+#  Base for each VM is a
+#      - RedHat 6.7 x86_64 minimal or 
+#      - CentOS 6.7 x86_64 minimal 
+#  All requirements are installed during provisioning step "root-actions".
+#  The application installation takes place in the last step, executed only 
+#  when all hosts are ready.
+#
+VAGRANTFILE_API_VERSION = "2"
+
+IP_OIM1="192.168.168.16"
+IP_OIM2="192.168.168.17"
+IP_OAM1="192.168.168.18"
+IP_OAM2="192.168.168.19"
+IP_OUD1="192.168.168.32"
+IP_OUD2="192.168.168.33"
+IP_WEB1="192.168.168.48"
+IP_WEB2="192.168.168.49"
+
+IP_LBFE="192.168.168.48"    # frontend load balancer
+IP_DBS1="192.168.168.170"   # database server
+IP_NFSI="10.80.1.4"         # existing nfs with install images
+
+BOX="centos67fusion"        # all vms are built using the template. the fusion 
+# templates have the needed system packages already installed and a few other 
+# configs from the root-script are in place. however procedure is the same as 
+# for minimal templates
+
+$hostfile = "# ...cant touch this
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1                                         localhost6 localhost6.localdomain6
+# hosts
+#{IP_OIM1}            oim1.ps3.agoracon.at             oim1
+#{IP_OIM2}            oim2.ps3.agoracon.at             oim2
+#{IP_OAM1}            oam1.ps3.agoracon.at             oam1
+#{IP_OAM2}            oam2.ps3.agoracon.at             oam2
+#{IP_OUD1}            oud1.ps3.agoracon.at             oud1
+#{IP_OUD2}            oud2.ps3.agoracon.at             oud2
+#{IP_WEB1}            web1.ps3.agoracon.at             web1
+#{IP_WEB2}            web2.ps3.agoracon.at             web2
+# load balanced
+#{IP_LBFE}          access.ps3.agoracon.at           access
+#{IP_LBFE}   access-mobile.ps3.agoracon.at    access-mobile
+#{IP_LBFE}        identity.ps3.agoracon.at         identity
+#{IP_LBFE}    access-admin.ps3.agoracon.at     access-admin
+#{IP_LBFE}  identity-admin.ps3.agoracon.at   identity-admin
+#{IP_LBFE}       dir-admin.ps3.agoracon.at        dir-admin
+#{IP_LBFE}      access-api.ps3.agoracon.at       access-api
+#{IP_LBFE}    identity-api.ps3.agoracon.at     identity-api
+# database
+#{IP_DBS1}         oradb11.vie.agoracon.at          oradb11
+# install images nfs
+#{IP_NFSI}             nyx.vie.agoracon.at              nyx
+"
+# images holds the mount of the installation repository
+$images = "nyx:/export/oracle /mnt/oracle nfs rw,bg 0 0\n"
+$exports, $fstab = "", "#{$images}"
+[ '/opt/fmw/config',
+  '/opt/fmw/products',
+  '/opt/fmw/lcm' ].each do |d|
+  $exports << "#{d} 192.168.168.0/24(rw,async,no_subtree_check)\n"
+  $fstab   << "oim1:#{d} #{d} nfs rw,async 0 0\n"
+end
+
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.provision "hosts-file", type: "shell" do |s|
+    s.inline = "echo '#{$hostfile}' > /etc/hosts"
+  end
+
+  config.vm.provision "root-actions", type: "shell" do |s|
+    s.inline ="/vagrant/user-config/env/root-script.sh"
+  end
+
+  config.vm.provision "nfs", type: "shell", preserve_order: true do |s|
+    s.inline = "echo '#{$fstab}' >> /etc/fstab; mount -a"
+  end
+
+  config.vm.provision "ssh-key", type: "shell" do |s|
+    s.inline = "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam ssh-key -a deploy'"
+  end
+
+  # ----------------------------------------------------- identity servers
+  config.vm.define :oim1 do |m|
+    name, ip      = "oim1", IP_OIM1
+    m.vm.box      = BOX
+    m.vm.hostname = name
+    m.vm.network  :private_network, ip: ip
+    m.vm.provider :virtualbox do |vb|
+      vb.name     = name
+      vb.cpus     = 4
+      vb.memory   = 10240
+    end
+
+    # let oim1 be the nfs server for the common file systems
+    #
+    m.vm.provision "nfs", type: "shell", preserve_order: true do |s|
+      s.inline = "echo '#{$exports}' >>/etc/exports;
+        echo '#{$images}' >>/etc/fstab;
+        mount /mnt/oracle;
+        /sbin/service nfs start && /sbin/chkconfig nfs on"
+    end
+  end
+
+  config.vm.define :oim2 do |m|
+    name, ip      = "oim2", IP_OIM2
+    m.vm.box      = BOX
+    m.vm.hostname = name
+    m.vm.network  :private_network, ip: ip
+    m.vm.provider :virtualbox do |vb|
+      vb.name     = name
+      vb.cpus     = 4
+      vb.memory   = 8192
+    end
+  end
+
+  # ----------------------------------------------------- access servers
+  config.vm.define :oam1 do |m|
+    name, ip      = "oam1", IP_OAM1
+    m.vm.box      = BOX
+    m.vm.hostname = name
+    m.vm.network  :private_network, ip: ip
+    m.vm.provider :virtualbox do |vb|
+      vb.name     = name
+      vb.cpus     = 4
+      vb.memory   = 8192
+    end
+  end
+
+  config.vm.define :oam2 do |m|
+    name, ip      = "oam2", IP_OAM2
+    m.vm.box      = BOX
+    m.vm.hostname = name
+    m.vm.network  :private_network, ip: ip
+    m.vm.provider :virtualbox do |vb|
+      vb.name     = name
+      vb.cpus     = 4
+      vb.memory   = 7168
+    end
+  end
+
+  # ----------------------------------------------------- directory servers
+  config.vm.define :oud1 do |m|
+    name, ip      = "oud1", IP_OUD1
+    m.vm.box      = BOX
+    m.vm.hostname = name
+    m.vm.network  :private_network, ip: ip
+    m.vm.provider :virtualbox do |vb|
+      vb.name     = name
+      vb.cpus     = 2
+      vb.memory   = 4096
+    end
+  end
+
+  config.vm.define :oud2 do |m|
+    name, ip      = "oud2", IP_OUD2
+    m.vm.box      = BOX
+    m.vm.hostname = name
+    m.vm.network  :private_network, ip: ip
+    m.vm.provider :virtualbox do |vb|
+      vb.name     = name
+      vb.cpus     = 2
+      vb.memory   = 4096
+    end
+  end
+
+  # ----------------------------------------------------- web server
+  config.vm.define :web1 do |m|
+    name, ip      = "web1", IP_WEB1
+    m.vm.box      = BOX
+    m.vm.hostname = name
+    m.vm.network  :private_network, ip: ip
+    # m.vm.network  :public_network,  ip: IP_LBFE, bridge: "lagg0"
+    m.vm.provider :virtualbox do |vb|
+      vb.name     = name
+      vb.cpus     = 2
+      vb.memory   = 4096
+    end
+    # m.vm.provision "load balancer simulation", type: "shell", 
+    #   preserve_order: true do |s|
+    #   s.inline = "/vagrant/user-config/env/load-balancer.sh #{IP_LBFE}"
+    # end
+  end
+
+  config.vm.define :web2 do |m|
+    name, ip      = "web2", IP_WEB2
+    m.vm.box      = BOX
+    m.vm.hostname = name
+    m.vm.network  :private_network, ip: ip
+    m.vm.provider :virtualbox do |vb|
+      vb.name     = name
+      vb.cpus     = 2
+      vb.memory   = 4096
+    end
+  end
+
+  config.vm.provision "iam-prov", type: "shell" do |s|
+    s.inline = "sudo -u fmwuser -H DEPLOYER=/vagrant /vagrant/iam provision"
+  end
+
+end
+

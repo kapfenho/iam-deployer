@@ -1,0 +1,1765 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Oracle Unified Directory" basedir="." default="preverify">
+	<description>Install, configure and validate the Oracle Internet Directory
+                 component</description>
+	<import file="${idm.provisioning.build.dir}/idm-base-app-build.xml"/>
+	<property name="absolute.idm.dir" location="${idm.provisioning.build.dir}"/>
+
+	<target name="application-preverify">
+		<echoNested message="Starting the preverify process for ${ant.project.name} .... "
+                    level="info"/>
+		<!-- Port availability check is present in Health check validation -->
+		<echoNested message="Completed the preverify process for ${ant.project.name} .... "
+                    level="info"/>
+	</target>
+	<target name="application-instance2-preverify">
+		<echoNested message="Starting the instance2-preverify process for ${ant.project.name} .... "
+                    level="info"/>
+		<logStatus state="BUILD_STARTED" category="OUD" task="preverify"
+                   message="Starting instance2-preverify for ${ant.project.name}"/>
+		<logStatus state="BUILD_STARTED" category="port"
+                   task="validatePortAvailability"/>
+		<portAvailable>
+			<port value="${provisioning.idmprov.oud.second.idstore.port}"/>
+			<port value="${provisioning.idmprov.oud.second.idstore.sslport}"/>
+		</portAvailable>
+		<logStatus state="BUILD_COMPLETE" category="port"
+                   task="validatePortAvailability"/>
+		<echoNested message="Completed the preverify process for ${ant.project.name} .... "
+                    level="info"/>
+	</target>
+	<target name="application-install">
+		<echoNested message="Starting the install process for ${ant.project.name} .... "
+                    level="info"/>
+		<logStatus state="BUILD_STARTED" category="OUD" task="install"
+                   message="Starting install for ${ant.project.name}"/>
+		<property name="idm.file.install.silent.base.template"
+                  value="${idm.provisioning.build.dir}/templates/oud_silent_install_template.rsp"/>
+		<property name="idm.file.install.silent.base"
+                  value="${idm.provisioning.build.dir}/config/oud_silent_install.rsp"/>
+		<property name="idm.oui.base"
+                  value="${install.temp.dir}/oud/Disk1"/>
+		<property name="inv.file.global"
+                  value="${absolute.idm.dir}/config/oraInst.loc"/>
+
+		<!-- create file with de-referenced values from the plan -->
+		<property name="ovm.dereference.plan"
+                  value="${provisioning.idmprov.global.fadir}/reference_idm_plan_overrides.properties"/>
+		<mkdir dir="${provisioning.idmprov.global.fadir}"/>
+		<touch file="${ovm.dereference.plan}"/>
+		<dereferencePlanFile tofile="${ovm.dereference.plan}"/>
+		<antcall target="install-idm"/>
+		<logStatus state="BUILD_COMPLETE" category="OUD" task="install"
+                   message="Completed install for ${ant.project.name}"/>
+	</target>
+	<target name="application-preconfigure">
+		<echoNested message="Starting the preconfigure process for ${ant.project.name} .... "
+                    level="info"/>
+		<logStatus state="BUILD_STARTED" category="OUD" task="preconfigure"
+                   message="Starting preconfigure for ${ant.project.name}"/>
+		<antcall target="configure-oud">
+			<param name="instance_name"
+                   value="${provisioning.idmprov.oud.instance_name}"/>
+			<param name="host"
+                   value="${provisioning.idmprov.oud.idstore.host}"/>
+			<param name="port"
+                   value="${provisioning.idmprov.oud.idstore.port}"/>
+			<param name="ldaps.port"
+                   value="${provisioning.idmprov.oud.idstore.sslport}"/>
+		</antcall>
+		<mkdir dir="${provisioning.idmprov.global.keystoresdir}/oud"/>
+		<copy file="${provisioning.idmprov.oud.instance_home}/OUD/config/admin-keystore.pin" todir="${provisioning.idmprov.global.keystoresdir}/oud"/>
+		<!-- Only for advanced topology  -->
+		<if>
+			<equalsNested arg1="${provisioning.setup.domain-topology.topology.domain.topology.advanced}"
+                          arg2="true"/>
+			<then>
+				<antcall target="create-replication-server"/>
+				<antcall target="create-replication-domain"/>
+				<antcall target="enable-assured-replication">
+					<param name="instance_home"
+                           value="${provisioning.idmprov.oud.instance_home}"/>
+					<param name="host"
+                           value="${provisioning.idmprov.oud.idstore.host}"/>
+				</antcall>
+			</then>
+            <else>
+            <!-- Single Node change log -->
+               <antcall target="enable-changelog-replication"/>
+            </else>
+		</if>
+		<antcall target="relax-oud-objclass-create-restrictions">
+			<param name="host"
+                           value="${provisioning.idmprov.oud.idstore.host}"/>
+		</antcall>
+		<logStatus state="BUILD_COMPLETE" category="OUD" task="preconfigure"
+                   message="Completed preconfigure for ${ant.project.name}"/>
+		<echoNested message="Completed the preconfigure process for ${ant.project.name} .... "
+                    level="info"/>
+	</target>
+	<target name="application-instance2-preconfigure">
+		<echoNested message="Starting the instance2-preconfigure process for ${ant.project.name} .... "
+                    level="info"/>
+		<logStatus state="BUILD_STARTED" category="OUD" task="preconfigure"
+                   message="Starting instance2-preconfigure for ${ant.project.name}"/>
+		<antcall target="configure-oud">
+			<param name="instance_name"
+                   value="${provisioning.idmprov.oud.second.instance_name}"/>
+			<param name="host"
+                   value="${provisioning.idmprov.oud.second.idstore.host}"/>
+			<param name="port"
+                   value="${provisioning.idmprov.oud.second.idstore.port}"/>
+			<param name="ldaps.port"
+                   value="${provisioning.idmprov.oud.second.idstore.sslport}"/>
+		</antcall>
+		<antcall target="enable-replication"/>
+		<antcall target="replication-initialize"/>
+		<antcall target="enable-assured-replication">
+			<param name="instance_home"
+                    value="${provisioning.idmprov.oud.second.instance_home}"/>
+			<param name="host"
+                   value="${provisioning.idmprov.oud.second.idstore.host}"/>
+		</antcall>
+		<antcall target="relax-oud-objclass-create-restrictions">
+			<param name="host"
+                           value="${provisioning.idmprov.oud.second.idstore.host}"/>
+		</antcall>
+		<logStatus state="BUILD_COMPLETE" category="OUD" task="preconfigure"
+                   message="Completed instance2-preconfigure for ${ant.project.name}"/>
+		<echoNested message="Completed the instance2-preconfigure process for ${ant.project.name} .... "
+                    level="info"/>
+	</target>
+	<target name="application-configure">
+		<echoNested message="Starting the configure process for ${ant.project.name} .... "
+                    level="info"/>
+		<logStatus state="BUILD_STARTED" category="OUD" task="configure"
+                   message="Starting configure for ${ant.project.name}"/>
+		<antcall target="oud-add-aci"/>
+
+		<antcall target="grant-oud-change-log-access">
+			<param name="instance_home"
+                           value="${provisioning.idmprov.oud.instance_home}"/>
+			<param name="host"
+                           value="${provisioning.idmprov.oud.idstore.host}"/>
+		</antcall>
+		<logStatus state="BUILD_COMPLETE" category="OUD" task="configure"
+                   message="Completed configure for ${ant.project.name}"/>
+		<echoNested message="Completed the configure process for ${ant.project.name} .... "
+                    level="info"/>
+	</target>
+	<target name="application-instance2-configure">
+		<echoNested message="Starting the instance2-configure process for ${ant.project.name} .... "
+                    level="info"/>
+		<logStatus state="BUILD_STARTED" category="OUD" task="configure"
+                   message="Starting instance2-configure for ${ant.project.name}"/>
+		<antcall target="grant-oud-change-log-access">
+			<param name="instance_home"
+                           value="${provisioning.idmprov.oud.second.instance_home}"/>
+			<param name="host"
+                           value="${provisioning.idmprov.oud.second.idstore.host}"/>
+		</antcall>
+
+		<antcall target="create-indexes-second-host"/>
+
+		<logStatus state="BUILD_COMPLETE" category="OUD" task="configure"
+                   message="Completed instance2-configure for ${ant.project.name}"/>
+		<echoNested message="Completed the instance2-configure process for ${ant.project.name} .... "
+                    level="info"/>
+	</target>
+
+	<target name="application-configure-secondary">
+		<echoNested message="Starting the configure-secondary process for ${ant.project.name} .... "
+                    level="info"/>
+		<logStatus state="BUILD_STARTED" category="OUD" task="configure-secondary"
+                   message="Starting configure-secondary for ${ant.project.name}"/>
+                <antcall target="configure-oud-password-policy">
+                    <param name="host" value="${provisioning.idmprov.oud.idstore.host}"/>
+                </antcall>
+                                  
+		<!-- stop OUD -->
+		<antcall target="stop-oud">
+			<param name="instanceHome"
+                   value="${provisioning.idmprov.oud.instance_home}"/>
+		</antcall>
+
+
+		<antcall target="oud-rebuild-indexes">
+			<param name="instance_home"
+                           value="${provisioning.idmprov.oud.instance_home}"/>
+		</antcall>
+		<!-- start OUD -->
+		<antcall target="start-oud">
+			<param name="instanceHome"
+                   value="${provisioning.idmprov.oud.instance_home}"/>
+		</antcall>
+
+		<logStatus state="BUILD_COMPLETE" category="OUD" task="configure-secondary"
+                   message="Completed configure-secondary for ${ant.project.name}"/>
+		<echoNested message="Completed the configure-secondary process for ${ant.project.name} .... "
+                    level="info"/>
+	</target>
+	<target name="application-instance2-configure-secondary">
+		<echoNested message="Starting the instance2-configure-secondary process for ${ant.project.name} .... "
+                    level="info"/>
+		<logStatus state="BUILD_STARTED" category="OUD" task="configure-secondary"
+                   message="Starting instance2-configure-secondary for ${ant.project.name}"/>
+                <antcall target="configure-oud-password-policy">
+                    <param name="host"  value="${provisioning.idmprov.oud.second.idstore.host}"/>
+                </antcall>
+		<antcall target="stop-oud">
+			<param name="instanceHome"
+                   value="${provisioning.idmprov.oud.second.instance_home}"/>
+		</antcall>
+		<antcall target="oud-rebuild-indexes">
+			<param name="instance_home"
+                           value="${provisioning.idmprov.oud.second.instance_home}"/>
+		</antcall>
+		<!-- start OUD -->
+		<antcall target="start-oud">
+			<param name="instanceHome"
+                   value="${provisioning.idmprov.oud.second.instance_home}"/>
+		</antcall>
+		<logStatus state="BUILD_COMPLETE" category="OUD" task="configure-secondary"
+                   message="Completed instance2-configure-secondary for ${ant.project.name}"/>
+		<echoNested message="Completed the instance2-configure-secondary process for ${ant.project.name} .... "
+                    level="info"/>
+	</target>
+	<target name="application-postconfigure">
+                <echoNested message="Starting the postconfigure process for ${ant.project.name} .... "
+                    level="info"/>
+                <logStatus state="BUILD_STARTED" category="OUD" task="postconfigure"
+                   message="Starting postconfigure for ${ant.project.name}"/>
+
+                  <if>
+                        <equalsNested arg1="${provisioning.setup.suite.core.action.install.suite.complete}" arg2="true" />
+                        <then>
+                            <if>
+                              <equalsNested arg1="${provisioning.idmprov.oim.identitystore.database}" arg2="true" />
+                              <then>
+                                 <antcall target="add-orclappiduser-objectclass" />
+
+		                 <antcall target="update-oud-aci-ldap-synchronization">
+			                  <param name="instance_home"
+                                           value="${provisioning.idmprov.oud.instance_home}"/>
+                                 </antcall>
+                              </then>
+                            </if>
+                        </then>
+                  </if>
+                <logStatus state="BUILD_COMPLETE" category="OUD" task="postconfigure"
+                   message="Completed postconfigure for ${ant.project.name}"/>
+                <echoNested message="Completed the postconfigure process for ${ant.project.name} .... "
+                    level="info"/>
+        </target>
+
+	<target name="application-instance2-postconfigure">
+		<echoNested message="Starting the instance2-postconfigure process for ${ant.project.name} .... "
+                    level="info"/>
+		<logStatus state="BUILD_STARTED" category="OUD" task="postconfigure"
+                   message="Starting instance2-postconfigure for ${ant.project.name}"/>
+		
+		<antcall target="update-oud-aci-ldap-synchronization">
+                         <param name="instance_home"
+                           value="${provisioning.idmprov.oud.second.instance_home}"/>
+                </antcall>
+
+		<!-- stop OUD -->
+		<antcall target="stop-oud">
+			<param name="instanceHome"
+               value="${provisioning.idmprov.oud.second.instance_home}"/>
+		</antcall>
+		<!--antcall target="wlsadmin-oudtuning">
+            <param name="is.instance2" value="true"/>
+        </antcall>
+        <antcall target="idm-tune-ldap-parameters">
+            <param name="ldap.host"
+                   value="${provisioning.idmprov.oud.second.idstore.host}"/>
+            <param name="ldap.port"
+                   value="${provisioning.idmprov.oud.second.idstore.port}"/>
+            <param name="ldap.sslport"
+                   value="${provisioning.idmprov.oud.second.idstore.sslport}"/>
+            <param name="ldap.instance.name"
+                   value="${provisioning.idmprov.oud.second.instance_name}"/>
+            <param name="ldap.component.name"
+                   value="${provisioning.idmprov.oud.second.idstore.component_name}"/>
+            <param name="instance.home"
+                   value="${provisioning.idmprov.oud.second.instance_home}"/>
+            <param name="oracle.home"
+                   value="${provisioning.idmprov.oud.oracle_home}"/>
+            <param name="admindn"
+                   value="${provisioning.idmprov.oud.idstore.admindn}"/>
+            <param name="admindn.password"
+                   value="${provisioning.idmprov.oud.idstore.admindn.password}"/>
+            <param name="realm_dn"
+                   value="${provisioning.idmprov.oud.idstore.realm_dn}"/>
+        </antcall-->
+		<logStatus state="BUILD_COMPLETE" category="OUD" task="postconfigure"
+                   message="Completed instance2-postconfigure for ${ant.project.name}"/>
+		<echoNested message="Completed the instance2-postconfigure process for ${ant.project.name} .... "
+                    level="info"/>
+	</target>
+	<target name="application-validate">
+		<echoNested message="Starting the validate process for ${ant.project.name} .... "
+                    level="info"/>
+		<logStatus state="BUILD_STARTED" category="OUD" task="validate"
+                   message="Starting validate for ${ant.project.name}"/>
+		<!--<logStatus state="BUILD_STARTED" category="security"
+                   task="ldapSearch-orcladmin"/>
+		<ldapSearch ldaphost="${provisioning.idmprov.oud.idstore.host}"
+                    ldapport="${provisioning.idmprov.oud.idstore.port}"
+                    ldapportsecure="${provisioning.idmprov.oud.idstore.sslport}"
+                    ldapusername="${provisioning.idmprov.common-pwds.dir_admin.dn}"
+                    ldappassword="${provisioning.idmprov.common-pwds.dir_admin.password}"
+                    ldapsslenabled="false"
+                    basedn="${provisioning.idmprov.dir.realm.dn}"
+                    searchscope="base"/>
+		<logStatus state="BUILD_COMPLETE" category="security"
+                   task="ldapSearch-orcladmin"/>-->
+		<if>
+			<and>
+				<equalsNested arg1="${provisioning.setup.products.core.action.install.directory}" arg2="true" />
+				<equalsNested arg1="${provisioning.setup.products.core.action.dir.install.new.type}" arg2="OUD" />
+			</and>
+			<then>
+				<logStatus state="BUILD_STARTED" category="healthcheck" task="validatePostInstallUsingHealthCheck"/>
+				<property name="postinstall.check.logfile" value="${idm.provisioning.build.dir}${file.separator}config${file.separator}healthcheck-postinstall-check-oud.log" />
+				<property name="prov.logs.loc" value="${provisioning.setup.install-location.locations.default.log.directory}${file.separator}${localhost.name}" />
+				<property name="oud.hc.check.inputFile" value="${idm.provisioning.build.dir}${file.separator}config${file.separator}healthcheck-oud-check-input.properties" />
+				<property name="execution.phase" value="POSTINSTALL" />
+				
+				<if>
+					<equalsNested arg1="${provisioning.setup.products.core.action.install.oam}" arg2="true" />
+						<then>
+							<property name="idmhc.base.dir" value="${provisioning.idmprov.oam.oracle_home}" />							
+						</then>
+						<else>
+							<property name="idmhc.base.dir" value="${provisioning.idmprov.oim.oracle_home}" />
+						</else>
+				</if>
+				
+				<!--  trycatch>
+					<try>
+						<healthCheckInvoker
+							basedir = "${idmhc.base.dir}"
+							logFile = "${postinstall.check.logfile}"
+							provLogLoc = "${prov.logs.loc}"
+							inputFile="${oud.hc.check.inputFile}"
+							topologyLoc = "${provisioning.idmprov.global.topology_dir}/topology.xml"
+							credConfigLoc = "${provisioning.idmprov.global.credconfig_dir}"
+							phase = "${execution.phase}"
+							postInstallCheck = "OUD"
+							type = "ERROR" />									
+					</try>
+					<catch>
+						<simulateValidationError message="Failed validating using Healthcheck framework." />
+						<failAndLogStatus task="post install health check" category="Validate" detail="IDM Health Check"/>
+					</catch>
+					<finally>
+						<modifyIDMResponseFile responseFile="${postinstall.check.logfile}" />
+						<modifyIDMResponseFile responseFile="${oud.hc.check.inputFile}" />
+					</finally>
+				</trycatch -->
+				<logStatus state="BUILD_COMPLETE" category="healthcheck" task="validatePostInstallUsingHealthCheck"/>
+			</then>
+		</if>
+		<logStatus state="BUILD_COMPLETE" category="OUD" task="validate"
+		                   message="Completed validate for ${ant.project.name}"/>
+				<echoNested message="Completed the validate process for ${ant.project.name} .... "
+		                    level="info"/>
+
+	</target>
+	<target name="application-instance2-validate">
+		<echoNested message="Starting the instance2-validate process for ${ant.project.name} .... "
+                    level="info"/>
+		<logStatus state="BUILD_STARTED" category="OUD" task="validate"
+                   message="Starting instance2-validate for ${ant.project.name}"/>
+		<logStatus state="BUILD_STARTED" category="security"
+                   task="ldapSearch-orcladmin"/>
+		<ldapSearch ldaphost="${provisioning.idmprov.oud.second.idstore.host}"
+                    ldapport="${provisioning.idmprov.oud.second.idstore.port}"
+                    ldapportsecure="${provisioning.idmprov.oud.second.idstore.sslport}"
+                    ldapusername="${provisioning.idmprov.common-pwds.dir_admin.dn}"
+                    ldappassword="${provisioning.idmprov.common-pwds.dir_admin.password}"
+                    ldapsslenabled="false"
+                    basedn="${provisioning.idmprov.dir.realm.dn}"
+                    searchscope="base"/>
+		<logStatus state="BUILD_COMPLETE" category="security"
+                   task="ldapSearch-orcladmin"/>
+		<logStatus state="BUILD_COMPLETE" category="OUD" task="validate"
+                   message="Completed instance2-validate for ${ant.project.name}"/>
+		<echoNested message="Completed the instance2-validate process for ${ant.project.name} .... "
+                    level="info"/>
+	</target>
+	<target name="application-startup">
+		<echoNested message="Starting the startup process for ${ant.project.name} .... "
+                    level="info"/>
+		<logStatus state="BUILD_STARTED" category="OUD" task="startup"
+                   message="start-opmn: Starting up server ..."/>
+		<echoNested message="Installing artifact patches for OUD .... "
+                    level="info"/>
+		<!-- stop OUD -->
+		<antcall target="stop-oud">
+			<param name="instanceHome"
+                   value="${provisioning.idmprov.oud.instance_home}"/>
+		</antcall>
+
+		<!-- stop directory admin server where odsm is deployed-->
+		<!--antcall target="stop-admin-server">
+			<param name="server"          value="AdminServer" />
+			<param name="base.property"   value="provisioning.idmprov.odsm"/>
+			<param name="nodemanagerhost" value="provisioning.idmprov.odsm.adminserverhost" />
+			<param name="nodemanagerport" value="${provisioning.setup.common.core.node.manager.port}" />
+		</antcall-->
+
+		<antcall target="apply-artifact-patching">
+			<param name="target" value="dir-artifact-patch" />
+		</antcall>
+		<!-- start OUD -->
+		<antcall target="start-oud">
+			<param name="instanceHome"
+                   value="${provisioning.idmprov.oud.instance_home}"/>
+		</antcall>
+		<logStatus state="BUILD_COMPLETE" category="OUD" task="startup"
+                   message="start-oud: Successfully started up"/>
+		<echoNested message="Completed the startup process for ${ant.project.name} .... "
+                    level="info"/>
+	</target>
+	<target name="application-instance2-startup">
+		<echoNested message="Starting the instance2-startup process for ${ant.project.name} .... "
+                    level="info"/>
+		<logStatus state="BUILD_STARTED" category="OUD" task="startup"
+                   message="start-opmn: Starting up server ..."/>
+		<!-- stop OUD -->
+		<antcall target="stop-oud">
+			<param name="instanceHome"
+                   value="${provisioning.idmprov.oud.second.instance_home}"/>
+		</antcall>
+		<antcall target="apply-artifact-patching">
+			<param name="target" value="dir-artifact-patch" />
+		</antcall>
+		<!-- start OUD -->
+		<antcall target="start-oud">
+			<param name="instanceHome"
+                   value="${provisioning.idmprov.oud.second.instance_home}"/>
+		</antcall>
+		<logStatus state="BUILD_COMPLETE" category="OUD" task="startup"
+                   message="start-oud: Successfully started up"/>
+		<echoNested message="Completed the instance2-startup process for ${ant.project.name} .... "
+                    level="info"/>
+	</target>
+
+	<target name="silent-file-idm-base">
+		<delete file="${idm.file.install.silent.base}"/>
+		<copy file="${idm.file.install.silent.base.template}"
+              tofile="${idm.file.install.silent.base}"/>
+		<replace file="${idm.file.install.silent.base}">
+			<replacefilter token="%MW_HOME%"
+                           value="${provisioning.idmprov.oud.mw_home}"/>
+			<replacefilter token="%ORACLE_HOME%"
+                           value="${provisioning.idmprov.oud.oracle_home}"/>
+		</replace>
+	</target>
+
+	<target name="install-idm" depends="silent-file-idm-base">
+
+		<trycatch>
+			<try>
+				<if>
+					<os family="windows"/>
+					<then>
+						<antcall target="run.oui">
+							<param name="dir.tmp"
+                                   value="${provisioning.idmprov.global.tmp}"/>
+							<param name="dir.oui" value="${idm.oui.base}"/>
+							<param name="file.rsp"
+                                   value="${idm.file.install.silent.base}"/>
+							<param name="oui.mode" value="-silent"/>
+							<param name="jre.loc"
+                                   value="${provisioning.idmprov.oud.java_home}"/>
+						</antcall>
+					</then>
+					<else>
+						<getPrimaryGroup property="primary.user.group"/>
+						<delete file="${inv.file.global}"/>
+						<echo file="${inv.file.global}" append="false">inventory_loc=${provisioning.idmprov.oud.mw_home}/oraInventory
+inst_group=${primary.user.group}                         </echo>
+						<antcall target="run.oui">
+							<param name="dir.tmp"
+                                   value="${provisioning.idmprov.global.tmp}"/>
+							<param name="dir.oui" value="${idm.oui.base}"/>
+							<param name="file.inv" value="${inv.file.global}"/>
+							<param name="file.rsp"
+                                   value="${idm.file.install.silent.base}"/>
+							<param name="oui.mode" value="-silent"/>
+							<param name="jre.loc"
+                                   value="${provisioning.idmprov.oud.java_home}"/>
+						</antcall>
+					</else>
+				</if>
+			</try>
+			<catch>
+				<failAndLogStatus task="OUD Install" category="OUD"
+                                  detail="OUD installation is unsuccessful."/>
+			</catch>
+			<finally>
+				<modifyIDMResponseFile responsefile="${idm.file.install.silent.base}"/>
+				<if>
+					<not>
+						<os family="windows"/>
+					</not>
+					<then>
+						<modifyIDMResponseFile responsefile="${inv.file.global}"/>
+					</then>
+				</if>
+			</finally>
+		</trycatch>
+	</target>
+	<target name="oud-add-aci">
+		<property name="ldif.oud.add.aci.template"
+                  value="${idm.provisioning.build.dir}/templates/oud_add_aci_template.ldif"/>
+		<property name="ldif.oud.add.aci"
+                  value="${idm.provisioning.build.dir}/config/oud_add_aci.ldif"/>
+		<delete file="${ldif.oud.add.aci}"/>
+		<copy file="${ldif.oud.add.aci.template}"
+              tofile="${ldif.oud.add.aci}"/>
+		<replace file="${ldif.oud.add.aci}">
+			<replacefilter token="%RESERVATION_CONTAINER%"
+                           value="${provisioning.idmprov.dir.reserve.container}"/>
+			<replacefilter token="%OIMLDAP%"
+                           value="${provisioning.idmprov.common-pwds.oim_ldap_user.name}"/>
+			<replacefilter token="%GROUP_SEARCH_BASE%"
+                           value="${provisioning.idmprov.dir.groups.container}"/>
+			<replacefilter token="%OIM_ADMIN_GROUP%"
+                           value="${provisioning.idmprov.dir.oimadmingroup}"/>
+			<replacefilter token="%SYSTEM_ID_BASE%"
+                           value="${provisioning.idmprov.dir.systemids.container}"/>
+		</replace>
+		<trycatch>
+			<try>
+				<ldapModify ldapHostName="${provisioning.idmprov.oud.idstore.host}"
+                            ldapPort="${provisioning.idmprov.oud.idstore.port}"
+                            oidOracleHome="${provisioning.idmprov.oud.oracle_home}"
+                            ldapDN="${provisioning.idmprov.oud.idstore.admindn}"
+                            ldapPwd="${provisioning.idmprov.oud.idstore.admindn.password}"
+                            ldifFileLoc="${ldif.oud.add.aci}"/>
+			</try>
+			<finally>
+				<modifyIDMResponseFile responsefile="${ldif.oud.add.aci}"/>
+			</finally>
+		</trycatch>
+	</target>
+	<target name="configure-oud">
+		
+		<property name="inv.file.global"
+                  value="${absolute.idm.dir}/config/oraInst.loc"/>
+		<property name="oud.pwd.file"
+                  value="${idm.provisioning.build.dir}/config/oud_pwd_template.rsp"/>
+		<decryptPassword password="${provisioning.idmprov.oud.idstore.admindn.password}"
+                         property="provisioning.idmprov.oud.idstore.admindn.password.value"/>
+		<property environment="env"/>
+
+     <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+            classpath="${idm.provisioning.build.dir}\..\lib\ant-contrib.jar"/>
+				<delete file="${inv.file.global}"/>
+				<echo file="${inv.file.global}" append="false">inventory_loc=${provisioning.idmprov.oud.mw_home}/oraInventory
+inst_group=${primary.user.group}                         </echo>
+				<echo file="${oud.pwd.file}" append="false">${provisioning.idmprov.oud.idstore.admindn.password.value}</echo>
+		         <trycatch>
+			<try>								<if>
+                    <os family="windows"/>
+                    <then>
+						<property name="idm.config.script" value="${provisioning.idmprov.oud.oracle_home}/oud-setup.bat"/> 
+						<echoNested message="Starting the oud setup.bat for windows from location ${provisioning.idmprov.oud.oracle_home}/oud-setup.bat" level="info" />
+						<echoNested message="name of the script == ${idm.config.script}" level="info"/>
+					
+						 <loadresource property="provisioning.idmprov.oud.mw_home.windows">
+		 				 <propertyresource name="provisioning.idmprov.oud.mw_home"/>
+  							<filterchain>
+    								<tokenfilter>
+      									<replacestring from="/" to="\"/>
+    								</tokenfilter>
+  							</filterchain>
+						 </loadresource>	
+						 <loadresource property="provisioning.idmprov.global.local_confighome.windows">
+		 				 <propertyresource name="provisioning.idmprov.global.local_confighome"/>
+  							<filterchain>
+    								<tokenfilter>
+      									<replacestring from="/" to="\"/>
+    								</tokenfilter>
+  							</filterchain>
+						 </loadresource>	
+						<echoNested message="referenceloc=${provisioning.idmprov.oud.mw_home.windows} and targetloc=${provisioning.idmprov.global.local_confighome.windows} and Instance_home = ${provisioning.idmprov.oud.idstore.instance_home} and oracle home =  ${provisioning.idmprov.oud.oracle_home} INSTANCE_NAME is ${oudInstRelPath}instances/${instance_name} baseDN =  ${provisioning.idmprov.oud.idstore.realm_dn} --hostName ${host}--ldapPort ${port}--ldapsPort ${ldaps.port}--adminConnectorPort ${provisioning.idmprov.oud.adminconnectorport} --rootUserDN ${provisioning.idmprov.oud.idstore.admindn}--rootUserPasswordFile ${oud.pwd.file} " />
+						<findRelPath referenceloc="${provisioning.idmprov.oud.mw_home.windows}"
+                        	     			targetloc="${provisioning.idmprov.global.local_confighome.windows}"
+	                             			proprelativeloc="oudInstRelPath"/>
+					<forget>
+						<exec executable="cmd" failonerror="true">
+							<env key="JAVA_HOME"
+                 			 	       		value="${provisioning.idmprov.oud.java_home}"/>
+							<env key="ORACLE_HOME"
+                 				 	       value="${provisioning.idmprov.oud.oracle_home}"/>
+							<env key="INSTANCE_NAME" value="${oudInstRelPath}instances/${instance_name}"/>
+							<arg value="/c"/>
+							<arg value="${idm.config.script}"/>
+							<arg value="--cli"/>
+							<arg line="--baseDN ${provisioning.idmprov.oud.idstore.realm_dn}"/>
+							<arg value="--addBaseEntry"/>
+							<arg line="--hostName ${host}"/>
+							<arg line="--ldapPort ${port}"/>
+							<arg line="--ldapsPort ${ldaps.port}"/>
+							<arg line="--generateSelfSignedCertificate"/>
+							<arg line="--adminConnectorPort ${provisioning.idmprov.oud.adminconnectorport}"/>
+							<arg line="--rootUserDN ${provisioning.idmprov.oud.idstore.admindn}"/>
+							<arg line="--rootUserPasswordFile ${oud.pwd.file}"/>
+							<arg value="--no-prompt"/>
+							<arg value="--noPropertiesFile"/>
+						</exec>
+					</forget>
+					
+					<waitfor maxwait="6" maxwaitunit="minute" checkevery="500">
+						        <available file="${provisioning.idmprov.oud.instance_home}\OUD\logs\oud-setup"/>
+					</waitfor>
+					
+					<trycatch>
+					<try>
+					
+						<tailFile 
+							filePath="${provisioning.idmprov.oud.instance_home}\OUD\logs\oud-setup"			
+							successPattern="INFO: start-ds return value: 0"
+							returnValue="resultvalue"
+						/>
+					
+					</try>
+					
+					<catch>
+						<failAndLogStatus task="tailFile" category="OUD" detail="OUD installation is unsuccessful."/>
+					</catch>
+					</trycatch>
+					<echo message="${resultvalue}"/>
+					
+					<switch value="${resultvalue}">
+						<case value="FAILURE_PATTERN_FOUND">
+							<fail>
+							 An Error Occured during the setup operation! Please refer to "logs" for details.
+							</fail>
+						</case>
+						<case value="ERROR">
+							<fail>
+							 An Error Occured during the setup operation!
+							</fail>
+						</case>
+					  
+						<case value="TIMEDOUT">
+							<fail>
+							An Error Occured during the setup operation! Task has been aborted due to timeout!
+							</fail>
+						</case>
+						<case value="ERROR - INCORRECT INPUT">
+							<fail>
+							 Please provide a valid input!
+							</fail>
+						</case>
+						<case value="SUCCESS_PATTERN_FOUND">
+						</case>
+						<default>
+						<fail>
+							 An Error Occured during the execution of oud-setup.bat!
+							</fail>
+						</default>
+					</switch>
+                </then>
+               <else>
+					<getPrimaryGroup property="primary.user.group"/>
+					<property name="idm.config.script" value="${provisioning.idmprov.oud.oracle_home}/oud-setup"/> 
+			  		<findRelPath referenceloc="${provisioning.idmprov.oud.mw_home}"
+                             targetloc="${provisioning.idmprov.global.local_confighome}"
+                             proprelativeloc="oudInstRelPath"/>
+				<exec executable="/bin/bash" failonerror="true">
+					<env key="JAVA_HOME"
+                         value="${provisioning.idmprov.oud.java_home}"/>
+					<env key="ORACLE_HOME"
+                         value="${provisioning.idmprov.oud.oracle_home}"/>
+					<env key="INSTANCE_NAME"
+                         value="${oudInstRelPath}instances/${instance_name}"/>
+					<arg value="${idm.config.script}"/>
+					<arg value="--cli"/>
+					<arg line="--baseDN ${provisioning.idmprov.oud.idstore.realm_dn}"/>
+					<arg value="--addBaseEntry"/>
+					<arg line="--hostName ${host}"/>
+					<arg line="--ldapPort ${port}"/>
+					<arg line="--ldapsPort ${ldaps.port}"/>
+					<arg line="--generateSelfSignedCertificate"/>
+					<arg line="--adminConnectorPort ${provisioning.idmprov.oud.adminconnectorport}"/>
+					<arg line="--rootUserDN ${provisioning.idmprov.oud.idstore.admindn}"/>
+					<arg line="--rootUserPasswordFile ${oud.pwd.file}"/>
+					<arg value="--no-prompt"/>
+					<arg value="--noPropertiesFile"/>
+				</exec>
+
+</else>			
+				</if>
+
+			</try>
+			<catch>
+				<failAndLogStatus task="OUD Configuration" category="OUD"
+                                  detail="OUD Configuration is unsuccessful."/>
+			</catch>
+			<finally>
+				<delete file="${oud.pwd.file}"/>
+			</finally>
+		</trycatch>
+	</target>
+	<target name="create-replication-server">
+		
+		<property name="inv.file.global"
+                  value="${absolute.idm.dir}/config/oraInst.loc"/>
+		<property name="oud.pwd.file"
+                  value="${idm.provisioning.build.dir}/config/oud_pwd_template.rsp"/>
+		<decryptPassword password="${provisioning.idmprov.oud.idstore.admindn.password}"
+                         property="provisioning.idmprov.oud.idstore.admindn.password.value"/>
+		<property environment="env"/>
+		<trycatch>
+			<try>
+				
+				<delete file="${inv.file.global}"/>
+				<echo file="${inv.file.global}" append="false">inventory_loc=${provisioning.idmprov.oud.mw_home}/oraInventory
+inst_group=${primary.user.group}                         </echo>
+				<echo file="${oud.pwd.file}" append="false">${provisioning.idmprov.oud.idstore.admindn.password.value}</echo>
+				<if>
+                                  <os family="windows"/>
+                                         <then>
+                                                <property name="idm.config.script" value="${provisioning.idmprov.oud.oracle_home}/bat/dsconfig.bat"/>
+						<exec executable="cmd" failonerror="true">
+        	                                <env key="JAVA_HOME"
+                			         value="${provisioning.idmprov.oud.java_home}"/>
+                                        	<env key="ORACLE_HOME"
+			                         value="${provisioning.idmprov.oud.oracle_home}"/>
+                        	                <env key="INSTANCE_NAME"
+			                         value="${provisioning.idmprov.oud.instance_home}"/>
+                        	                <arg value="/c"/>
+                        	                <arg value="${idm.config.script}"/>
+                                	        <arg value="create-replication-server"/>
+                                        	<arg value="--provider-name"/>
+	                                        <arg value="Multimaster Synchronization"/>
+        	                                <arg line="--set replication-port:${provisioning.idmprov.oud.replicationport}"/>
+                	                        <arg line="--set replication-server-id:22066"/>
+                        	                <arg line="--type generic"/>
+                                	        <arg line="--hostName ${provisioning.idmprov.oud.idstore.host}"/>
+                                        	<arg line="--port ${provisioning.idmprov.oud.adminconnectorport}"/>
+	                                        <arg line="--bindDN ${provisioning.idmprov.oud.idstore.admindn}"/>
+        	                                <arg line="--bindPasswordFile ${oud.pwd.file}"/>
+                	                        <arg value="--trustAll"/>
+                        	                <arg value="--no-prompt"/>
+                                	        <arg value="--noPropertiesFile"/>
+	                                </exec>
+					</then>
+				<else>
+				<property name="idm.config.script"
+				 value="${provisioning.idmprov.oud.oracle_home}/bin/dsconfig"/>
+				<getPrimaryGroup property="primary.user.group"/>
+				<!--findRelPath referenceloc="${provisioning.idmprov.oud.mw_home}"
+                             targetloc="${provisioning.idmprov.global.local_confighome}"
+                             proprelativeloc="oudInstRelPath"/-->
+				<exec executable="/bin/bash" failonerror="true">
+					<env key="JAVA_HOME"
+                         value="${provisioning.idmprov.oud.java_home}"/>
+					<env key="ORACLE_HOME"
+                         value="${provisioning.idmprov.oud.oracle_home}"/>
+					<env key="INSTANCE_NAME"
+                         value="${provisioning.idmprov.oud.instance_home}"/>
+					<arg value="${idm.config.script}"/>
+					<arg value="create-replication-server"/>
+					<arg value="--provider-name"/>
+					<arg value="Multimaster Synchronization"/>
+					<arg line="--set replication-port:${provisioning.idmprov.oud.replicationport}"/>
+					<arg line="--set replication-server-id:22066"/>
+					<arg line="--type generic"/>
+					<arg line="--hostName ${provisioning.idmprov.oud.idstore.host}"/>
+					<arg line="--port ${provisioning.idmprov.oud.adminconnectorport}"/>
+					<arg line="--bindDN ${provisioning.idmprov.oud.idstore.admindn}"/>
+					<arg line="--bindPasswordFile ${oud.pwd.file}"/>
+					<arg value="--trustAll"/>
+					<arg value="--no-prompt"/>
+					<arg value="--noPropertiesFile"/>
+				</exec>
+			</else>
+				</if>
+			</try>
+			<catch>
+				<failAndLogStatus task="OUD Replication Server setup"
+                                  category="OUD"
+                                  detail="OUD Replication Server setup is unsuccessful."/>
+			</catch>
+			<finally>
+				<delete file="${oud.pwd.file}"/>
+			</finally>
+		</trycatch>
+	</target>
+
+        <!--FIX for Bug 20352405 - OAM USER LOCKOUT DOESNT HAPPEN AFTER 3 LOGIN ATTEMPTS WITH WRONG PASSWORD.It also takes care of the issue in the bug 20201364. -->
+        <target name="configure-oud-password-policy">
+            <property name="oud.pwd.file"
+                  value="${idm.provisioning.build.dir}/config/oud_pwd_template.rsp"/>
+            <decryptPassword password="${provisioning.idmprov.oud.idstore.admindn.password}"
+                         property="provisioning.idmprov.oud.idstore.admindn.password.value"/>
+            <echo file="${oud.pwd.file}" append="false">${provisioning.idmprov.oud.idstore.admindn.password.value}</echo>
+                         <trycatch>
+                        <try>                                                           <if>
+                    <os family="windows"/>
+                    <then>
+                          <exec executable="cmd" failonerror="true">
+                                                        <env key="JAVA_HOME" value="${provisioning.idmprov.oud.java_home}"/>
+                                                        <arg value="/c"/><arg value='${provisioning.idmprov.oud.oracle_home}/bin/dsconfig -h ${host} -p ${provisioning.idmprov.oud.adminconnectorport} -D "${provisioning.idmprov.oud.idstore.admindn}" -j ${oud.pwd.file} -X -n set-password-policy-prop --policy-name "Default Password Policy" --set "lockout-failure-count:10"'/>
+                          </exec>
+                    </then>
+                    <else>
+                        <exec executable="sh" failonerror="true">
+                                    <env key="JAVA_HOME" value="${provisioning.idmprov.oud.java_home}"/>
+                                    <arg value="-c"/><arg value='${provisioning.idmprov.oud.oracle_home}/bin/dsconfig -h ${host} -p ${provisioning.idmprov.oud.adminconnectorport} -D "${provisioning.idmprov.oud.idstore.admindn}" -j ${oud.pwd.file} -X -n set-password-policy-prop --policy-name "Default Password Policy" --set "lockout-failure-count:10"'/>
+                                </exec>
+                    </else>
+                                </if>
+                        </try>
+                        <catch>
+                                <failAndLogStatus task="OUD Configuration" category="OUD"
+                                  detail="OUD Password Policy Configuration is unsuccessful."/>
+                        </catch>
+                        <finally>
+                                <delete file="${oud.pwd.file}"/>
+                        </finally>
+                </trycatch>
+        </target>
+
+	<target name="create-replication-domain">
+		
+		<property name="inv.file.global"
+                  value="${absolute.idm.dir}/config/oraInst.loc"/>
+		<property name="oud.pwd.file"
+                  value="${idm.provisioning.build.dir}/config/oud_pwd_template.rsp"/>
+		<decryptPassword password="${provisioning.idmprov.oud.idstore.admindn.password}"
+                         property="provisioning.idmprov.oud.idstore.admindn.password.value"/>
+		<property environment="env"/>
+		<trycatch>
+			<try>
+
+				<delete file="${inv.file.global}"/>
+				<echo file="${inv.file.global}" append="false">inventory_loc=${provisioning.idmprov.oud.mw_home}/oraInventory
+inst_group=${primary.user.group}                         </echo>
+				<echo file="${oud.pwd.file}" append="false">${provisioning.idmprov.oud.idstore.admindn.password.value}</echo>
+				<if>
+                                  <os family="windows"/>
+                                         <then>
+                                                <property name="idm.config.script" value="${provisioning.idmprov.oud.oracle_home}/bat/dsconfig.bat"/>
+                                                <exec executable="cmd" failonerror="true">
+                                                <env key="JAVA_HOME"
+                                                 value="${provisioning.idmprov.oud.java_home}"/>
+                                                <env key="ORACLE_HOME"
+                                                 value="${provisioning.idmprov.oud.oracle_home}"/>
+                                                <env key="INSTANCE_NAME"
+                                                 value="${provisioning.idmprov.oud.instance_home}"/>
+                                                <arg value="/c"/>
+						    <arg value="${idm.config.script}"/>
+                	                        <arg value="create-replication-domain"/>
+        	                                <arg value="--provider-name"/>
+	                                        <arg value="Multimaster Synchronization"/>
+                                      		<arg line="--set base-dn:${provisioning.idmprov.oud.idstore.realm_dn}"/>
+	                                      	<arg line="--set replication-server:${provisioning.idmprov.oud.idstore.host}:${provisioning.idmprov.oud.replicationport}"/>
+                                	        <arg line="--set server-id:5057"/>
+                        	                <arg line="--type generic"/>
+                	                        <arg line="--domain-name ${provisioning.idmprov.oud.idstore.realm_dn}"/>
+        	                                <arg line="--hostName ${provisioning.idmprov.oud.idstore.host}"/>
+	                                      	 <arg line="--port ${provisioning.idmprov.oud.adminconnectorport}"/>
+                                        	<arg line="--bindDN ${provisioning.idmprov.oud.idstore.admindn}"/>
+                                	        <arg line="--bindPasswordFile ${oud.pwd.file}"/>
+                        	                <arg value="--trustAll"/>
+                	                        <arg value="--no-prompt"/>
+        	                                <arg value="--noPropertiesFile"/>
+	                                </exec>
+					</then>
+				<else>
+				<property name="idm.config.script"
+		                  value="${provisioning.idmprov.oud.oracle_home}/bin/dsconfig"/>
+				<getPrimaryGroup property="primary.user.group"/>
+				<!--findRelPath referenceloc="${provisioning.idmprov.oud.mw_home}"
+                             targetloc="${provisioning.idmprov.global.local_confighome}"
+                             proprelativeloc="oudInstRelPath"/-->
+				<exec executable="/bin/bash" failonerror="true">
+					<env key="JAVA_HOME"
+                         value="${provisioning.idmprov.oud.java_home}"/>
+					<env key="ORACLE_HOME"
+                         value="${provisioning.idmprov.oud.oracle_home}"/>
+					<env key="INSTANCE_NAME"
+                         value="${provisioning.idmprov.oud.instance_home}"/>
+					<arg value="${idm.config.script}"/>
+					<arg value="create-replication-domain"/>
+					<arg value="--provider-name"/>
+					<arg value="Multimaster Synchronization"/>
+					<arg line="--set base-dn:${provisioning.idmprov.oud.idstore.realm_dn}"/>
+					<arg line="--set replication-server:${provisioning.idmprov.oud.idstore.host}:${provisioning.idmprov.oud.replicationport}"/>
+					<arg line="--set server-id:5057"/>
+					<arg line="--type generic"/>
+					<arg line="--domain-name ${provisioning.idmprov.oud.idstore.realm_dn}"/>
+					<arg line="--hostName ${provisioning.idmprov.oud.idstore.host}"/>
+					<arg line="--port ${provisioning.idmprov.oud.adminconnectorport}"/>
+					<arg line="--bindDN ${provisioning.idmprov.oud.idstore.admindn}"/>
+					<arg line="--bindPasswordFile ${oud.pwd.file}"/>
+					<arg value="--trustAll"/>
+					<arg value="--no-prompt"/>
+					<arg value="--noPropertiesFile"/>
+				</exec>
+			</else>
+				</if>
+			</try>
+			<catch>
+				<failAndLogStatus task="OUD Replication Server setup"
+                                  category="OUD"
+                                  detail="OUD Replication Server setup is unsuccessful."/>
+			</catch>
+			<finally>
+				<delete file="${oud.pwd.file}"/>
+			</finally>
+		</trycatch>
+	</target>
+	<target name="enable-replication">
+		
+		<property name="inv.file.global"
+                  value="${absolute.idm.dir}/config/oraInst.loc"/>
+		<property name="oud.pwd.file"
+                  value="${idm.provisioning.build.dir}/config/oud_pwd_template.rsp"/>
+		<decryptPassword password="${provisioning.idmprov.oud.idstore.admindn.password}"
+                         property="provisioning.idmprov.oud.idstore.admindn.password.value"/>
+		<property environment="env"/>
+		<trycatch>
+			<try>
+				
+				<delete file="${inv.file.global}"/>
+				<echo file="${inv.file.global}" append="false">inventory_loc=${provisioning.idmprov.oud.mw_home}/oraInventory
+inst_group=${primary.user.group}                         </echo>
+				<echo file="${oud.pwd.file}" append="false">${provisioning.idmprov.oud.idstore.admindn.password.value}</echo>
+				<if> 
+				<os family="windows"/>
+					<then>
+					<property name="idm.config.script"
+			                  	value="${provisioning.idmprov.oud.oracle_home}/bat/dsreplication.bat"/>
+					 <exec executable="cmd" failonerror="true">
+	                                        <env key="JAVA_HOME"
+                                                 value="${provisioning.idmprov.oud.java_home}"/>
+        	                                <env key="ORACLE_HOME"
+                                                 value="${provisioning.idmprov.oud.oracle_home}"/>
+                	                        <env key="INSTANCE_NAME"
+                                                 value="${provisioning.idmprov.oud.second.instance_home}"/>		
+											<arg value="/c"/>
+											<arg value="${idm.config.script}"/>
+                                        	<arg value="enable"/>
+	                                        <arg line="--host1 ${provisioning.idmprov.oud.idstore.host}"/>
+        	                                <arg line="--port1 ${provisioning.idmprov.oud.adminconnectorport}"/>
+                	                        <arg line="--bindDN1 ${provisioning.idmprov.oud.idstore.admindn}"/>
+                        	                <arg line="--bindPasswordFile1 ${oud.pwd.file}"/>
+                                	        <arg line="--replicationPort1 ${provisioning.idmprov.oud.replicationport}"/>
+		                                <arg value="--secureReplication1"/>
+                	                        <arg line="--host2 ${provisioning.idmprov.oud.second.idstore.host}"/>
+                         	                <arg line="--port2 ${provisioning.idmprov.oud.adminconnectorport}"/>
+                                	        <arg line="--bindDN2 ${provisioning.idmprov.oud.idstore.admindn}"/>
+        	                                <arg line="--bindPasswordFile2 ${oud.pwd.file}"/>
+	                                        <arg line="--replicationPort2 ${provisioning.idmprov.oud.replicationport}"/>
+                	                        <arg line="--baseDN ${provisioning.idmprov.oud.idstore.realm_dn}"/>
+                        	                <arg line="--adminUID ${provisioning.idmprov.oud.replication.admin}"/>
+                                	        <arg line="--adminPasswordFile ${oud.pwd.file}"/>
+                                        	<arg value="--no-prompt"/>
+	                                        <arg value="--noPropertiesFile"/>
+        	                                <arg value="--trustAll"/>
+	                                </exec>
+					</then>
+				<else>
+				<property name="idm.config.script"
+			                  	value="${provisioning.idmprov.oud.oracle_home}/bin/dsreplication"/>
+				<getPrimaryGroup property="primary.user.group"/>
+				<!--findRelPath referenceloc="${provisioning.idmprov.oud.mw_home}"
+                             targetloc="${provisioning.idmprov.global.local_confighome}"
+                             proprelativeloc="oudInstRelPath"/-->
+				<exec executable="/bin/bash" failonerror="true">
+					<env key="JAVA_HOME"
+                         value="${provisioning.idmprov.oud.java_home}"/>
+					<env key="ORACLE_HOME"
+                         value="${provisioning.idmprov.oud.oracle_home}"/>
+					<env key="INSTANCE_NAME"
+                         value="${provisioning.idmprov.oud.second.instance_home}"/>
+					<arg value="${idm.config.script}"/>
+					<arg value="enable"/>
+					<arg line="--host1 ${provisioning.idmprov.oud.idstore.host}"/>
+					<arg line="--port1 ${provisioning.idmprov.oud.adminconnectorport}"/>
+					<arg line="--bindDN1 ${provisioning.idmprov.oud.idstore.admindn}"/>
+					<arg line="--bindPasswordFile1 ${oud.pwd.file}"/>
+					<arg line="--replicationPort1 ${provisioning.idmprov.oud.replicationport}"/>
+					<arg value="--secureReplication1"/>
+					<arg line="--host2 ${provisioning.idmprov.oud.second.idstore.host}"/>
+					<arg line="--port2 ${provisioning.idmprov.oud.adminconnectorport}"/>
+					<arg line="--bindDN2 ${provisioning.idmprov.oud.idstore.admindn}"/>
+					<arg line="--bindPasswordFile2 ${oud.pwd.file}"/>
+					<arg line="--replicationPort2 ${provisioning.idmprov.oud.replicationport}"/>
+					<arg line="--baseDN ${provisioning.idmprov.oud.idstore.realm_dn}"/>
+					<arg line="--adminUID ${provisioning.idmprov.oud.replication.admin}"/>
+					<arg line="--adminPasswordFile ${oud.pwd.file}"/>
+					<arg value="--no-prompt"/>
+					<arg value="--noPropertiesFile"/>
+					<arg value="--trustAll"/>
+				</exec>
+			</else>
+				</if>
+			</try>
+			<catch>
+				<failAndLogStatus task="OUD Replication Server enabling"
+                                  category="OUD"
+                                  detail="OUD Replication Server enabling is unsuccessful."/>
+			</catch>
+			<finally>
+				<delete file="${oud.pwd.file}"/>
+			</finally>
+		</trycatch>
+	</target>
+	<target name="replication-initialize">
+		
+		<property name="inv.file.global"
+                  value="${absolute.idm.dir}/config/oraInst.loc"/>
+		<property name="oud.pwd.file"
+                  value="${idm.provisioning.build.dir}/config/oud_pwd_template.rsp"/>
+		<decryptPassword password="${provisioning.idmprov.oud.idstore.admindn.password}"
+                         property="provisioning.idmprov.oud.idstore.admindn.password.value"/>
+		<property environment="env"/>
+		<trycatch>
+			<try>
+				
+				<delete file="${inv.file.global}"/>
+				<echo file="${inv.file.global}" append="false">inventory_loc=${provisioning.idmprov.oud.mw_home}/oraInventory 
+inst_group=${primary.user.group}                         </echo>
+				<echo file="${oud.pwd.file}" append="false">${provisioning.idmprov.oud.idstore.admindn.password.value}</echo>
+				<if>
+	                                <os family="windows"/>
+                                        <then>
+						<property name="idm.config.script"
+					                  value="${provisioning.idmprov.oud.oracle_home}/bat/dsreplication.bat"/>
+					        <exec executable="cmd" failonerror="true">
+                        	                <env key="JAVA_HOME"
+			                         value="${provisioning.idmprov.oud.java_home}"/>
+                        	                <env key="ORACLE_HOME"
+			                         value="${provisioning.idmprov.oud.oracle_home}"/>
+                        		        <env key="INSTANCE_NAME"
+        		                	 value="${provisioning.idmprov.oud.second.instance_home}"/>
+	                                        <arg value="/c"/>
+						<arg value="${idm.config.script}"/>
+	                                       	<arg value="initialize"/>
+        	                            	<arg line="--hostSource ${provisioning.idmprov.oud.idstore.host}"/>
+	                                        <arg line="--portSource ${provisioning.idmprov.oud.adminconnectorport}"/>
+        	                                <arg line="--hostDestination ${provisioning.idmprov.oud.second.idstore.host}"/>
+                	                        <arg line="--portDestination ${provisioning.idmprov.oud.adminconnectorport}"/>
+                        	                <arg line="--baseDN ${provisioning.idmprov.oud.idstore.realm_dn}"/>
+                                	        <arg line="--adminUID ${provisioning.idmprov.oud.replication.admin}"/>
+                                	        <arg line="--adminPasswordFile ${oud.pwd.file}"/>
+                        	                <arg value="--trustAll"/>
+                	                        <arg value="--no-prompt"/>
+        	                                <arg value="--noPropertiesFile"/>
+	                                </exec>
+					</then>
+				<else>
+				<getPrimaryGroup property="primary.user.group"/>
+				<property name="idm.config.script"
+		                  value="${provisioning.idmprov.oud.oracle_home}/bin/dsreplication"/>
+				<!--findRelPath referenceloc="${provisioning.idmprov.oud.mw_home}"
+                             targetloc="${provisioning.idmprov.global.local_confighome}"
+                             proprelativeloc="oudInstRelPath"/-->
+				<exec executable="/bin/bash" failonerror="true">
+					<env key="JAVA_HOME"
+                         value="${provisioning.idmprov.oud.java_home}"/>
+					<env key="ORACLE_HOME"
+                         value="${provisioning.idmprov.oud.oracle_home}"/>
+					<env key="INSTANCE_NAME"
+                         value="${provisioning.idmprov.oud.second.instance_home}"/>
+					<arg value="${idm.config.script}"/>
+					<arg value="initialize"/>
+					<arg line="--hostSource ${provisioning.idmprov.oud.idstore.host}"/>
+					<arg line="--portSource ${provisioning.idmprov.oud.adminconnectorport}"/>
+					<arg line="--hostDestination ${provisioning.idmprov.oud.second.idstore.host}"/>
+					<arg line="--portDestination ${provisioning.idmprov.oud.adminconnectorport}"/>
+					<arg line="--baseDN ${provisioning.idmprov.oud.idstore.realm_dn}"/>
+					<arg line="--adminUID ${provisioning.idmprov.oud.replication.admin}"/>
+					<arg line="--adminPasswordFile ${oud.pwd.file}"/>
+					<arg value="--trustAll"/>
+					<arg value="--no-prompt"/>
+					<arg value="--noPropertiesFile"/>
+				</exec>
+			</else>
+				</if>
+			</try>
+			<catch>
+				<failAndLogStatus task="OUD Replication initialize"
+                                  category="OUD"
+                                  detail="OUD Replication initialize is unsuccessful."/>
+			</catch>
+			<finally>
+				<delete file="${oud.pwd.file}"/>
+			</finally>
+		</trycatch>
+	</target>
+	<target name="enable-assured-replication">
+		
+		<property name="inv.file.global"
+                  value="${absolute.idm.dir}/config/oraInst.loc"/>
+		<property name="oud.pwd.file"
+                  value="${idm.provisioning.build.dir}/config/oud_pwd_template.rsp"/>
+		<decryptPassword password="${provisioning.idmprov.oud.idstore.admindn.password}"
+                         property="provisioning.idmprov.oud.idstore.admindn.password.value"/>
+		<property environment="env"/>
+		<trycatch>
+			<try>
+				
+				<delete file="${inv.file.global}"/>
+				<echo file="${inv.file.global}" append="false">inventory_loc=${provisioning.idmprov.oud.mw_home}/oraInventory
+inst_group=${primary.user.group}                         </echo>
+				<echo file="${oud.pwd.file}" append="false">${provisioning.idmprov.oud.idstore.admindn.password.value}</echo>
+				<if>
+          	                     <os family="windows"/>
+                                        <then>
+						<property name="idm.config.script"
+				                  value="${provisioning.idmprov.oud.oracle_home}/bat/dsconfig.bat"/>
+						<exec executable="cmd" failonerror="true">
+	                                        <env key="JAVA_HOME"
+			                         value="${provisioning.idmprov.oud.java_home}"/>
+                        	                <env key="ORACLE_HOME"
+			                         value="${provisioning.idmprov.oud.oracle_home}"/>
+                        	                <env key="INSTANCE_NAME"
+			                         value="${instance_home}"/>
+						<arg value="/c"/>
+						<arg value="${idm.config.script}"/>
+                	                        <arg value="set-replication-domain-prop"/>
+        	                                <arg value="-h${host}"/>
+	                                        <arg value="-p${provisioning.idmprov.oud.adminconnectorport}"/>
+                                        	<arg value="-D${provisioning.idmprov.oud.idstore.admindn}"/>
+                                	        <arg value="-j${oud.pwd.file}"/>
+                        	                <arg value="-n"/>
+                	                        <arg value="--provider-name"/>
+        	                                <arg value="Multimaster Synchronization"/>
+	                                        <arg line="--domain-name ${provisioning.idmprov.oud.idstore.realm_dn}"/>
+                                        	<arg value="--advanced"/>
+                                	        <arg line="--set assured-type:safe-read"/>
+                        	                <arg value="--trustAll"/>
+        		                        </exec>
+					</then>
+				<else>
+				<getPrimaryGroup property="primary.user.group"/>
+				<property name="idm.config.script"
+			                  value="${provisioning.idmprov.oud.oracle_home}/bin/dsconfig"/>
+				<!--findRelPath referenceloc="${provisioning.idmprov.oud.mw_home}"
+                             targetloc="${provisioning.idmprov.global.local_confighome}"
+                             proprelativeloc="oudInstRelPath"/-->
+				<exec executable="/bin/bash" failonerror="true">
+					<env key="JAVA_HOME"
+                         value="${provisioning.idmprov.oud.java_home}"/>
+					<env key="ORACLE_HOME"
+                         value="${provisioning.idmprov.oud.oracle_home}"/>
+					<env key="INSTANCE_NAME"
+                         value="${instance_home}"/>
+					<arg value="${idm.config.script}"/>
+					<arg value="set-replication-domain-prop"/>
+					<arg value="-h${host}"/>
+					<arg value="-p${provisioning.idmprov.oud.adminconnectorport}"/>
+					<arg value="-D${provisioning.idmprov.oud.idstore.admindn}"/>
+					<arg value="-j${oud.pwd.file}"/>
+					<arg value="-n"/>
+					<arg value="--provider-name"/>
+					<arg value="Multimaster Synchronization"/>
+					<arg line="--domain-name ${provisioning.idmprov.oud.idstore.realm_dn}"/>
+					<arg value="--advanced"/>
+					<arg line="--set assured-type:safe-read"/>
+					<arg value="--trustAll"/>
+				</exec>
+			</else>
+				</if>
+			</try>
+			<catch>
+				<failAndLogStatus task="OUD enable assured replication"
+                                  category="OUD"
+                                  detail="OUD enable assured replication is unsuccessful."/>
+			</catch>
+			<finally>
+				<delete file="${oud.pwd.file}"/>
+			</finally>
+		</trycatch>
+	</target>
+
+	<target name="grant-oud-change-log-access">
+		<property name="idm.oud.changelog.ldif.template"
+                  value="${idm.provisioning.build.dir}/templates/oud_grant_change_log_access_template.rsp"/>
+		<property name="idm.oud.changelog.ldif"
+                  value="${idm.provisioning.build.dir}/config/oud_grant_change_log_access.rsp"/>
+		<property name="inv.file.global"
+                  value="${absolute.idm.dir}/config/oraInst.loc"/>
+		<property name="oud.pwd.file"
+                  value="${idm.provisioning.build.dir}/config/oud_pwd_template.rsp"/>
+		<delete file="${idm.oud.changelog.ldif}"/>
+		<copy file="${idm.oud.changelog.ldif.template}"
+              tofile="${idm.oud.changelog.ldif}"/>
+		<replace file="${idm.oud.changelog.ldif}">
+			<replacefilter token="%LDAPSYNC_GROUPDN%"
+                           value="${provisioning.idmprov.dir.oimadmingroup.dn}"/>
+		</replace>
+		<decryptPassword password="${provisioning.idmprov.oud.idstore.admindn.password}"
+                         property="provisioning.idmprov.oud.idstore.admindn.password.value"/>
+		<property environment="env"/>
+		<property name="local.ORACLE_HOME"
+                  value="${provisioning.idmprov.oud.oracle_home}"/>
+		<property name="local.ORACLE_INSTANCE"
+                  value="${instance_home}"/>
+		<trycatch>
+			<try>
+				
+				<delete file="${inv.file.global}"/>
+				<echo file="${inv.file.global}" append="false">inventory_loc=${provisioning.idmprov.oud.mw_home}/oraInventory
+inst_group=${primary.user.group}                         </echo>
+				<echo file="${oud.pwd.file}" append="false">${provisioning.idmprov.oud.idstore.admindn.password.value}</echo>
+				<if>
+                                 <os family="windows"/>
+                                        <then>
+						<property name="idm.config.script"
+                				  value="${instance_home}/OUD/bat/dsconfig.bat"/>
+						<exec executable="cmd" failonerror="true">
+						<arg value="/c"/>
+						<arg value="${idm.config.script}"/>
+        	                                <arg value="-h${host}"/>
+	                                        <arg value="-p${provisioning.idmprov.oud.adminconnectorport}"/>
+                                        	<arg value="-D${provisioning.idmprov.oud.idstore.admindn}"/>
+                                	        <arg value="-j${oud.pwd.file}"/>
+                        	                <arg value="-F${idm.oud.changelog.ldif}"/>
+                        	                <arg value="-X"/>
+                	                        <arg value="-n"/>
+        	                                <arg value="--trustAll"/>
+	                                </exec>
+					</then>
+				<else>
+					<property name="idm.config.script"
+                				  value="${instance_home}/OUD/bin/dsconfig"/>
+					<getPrimaryGroup property="primary.user.group"/>
+					<exec executable="/bin/bash" failonerror="true">
+					<arg value="${idm.config.script}"/>
+					<arg value="-h${host}"/>
+					<arg value="-p${provisioning.idmprov.oud.adminconnectorport}"/>
+					<arg value="-D${provisioning.idmprov.oud.idstore.admindn}"/>
+					<arg value="-j${oud.pwd.file}"/>
+					<arg value="-F${idm.oud.changelog.ldif}"/>
+					<arg value="-X"/>
+					<arg value="-n"/>
+					<arg value="--trustAll"/>
+				</exec>
+			</else>
+				</if>
+			</try>
+			<catch>
+				<failAndLogStatus task="OUD Configuration" category="OUD"
+                                  detail="Grant OUD change log access unsuccessful."/>
+			</catch>
+			<finally>
+				<delete file="${oud.pwd.file}"/>
+				<modifyIDMResponseFile responsefile="${idm.oud.changelog.ldif}"/>
+			</finally>
+		</trycatch>
+	</target>
+	<!-- Need to do this as IDM config tool doesn't create indexes during prepareID store for second instance -->
+	<target name="create-indexes-second-host">
+		<property name="ldif.ojd.schema.generic"
+                  value="${provisioning.idmprov.global.oud_internal_dir}/ojd_user_index_generic.ldif"/>
+		<property name="ldif.oud.indexes.extn"
+                  value="${provisioning.idmprov.global.oud_internal_dir}/oud_indexes_extn.ldif"/>
+		<property name="instance_home" value="${provisioning.idmprov.oud.second.instance_home}"/>
+		
+		<property name="inv.file.global"
+                  value="${absolute.idm.dir}/config/oraInst.loc"/>
+		<property name="oud.pwd.file"
+                  value="${idm.provisioning.build.dir}/config/oud_pwd_template.rsp"/>
+		<decryptPassword password="${provisioning.idmprov.oud.idstore.admindn.password}"
+                         property="provisioning.idmprov.oud.idstore.admindn.password.value"/>
+		<property environment="env"/>
+		<property name="local.ORACLE_HOME"
+                  value="${provisioning.idmprov.oud.oracle_home}"/>
+		<property name="local.ORACLE_INSTANCE"
+                  value="${instance_home}"/>
+		<trycatch>
+			<try>
+
+				<delete file="${inv.file.global}"/>
+				<echo file="${inv.file.global}" append="false">inventory_loc=${provisioning.idmprov.oud.mw_home}/oraInventory
+inst_group=${primary.user.group}                         </echo>
+				<echo file="${oud.pwd.file}" append="false">${provisioning.idmprov.oud.idstore.admindn.password.value}</echo>
+				<if>
+                        	        <os family="windows"/>
+                                        <then>
+					<property name="idm.config.script"
+				                  value="${instance_home}/OUD/bat/ldapmodify.bat"/>
+			
+					<exec executable="cmd" failonerror="true">
+                                        	<arg value="/c"/>
+        	                                <arg value="${idm.config.script}"/>
+	                                        <arg value="-h${provisioning.idmprov.oud.second.idstore.host}"/>
+                                	        <arg value="-p${provisioning.idmprov.oud.adminconnectorport}"/>
+                        	                <arg value="-D${provisioning.idmprov.oud.idstore.admindn}"/>
+                	                        <arg value="-j${oud.pwd.file}"/>
+        	                                <arg value="-f${ldif.ojd.schema.generic}"/>
+	                                        <arg value="-X"/>
+                                        	<arg value="-Z"/>
+                                	        <arg value="-c"/>
+                        	                <arg value="-a"/>
+                	                        <arg value="--trustAll"/>
+        	                        </exec>
+	                                <exec executable="cmd" failonerror="true">
+                                        	<arg value="/c"/>
+                                        	<arg value="${idm.config.script}"/>
+                                	        <arg value="-h${provisioning.idmprov.oud.second.idstore.host}"/>
+                        	                <arg value="-p${provisioning.idmprov.oud.adminconnectorport}"/>
+                	                        <arg value="-D${provisioning.idmprov.oud.idstore.admindn}"/>
+        	                                <arg value="-j${oud.pwd.file}"/>
+	                                        <arg value="-f${ldif.oud.indexes.extn}"/>
+                                        	<arg value="-X"/>
+                                	        <arg value="-Z"/>
+                        	                <arg value="-c"/>
+                	                        <arg value="-a"/>
+        	                                <arg value="--trustAll"/>
+	                                </exec>
+					</then>
+				<else>
+				<getPrimaryGroup property="primary.user.group"/>
+				<property name="idm.config.script"
+		                  value="${instance_home}/OUD/bin/ldapmodify"/>
+				<exec executable="/bin/bash" failonerror="true">
+					<arg value="${idm.config.script}"/>
+					<arg value="-h${provisioning.idmprov.oud.second.idstore.host}"/>
+					<arg value="-p${provisioning.idmprov.oud.adminconnectorport}"/>
+					<arg value="-D${provisioning.idmprov.oud.idstore.admindn}"/>
+					<arg value="-j${oud.pwd.file}"/>
+					<arg value="-f${ldif.ojd.schema.generic}"/>
+					<arg value="-X"/>
+					<arg value="-Z"/>
+					<arg value="-c"/>
+					<arg value="-a"/>
+					<arg value="--trustAll"/>
+				</exec>
+				<exec executable="/bin/bash" failonerror="true">
+					<arg value="${idm.config.script}"/>
+					<arg value="-h${provisioning.idmprov.oud.second.idstore.host}"/>
+					<arg value="-p${provisioning.idmprov.oud.adminconnectorport}"/>
+					<arg value="-D${provisioning.idmprov.oud.idstore.admindn}"/>
+					<arg value="-j${oud.pwd.file}"/>
+					<arg value="-f${ldif.oud.indexes.extn}"/>
+					<arg value="-X"/>
+					<arg value="-Z"/>
+					<arg value="-c"/>
+					<arg value="-a"/>
+					<arg value="--trustAll"/>
+				</exec>
+			</else>
+				</if>
+			</try>
+			<catch>
+				<failAndLogStatus task="OUD create indexes second" category="OUD"
+                                  detail="OUD create indexes second unsuccessful."/>
+			</catch>
+			<finally>
+				<delete file="${oud.pwd.file}"/>
+			</finally>
+		</trycatch>
+
+	</target>
+
+	<target name="oud-rebuild-indexes">
+		
+
+		<property name="inv.file.global"
+                  value="${absolute.idm.dir}/config/oraInst.loc"/>
+		<property environment="env"/>
+		<property name="local.ORACLE_HOME"
+                  value="${provisioning.idmprov.oud.oracle_home}"/>
+		<property name="local.ORACLE_INSTANCE"
+                  value="${instance_home}"/>
+		<trycatch>
+			<try>
+				
+				<delete file="${inv.file.global}"/>
+				<echo file="${inv.file.global}" append="false">inventory_loc=${provisioning.idmprov.oud.mw_home}/oraInventory
+inst_group=${primary.user.group}                         </echo>
+
+<if>
+					<os family="windows"/>
+					<then>
+						<property name="idm.config.script"
+			                                          value="${instance_home}/OUD/bat/rebuild-index.bat"/>
+		                                <exec executable="cmd" failonerror="true">
+							<arg value="/c"/>
+        	                                	<arg value="${idm.config.script}"/>
+                	                	        <arg value="--rebuildAll"/>
+                        		                <arg value="-b"/>
+                	        	                <arg value="${provisioning.idmprov.oud.idstore.realm_dn}"/>
+        	                        	</exec>
+					</then>
+				<else>
+				<getPrimaryGroup property="primary.user.group"/>
+				
+				<property name="idm.config.script"
+			                  value="${instance_home}/OUD/bin/rebuild-index"/>
+				<exec executable="/bin/bash" failonerror="true">
+					<arg value="${idm.config.script}"/>
+					<arg value="--rebuildAll"/>
+					<arg value="-b"/>
+					<arg value="${provisioning.idmprov.oud.idstore.realm_dn}"/>
+				</exec>
+			</else>
+				</if>
+			</try>
+			<catch>
+				<failAndLogStatus task="Rebuilding indexes" category="OUD"
+                                  detail="Rebuilding indexes OUD failed"/>
+			</catch>
+			<finally>
+
+			</finally>
+		</trycatch>
+	</target>
+
+	<target name="generate-tnsnames-for-oud">
+		<property name="idm.file.oud.tns.update"
+                  value="${instancehome}/config/tnsnames.ora"/>
+		<property name="idm.file.oud.tnsnames.template"
+                  value="${idm.provisioning.build.dir}/templates/tnsnames_rac_oud_template.rsp"/>
+		<getTnsAddressList dbbaseproperty="${db.base.property}"
+                           property="oud.address.list"/>
+		<propertycopy name="oud.servicename"
+                      from="${db.base.property}.servicename" override="true"/>
+		<delete file="${idm.file.oud.tns.update}"/>
+		<copy file="${idm.file.oud.tnsnames.template}"
+              tofile="${idm.file.oud.tns.update}"/>
+		<replace file="${idm.file.oud.tns.update}">
+			<replacefilter token="%OUD_URL%" value="${oud.address.list}"/>
+			<replacefilter token="%PROVISIONING.IDMPROV.OUD.IDSTORE.DB.SERVICE_NAME%"
+                           value="${oud.servicename}"/>
+		</replace>
+	</target>
+
+	<target name="relax-oud-objclass-create-restrictions">
+		
+		<property name="inv.file.global"
+                  value="${absolute.idm.dir}/config/oraInst.loc"/>
+		<property name="oud.pwd.file"
+                  value="${idm.provisioning.build.dir}/config/oud_pwd_template.rsp"/>
+		<decryptPassword password="${provisioning.idmprov.oud.idstore.admindn.password}"
+                         property="provisioning.idmprov.oud.idstore.admindn.password.value"/>
+		<property environment="env"/>
+		<trycatch>
+			<try>
+				
+				<delete file="${inv.file.global}"/>
+				<echo file="${inv.file.global}" append="false">inventory_loc=${provisioning.idmprov.oud.mw_home}/oraInventory
+inst_group=${primary.user.group}                         </echo>
+				<echo file="${oud.pwd.file}" append="false">${provisioning.idmprov.oud.idstore.admindn.password.value}</echo>
+				<if>
+	                                <os family="windows"/>
+                                        	
+					<then>
+					<property name="idm.config.script"
+				                  value="${provisioning.idmprov.oud.oracle_home}/bat/dsconfig.bat"/>
+					<exec executable="cmd" failonerror="true">
+						<env key="JAVA_HOME"
+			                         value="${provisioning.idmprov.oud.java_home}"/>
+                        	                <env key="ORACLE_HOME"
+			                         value="${provisioning.idmprov.oud.oracle_home}"/>
+                        	                <env key="INSTANCE_NAME"
+			                         value="${provisioning.idmprov.oud.second.instance_home}"/>
+                        	                <arg value="/c"/>
+						<arg value="${idm.config.script}"/>
+                	                        <arg value="-h${host}"/>
+        	                                <arg value="-p${provisioning.idmprov.oud.adminconnectorport}"/>
+	                                        <arg value="-D${provisioning.idmprov.oud.idstore.admindn}"/>
+                                        	<arg value="-j${oud.pwd.file}"/>
+                                	        <arg value="-n"/>
+                        	                <arg value="set-global-configuration-prop"/>
+                	                        <arg line="--set single-structural-objectclass-behavior:warn"/>
+        	                                <arg value="--trustAll"/>
+	                                </exec>
+					</then>
+				<else>
+				<property name="idm.config.script"
+		                  value="${provisioning.idmprov.oud.oracle_home}/bin/dsconfig"/>
+				<getPrimaryGroup property="primary.user.group"/>
+				<!--findRelPath referenceloc="${provisioning.idmprov.oud.mw_home}"
+                             targetloc="${provisioning.idmprov.global.local_confighome}"
+                             proprelativeloc="oudInstRelPath"/-->
+				<exec executable="/bin/bash" failonerror="true">
+					<env key="JAVA_HOME"
+                         value="${provisioning.idmprov.oud.java_home}"/>
+					<env key="ORACLE_HOME"
+                         value="${provisioning.idmprov.oud.oracle_home}"/>
+					<env key="INSTANCE_NAME"
+                         value="${provisioning.idmprov.oud.second.instance_home}"/>
+					<arg value="${idm.config.script}"/>
+					<arg value="-h${host}"/>
+					<arg value="-p${provisioning.idmprov.oud.adminconnectorport}"/>
+					<arg value="-D${provisioning.idmprov.oud.idstore.admindn}"/>
+					<arg value="-j${oud.pwd.file}"/>
+					<arg value="-n"/>
+					<arg value="set-global-configuration-prop"/>
+					<arg line="--set single-structural-objectclass-behavior:warn"/>
+					<arg value="--trustAll"/>
+				</exec>
+			</else>
+				</if>
+			</try>
+			<catch>
+				<failAndLogStatus task="OUD relax obj class creation restrictions setup"
+                                  category="OUD"
+                                  detail="OUD relax obj class creation restrictions is unsuccessful."/>
+			</catch>
+			<finally>
+				<delete file="${oud.pwd.file}"/>
+			</finally>
+		</trycatch>
+	</target>
+
+	<!--This target is for setting password expiry of OUD(bug# 14152415).This is invoked only for saas based 3-Node Topology. -->
+	<target name="passwordexpiry-tune-ldap">
+		<property name="pwdexpirytunefile.ldap.template"
+                  value="${idm.provisioning.build.dir}/templates/password-expiry-tune_template.ldif"/>
+		<property name="pwdexpirytunefile.ldap"
+                  value="${idm.provisioning.build.dir}/config/password-expiry-tune.ldif"/>
+		<delete file="${pwdexpirytunefile.ldap}"/>
+		<copy file="${pwdexpirytunefile.ldap.template}"
+              tofile="${pwdexpirytunefile.ldap}"/>
+		<replace file="${pwdexpirytunefile.ldap}">
+			<replacefilter token="%REALM_DN%" value="${ldap.realm_dn}"/>
+		</replace>
+		<antcall target="tune-ldap-parameters">
+			<param name="ldap.host" value="${ldap.host}"/>
+			<param name="ldap.port" value="${ldap.port}"/>
+			<param name="ldif.file.loc" value="${pwdexpirytunefile.ldap}"/>
+			<param name="oracle.home" value="${oracle.home}"/>
+			<param name="admindn" value="${admindn}"/>
+			<param name="admindn.password" value="${admindn.password}"/>
+		</antcall>
+	</target>
+      <target name="enable-changelog-replication">
+        
+        <property name="inv.file.global"
+                  value="${absolute.idm.dir}/config/oraInst.loc"/>
+        <property name="oud.pwd.file"
+                  value="${idm.provisioning.build.dir}/config/oud_pwd_template.rsp"/>
+        <decryptPassword password="${provisioning.idmprov.oud.idstore.admindn.password}"
+                         property="provisioning.idmprov.oud.idstore.admindn.password.value"/>
+        <property environment="env"/>
+        <trycatch>
+            <try>
+                       <delete file="${inv.file.global}"/>
+                <echo file="${inv.file.global}" append="false">inventory_loc=${provisioning.idmprov.oud.mw_home}/oraInventory 
+inst_group=${primary.user.group}                         </echo>
+                <echo file="${oud.pwd.file}" append="false">${provisioning.idmprov.oud.idstore.admindn.password.value}</echo>
+                <if>
+                                <os family="windows"/>
+                                <then>
+        			<property name="idm.config.script"
+			                  value="${provisioning.idmprov.oud.oracle_home}/bat/dsreplication.bat"/>
+				<exec executable="cmd" failonerror="true">
+		                    <env key="JAVA_HOME"
+                		         value="${provisioning.idmprov.oud.java_home}"/>
+		                    <env key="ORACLE_HOME"
+                		         value="${provisioning.idmprov.oud.oracle_home}"/>
+		                    <env key="INSTANCE_NAME"
+                		         value="${provisioning.idmprov.oud.instance_home}"/>
+		                    <arg value="/c"/>
+		                    <arg value="${idm.config.script}"/>
+                		    <arg value="enable-changelog"/>
+		                    <arg line="-h ${provisioning.idmprov.oud.idstore.host}"/>
+		                    <arg line="-p ${provisioning.idmprov.oud.adminconnectorport}"/>
+                		    <arg line="-b ${provisioning.idmprov.oud.idstore.realm_dn}"/>
+		                    <arg line="-D ${provisioning.idmprov.oud.idstore.admindn}"/>
+                		    <arg line="-j ${oud.pwd.file}"/>
+	        	            <arg line="-r ${provisioning.idmprov.oud.replicationport}"/>
+	                	    <arg value="--trustAll"/>
+		                    <arg value="--no-prompt"/>
+                		    <arg value="--noPropertiesFile"/>
+		                </exec>
+			</then>
+		<else>
+        	<property name="idm.config.script"
+                  value="${provisioning.idmprov.oud.oracle_home}/bin/dsreplication"/>
+                <getPrimaryGroup property="primary.user.group"/>
+                <!--findRelPath referenceloc="${provisioning.idmprov.oud.mw_home}"
+                             targetloc="${provisioning.idmprov.global.local_confighome}"
+                             proprelativeloc="oudInstRelPath"/-->
+                <exec executable="/bin/bash" failonerror="true">
+                    <env key="JAVA_HOME"
+                         value="${provisioning.idmprov.oud.java_home}"/>
+                    <env key="ORACLE_HOME"
+                         value="${provisioning.idmprov.oud.oracle_home}"/>
+                    <env key="INSTANCE_NAME"
+                         value="${provisioning.idmprov.oud.instance_home}"/>
+                    <arg value="${idm.config.script}"/>
+                    <arg value="enable-changelog"/>
+                    <arg line="-h ${provisioning.idmprov.oud.idstore.host}"/>
+                    <arg line="-p ${provisioning.idmprov.oud.adminconnectorport}"/>
+                    <arg line="-b ${provisioning.idmprov.oud.idstore.realm_dn}"/>
+                    <arg line="-D ${provisioning.idmprov.oud.idstore.admindn}"/>
+                    <arg line="-j ${oud.pwd.file}"/>
+                    <arg line="-r ${provisioning.idmprov.oud.replicationport}"/>
+                    <arg value="--trustAll"/>
+                    <arg value="--no-prompt"/>
+                    <arg value="--noPropertiesFile"/>
+                </exec>
+            </else>
+		</if>
+            </try>
+            <catch>
+                <failAndLogStatus task="OUD Replication enable change log"
+                                  category="OUD"
+                                  detail="OUD Replication enable change log is unsuccessful."/>
+            </catch>
+            <finally>
+                <delete file="${oud.pwd.file}"/>
+            </finally>
+        </trycatch>
+	</target>
+    <!--target name="idm-tune-ldap-parameters">
+        <if>
+            <equalsNested arg1="${provisioning.setup.domain-topology.topology.domain.topology.intermediate}"
+                          arg2="true"/>
+            <then>
+                <antcall target="passwordexpiry-tune-ldap">
+                    <param name="ldap.host" value="${ldap.host}"/>
+                    <param name="ldap.port" value="${ldap.port}"/>
+                    <param name="oracle.home" value="${oracle.home}"/>
+                    <param name="admindn" value="${admindn}"/>
+                    <param name="admindn.password" value="${admindn.password}"/>
+                    <param name="ldap.realm_dn" value="${ldap.realm_dn}"/>
+                </antcall>
+            </then>
+        </if>
+        <if>
+            <equalsNested arg1="${provisioning.setup.common.core.multitenant}"
+                          arg2="true"/>
+            <then>
+                <property name="idm.file.tune.ldap.template"
+                          value="${idm.provisioning.build.dir}/templates/edg_config_tuning_sharedidm.ldif"/>
+                <property name="idm.file.tune.ldap"
+                          value="${idm.provisioning.build.dir}/config/edg_config_tuning_sharedidm.ldif"/>
+            </then>
+            <else>
+                <property name="idm.file.tune.ldap.template"
+                          value="${idm.provisioning.build.dir}/templates/edg_config_tuning.ldif"/>
+                <property name="idm.file.tune.ldap"
+                          value="${idm.provisioning.build.dir}/config/edg_config_tuning.ldif"/>
+            </else>
+        </if>
+        <delete file="${idm.file.tune.ldap}"/>
+        <copy file="${idm.file.tune.ldap.template}"
+              tofile="${idm.file.tune.ldap}"/>
+        <replace file="${idm.file.tune.ldap}">
+            <replacefilter token="%INSTANCE_NAME%"
+                           value="${ldap.instance.name}"/>
+            <replacefilter token="%REALM_DN%" value="${ldap.realm_dn}"/>
+        </replace>
+        <replace file="${idm.file.tune.ldap}">
+            <replacefilter token="%COMPONENT_NAME%"
+                           value="${ldap.component.name}"/>
+        </replace>
+        <antcall target="tune-ldap-parameters">
+            <param name="ldap.host" value="${ldap.host}"/>
+            <param name="ldap.port" value="${ldap.port}"/>
+            <param name="ldif.file.loc" value="${idm.file.tune.ldap}"/>
+            <param name="oracle.home" value="${oracle.home}"/>
+            <param name="admindn" value="${admindn}"/>
+            <param name="admindn.password" value="${admindn.password}"/>
+        </antcall-->
+    <!-- re-start OUD instance -->
+    <!--antcall target="stop-opmn">
+            <param name="instanceHome" value="${instance.home}"/>
+        </antcall>
+        <antcall target="start-opmn">
+            <param name="instanceHome" value="${instance.home}"/>
+        </antcall>
+        <antcall target="wait-ldap-connectivity-generic">
+            <param name="host" value="${ldap.host}"/>
+            <param name="port" value="${ldap.port}"/>
+            <param name="sslport" value="${ldap.sslport}"/>
+            <param name="admindn" value="${admindn}"/>
+            <param name="admindn_password" value="${admindn.password}"/>
+            <param name="realm_dn" value="${realm_dn}"/>
+        </antcall>
+    </target-->
+    <target name="start-oud">
+		<if>
+			<os family="windows"/>
+			<then>
+				<exec executable="cmd">
+					<arg value="/c"/>
+					<arg value="${instanceHome}/OUD/bat/start-ds.bat"/>
+				</exec>
+			</then>
+			<else>
+				<exec executable="${instanceHome}/OUD/bin/start-ds">
+				</exec>
+			</else>
+		</if>
+    </target>
+	<target name="stop-oud">
+		<if>
+			<os family="windows"/>
+			<then>
+				<exec executable="cmd">
+					<arg value="/c"/>
+					<arg value="${instanceHome}/OUD/bat/stop-ds.bat"/>
+				</exec>
+			</then>
+			<else>
+				<exec executable="${instanceHome}/OUD/bin/stop-ds">
+				</exec>
+			</else>
+		</if>
+	</target>
+	<target name="update-oud-aci-ldap-synchronization">
+
+		<property name="update.oud.aci.ldap.sync.config.ldif" value="${instance_home}/OUD/config/config.ldif"/>
+		<property name="update.oud.aci.ldap.sync.config.ldif.backup" value="{instance_home}/OUD/config/config.ldif.backup"/>
+
+		<copy file="${update.oud.aci.ldap.sync.config.ldif}"
+	            tofile="${update.oud.aci.ldap.sync.config.ldif.backup}"/>
+
+		<replace file="${update.oud.aci.ldap.sync.config.ldif}">
+			<replacefilter token="ds-cfg-global-aci: (targetcontrol=&quot;1.3.6.1.1.12 || 1.3.6.1.1.13.1 || 1.3.6.1.1.13.2 || 1.2.840.113556.1.4.319 || 1.2.826.0.1.3344810.2.3 || 2.16.840.1.113730.3.4.18 || 2.16.840.1.113730.3.4.9 || 1.2.840.113556.1.4.473 || 1.3.6.1.4.1.42.2.27.9.5.9&quot;) (version 3.0; acl &quot;Authenticated users control access&quot;; allow(read) userdn=&quot;ldap:///all&quot;;)" value="ds-cfg-global-aci: (targetcontrol=&quot;2.16.840.1.113730.3.4.2 || 2.16.840.1.113730.3.4.17 || 2.16.840.1.113730.3.4.19 || 1.3.6.1.4.1.4203.1.10.2 || 1.3.6.1.4.1.42.2.27.8.5.1 || 2.16.840.1.113730.3.4.16 || 2.16.840.1.113894.1.8.31 || 1.2.840.113556.1.4.319&quot;) (version 3.0; acl &quot;Anonymous control access&quot;; allow(read) userdn=&quot;ldap:///anyone&quot;;)"/>
+		</replace>
+	</target>
+				
+	<target name="add-orclappiduser-objectclass" >
+		<property name="ldif.add.orclappiduser.template" value="${idm.provisioning.build.dir}/templates/add_orclappiduser_template.ldif"/>
+		<property name="ldif.add.orclappiduser" value="${idm.provisioning.build.dir}/config/add_orclappiduser.ldif"/>
+
+		<delete file="${ldif.add.orclappiduser}"/>
+		<copy file="${ldif.add.orclappiduser.template}"
+	            tofile="${ldif.add.orclappiduser}"/>
+
+		<replace file="${ldif.add.orclappiduser}">
+			<replacefilter token="%XELSYSADM%" value="${provisioning.idmprov.common-pwds.xelsysadm.name}"/>
+			<replacefilter token="%OIMLDAP%" value="${provisioning.idmprov.common-pwds.oim_ldap_user.name}"/>
+			<replacefilter token="%OAMLDAP%" value="${provisioning.idmprov.common-pwds.oamldap.name}"/>
+			<replacefilter token="%USERNAMEATTR%" value="${provisioning.idmprov.dir.usernameattr}"/>
+			<replacefilter token="%USERSEARCHBASE%" value="${provisioning.idmprov.dir.users.container}"/>
+			<replacefilter token="%SYSTEMIDBASE%" value="${provisioning.idmprov.dir.systemids.container}"/>
+		</replace>
+
+		<trycatch>
+			<try>
+				<ldapModify ldapHostName="${provisioning.idmprov.oud.idstore.host}"
+                            ldapPort="${provisioning.idmprov.oud.idstore.port}"
+                            oidOracleHome="${provisioning.idmprov.oud.oracle_home}"
+                            ldapDN="${provisioning.idmprov.oud.idstore.admindn}"
+                            ldapPwd="${provisioning.idmprov.oud.idstore.admindn.password}"
+                            ldifFileLoc="${ldif.add.orclappiduser}"/>
+			</try>
+			<finally>
+				<modifyIDMResponseFile responseFile="${ldif.add.orclappiduser}" />
+			</finally>
+		</trycatch>
+	</target>
+
+</project>
