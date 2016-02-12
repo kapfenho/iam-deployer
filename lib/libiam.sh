@@ -689,5 +689,6 @@ _mvlog()
 . ${DEPLOYER}/lib/libuserenv.sh
 . ${DEPLOYER}/lib/libweb.sh
 . ${DEPLOYER}/lib/liboia.sh
+. ${DEPLOYER}/lib/libiamhc.sh
 
 

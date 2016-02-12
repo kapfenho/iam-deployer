@@ -407,6 +407,22 @@ help_directory() {
   "
 }
 # ---------------------------------------------------
+help_hc() {
+  echo "
+  Syntax: ${0} hc [-H host] [-A]
+
+  Runs the Oracle Health Check programm. The workflow:
+
+  * a property file is built, used as input for all checks
+  * the host type is identified by checking local instance and domain 
+    directories
+  * based on the information the proper checks are executed
+
+  Default location for results:  LCM_HOME/checks
+
+  "
+}
+# ---------------------------------------------------
 help_webtier() {
   echo "
   Syntax: ${0} webtier -a {postinstall|config|movelogs}

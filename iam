@@ -353,6 +353,15 @@ else
       fi
       ;;
 
+    hc)
+      if   [ -z "${opt_h}" ] ; then
+        iamhc_check
+      else
+        help_hc
+        exit $ERROR_SYNTAX_ERROR
+      fi
+      ;;
+
     remove)
       if   [ -z "${opt_h}" -a -n "${opt_t}" -a "${opt_t}" == "identity" ] ; then
         remove_iam

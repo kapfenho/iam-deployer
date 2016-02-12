@@ -7,7 +7,10 @@ iam_config_rsp=${DEPLOYER}/user-config/iam/provisioning.rsp
 lcm_config_rsp=${DEPLOYER}/user-config/lcm/lcm_install.rsp
 
 getvar() {
-  eval $(grep ${1} ${iam_config_rsp}) 2>/dev/null || true
+  #eval $(grep ${1} ${iam_config_rsp}) 2>/dev/null || true
+  if ! eval $(grep ${1} ${iam_config_rsp}) 2>/dev/null ; then
+    echo "ERROR: could not get var ${1}"
+  fi
 }
 
 . ${DEPLOYER}/user-config/iam.config
@@ -26,20 +29,39 @@ getvar() {
 
 getvar DT_SINGLEHOST
 getvar IDMPROV_ACCESS_DOMAIN
+getvar IDMPROV_PRODUCT_IDENTITY_DOMAIN
 getvar IDMPROV_LBR_OIMADMIN_HOST
+getvar IDMPROV_LBR_IDMADMIN_HOST
+
+# TODO some var changed from PS2 to PS3
+# PS2
 getvar IDMPROV_LBR_OIMINTERNAL_HOST
 getvar IDMPROV_LBR_SSO_HOST
+# PS3
+getvar IDMPROV_LBR_IDGINTERNAL_HOST
+getvar IDMPROV_LBR_IAGINTERNAL_HOST
+getvar IDMPROV_LBR_SSO_ACCESS_HOST
+getvar IDMPROV_LBR_SSO_IDENTITY_HOST
+
+getvar IDMPROV_IDMDOMAIN_ADMINSERVER_HOST
+getvar IDMPROV_IDMDOMAIN_ADMINSERVER_PORT
 getvar IDMPROV_OIMDOMAIN_ADMINSERVER_HOST
 getvar IDMPROV_OIMDOMAIN_ADMINSERVER_PORT
+getvar IDMPROV_OAM_HOST
+getvar IDMPROV_OAM_PORT
 getvar IDMPROV_OIM_HOST
 getvar IDMPROV_OIM_PORT
-getvar IDMPROV_PRODUCT_IDENTITY_DOMAIN
+getvar IDMPROV_SOA_HOST
+getvar IDMPROV_SOA_PORT
+getvar IDMPROV_OID_HOST
+getvar DIR_PORT
+getvar DIR_SSL_PORT
+getvar IDMPROV_SECOND_OAM_HOST
+getvar IDMPROV_SECOND_OAM_PORT
 getvar IDMPROV_SECOND_OIM_HOST
 getvar IDMPROV_SECOND_OIM_PORT
 getvar IDMPROV_SECOND_SOA_HOST
 getvar IDMPROV_SECOND_SOA_PORT
-getvar IDMPROV_SOA_HOST
-getvar IDMPROV_SOA_PORT
 getvar IL_APP_BASE
 getvar IL_APP_CONFIG
 getvar IL_INSTALLERDIR_LOCATION
@@ -47,12 +69,21 @@ getvar INSTALL_LCMHOME_DIR
 getvar INSTALL_LOCALCONFIG_DIR
 getvar NODEMANAGER_NAME
 getvar OHS_INSTANCENAME
+getvar OIMADMIN_NAME
 getvar OIM_DB_SCHEMAPREFIX
 getvar OIM_DB_SERVICENAME
 getvar OIM_SINGLE_DB_HOST
 getvar OIM_SINGLE_DB_PORT
+getvar OIM_RAC_SCAN_ADDRESS
+getvar OIM_RAC_SCAN_PORT
 getvar WLSADMIN_NAME
-getvar WLSADMIN_NAME
+
+getvar DIR_REALM_DN
+getvar SYSTEM_IDS_CONTAINER
+getvar IDMPROV_OID_HOST
+getvar DIR_PORT
+getvar DIR_ADMIN_NAME
+getvar DIR_SSL_PORT
 
 
 :          ${iam_user_umask:="0007"}
@@ -105,6 +136,7 @@ getvar WLSADMIN_NAME
 :        ${dbs_port:=${OIM_SINGLE_DB_PORT:-${OIM_RAC_SCAN_PORT}}}
 : ${iam_servicename:=${OIM_DB_SERVICENAME}}
 :  ${iam_oim_prefix:=${OIM_DB_SCHEMAPREFIX}}
+:  ${iam_oam_prefix:=${OAM_DB_SCHEMAPREFIX}}
 
      iam_domain_oim=${IDMPROV_PRODUCT_IDENTITY_DOMAIN}
      iam_domain_acc=${IDMPROV_ACCESS_DOMAIN}
