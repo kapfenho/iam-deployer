@@ -35,6 +35,7 @@ _replace_in_env()
   sed -i "s/__IAM_TOP__/${_iam_top}/"     ${bin}/*
   sed -i "s/__IAM_LOG__/${_iam_log}/"     ${env}/*
   sed -i "s/__IAM_LOG__/${_iam_log}/"     ${bin}/*
+  sed -i "s/__IAM_JDK__/${_iam_jdk}/"     ${env}/*
   sed -i "s/__IL_APP_CONFIG__/${_IL_APP_CONFIG}/" ${env}/*
   sed -i "s/__IL_APP_CONFIG__/${_IL_APP_CONFIG}/" ${bin}/*
   # access - acc
@@ -122,6 +123,7 @@ _cp_oud()
   cp ${src}/env/tools.properties ${env}/
   _replace_in_env
   sed -i "s/__HOSTNAME__/$(hostname -f)/" ${env}/*
+
   echo -n ${oudPwd} > ${crd}/oudadmin
 }
 
@@ -137,9 +139,11 @@ _cp_web()
   # get the instance name
   local _ohspath=$(find ${INSTALL_LOCALCONFIG_DIR}/instances \
     -maxdepth 1 -type d -a -name 'ohs*')
-  local _ohs=$(basename $_ohspath)
 
-  sed -i "s/ohs1/${_ohs}/" ${env}/*
+  if [ "X${_ohspath}" != "X" ] ; then
+    local _ohs=$(basename $_ohspath)
+    sed -i "s/ohs1/${_ohs}/" ${env}/*
+  fi
 }
 
 #  ------------------------------------------------
@@ -162,9 +166,10 @@ init_userenv()
     _iam_hostenv=$(echo ${iam_hostenv}   | sed -e 's/[\/&]/\\&/g')
         _iam_top=$(echo ${iam_top}       | sed -e 's/[\/&]/\\&/g')
         _iam_log=$(echo ${iam_log}       | sed -e 's/[\/&]/\\&/g')
+        _iam_jdk=$(echo ${iam_jdk}       | sed -e 's/[\/&]/\\&/g')
   _deployer_path=$(echo ${DEPLOYER}      | sed -e 's/[\/&]/\\&/g')
   _IL_APP_CONFIG=$(echo ${IL_APP_CONFIG} | sed -e 's/[\/&]/\\&/g')
-  # also used but scaping not necessary:
+  # also used but escaping not necessary:
   # iam_domain_oim, iam_domain_acc
 
   for d in ${env} ${bin} ${lib} ${crd} ; do
@@ -188,7 +193,7 @@ init_userenv()
 
   exists_product identity  && _cp_oim
   exists_product access    && _cp_acc
-  exists_product directory && _cp_oud
+  exists_product dir       && _cp_oud
   exists_product web       && _cp_web
   exists_product analytics && _cp_oia
 

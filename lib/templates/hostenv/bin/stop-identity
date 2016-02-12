@@ -15,6 +15,11 @@ try:
 except:
   pass
 
+try:
+  shutdown(name='bip_cluster',entityType='Cluster',force='true');
+except:
+  pass
+
 shutdown('AdminServer',force='true');
 exit();
 EOS

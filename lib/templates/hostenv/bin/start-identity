@@ -8,6 +8,7 @@ nmStart('AdminServer');
 acConnect();
 start(name='soa_cluster',type='Cluster');
 start(name='oim_cluster',type='Cluster');
+start(name='bip_cluster',type='Cluster');
 exit();
 EOS
 

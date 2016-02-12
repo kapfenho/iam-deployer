@@ -264,18 +264,20 @@ else
       elif [ "${opt_a}" == "psa"         -a -z "${opt_h}" ] ; then
         run_psa access
       elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -z "${opt_n}" ] ; then
-        ${opt_u:=${domaUser}}
-        ${opt_p:=${domaPwd}}
-        ${opt_w:="${iam_hostenv}/.env/access.prop"}
+        # domain keyfile
+        : ${opt_u:=${domaUser}}
+        : ${opt_p:=${domaPwd}}
+        : ${opt_w:="${iam_hostenv}/.env/access.prop"}
         if ! [ -a ${opt_w} ] ;  then
           error "Domain property file not found. Please run userenv!"
           exit $ERROR_FILE_NOT_FOUND
         fi
         create_domain_keyfile 
       elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -n "${opt_n}" ] ; then
-        ${opt_u:=${nmUser}}
-        ${opt_p:=${nmPwd}}
-        ${opt_w:="${iam_hostenv}/.env/access.prop"}
+        # nodemanager keyfile
+        : ${opt_u:=${nmUser}}
+        : ${opt_p:=${nmPwd}}
+        : ${opt_w:="${iam_hostenv}/.env/access.prop"}
         if ! [ -a ${opt_w} ] ;  then
           error "Domain property file not found. Please run userenv!"
           exit $ERROR_FILE_NOT_FOUND

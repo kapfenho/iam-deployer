@@ -10,6 +10,11 @@ try:
 except:
   pass
 
+try:
+  shutdown(name='ama_cluster',entityType='Cluster',force='true')
+except:
+  pass
+
 shutdown('AdminServer',force='true');
 exit();
 EOS

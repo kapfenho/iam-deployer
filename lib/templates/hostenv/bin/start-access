@@ -7,6 +7,7 @@ acNmConnect();
 nmStart('AdminServer');
 acConnect();
 start(name='oam_cluster',type='Cluster');
+start(name='ama_cluster',type='Cluster');
 exit();
 EOS
 

@@ -219,7 +219,7 @@ DIR_USE_EXISTING_DIR_TYPE=OUD
 #Install Locations
 IL_INSTALLERDIR_LOCATION=/mnt/oracle/iam-11.1.2.3/repo
 IL_APP_BASE=/opt/fmw
-IL_APP_CONFIG=${provisioning.setup.install-location.locations.default.home.top}/config
+IL_APP_CONFIG=/opt/fmw/config
 IL_ENABLE_LOCALAPP_CONFIG=true
 IL_LOCALAPP_CONFIG=/opt/fmw/services
 IL_WIN_DOMAIN_USERNAME=

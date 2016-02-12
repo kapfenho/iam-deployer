@@ -86,7 +86,7 @@ deploy_ssh_keypair()
 
 
 #  helper functions for product selection
-#  vendor products: identity, access, web, directory
+#  vendor products: identity, access, web, dir
 #  user products:   bip
 #  in case products directory not found exit run
 #

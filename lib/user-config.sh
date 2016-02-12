@@ -53,6 +53,8 @@ getvar IDMPROV_OIM_HOST
 getvar IDMPROV_OIM_PORT
 getvar IDMPROV_SOA_HOST
 getvar IDMPROV_SOA_PORT
+getvar IDMPROV_OHS_HOST
+getvar IDMPROV_OHS_PORT
 getvar IDMPROV_OID_HOST
 getvar DIR_PORT
 getvar DIR_SSL_PORT
@@ -62,6 +64,9 @@ getvar IDMPROV_SECOND_OIM_HOST
 getvar IDMPROV_SECOND_OIM_PORT
 getvar IDMPROV_SECOND_SOA_HOST
 getvar IDMPROV_SECOND_SOA_PORT
+getvar IDMPROV_SECOND_OHS_HOST
+getvar IDMPROV_SECOND_OHS_PORT
+getvar IDMPROV_SECOND_OID_PORT
 getvar IL_APP_BASE
 getvar IL_APP_CONFIG
 getvar IL_INSTALLERDIR_LOCATION
@@ -108,7 +113,10 @@ getvar DIR_SSL_PORT
 : ${IDMPROV_SECOND_OIA_HOST:=${IDMPROV_SECOND_OIM_HOST}}
 :        ${IDMPROV_OIA_PORT:="7310"}
 : ${IDMPROV_SECOND_OIA_PORT:="7310"}
+# shipped_jdk: ps2=jdk6, ps3=jdk
 :         ${shipped_jdk_dir:="jdk"}
+# iam_jdk: ps2=jdk6/current, ps3=jdk
+:                 ${iam_jdk:="jdk"}
 #
 
 # --------- user must not set this
