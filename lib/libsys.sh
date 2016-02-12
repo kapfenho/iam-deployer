@@ -12,6 +12,7 @@ rcd_add() {
     log "rcd_add" "service ${1} already registered, skipped"
   else
     sudo -n cp -p ${2} ${dest}
+    sudo -n sed -i "s/__SID__/${dbs_sid}/g" ${dest}/${1}
     sudo -n chmod 0755 ${dest}
     log "rcd_add" "start script added"
     sudo -n chkconfig --add ${1}

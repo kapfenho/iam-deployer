@@ -11,7 +11,7 @@ except:
   pass
 
 try:
-  shutdown(name='ama_cluster',entityType='Cluster',force='true')
+  shutdown(name='oam_policy_mgr_cluster',entityType='Cluster',force='true')
 except:
   pass
 

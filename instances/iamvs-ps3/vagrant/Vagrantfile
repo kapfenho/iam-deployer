@@ -26,10 +26,10 @@ $hostfile   = "# ...cant touch this
 #{IP_LBFE}      identity-api.iamvs.agoracon.at     identity-api
 #{IP_LBFE}         dir-admin.iamvs.agoracon.at        dir-admin
 #{IP_LBFE}             omsas.iamvs.agoracon.at            omsas
-192.168.168.1                           images
+#{IP_NFSI}                              images
 "
 
-$images = "images:/Volumes/hext01/install/oracle /mnt/oracle nfs ro,bg 0 0\n"
+$images = "images:/export/oracle /mnt/oracle nfs rw,bg 0 0\n"
 # $exports, $fstab = "", "#{$images}"
 # [ '/opt/fmw/config',
 #   '/opt/fmw/products',
@@ -73,7 +73,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     app.vm.provider :virtualbox do |v|
       v.name   = app_name
       v.cpus   = 4
-      v.memory = 12 * 1024
+      v.memory = 32 * 1024
     end
 
   end

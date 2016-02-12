@@ -219,7 +219,7 @@ DIR_USE_EXISTING_DIR_TYPE=OUD
 #Install Locations
 IL_INSTALLERDIR_LOCATION=/mnt/oracle/iam-11.1.2.3/repo
 IL_APP_BASE=/opt/fmw
-IL_APP_CONFIG=${provisioning.setup.install-location.locations.default.home.top}/config
+IL_APP_CONFIG=/opt/fmw/config
 IL_ENABLE_LOCALAPP_CONFIG=true
 IL_LOCALAPP_CONFIG=/opt/fmw/services
 IL_WIN_DOMAIN_USERNAME=
@@ -266,7 +266,7 @@ DIR_EXISTING_ROOTCA_FOR_AD=
 DIR_REALM_DN=dc=agoracon,dc=at
 DIR_USERS_CONTAINER=cn=Users,${provisioning.idmprov.dir.realm.dn}
 DIR_GROUPS_CONTAINER=cn=Groups,${provisioning.idmprov.dir.realm.dn}
-SYSTEM_IDS_CONTAINER=cn=SystemIDs,${provisioning.idmprov.dir.realm.dn}
+SYSTEM_IDS_CONTAINER=cn=SystemIDs,dc=agoracon,dc=at
 DIR_WLSADMINGROUP_CONTAINER=IDM Administrators
 DIR_OAMADMINGROUP_CONTAINER=OAMAdministrators
 DIR_OIMADMINGROUP_CONTAINER=OIMAdministrators
@@ -328,7 +328,7 @@ OIM_JMS_TLOGS_LOCATION=${provisioning.idmprov.global.confighome}/domains/${provi
 #OIM DB Configuration
 OIM_DB_IS_RAC=false
 OIM_DB_IS_SINGLE=true
-OIM_SINGLE_DB_HOST=${provisioning.setup.domain-topology.topology.oim.host}
+OIM_SINGLE_DB_HOST=oradb.iamvs.agoracon.at
 OIM_SINGLE_DB_PORT=1521
 OIM_DB_SCHEMAPREFIX=DIM
 OIM_DB_SCHEMAUSER=${provisioning.idmprov.oim-db.schema_prefix}_OIM
@@ -344,7 +344,7 @@ OIM_DB_SYSDBA_USERNAME=sys
 OIM_DB_SYSDBA_PASSWORD=v0Yd+NuDEIrI7ddlKajeyQ==
 
 #Topology Configurations
-IDMPROV_PRODUCT_DIRECTORY_HOST=
+IDMPROV_PRODUCT_DIRECTORY_HOST=iamvs.agoracon.at
 IDMPROV_PRODUCT_DIRECTORY_DOMAIN=dir
 IDMPROV_PRODUCT_DIRTIER_IN_DEDICATED_ZONE=${provisioning.setup.domain-topology.topology.domain.topology.advanced}
 IDMPROV_PRODUCT_IDENTITY_HOST=
@@ -353,28 +353,28 @@ IDMPROV_PRODUCT_WEBTIER_HOST=
 IDMPROV_PRODUCT_WEBTIER_DOMAIN=web
 IDMPROV_PRODUCT_WEBTIER_IN_DMZ=${provisioning.setup.domain-topology.topology.domain.topology.advanced}
 IDMPROV_ENABLE_OMSS=true
-IDMPROV_IDMDOMAIN_ADMINSERVER_HOST=${provisioning.setup.domain-topology.topology.domain.host}
+IDMPROV_IDMDOMAIN_ADMINSERVER_HOST=iamvs.agoracon.at
 IDMPROV_IDMDOMAIN_ADMINSERVER_PORT=7001
-IDMPROV_OIMDOMAIN_ADMINSERVER_HOST=${provisioning.setup.domain-topology.topology.domain.host}
+IDMPROV_OIMDOMAIN_ADMINSERVER_HOST=iamvs.agoracon.at
 IDMPROV_OIMDOMAIN_ADMINSERVER_PORT=7101
-IDMPROV_OID_HOST=${provisioning.setup.domain-topology.topology.domain.host}
+IDMPROV_OID_HOST=iamvs.agoracon.at
 IDMPROV_OID_PORT=${provisioning.idmprov.dir.port}
 IDMPROV_OID_SSLPORT=${provisioning.idmprov.dir.sslport}
-IDMPROV_OVD_HOST=${provisioning.setup.domain-topology.topology.domain.host}
-IDMPROV_OIM_HOST=${provisioning.setup.domain-topology.topology.domain.host}
+IDMPROV_OVD_HOST=iamvs.agoracon.at
+IDMPROV_OIM_HOST=iamvs.agoracon.at
 IDMPROV_OIM_PORT=14000
-IDMPROV_SOA_HOST=${provisioning.setup.domain-topology.topology.domain.host}
+IDMPROV_SOA_HOST=iamvs.agoracon.at
 IDMPROV_SOA_PORT=8001
-IDMPROV_BIP_HOST=${provisioning.setup.domain-topology.topology.oim.host}
+IDMPROV_BIP_HOST=iamvs.agoracon.at
 IDMPROV_BIP_PORT=9704
-IDMPROV_OAM_HOST=${provisioning.setup.domain-topology.topology.domain.host}
+IDMPROV_OAM_HOST=iamvs.agoracon.at
 IDMPROV_OAM_PORT=14100
-IDMPROV_OMSM_HOST=${provisioning.setup.domain-topology.topology.idmdomain.host}
-IDMPROV_OMSAS_HOST=${provisioning.setup.domain-topology.topology.ohs.host}
-IDMPROV_OAM_POLICY_MANAGER_HOST=${provisioning.setup.domain-topology.topology.idmdomain.host}
+IDMPROV_OMSM_HOST=iamvs.agoracon.at
+IDMPROV_OMSAS_HOST=iamvs.agoracon.at
+IDMPROV_OAM_POLICY_MANAGER_HOST=iamvs.agoracon.at
 IDMPROV_OAM_POLICY_MANAGER_PORT=14150
 IDMPROV_OAM_POLICY_MANAGER_SSL_PORT=14151
-IDMPROV_OHS_HOST=${provisioning.setup.domain-topology.topology.domain.host}
+IDMPROV_OHS_HOST=iamvs.agoracon.at
 IDMPROV_OHS_PORT=7777
 IDMPROV_OHS_SSLPORT=4443
 IDMPROV_OHS_OPMNREMOTEPORT=6704

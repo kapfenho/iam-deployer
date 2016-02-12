@@ -3,13 +3,15 @@
 #  load the iam provisioning variables and assign them to the 
 #  variables used in the script
 #
+VARERR="NO"
+
 iam_config_rsp=${DEPLOYER}/user-config/iam/provisioning.rsp
 lcm_config_rsp=${DEPLOYER}/user-config/lcm/lcm_install.rsp
 
 getvar() {
   #eval $(grep ${1} ${iam_config_rsp}) 2>/dev/null || true
   if ! eval $(grep ${1} ${iam_config_rsp}) 2>/dev/null ; then
-    echo "ERROR: could not get var ${1}"
+    echo "WARNING: could not read variable  ${1}  from provisioning.rsp"
   fi
 }
 
@@ -89,7 +91,6 @@ getvar IDMPROV_OID_HOST
 getvar DIR_PORT
 getvar DIR_ADMIN_NAME
 getvar DIR_SSL_PORT
-
 
 :          ${iam_user_umask:="0007"}
 :          ${iam_orainv_grp:="oinstall"}

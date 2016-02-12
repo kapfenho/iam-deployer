@@ -24,22 +24,21 @@ iam lcminst
 # iam lcmprovmod
 
 # let's do the lcm...
-  # no preverify
+#  skipped:  validate
 for step in \
+  preverify \
   install \
   unblock \
   preconfigure \
   configure \
   configure-secondary \
   postconfigure \
-  startup \
-  validate
+  startup
 do
   # execute step on all hosts
   iam lcmstep -a ${step}
 done
 
-exit 0
 # deploy user environment in shared location
 iam userenv -a env
 # on each host: load in user profile and create easy to reach shortcuts 
@@ -47,32 +46,34 @@ iam userenv -a profile
 
 # copy weblogic libraries
 iam weblogic -a wlstlibs -t identity
+iam weblogic -a wlstlibs -t access
 
 # generate keyfiles
 iam identity -a keyfile -u ${nmUser}   -p ${nmPwd} -n
 iam identity -a keyfile -u ${domiUser} -p ${domiPwd}
 
+iam access   -a keyfile -u ${nmUser}   -p ${nmPwd} -n
+iam access   -a keyfile -u ${domaUser} -p ${domaPwd}
+
 # domain configuration
 iam identity -a config
-
-# upgrade jdk
-iam jdk -a install7 -O identity
+iam access   -a config
 
 # stop all services
 $SHELL -l ~/bin/stop-identity
-$SHELL -l ~/bin/stop-webtier
+$SHELL -l ~/bin/stop-access
 $SHELL -l ~/bin/stop-nodemanager
+$SHELL -l ~/bin/stop-dir
+$SHELL -l ~/bin/stop-webtier
 
-iam jdk -a move6 -O identity
-
-# identity domain PSA run
-#iam identity -a psa
+exit 0
 
 iam weblogic -a jdk7fix -t identity
 iam identity -a jdk7fix
 
 # identity domain post-install steps
 iam identity -a movelogs
+iam access   -a movelogs
 
 # webgate installation bug fix
 iam webtier -a movelogs

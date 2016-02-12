@@ -1,0 +1,78 @@
+#!/bin/sh
+# vi:ft=sh:
+
+ERR_FILE_NOT_FOUND=80
+ERR_SYNTAX_ERROR=81
+ERR_DOMAIN_UNKNOWN=82
+ERR_WLST=82
+
+
+check_domain() {
+  if ! [ -e ~/.env/${DOMAIN}.prop ] ; then
+    echo "ERROR: domain ${DOMAIN} unkown"
+    exit $ERR_DOMAIN_UNKOWN
+  fi
+}
+
+dom_run() {
+  source $(grep -l "DOMAIN=${DOMAIN}" ~/.env/*.env)
+
+  ${WL_HOME}/common/bin/wlst.sh -loadProperties ~/.env/${DOMAIN}.prop \
+    ~/lib/dom.py $*
+}
+
+dom_kill() {
+  echo "Not implemented"
+}
+
+# --- main ------------------------------------------------------------
+#
+
+if ! shopt -q login_shell ; then
+  source /etc/profile
+fi
+
+#  remember original parameters for host calls
+orig_params="${@}"
+printhelp=0
+
+if   [ $# -lt 1 ] ; then
+  printhelp=1
+
+elif [ $# -eq 1 ] ; then
+
+  if [ "${1}" == "status" ] ; then
+    dom_global_status
+  else
+    printhelp=1
+  fi
+
+else
+
+  DOMAIN=${1}
+  check_domain ${DOMAIN}
+  
+  case ${2} in
+
+    start | stop | status)
+      shift
+      dom_run $*
+      ;;
+
+    kill)
+      shift
+      dom_kill $*
+      ;;
+
+    *)
+      printhelp=1
+      ;;
+  esac
+fi
+
+if [ "X${printhelp}" == "X1" ] ; then
+  domhelp
+  exit $ERROR_SYNTAX_ERROR
+fi
+
+
