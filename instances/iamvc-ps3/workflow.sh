@@ -22,13 +22,8 @@ done
 
 iam ssh-key -a add -A
 
-# install database
-# database
+# create inventory, for lcm only
 iam orainv
-
-# ps2 rcu: create database schemas
-#iam rcu -a create -t identity
-
 # install lcm
 iam lcminst
 
@@ -101,3 +96,4 @@ iam webtier -a movelogs -H ${web2}
 iam webtier -a config -v -H ${web1}
 iam webtier -a config -v -H ${web2}
 
+echo -e "\nSetup finished successfully!\n"

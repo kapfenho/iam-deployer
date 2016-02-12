@@ -16,7 +16,7 @@ except:
   pass
 
 try:
-  shutdown(name='bip_cluster',entityType='Cluster',force='true');
+  shutdown(name='bi_cluster',entityType='Cluster',force='true');
 except:
   pass
 
