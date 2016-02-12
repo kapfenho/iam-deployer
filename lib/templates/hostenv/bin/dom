@@ -1,30 +1,32 @@
 #!/bin/sh
 # vi:ft=sh:
 
-WARNING_DONE=0
-ERROR_FILE_NOT_FOUND=80
-ERROR_SYNTAX_ERROR=81
-ERROR_WLST=82
+ERR_FILE_NOT_FOUND=80
+ERR_SYNTAX_ERROR=81
+ERR_DOMAIN_UNKNOWN=82
+ERR_WLST=82
 
 
 check_domain() {
-  if ! [ -f "~/.env/${DOMAIN}.env" ] ; then
+  if ! [ -e ~/.env/${DOMAIN}.prop ] ; then
     echo "ERROR: domain ${DOMAIN} unkown"
     exit $ERR_DOMAIN_UNKOWN
   fi
 }
 
-domstart() {
-  source ~/.env/${DOMAIN}.env
-  ${WL_HOME}/common/bin/wlst.sh -loadProperties ~/.env/${DOMAIN}.prop <<EOS
-acNmConnect();
-nmStart('AdminServer');
-acConnect();
-start(name='oam_cluster',type='Cluster');
-start(name='ama_cluster',type='Cluster');
-exit();
-EOS
+dom_run() {
+  source $(grep -l "DOMAIN=${DOMAIN}" ~/.env/*.env)
+
+  ${WL_HOME}/common/bin/wlst.sh -loadProperties ~/.env/${DOMAIN}.prop \
+    ~/lib/dom.py $*
 }
+
+dom_kill() {
+  echo "Not implemented"
+}
+
+# --- main ------------------------------------------------------------
+#
 
 if ! shopt -q login_shell ; then
   source /etc/profile
@@ -51,23 +53,15 @@ else
   check_domain ${DOMAIN}
   
   case ${2} in
-    start)
-      shift ; shift
-      domstart $*
-      ;;
 
-    stop)
-      shift ; shift
-      domstop $*
+    start | stop | status)
+      shift
+      dom_run $*
       ;;
 
     kill)
-      shift ; shift
-      domkill $*
-      ;;
-
-    status)
-      domstatus
+      shift
+      dom_kill $*
       ;;
 
     *)
@@ -76,12 +70,9 @@ else
   esac
 fi
 
-
 if [ "X${printhelp}" == "X1" ] ; then
   domhelp
   exit $ERROR_SYNTAX_ERROR
 fi
-
-
 
 

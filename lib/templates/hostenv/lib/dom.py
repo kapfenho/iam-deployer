@@ -1,12 +1,11 @@
-
 import sys
 
 # start domain, no server names given
 #
-def startDomain():
+def startDomain(domClusters):
 	acNmConnect();
 	try:
-		nmStart("AdminServer");
+		nmStart(domAdminServer);
 	except:
 		print "ERROR while starting AdminServer";
 		exit();
@@ -17,13 +16,14 @@ def startDomain():
 	except:
 		pass
 
+
 # start servers in domain, list of server name come as parameters
 #
 def startServers(servers):
 	acNmConnect();
-	if 'AdminServer' in servers:
-		nmStart('AdminServer');
-		servers = servers - set(['AdminServer'])
+	if domAdminServer in servers:
+		nmStart(domAdminServer);
+		servers.remove(domAdminServer);
 
 	if len(servers) > 0:
 		acConnect()
@@ -33,24 +33,29 @@ def startServers(servers):
 			except:
 				pass;
 
-def stopDomain():
+
+# stop whole domain, used when no parameters are set
+#
+def stopDomain(domServers):
 	acNmConnect();
 	acConnect();
-	for s in domManagedServers:
+	for s in domServers:
 		try:
 			shutdown(name=s, entityType="Server", force="true");
 		except:
 			pass;
-	shutdown("AdminServer", entityType="Server", force="true");
+	shutdown(domAdminServer, entityType="Server", force="true");
 
 
+# stop stated servers
+#
 def stopServers(servers):
 	acNmConnect();
 	acConnect();
 
-	if "AdminServer" in severs:
+	if domAdminServer in servers:
 		stopAdmin = True;
-		servers = servers - set(["AdminServer"])
+		servers.remove(domAdminServer);
 
 	for s in servers:
 		try:
@@ -59,44 +64,46 @@ def stopServers(servers):
 			pass;
 
 	if stopAdmin == True:
-		shutdown(name="AdminServer", entityType="Server", force="true");
+		shutdown(name=domAdminServer, entityType="Server", force="true");
 
 
 
 def main(argv):
-	pNum = len(argv)
+
+	dClusters = domClusters.split(',');
+	dServers = domServers.split(',');
+
 	if len(argv) < 2:
-		sys.stderr.write("Usage: %s {start|stop|kill|statuss} [server1 [server2 ...]]" % (argv[0],))
-        return 1
+		sys.stderr.write("Usage: %s {start|stop|kill|statuss} [server1 [server2...]]\n" % (argv[0],))
+		return 1;
 
 	cmd = argv[1];
-	if len(argv) > 3:
-		servers = set(argv[2:])
+	servers = None;
+	if len(argv) > 2:
+		servers = argv[2:]
 	
 	if cmd == "start":
-		if servers:
+		if servers is None:
+			startDomain(dClusters);
+		else:
 			startServers(servers);
-		else:
-			startDomain();
+
 	elif cmd == "stop":
-		if servers:
+		if servers is None:
+			stopDomain(dServers);
+		else:
 			stopServers(servers);
-		else:
-			stopDomain();
+
 	elif cmd == "kill":
-		if servers:
-			killServers(servers);
-		else:
+		if servers is None:
 			killDomain();
+		else:
+			killServers(servers);
+
 	elif cmd == "status":
 		printDomainStatus();
 
+# --- main ------------------------------------------------------------
+#
+main(sys.argv)
 
-
-
-
-
-if __name__ == "__main__":
-    sys.exit(main(sys.argv))
-
-        
