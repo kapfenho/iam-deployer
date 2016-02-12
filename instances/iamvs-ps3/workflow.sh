@@ -21,11 +21,11 @@ iam orainv
 # install lcm
 iam lcminst
 # switch off checks
-iam lcmprovmod
+# iam lcmprovmod
 
 # let's do the lcm...
+  # no preverify
 for step in \
-  preverify \
   install \
   unblock \
   preconfigure \
