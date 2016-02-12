@@ -11,3 +11,6 @@ Changelog
             last step (verification), since health checks can only be 
             executed. Instance: iamvc-ps3
             
+2016-02-12  Health-Check: a new subcommand is calling the Oracle Health 
+            Checks in all currently possible variations. Call it instead 
+            the broken postinstall verification phase (last phase)
