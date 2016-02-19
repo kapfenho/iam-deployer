@@ -282,6 +282,7 @@ help_identity() {
                       [-u user] [-p pwd]
 
     ${0} identity -a jdk7fix
+    ${0} identity -a domainfix
     ${0} identity -a psa
     ${0} identity -a keyfile -u user -p pwd [-w wlst-prop-file] [-n]
     ${0} identity -a config
@@ -293,6 +294,7 @@ help_identity() {
   Parameter:
     -a   action to perform
          jdk7fix      fix java parameters in commEnv.sh
+         domainfix    set prod mode, custom env, fix errors
          psa          run Patch Set assitant for OIM
          keyfile      create domain keyfiles for user
          config       apply custom domain config
@@ -317,6 +319,7 @@ help_access() {
 
 
     ${0} access -a jdk7fix
+    ${0} access -a domainfix
     ${0} access -a psa
     ${0} access -a keyfile -u user -p pwd [-w wlst-prop-file] [-n]
     ${0} access -a config
@@ -328,6 +331,7 @@ help_access() {
   Parameter:
     -a   action to perform
          jdk7fix      fix java parameters in commEnv.sh
+         domainfix    set prod mode, custom env, fix errors
          psa          run Patch Set assitant for OAM
          keyfile      create domain keyfiles for user
          config       apply custom domain config

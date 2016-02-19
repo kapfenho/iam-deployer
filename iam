@@ -223,6 +223,10 @@ else
 
       if   [ "${opt_a}" == "jdk7fix"  -a -z "${opt_h}" ] ; then
         patch_wls_domain identity
+      elif [ "${opt_a}" == "domainfix" -a -z "${opt_h}" ] ; then
+        domain_adaptions identity
+      elif [ "${opt_a}" == "usejdk"   -a -n "${opt_t}" -z "${opt_h}" ] ; then
+        domain_modify_jdk_path ${ADMIN_HOME} ${opt_t}
       elif [ "${opt_a}" == "psa"      -a -z "${opt_h}" ] ; then
         run_psa identity
       elif [ "${opt_a}" == "keyfile"  -a -z "${opt_h}" -a -z "${opt_n}" ] ; then
@@ -261,6 +265,10 @@ else
 
       if   [ "${opt_a}" == "jdk7fix"     -a -z "${opt_h}" ] ; then
         patch_wls_domain access
+      elif [ "${opt_a}" == "domainfix"   -a -z "${opt_h}" ] ; then
+        domain_adaptions access
+      elif [ "${opt_a}" == "usejdk"      -a -n "${opt_t}" -z "${opt_h}" ] ; then
+        domain_modify_jdk_path ${ADMIN_HOME} ${opt_t}
       elif [ "${opt_a}" == "psa"         -a -z "${opt_h}" ] ; then
         run_psa access
       elif [ "${opt_a}" == "keyfile"     -a -z "${opt_h}" -a -z "${opt_n}" ] ; then
