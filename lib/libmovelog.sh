@@ -47,12 +47,16 @@ move_logs()
       _mvlog ${iam_services}/domains/${iam_domain_oim}/servers/wls_soa2/logs            ${dst}/${iam_domain_oim}/wls_soa2
       _mvlog ${iam_services}/domains/${iam_domain_oim}/servers/wls_oim1/logs            ${dst}/${iam_domain_oim}/wls_oim1
       _mvlog ${iam_services}/domains/${iam_domain_oim}/servers/wls_oim2/logs            ${dst}/${iam_domain_oim}/wls_oim2
+      _mvlog ${iam_services}/domains/${iam_domain_oim}/servers/wls_bi1/logs             ${dst}/${iam_domain_oim}/wls_bi1
+      _mvlog ${iam_services}/domains/${iam_domain_oim}/servers/wls_bi2/logs             ${dst}/${iam_domain_oim}/wls_bi2
       ;;
     access)
       mkdir -p ${dst}/nodemanager
       _mvlog ${iam_top}/config/domains/${iam_domain_acc}/servers/AdminServer/logs       ${dst}/${iam_domain_acc}/AdminServer
       _mvlog ${iam_services}/domains/${iam_domain_acc}/servers/wls_oam1/logs            ${dst}/${iam_domain_acc}/wls_oam1
       _mvlog ${iam_services}/domains/${iam_domain_acc}/servers/wls_oam2/logs            ${dst}/${iam_domain_acc}/wls_oam2
+      _mvlog ${iam_services}/domains/${iam_domain_acc}/servers/wls_ama1/logs            ${dst}/${iam_domain_acc}/wls_ama1
+      _mvlog ${iam_services}/domains/${iam_domain_acc}/servers/wls_ama2/logs            ${dst}/${iam_domain_acc}/wls_ama2
       ;;
     dir)
       mkdir -p ${dst}/${iam_instance_oud}
