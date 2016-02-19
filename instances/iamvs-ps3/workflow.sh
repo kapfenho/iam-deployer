@@ -69,7 +69,10 @@ $SHELL -l ~/bin/stop-webtier
 exit 0
 
 iam weblogic -a jdk7fix -t identity
-iam identity -a jdk7fix
+iam weblogic -a jdk7fix -t access
+
+iam identity -a domainfix
+iam access   -a domainfix
 
 # identity domain post-install steps
 iam identity -a movelogs

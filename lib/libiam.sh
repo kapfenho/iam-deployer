@@ -1,6 +1,7 @@
 #  iam deploy and config functions ---------------------------------
 #  source it
 
+# -----------------------------------------------------------------------
 #  load user env file {common,idm,acc} - if not there 
 #  exit with error
 #
@@ -20,6 +21,7 @@ load_userenv()
   fi
 }
 
+# -----------------------------------------------------------------------
 #  create ssh-keypair for host access
 #  - param 1: path of shared directory for common key
 #
@@ -34,6 +36,7 @@ gen_ssh_keypair()
   fi
 }
 
+# -----------------------------------------------------------------------
 # quietly add list of hosts (passed as parameters) to ${HOME}/.ssh/known_hosts 
 # file after this function is run, a list of known hosts will be prepared for 
 # the current user@localhost.
@@ -46,6 +49,7 @@ add_known_hosts()
   done
 }
 
+# -----------------------------------------------------------------------
 #  copy the keypair to the standard locations and trust the same key
 #  because all hosts will use the very same one during initialization
 #  - param 1: path of shared directory with common key
@@ -85,6 +89,7 @@ deploy_ssh_keypair()
 }
 
 
+# -----------------------------------------------------------------------
 #  helper functions for product selection
 #  vendor products: identity, access, web, dir
 #  user products:   bip
@@ -103,6 +108,7 @@ exists_product()
   return 0
 }
 
+# -----------------------------------------------------------------------
 #  create oracle inventory pointer
 #
 create_orainvptr()
@@ -116,6 +122,7 @@ EOS
 }
 
 
+# -----------------------------------------------------------------------
 #  deloy life cycle management (deployment wizard)
 #
 deploy_lcm()
@@ -159,6 +166,7 @@ EOS
   fi
 }
 
+# -----------------------------------------------------------------------
 #  LCM patches: needed for PS3 cluster installation
 #  param1: oracle patch number
 #
@@ -176,6 +184,7 @@ patch_lcm()
   fi
 }
 
+# -----------------------------------------------------------------------
 #  change provisioining profiles to disables healthcheck before 
 #  and after installation
 #
@@ -204,6 +213,7 @@ lcm_modify_profiles()
   fi  
 }
 
+# -----------------------------------------------------------------------
 #  provision step within life cycle manager wizard
 #+ param 1: step name
 #
@@ -235,6 +245,7 @@ lcmstep()
   fi
 }
 
+# -----------------------------------------------------------------------
 # post install task: patching of OPSS database instances
 #
 patch_opss() {
@@ -257,6 +268,7 @@ patch_opss() {
 
 }
 
+# -----------------------------------------------------------------------
 #  check what jdk the process with id uses, if it uses jdk6
 #  change our environment to use the same one
 #    param1: pid
@@ -275,6 +287,7 @@ use_jdk_of_proc() {
 }
 
 
+# -----------------------------------------------------------------------
 #  create domain keyfiles for user ----------------------------------
 #  parameters are used from opt_ variables:
 #    $opt_u: username
@@ -310,6 +323,7 @@ exit()
   fi
 }
 
+# -----------------------------------------------------------------------
 #  create nodemanager keyfiles for user -----------------------------
 #  parameters are used from opt_ variables:
 #    $opt_u: username
@@ -343,104 +357,7 @@ exit()
   fi
 }
 
-#  remove hostenvironment: ~/{bin,lib,.env,.creds}
-#  Always returns 0
-#
-remove_env()
-{
-  set -o nounset
-  : ${DEPLOYER:?}
-
-  #  bin
-  for f in $(ls ${DEPLOYER}/lib/templates/hostenv/bin/) ; do
-    rm -f ~/bin/${f}
-  done
-  rmdir ~/bin 2>/dev/null || true
-  #  lib
-  for f in $(ls ${DEPLOYER}/lib/templates/hostenv/lib/) ; do
-    rm -f ~/lib/${f}
-  done
-  rmdir ~/lib 2>/dev/null || true
-  #  env
-  for f in $(ls ${DEPLOYER}/lib/templates/hostenv/env/) ; do
-    rm -f ~/.env/${f}
-  done
-  rmdir ~/.env 2>/dev/null || true
-  #  cred
-  rm -Rf ~/.cred 
-}
-
-
-#  remove installation directories populated by LCM
-#  Always returns 0
-#
-remove_iam()
-{
-  set -o nounset
-  : ${iam_top:?}
-  : ${iam_services:?}
-
-  rm -Rf ${iam_top}/products/* \
-         ${iam_top}/config/* \
-         ${iam_top}/*.lck \
-         ${iam_top}/lcm/lcmhome/provisioning/phaseguards/* \
-         ${iam_top}/lcm/lcmhome/provisioning/provlocks/* \
-         ${iam_top}/lcm/lcmhome/provisioning/logs/ \
-         ${iam_services}/*
-}
-
-#  remove LCM (life cycle manager) iam_base/lcm
-#  binaries and home
-#
-remove_lcm()
-{
-  set -o nounset
-  : ${iam_top:?}
-
-  rm -Rf ${iam_top}/lcm/{lcm,lcmhome}
-}
-
-#  remove OIA installation including including env
-#  Always returns 0
-#
-remove_oia()
-{
-  set -o nounset
-  : ${iam_top:?}
-  : ${iam_log:?}
-  : ${iam_services:?}
-  : ${iam_rbacx_home:?}
-  : ${iam_domain_oia:?}
-  : ${IL_APP_CONFIG:?}
-  : ${IDMPROV_OIA_HOST:?}
-
-  rm -Rf ${iam_top}/products/analytics \
-         ${iam_rbacx_home} \
-         ${IL_APP_CONFIG}/oia.jar \
-         ${iam_log}/${iam_domain_oia} \
-         ${iam_services}/domains/${iam_domain_oia} \
-         ~/.env/{oia.env,analytics.prop,oia.prop} \
-         ~/bin/*analytics* \
-         ~/lib/deploy-oia.py \
-         ~/.cred/${iam_domain_oia}.{key,usr}
-
-  echo "Removing domain from nodemanager"
-  for f in ${iam_top}/config/nodemanager/${IDMPROV_OIA_HOST}/nodemanager.domains ; do
-    sed -i -e /${iam_domain_oia}/d ${f}
-  done
-
-  echo
-  echo "OIA binaries, webapp, domain and environment files removed."
-  echo "Restart nodemanager now"
-}
-
-remove_all()
-{
-  remove_iam
-  remove_lcm
-  remove_env
-}
-
+# -----------------------------------------------------------------------
 #  run Oracle patch set assistant
 #  param1: product name
 # 
@@ -457,6 +374,7 @@ run_psa()
     -logDir /tmp
 }
 
+# -----------------------------------------------------------------------
 #  apply custom config to domain ------------------------------------
 #
 config_identity()
@@ -470,6 +388,7 @@ config_identity()
   log "Identity Domain: configuration steps done."
 }
 
+# -----------------------------------------------------------------------
 #  apply custom config to domain ------------------------------------
 #
 config_access()
@@ -483,6 +402,7 @@ config_access()
   log "Access Domain: configuration steps done"
 }
 
+# -----------------------------------------------------------------------
 #  fix bug shipped with release
 # 
 config_webtier()
@@ -498,6 +418,7 @@ config_webtier()
 }
 
 
+# -----------------------------------------------------------------------
 # install weblogic server
 #
 weblogic_install()
@@ -526,6 +447,7 @@ EOS
   fi
 }
 
+# -----------------------------------------------------------------------
 #  deploy standard lib acStdLib for wlst ----------------------------
 #  param1: product namem (identity,access)
 #
@@ -543,6 +465,7 @@ wlst_copy_libs()
   fi
 }
 
+# -----------------------------------------------------------------------
 # the patches correct bugs of the default configuration:  -----------
 #   * several concurrent jvm memory options are stated
 #   * jvm runs in client mode (dev and prod mode)
@@ -573,7 +496,7 @@ patch_wls_domain()
     error "ERROR: Parameter missing"
     exit $ERROR_SYNTAX_ERROR
   fi
-
+  local _product=${1}
   local _src=${DEPLOYER}/lib/${1}
 
   # admin domain
@@ -582,9 +505,12 @@ patch_wls_domain()
   fi
 
   if ! grep setCustDomainEnv ${ADMIN_HOME}/bin/setDomainEnv.sh >/dev/null 2>&1 ; then
-    patch -b ${ADMIN_HOME}/bin/setDomainEnv.sh <${_src}/domain/setDomainEnv.sh.patch
-    sed -i 's/products\/identity\/jdk6/products\/identity\/jdk\/current/g' \
-      ${ADMIN_HOME}/bin/setDomainEnv.sh 
+    patch -b ${ADMIN_HOME}/bin/setDomainEnv.sh <${_src}/domain/setDomainEnv.sh.patch || true
+    if grep -qEe "products\/${_product}\/jdk6" ${ADMIN_HOME}/bin/setDomainEnv.sh ; then
+      echo "Moving from jdk6 to jdk/current..."
+      sed -i "s/products\/${_product}\/jdk6/products\/${_product}\/jdk\/current/g" \
+       ${ADMIN_HOME}/bin/setDomainEnv.sh 
+    fi
     log "ADMIN_HOME patched: ${ADMIN_HOME}"
   fi
 
@@ -593,16 +519,108 @@ patch_wls_domain()
     cp ${_src}/domain/setCustDomainEnv.sh ${WRK_HOME}/bin/
   fi
 
+  _p=${_src}/domain/setDomainEnv.sh.local.patch
+  if ! [ -e ${_p} ] ; then
+    _p=${_src}/domain/setDomainEnv.sh.patch
+  fi
   if ! grep setCustDomainEnv ${WRK_HOME}/bin/setDomainEnv.sh >/dev/null 2>&1 ; then
-    patch -b ${WRK_HOME}/bin/setDomainEnv.sh <${_src}/domain/setDomainEnv.sh.patch
-    sed -i 's/products\/identity\/jdk6/products\/identity\/jdk\/current/g' \
-      ${WRK_HOME}/bin/setDomainEnv.sh 
+    patch -b ${WRK_HOME}/bin/setDomainEnv.sh <${_p} || true
+    if grep -qEe "products\/${_product}\/jdk6" ${WRK_HOME}/bin/setDomainEnv.sh ; then
+      echo "Moving from jdk6 to jdk/current..."
+      sed -i "s/products\/${_product}\/jdk6/products\/${_product}\/jdk\/current/g" \
+        ${WRK_HOME}/bin/setDomainEnv.sh
+    fi
     log "WRK_HOME patched: ${WRK_HOME}"
   fi
 }
 
-# create log area and link locations.  this script shall be run on each machine
+# -----------------------------------------------------------------------
+#  domain adaptions from shipped:
+#    set production mode
+#    include a new file where customizations are located
+#    remove wrong memory settings with wls_oim1
 #
+domain_adaptions()
+{
+  local _src=${DEPLOYER}/lib/${1}
+
+  [ -f ${ADMIN_HOME}/bin/setCustDomainEnv.sh ] || \
+    cp ${_src}/domain/setCustDomainEnv.sh ${ADMIN_HOME}/bin/
+
+  [ -f ${WRK_HOME}/bin/setCustDomainEnv.sh ] || \
+    cp ${_src}/domain/setCustDomainEnv.sh ${WRK_HOME}/bin/
+
+  domain_set_production_mode ${ADMIN_HOME} "true"
+  domain_set_production_mode ${WRK_HOME}   "true"
+
+  domain_include_custom_env ${ADMIN_HOME}
+  domain_include_custom_env ${WRK_HOME}
+
+  domain_remove_wrong_settings ${ADMIN_HOME}
+  domain_remove_wrong_settings ${WRK_HOME}
+}
+# -----------------------------------------------------------------------
+#  update jdk reference in domain config
+#  param1: domain_home path
+#  param2: java_home
+#
+domain_modify_jdk_path()
+{
+  local _dc=${1}/bin/setDomainEnv.sh
+  local _jh=${2}
+  
+  # set bea_java_home
+  sed -i -e "s/^BEA_JAVA_HOME=.*/BEA_JAVA_HOME=${_jh}/g" ${_dc}
+  # set java_home
+  sed -i -e "s/JAVA_HOME=.*/JAVA_HOME=${_jh}/g" ${_dc}
+}
+
+# -----------------------------------------------------------------------
+#  set domain production mode to true or false
+#  param1: domain_home path
+#  param2: true or false
+#
+domain_set_production_mode()
+{
+  local  _dc=${1}/bin/setDomainEnv.sh
+  local _val=${2}
+
+  # production_mode
+  sed -i -e "s/^PRODUCTION_MODE=.*/PRODUCTION_MODE=\"${_val}\"/g" ${_dc}
+}
+
+# -----------------------------------------------------------------------
+#  include the custom env file into setDomainEnv.sh. must be the last 
+#  include in setDomainEnv.sh
+#  param1: domain_home path
+#
+domain_include_custom_env()
+{
+  local  _dc=${1}/bin/setDomainEnv.sh
+
+  # include
+  if ! grep -q 'setCustDomainEnv' ${_dc} ; then
+    sed -i -e 's/WLS_HOME="${WL\_HOME}\/server"/# Custom settings -- horst kapfenberger -- \
+\. ${DOMAIN\_HOME}\/bin\/setCustDomainEnv.sh \
+# custom setting -- end -- \
+ \
+WLS\_HOME="${WL\_HOME}\/server"/' ${_dc}
+  fi
+}
+
+# -----------------------------------------------------------------------
+#  remove the wrong memory settings the system comes with
+#  param1: domain_home path
+#
+domain_remove_wrong_settings()
+{
+  local  _dc=${1}/bin/setDomainEnv.sh
+  # remove wrong settings
+  if grep -q '^if.*wls_oim1.*wls_oim2' ${_dc} ; then
+    sed -i -e '/^if .*wls\_oim1.*wls\_oim2/,/^fi/d' ${_dc}
+  fi
+
+}
 
 #  -------------------------------------------------------------------------
 #  private function - called by move_logs()
@@ -632,53 +650,6 @@ _mvlog()
     ln -sf   ${dst} ${src}
   fi
 }
-# ---> move_logs is dupplicate (active version in lib/libmovelogs.sh
-##  --------------------------------------------------------------------------
-##  public function - entry point
-##  control flags: idm, acc, web, oud
-##
-#move_logs()
-#{
-#  local _product=${1}
-#  oudins=oud1
-#  ohsins=ohs1
-#
-#  dst=${iam_log}
-#  idmdom=${iam_domain_oim}
-#  accdom=${iam_domain_acc}
-#
-#  if [ -z ${idmdom} ] ; then
-#    error "Env variable IDMPROV_IDENTITY_DOMAIN not defined"
-#    exit 81
-#  fi
-#
-#  case ${_product} in
-#    idm)
-#      mkdir -p ${dst}/nodemanager
-#      _mvlog ${iam_top}/config/domains/${idmdom}/servers/AdminServer/logs           ${dst}/${idmdom}/AdminServer
-#      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_soa1/logs            ${dst}/${idmdom}/wls_soa1
-#      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_soa2/logs            ${dst}/${idmdom}/wls_soa2
-#      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_oim1/logs            ${dst}/${idmdom}/wls_oim1
-#      _mvlog ${iam_top}/services/domains/${idmdom}/servers/wls_oim2/logs            ${dst}/${idmdom}/wls_oim2
-#      ;;
-#    acc)
-#      mkdir -p ${dst}/nodemanager
-#      _mvlog ${iam_top}/config/domains/${accdom}/servers/AdminServer/logs           ${dst}/${accdom}/AdminServer
-#      _mvlog ${iam_top}/services/domains/${accdom}/servers/wls_oam1/logs            ${dst}/${accdom}/wls_oam1
-#      _mvlog ${iam_top}/services/domains/${accdom}/servers/wls_oam2/logs            ${dst}/${accdom}/wls_oam2
-#      ;;
-#    dir)
-#      mkdir -p ${dst}/${oudins}
-#      _mvlog ${iam_top}/services/instances/${oudins}/OUD/logs                       ${dst}/${oudins}/logs
-#      ;;
-#    web)
-#      mkdir -p ${dst}/${ohsins}
-#      _mvlog ${iam_top}/services/instances/${ohsins}/auditlogs                      ${dst}/${ohsins}/auditlogs
-#      _mvlog ${iam_top}/services/instances/${ohsins}/diagnostics/logs/OHS/${ohsins} ${dst}/${ohsins}/logs
-#      _mvlog ${iam_top}/services/instances/${ohsins}/diagnostics/logs/OPMN/opmn     ${dst}/${ohsins}/opmn
-#      ;;
-#  esac
-# }
 
 # additional library files
 #
@@ -690,5 +661,6 @@ _mvlog()
 . ${DEPLOYER}/lib/libweb.sh
 . ${DEPLOYER}/lib/liboia.sh
 . ${DEPLOYER}/lib/libiamhc.sh
+. ${DEPLOYER}/lib/libremove.sh
 
 

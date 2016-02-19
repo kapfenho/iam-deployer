@@ -5,7 +5,7 @@
 VAGRANTFILE_API_VERSION = "2"
 
 IP_SRV="192.168.168.10"     # server ip address
-IP_LBFE=IP_SRV              # frontend load balancer
+IP_LBFE="10.80.1.80"        # frontend load balancer
 IP_DBS1=IP_SRV              # database server
 IP_NFSI="10.80.1.4"         # existing nfs with install images
 
@@ -54,14 +54,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       mount /mnt/oracle"
   end
 
-  # config.vm.provision "ssh-key", type: "shell" do |s|
-  #   s.inline = "su - fmwuser -c 'mkdir -p ~/.ssh;
-  #     chmod 0700 ~/.ssh; 
-  #     cp /vagrant/user-config/hostenv/ssh/* ~/.ssh/; 
-  #     chmod 0644 ~/.ssh/*; 
-  #     chmod 0600 ~/.ssh/id_rsa'"
-  # end
-
   config.vm.define :app, primary: true do |app|
     app.vm.box          = app_box
     app.vm.hostname     = app_name
@@ -69,7 +61,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     app.vm.boot_timeout = 120
     app.ssh.username    = 'fmwuser'
 
-    app.vm.network :private_network, ip: IP_SRV
+    app.vm.network  :private_network, ip: IP_SRV
+    app.vm.network  :public_network,  ip: IP_LBFE, bridge: "lagg0"
     app.vm.provider :virtualbox do |v|
       v.name   = app_name
       v.cpus   = 4
