@@ -59,8 +59,8 @@ move_logs()
       _mvlog ${iam_services}/domains/${iam_domain_acc}/servers/wls_ama2/logs            ${dst}/${iam_domain_acc}/wls_ama2
       ;;
     dir)
-      mkdir -p ${dst}/${iam_instance_oud}
-      _mvlog ${iam_services}/instances/${iam_instance_oud}/OUD/logs                     ${dst}/${iam_instance_oud}/logs
+      mkdir -p ${dst}/${INSTANCE}
+      _mvlog ${iam_instance_oud}/OUD/logs ${dst}/${INSTANCE}/logs
       ;;
     webtier)
       local _ohspath=$(find ${INSTALL_LOCALCONFIG_DIR}/instances \

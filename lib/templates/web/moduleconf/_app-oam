@@ -1,0 +1,40 @@
+    # -----------------------------------------------------------------
+    # OAM contexts
+    #
+    # vi: ft=apache :
+
+    <Location /access>
+      SetHandler weblogic-handler
+      __WLS_OAM__
+      # WebLogicPort 14150
+      WLCookieName OAMSESSIONID    
+    </Location>
+
+    <Location /oam>
+      SetHandler weblogic-handler
+      __WLS_OAM__
+      # WebLogicPort 14100
+      WLCookieName OAM_JSESSIONID
+    </Location>
+
+    <Location /msmconsole>
+      SetHandler weblogic-handler
+      __WLS_OAM__
+      # WebLogicPort ${provisioning.idmprov.omsm.port}
+      WLCookieName OAM_JSESSIONID
+    </Location>
+
+    <Location /oamfed>
+      SetHandler weblogic-handler
+      __WLS_OAM__
+      # WebLogicPort 14100
+      WLCookieName OAM_JSESSIONID
+    </Location>
+
+    <Location /ms_oauth>
+      SetHandler weblogic-handler
+      __WLS_OAM__
+      # WebLogicPort 14100
+      WLCookieName OAMSESSIONID
+    </Location>
+

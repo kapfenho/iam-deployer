@@ -1,0 +1,26 @@
+    # -----------------------------------------------------------------
+    # Weblogic Admin of IAM domain
+    #
+    # vi: ft=apache :
+
+    # IDM Admin Server and EM
+    <Location /console>
+        SetHandler weblogic-handler
+        __WLS_IDMADMINSERVER__
+    </Location>
+
+    <Location /consolehelp>
+        SetHandler weblogic-handler
+        __WLS_IDMADMINSERVER__
+    </Location>
+
+    <Location /em>
+        SetHandler weblogic-handler
+        __WLS_IDMADMINSERVER__
+    </Location>
+
+    # Oracle Entitlements Server, APM
+    <Location /apm>
+        SetHandler weblogic-handler
+        __WLS_IDMADMINSERVER__
+    </Location>

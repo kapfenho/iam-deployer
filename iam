@@ -337,6 +337,9 @@ else
       ;;
 
     directory)
+      load_userenv common
+      load_userenv dir
+
       if   [ "${opt_a}" == "postinstall" -a -z "${opt_h}" ] ; then
         patch_oud_post_inst
       elif [ "${opt_a}" == "harden"      -a -z "${opt_h}" ] ; then
