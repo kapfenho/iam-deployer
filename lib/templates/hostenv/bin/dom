@@ -21,10 +21,6 @@ dom_run() {
     ~/lib/dom.py $*
 }
 
-dom_kill() {
-  echo "Not implemented"
-}
-
 # --- main ------------------------------------------------------------
 #
 
@@ -38,36 +34,17 @@ printhelp=0
 
 if   [ $# -lt 1 ] ; then
   printhelp=1
-
 elif [ $# -eq 1 ] ; then
-
   if [ "${1}" == "status" ] ; then
     dom_global_status
   else
     printhelp=1
   fi
-
 else
-
   DOMAIN=${1}
   check_domain ${DOMAIN}
-  
-  case ${2} in
-
-    start | stop | status)
-      shift
-      dom_run $*
-      ;;
-
-    kill)
-      shift
-      dom_kill $*
-      ;;
-
-    *)
-      printhelp=1
-      ;;
-  esac
+  shift
+  dom_run $*
 fi
 
 if [ "X${printhelp}" == "X1" ] ; then
