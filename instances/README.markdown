@@ -1,13 +1,13 @@
 Instances - User Configs
 ========================
 
-iamvs-vienna    Single Host Setup, Reference Implementation
-iamvc-vienna    Cluster Setup, Reference Implementation
+## Version: Patch Set 2
 
+iamvs-ps2       Single Host Setup, Reference Implementation
+iamvc-ps2       Cluster Setup, Reference Implementation
 
-Archive
--------
+## Version: Patch Set 3
 
-Those instances are not in version control any more:
+iamvs-ps3       Single Host Setup, Reference Implementation
+iamvc-ps3       Cluster Setup, Reference Implementation
 
-kenv            Test Env, Cluster, VWFS, separated on 2.Dec.2015
