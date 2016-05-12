@@ -40,7 +40,7 @@ httpd_config() {
   log "Replacing virtual host files"
   rm -f ${dst}/moduleconf/*
   for f in ${files[@]} ; do
-    cp -f ${src}/moduleconf/${f} ${dst}/moduleconf/
+    [ -f ${src}/moduleconf/${f} ] && cp -f ${src}/moduleconf/${f} ${dst}/moduleconf/
   done
 
   log "Deploying load balancer health check files"
@@ -111,6 +111,7 @@ httpd_config() {
   # now we do the substi thing, in place
   #
   for f in ${files[@]} ; do
+    [ -f ${dst}/moduleconf/${f} ] && \
     sed -i -e "s/__WLS_VH_FRONTEND__/${IDMPROV_LBR_SSO_HOST}/g" \
            -e "s/__WLS_VH_IDMINTERNAL__/${IDMPROV_LBR_OIMINTERNAL_HOST}/g" \
            -e "s/__WLS_VH_IAMADMIN__/${IDMPROV_LBR_OIMADMIN_HOST}/g" \
