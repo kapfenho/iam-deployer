@@ -68,10 +68,12 @@ _cp_acc()
   # already done?
   [ -f ${env}/acc.env ] && return
 
-  cp ${src}/bin/*access*      ${bin}/
+  # cp ${src}/bin/*access*      ${bin}/
+  cp ${src}/env/access.prop   ${env}/
   cp ${src}/bin/*nodemanager* ${bin}/
   cp ${src}/env/acc.env       ${env}/
-  cp ${src}/env/access.prop   ${env}/
+  [ -f ${bin}/dom    ] || cp ${src}/bin/dom     ${bin}/
+  [ -f ${lib}/dom.py ] || cp ${src}/lib/dom.py  ${lib}/
   sed -i "s/__DOMAIN_NAME__/${iam_domain_acc}/" ${env}/*
   _cp_nodemanager
   _replace_in_env
@@ -82,12 +84,14 @@ _cp_oim()
   # already done?
   [ -f ${env}/idm.env ] && return
 
-  cp ${src}/bin/*identity*      ${bin}/
+  # cp ${src}/bin/*identity*      ${bin}/
+  cp ${src}/env/identity.prop   ${env}/
   cp ${src}/bin/*nodemanager*   ${bin}/
   cp ${src}/env/idm.env         ${env}/
   cp ${src}/env/idm-deplenv.env ${env}/
-  cp ${src}/env/identity.prop   ${env}/
   cp ${src}/lib/deploy.py       ${lib}/
+  [ -f ${bin}/dom    ] || cp ${src}/bin/dom     ${bin}/
+  [ -f ${lib}/dom.py ] || cp ${src}/lib/dom.py  ${lib}/
   sed -i "s/__DOMAIN_NAME__/${iam_domain_oim}/" ${env}/*
   _cp_nodemanager
   _replace_in_env
@@ -102,11 +106,13 @@ _cp_oia()
   # be escaped before
   _iam_rbacx_home=$(echo ${iam_rbacx_home} | sed -e 's/[\/&]/\\&/g')
 
-  cp ${src}/bin/*analytics*     ${bin}/
+  # cp ${src}/bin/*analytics*     ${bin}/
+  cp ${src}/env/oia.prop        ${env}/
   cp ${src}/env/oia.env         ${env}/
   cp ${src}/env/analytics.prop  ${env}/
-  cp ${src}/env/oia.prop        ${env}/
   cp ${src}/lib/deploy-oia.py   ${lib}/
+  [ -f ${bin}/dom    ] || cp ${src}/bin/dom     ${bin}/
+  [ -f ${lib}/dom.py ] || cp ${src}/lib/dom.py  ${lib}/
   sed -i "s/__DOMAIN_NAME__/${iam_domain_oia}/" ${env}/*
   sed -i "s/__RBACX_HOME__/${_iam_rbacx_home}/" ${env}/*
   _cp_nodemanager

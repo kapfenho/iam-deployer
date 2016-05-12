@@ -6,6 +6,30 @@ ERR_SYNTAX_ERROR=81
 ERR_DOMAIN_UNKNOWN=82
 ERR_WLST=82
 
+helpexit() {
+  echo "
+  Syntax: ${0} domain command [wls_server] [wls_server...]
+  Syntax: ${0} status
+ 
+  Control weblogic domain: start, stop, etc. In case wls_server(s) are 
+  stated command is only applied to those servers, without servers the 
+  command is applied to whole domain. The kill command always expects 
+  wls_server name(s).
+  In the second form, without domain name, the overall environment status 
+  information is printed.
+
+  Domain commands:
+    start     start domain: start admin server via nodemanager, managed 
+              servers via admin server
+    nmstart   start all stated servers via nodemanager. No admin server 
+              used. Can be used at system start
+    stop      stop domain. Managed servers are stoped via admin server 
+              and admin server via nodemanager
+    kill      stop servers via nodemanager. Hard system stop.
+    status    show domain status information, admin server needed
+"
+  exit $ERR_SYNTAX_ERROR
+}
 
 check_domain() {
   if ! [ -e ~/.env/${DOMAIN}.prop ] ; then
@@ -21,10 +45,6 @@ dom_run() {
     ~/lib/dom.py $*
 }
 
-dom_kill() {
-  echo "Not implemented"
-}
-
 # --- main ------------------------------------------------------------
 #
 
@@ -32,47 +52,18 @@ if ! shopt -q login_shell ; then
   source /etc/profile
 fi
 
-#  remember original parameters for host calls
-orig_params="${@}"
-printhelp=0
-
 if   [ $# -lt 1 ] ; then
-  printhelp=1
-
+  helpexit
 elif [ $# -eq 1 ] ; then
-
   if [ "${1}" == "status" ] ; then
     dom_global_status
   else
-    printhelp=1
+    helpexit
   fi
-
 else
-
   DOMAIN=${1}
   check_domain ${DOMAIN}
-  
-  case ${2} in
-
-    start | stop | status)
-      shift
-      dom_run $*
-      ;;
-
-    kill)
-      shift
-      dom_kill $*
-      ;;
-
-    *)
-      printhelp=1
-      ;;
-  esac
+  shift
+  dom_run $*
 fi
-
-if [ "X${printhelp}" == "X1" ] ; then
-  domhelp
-  exit $ERROR_SYNTAX_ERROR
-fi
-
 

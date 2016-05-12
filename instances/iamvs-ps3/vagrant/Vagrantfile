@@ -68,7 +68,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       v.cpus   = 4
       v.memory = 32 * 1024
     end
-
+    # manual ip
+    app.vm.provision "shell",
+      run: "always",
+      inline: "ip route add 10.80.2.0/24 via 10.80.1.1"
   end
 
   config.vm.provision "database", type: "shell" do |s|

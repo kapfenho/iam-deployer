@@ -1,0 +1,11 @@
+    # -----------------------------------------------------------------
+    # OAM admin contexts
+    #
+    # vi: ft=apache :
+
+    # oam admin console
+    <Location /oamconsole>
+        SetHandler weblogic-handler
+        __WLS_IDMADMINSERVER__
+    </Location>
+

@@ -25,12 +25,12 @@ httpd_config() {
   local files=( _app-oim
                 _app-oimadmin
                 _app-soa
-                _app-oia
+                _app-oam
                 _wls-iamdomain
-                _wls-oiadomain
+                _wls-oamdomain
                 _ssl
                 iamadmin.conf
-                oiaadmin.conf
+                oamadmin.conf
                 idminternal.conf
                 sso.conf )
 
@@ -55,18 +55,33 @@ httpd_config() {
   # adminserver oia
   wlsdom2+="WebLogicHost ${IDMPROV_OIADOMAIN_ADMINSERVER_HOST}\\"$'\n'
   wlsdom2+="        WebLogicPort ${IDMPROV_OIADOMAIN_ADMINSERVER_PORT}"
+  # adminserver oia
+  wlsdom3+="WebLogicHost ${IDMPROV_IDMDOMAIN_ADMINSERVER_HOST}\\"$'\n'
+  wlsdom3+="        WebLogicPort ${IDMPROV_IDMDOMAIN_ADMINSERVER_PORT}"
 
   if [ "${DT_SINGLEHOST}" == "true" ] ; then
+    # oam
+    wlsoam+="WebLogicHost $(hostname -f)\\"$'\n'
+    wlsoam+="        WebLogicPort ${IDMPROV_OAM_PORT}"
     # oim
     wlsoim+="WebLogicHost $(hostname -f)\\"$'\n'
     wlsoim+="        WebLogicPort ${IDMPROV_OIM_PORT}"
     # soa
     wlssoa+="WebLogicHost $(hostname -f)\\"$'\n'
     wlssoa+="        WebLogicPort ${IDMPROV_SOA_PORT}"
+    # bip
+    wlsbip+="WebLogicHost $(hostname -f)\\"$'\n'
+    wlsbip+="        WebLogicPort ${IDMPROV_BIP_PORT}"
     # oia
     wlsoia+="WebLogicHost $(hostname -f)\\"$'\n'
     wlsoia+="        WebLogicPort ${IDMPROV_OIA_PORT}"
   else
+    # oam cluster
+    wlsoam+="WebLogicCluster "
+    wlsoam+="${IDMPROV_OAM_HOST}:"
+    wlsoam+="${IDMPROV_OAM_PORT},"
+    wlsoam+="${IDMPROV_SECOND_OAM_HOST}:"
+    wlsoam+="${IDMPROV_SECOND_OAM_PORT}"
     # oim cluster
     wlsoim+="WebLogicCluster "
     wlsoim+="${IDMPROV_OIM_HOST}:"
@@ -79,6 +94,12 @@ httpd_config() {
     wlssoa+="${IDMPROV_SOA_PORT},"
     wlssoa+="${IDMPROV_SECOND_SOA_HOST}:"
     wlssoa+="${IDMPROV_SECOND_SOA_PORT}"
+    # bip cluster
+    wlsbip+="WebLogicCluster "
+    wlsbip+="${IDMPROV_BIP_HOST}:"
+    wlsbip+="${IDMPROV_BIP_PORT},"
+    wlsbip+="${IDMPROV_SECOND_BIP_HOST}:"
+    wlsbip+="${IDMPROV_SECOND_BIP_PORT}"
     # oia cluster
     wlsoia+="WebLogicCluster "
     wlsoia+="${IDMPROV_OIA_HOST}:"
@@ -96,11 +117,13 @@ httpd_config() {
            -e "s/__WLS_VH_OIAADMIN__/${IDMPROV_LBR_OIAADMIN_HOST}/g" \
            -e "s/__WLS_IAMADMINSERVER__/${wlsdom1}/g" \
            -e "s/__WLS_OIAADMINSERVER__/${wlsdom2}/g" \
+           -e "s/__WLS_IDMADMINSERVER__/${wlsdom3}/g" \
            -e "s/__WLS_OIA__/${wlsoia}/g" \
+           -e "s/__WLS_OAM__/${wlsoam}/g" \
            -e "s/__WLS_OIM__/${wlsoim}/g" \
+           -e "s/__WLS_BIP__/${wlsbip}/g" \
            -e "s/__WLS_SOA__/${wlssoa}/g" ${dst}/moduleconf/${f}
   done
-
 
 }
 
