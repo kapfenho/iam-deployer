@@ -41,9 +41,6 @@ httpd_config() {
                 oam-admin.conf
                 oim-admin.conf )
 
-  log "Replacing SSL files"
-  cp -f ${src}/ssl.conf ${dst}/
-
   log "Replacing virtual host files"
   rm -rf ${dst}/moduleconf/*
   mkdir -p ${dst}/moduleconf/apps
