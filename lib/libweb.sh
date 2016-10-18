@@ -14,6 +14,10 @@ httpd_config() {
   local wlssoa=""
   local wlsoia=""
   local wlsadm=""
+  local wlsbip=""
+  local wlsdom1=""
+  local wlsdom2=""
+  local wlsdom3=""
 
   log "Generating OHS config files"
   log "Creating backup archive of original files"
