@@ -5,41 +5,31 @@
 
     <Location /access>
       SetHandler weblogic-handler
-      WebLogicHost iamvs.agoracon.at
-      WebLogicPort 14100
-      WLCookieName OAMSESSIONID    
-      WLProxySSL ON
+      WLCookieName OAMSESSIONID
+      __WLS_OAM__
     </Location>
 
     <Location /oam>
       SetHandler weblogic-handler
-      WebLogicHost iamvs.agoracon.at
-      WebLogicPort 14100
       WLCookieName OAM_JSESSIONID
-      WLProxySSL ON
+      __WLS_OAM__
     </Location>
 
     <Location /msmconsole>
       SetHandler weblogic-handler
-      WebLogicHost iamvs.agoracon.at
-      WebLogicPort 14100
       WLCookieName OAM_JSESSIONID
-      WLProxySSL ON
+      __WLS_OAM__
     </Location>
 
     <Location /oamfed>
       SetHandler weblogic-handler
-      WebLogicHost iamvs.agoracon.at
-      WebLogicPort 14100
       WLCookieName OAM_JSESSIONID
-      WLProxySSL ON
+      __WLS_OAM__
     </Location>
 
     <Location /ms_oauth>
       SetHandler weblogic-handler
-      WebLogicHost iamvs.agoracon.at
-      WebLogicPort 14100
       WLCookieName OAMSESSIONID
-      WLProxySSL ON
+      __WLS_OAM__
     </Location>
 

@@ -1,62 +1,60 @@
-    # -----------------------------------------------------------------
-    # OIM contexts
-    #
-    # vi: ft=apache :
+    # ----------------------------------------------------
+    # OIM contexts                            vi:ft=apache:
 
     # oim self and advanced admin webapp consoles(canonic webapp)
     <Location /oim>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
     </Location>
 
     # SOA callback for OIM Flexible Certifier Certification
     <Location /CertificationCallbackService>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
-    </Location>	  
+    </Location>	
 
-    # Callback webservice for SOA. SOA calls this when a request is approved/rejected
-    # Provide the SOA Managed Server Port
+    # Callback webservice for SOA. SOA calls this when a request is 
+    # approved/rejected
     <Location /workflowservice>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
     </Location>
 
-    # reqsvc is for making calls to oim entities from within soa composite 
+    # reqsvc is for making calls to oim entities from within soa composite
     <Location /reqsvc>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
     </Location>
 
      # xlWebApp - Legacy 9.x webapp (struts based)
      <Location /xlWebApp>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
     </Location>
 
     # Nexaweb WebApp - used for workflow designer and DM
     <Location /Nexaweb>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
     </Location>
 
     # used for FA Callback service.
     <Location /callbackResponseService>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
     </Location>
 
     # spml xsd profile
     <Location /spml-xsd>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
     </Location>
 
@@ -71,34 +69,34 @@
     # role sod profile
     <Location /role-sod>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
     </Location>
 
     <Location /HTTPClnt>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
     </Location>
 
     # PaaS IDM admin console(idmshell based)
     <Location /identity>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
     </Location>
 
     # System Administration console
     <Location /sysadmin>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
     </Location>
 
     # Stop and getStatus Scheduler Service
     <Location /SchedulerService-web>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
     </Location>
 

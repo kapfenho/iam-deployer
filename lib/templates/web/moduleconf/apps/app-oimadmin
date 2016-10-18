@@ -1,7 +1,5 @@
-    # -----------------------------------------------------------------
-    # OIM contexts
-    #
-    # vi: ft=apache :
+    # ------------------------------------------------
+    # OIM contexts                        vi:ft=apache:
 
     # oim admin console (idmshell based)
     <Location /admin>

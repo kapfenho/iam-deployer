@@ -1,50 +1,39 @@
-    # ---------------------------------------------------------------
-    # SOA contexts
-    #
-    # vi: ft=apache :
+    # --------------------------------------------------
+    # SOA contexts                         vi:ft=apache:
 
-    # SOA Callback webservice for SOD - Provide the SOA Managed Server Ports
+    # SOA Callback webservice for SOD - Provide the SOA Managed Server 
+    # Ports
     <Location /sodcheck>
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
-        WebLogicHost iamvs.agoracon.at
-        WebLogicPort 8001
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
+        __WLS_SOA__
     </Location>
 
     # SOA Infrastructure
     <Location /soa-infra>
         SetHandler weblogic-handler
         WLCookieName oimjsessionid
-        WebLogicHost iamvs.agoracon.at
-        WebLogicPort 8001
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
+        __WLS_SOA__
     </Location>
 
     # SOA Composer
     <Location /soa/composer>
         SetHandler weblogic-handler
         WLCookieName oimjsessionid
-        WebLogicHost iamvs.agoracon.at
-        WebLogicPort 8001
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
+        __WLS_SOA__
     </Location>
 
     # SOA Worklistapp
     <Location /integration/worklistapp>
         SetHandler weblogic-handler
         WLCookieName oimjsessionid
-        WebLogicHost iamvs.agoracon.at
-        WebLogicPort 8001
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
+        __WLS_SOA__
     </Location>
 
     # UMS Email Support 
     <Location /ucs> 
         SetHandler weblogic-handler 
         WLCookieName oimjsessionid 
-        WebLogicHost iamvs.agoracon.at
-        WebLogicPort 8001
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
+        __WLS_SOA__
     </Location> 
 

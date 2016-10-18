@@ -1,7 +1,5 @@
-    # -----------------------------------------------------------------
-    # Weblogic Admin of IAM domain
-    #
-    # vi: ft=apache :
+    # ---------------------------------------------------
+    # Weblogic Admin of IAM domain          vi:ft=apache:
 
     # webogic admin console
     <Location /console>

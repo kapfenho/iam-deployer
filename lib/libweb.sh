@@ -22,24 +22,28 @@ httpd_config() {
   [[ -a ${bak} ]] || \
     tar --create --gzip --directory=${dst}/.. --file=${bak} ${dst}
 
-  local files=( _app-oim
-                _app-oimadmin
-                _app-soa
-                _app-oam
-                _wls-iamdomain
-                _wls-oamdomain
-                _ssl
-                iamadmin.conf
-                oamadmin.conf
+  local files=( apps/app-oim
+                apps/app-oimadmin
+                apps/app-soa
+                apps/app-bip
+                apps/app-oam
+                apps/app-oia
+                apps/wls-iamdomain
+                apps/wls-oamdomain
+                apps/wls-oiadomain
+                apps/test-email
+                idm.conf
                 idminternal.conf
-                sso.conf )
+                oam-admin.conf
+                oim-admin.conf )
 
   log "Replacing SSL files"
   cp -f ${src}/ssl.conf ${dst}/
 
   log "Replacing virtual host files"
-  rm -f ${dst}/moduleconf/*
-  for f in ${files[@]} ; do
+  rm -rf ${dst}/moduleconf/*
+  mkdir -p ${dst}/moduleconf/apps
+  for f in ${files[@]} README.md ; do
     [ -f ${src}/moduleconf/${f} ] && cp -f ${src}/moduleconf/${f} ${dst}/moduleconf/
   done
 
