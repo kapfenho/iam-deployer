@@ -8,7 +8,6 @@
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # SOA callback for OIM Flexible Certifier Certification
@@ -16,7 +15,6 @@
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>	  
 
     # Callback webservice for SOA. SOA calls this when a request is approved/rejected
@@ -25,7 +23,6 @@
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # reqsvc is for making calls to oim entities from within soa composite 
@@ -33,7 +30,6 @@
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
      # xlWebApp - Legacy 9.x webapp (struts based)
@@ -41,7 +37,6 @@
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # Nexaweb WebApp - used for workflow designer and DM
@@ -49,7 +44,6 @@
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # used for FA Callback service.
@@ -57,7 +51,6 @@
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # spml xsd profile
@@ -65,7 +58,6 @@
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # OIM, spml dsml profile
@@ -74,7 +66,6 @@
         PathTrim /weblogic
         WLCookieName oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # role sod profile
@@ -82,14 +73,12 @@
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     <Location /HTTPClnt>
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # PaaS IDM admin console(idmshell based)
@@ -97,7 +86,6 @@
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # System Administration console
@@ -105,7 +93,6 @@
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # Stop and getStatus Scheduler Service
@@ -113,6 +100,5 @@
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 

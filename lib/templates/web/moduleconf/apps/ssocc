@@ -1,0 +1,4 @@
+RequestHeader set X-Forwarded-Proto "https"
+ProxyPass /ssocc/ http://localhost:7090/ssocc/
+ProxyPassReverse /ssocc/ http://localhost:7090/ssocc/
+# vi:ft=apache:

@@ -3,28 +3,24 @@
     #
     # vi: ft=apache :
 
-    # OIM Related Entries
-    # oim admin console(idmshell based)
+    # oim admin console (idmshell based)
     <Location /admin>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # System Administration console
     <Location /sysadmin>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # oim self and advanced admin webapp consoles(canonic webapp)
     <Location /oim>
         SetHandler weblogic-handler
-        WLCookieName    oimjsessionid
+        WLCookieName oimjsessionid
         __WLS_OIM__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 

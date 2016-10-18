@@ -7,7 +7,8 @@
     <Location /sodcheck>
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
-        __WLS_SOA__
+        WebLogicHost iamvs.agoracon.at
+        WebLogicPort 8001
         WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
@@ -15,7 +16,8 @@
     <Location /soa-infra>
         SetHandler weblogic-handler
         WLCookieName oimjsessionid
-        __WLS_SOA__
+        WebLogicHost iamvs.agoracon.at
+        WebLogicPort 8001
         WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
@@ -23,7 +25,8 @@
     <Location /soa/composer>
         SetHandler weblogic-handler
         WLCookieName oimjsessionid
-        __WLS_SOA__
+        WebLogicHost iamvs.agoracon.at
+        WebLogicPort 8001
         WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
@@ -31,7 +34,8 @@
     <Location /integration/worklistapp>
         SetHandler weblogic-handler
         WLCookieName oimjsessionid
-        __WLS_SOA__
+        WebLogicHost iamvs.agoracon.at
+        WebLogicPort 8001
         WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
@@ -39,7 +43,8 @@
     <Location /ucs> 
         SetHandler weblogic-handler 
         WLCookieName oimjsessionid 
-        __WLS_SOA__
+        WebLogicHost iamvs.agoracon.at
+        WebLogicPort 8001
         WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location> 
 

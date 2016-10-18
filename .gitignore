@@ -5,7 +5,7 @@
 #/user-config/iam/*.rsp
 #/user-config/iam/provisioning_data
 /.vagrant
-/_attic
+_attic
 /_releases
 /sw
 /attic
