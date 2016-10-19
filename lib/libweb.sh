@@ -35,6 +35,7 @@ httpd_config() {
                 apps/wls-iamdomain
                 apps/wls-oamdomain
                 apps/wls-oiadomain
+                apps/ssocc
                 apps/test-email
                 idm.conf
                 idminternal.conf
@@ -45,7 +46,7 @@ httpd_config() {
   rm -rf ${dst}/moduleconf/*
   mkdir -p ${dst}/moduleconf/apps
   for f in ${files[@]} README.md ; do
-    [ -f ${src}/moduleconf/${f} ] && cp -f ${src}/moduleconf/${f} ${dst}/moduleconf/
+    [ -f ${src}/moduleconf/${f} ] && cp -f ${src}/moduleconf/${f} ${dst}/moduleconf/${f}
   done
 
   log "Deploying load balancer health check files"
@@ -117,7 +118,7 @@ httpd_config() {
   #
   for f in ${files[@]} ; do
     [ -f ${dst}/moduleconf/${f} ] && \
-    sed -i -e "s/__WLS_VH_FRONTEND__/${IDMPROV_LBR_SSO_HOST}/g" \
+    sed -i -e "s/__WLS_VH_FRONTEND__/${IDMPROV_LBR_SSO_IDENTITY_HOST}/g" \
            -e "s/__WLS_VH_IDMINTERNAL__/${IDMPROV_LBR_OIMINTERNAL_HOST}/g" \
            -e "s/__WLS_VH_IAMADMIN__/${IDMPROV_LBR_OIMADMIN_HOST}/g" \
            -e "s/__WLS_VH_OIAADMIN__/${IDMPROV_LBR_OIAADMIN_HOST}/g" \
