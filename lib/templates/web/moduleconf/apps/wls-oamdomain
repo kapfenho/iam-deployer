@@ -1,9 +1,7 @@
-    # -----------------------------------------------------------------
-    # Weblogic Admin of IAM domain
-    #
-    # vi: ft=apache :
+    # ---------------------------------------------------
+    # Weblogic Admin of IAM domain          vi:ft=apache:
 
-    # IDM Admin Server and EM
+    # webogic admin console
     <Location /console>
         SetHandler weblogic-handler
         __WLS_IDMADMINSERVER__
@@ -14,7 +12,14 @@
         __WLS_IDMADMINSERVER__
     </Location>
 
+    # enterprise manager for access manager
     <Location /em>
+        SetHandler weblogic-handler
+        __WLS_IDMADMINSERVER__
+    </Location>
+
+    # access manager configuration ui
+    <Location /oamconsole>
         SetHandler weblogic-handler
         __WLS_IDMADMINSERVER__
     </Location>

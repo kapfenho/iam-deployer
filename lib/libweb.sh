@@ -14,6 +14,10 @@ httpd_config() {
   local wlssoa=""
   local wlsoia=""
   local wlsadm=""
+  local wlsbip=""
+  local wlsdom1=""
+  local wlsdom2=""
+  local wlsdom3=""
 
   log "Generating OHS config files"
   log "Creating backup archive of original files"
@@ -22,25 +26,27 @@ httpd_config() {
   [[ -a ${bak} ]] || \
     tar --create --gzip --directory=${dst}/.. --file=${bak} ${dst}
 
-  local files=( _app-oim
-                _app-oimadmin
-                _app-soa
-                _app-oam
-                _wls-iamdomain
-                _wls-oamdomain
-                _ssl
-                iamadmin.conf
-                oamadmin.conf
+  local files=( apps/app-oim
+                apps/app-oimadmin
+                apps/app-soa
+                apps/app-bip
+                apps/app-oam
+                apps/app-oia
+                apps/wls-iamdomain
+                apps/wls-oamdomain
+                apps/wls-oiadomain
+                apps/ssocc
+                apps/test-email
+                idm.conf
                 idminternal.conf
-                sso.conf )
-
-  log "Replacing SSL files"
-  cp -f ${src}/ssl.conf ${dst}/
+                oam-admin.conf
+                oim-admin.conf )
 
   log "Replacing virtual host files"
-  rm -f ${dst}/moduleconf/*
-  for f in ${files[@]} ; do
-    [ -f ${src}/moduleconf/${f} ] && cp -f ${src}/moduleconf/${f} ${dst}/moduleconf/
+  rm -rf ${dst}/moduleconf/*
+  mkdir -p ${dst}/moduleconf/apps
+  for f in ${files[@]} README.md ; do
+    [ -f ${src}/moduleconf/${f} ] && cp -f ${src}/moduleconf/${f} ${dst}/moduleconf/${f}
   done
 
   log "Deploying load balancer health check files"
@@ -112,7 +118,7 @@ httpd_config() {
   #
   for f in ${files[@]} ; do
     [ -f ${dst}/moduleconf/${f} ] && \
-    sed -i -e "s/__WLS_VH_FRONTEND__/${IDMPROV_LBR_SSO_HOST}/g" \
+    sed -i -e "s/__WLS_VH_FRONTEND__/${IDMPROV_LBR_SSO_IDENTITY_HOST}/g" \
            -e "s/__WLS_VH_IDMINTERNAL__/${IDMPROV_LBR_OIMINTERNAL_HOST}/g" \
            -e "s/__WLS_VH_IAMADMIN__/${IDMPROV_LBR_OIMADMIN_HOST}/g" \
            -e "s/__WLS_VH_OIAADMIN__/${IDMPROV_LBR_OIAADMIN_HOST}/g" \

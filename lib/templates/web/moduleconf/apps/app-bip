@@ -1,0 +1,15 @@
+    # -----------------------------------------------------------------
+    # BI Publisher services
+    #
+    # vi: ft=apache :
+
+    # Oracle BIP console ---------------------------------------------------
+    <Location /xmlpserver>
+        SetHandler weblogic-handler
+        WLCookieName oimjsessionid
+        __WLS_BIP__
+    </Location>
+
+    # Fix for favourites URL slash decode problem (Ticket:101260440)
+    AllowEncodedSlashes On
+

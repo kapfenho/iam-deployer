@@ -1,0 +1,24 @@
+    # ------------------------------------------------
+    # OIM contexts                        vi:ft=apache:
+
+    # oim admin console (idmshell based)
+    <Location /admin>
+        SetHandler weblogic-handler
+        WLCookieName oimjsessionid
+        __WLS_OIM__
+    </Location>
+
+    # System Administration console
+    <Location /sysadmin>
+        SetHandler weblogic-handler
+        WLCookieName oimjsessionid
+        __WLS_OIM__
+    </Location>
+
+    # oim self and advanced admin webapp consoles(canonic webapp)
+    <Location /oim>
+        SetHandler weblogic-handler
+        WLCookieName oimjsessionid
+        __WLS_OIM__
+    </Location>
+

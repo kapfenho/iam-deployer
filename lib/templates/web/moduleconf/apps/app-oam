@@ -5,36 +5,31 @@
 
     <Location /access>
       SetHandler weblogic-handler
+      WLCookieName OAMSESSIONID
       __WLS_OAM__
-      # WebLogicPort 14150
-      WLCookieName OAMSESSIONID    
     </Location>
 
     <Location /oam>
       SetHandler weblogic-handler
-      __WLS_OAM__
-      # WebLogicPort 14100
       WLCookieName OAM_JSESSIONID
+      __WLS_OAM__
     </Location>
 
     <Location /msmconsole>
       SetHandler weblogic-handler
-      __WLS_OAM__
-      # WebLogicPort ${provisioning.idmprov.omsm.port}
       WLCookieName OAM_JSESSIONID
+      __WLS_OAM__
     </Location>
 
     <Location /oamfed>
       SetHandler weblogic-handler
-      __WLS_OAM__
-      # WebLogicPort 14100
       WLCookieName OAM_JSESSIONID
+      __WLS_OAM__
     </Location>
 
     <Location /ms_oauth>
       SetHandler weblogic-handler
-      __WLS_OAM__
-      # WebLogicPort 14100
       WLCookieName OAMSESSIONID
+      __WLS_OAM__
     </Location>
 

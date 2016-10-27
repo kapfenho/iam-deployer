@@ -1,14 +1,12 @@
-    # ---------------------------------------------------------------
-    # SOA contexts
-    #
-    # vi: ft=apache :
+    # --------------------------------------------------
+    # SOA contexts                         vi:ft=apache:
 
-    # SOA Callback webservice for SOD - Provide the SOA Managed Server Ports
+    # SOA Callback webservice for SOD - Provide the SOA Managed Server 
+    # Ports
     <Location /sodcheck>
         SetHandler weblogic-handler
         WLCookieName    oimjsessionid
         __WLS_SOA__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # SOA Infrastructure
@@ -16,7 +14,6 @@
         SetHandler weblogic-handler
         WLCookieName oimjsessionid
         __WLS_SOA__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # SOA Composer
@@ -24,7 +21,6 @@
         SetHandler weblogic-handler
         WLCookieName oimjsessionid
         __WLS_SOA__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # SOA Worklistapp
@@ -32,7 +28,6 @@
         SetHandler weblogic-handler
         WLCookieName oimjsessionid
         __WLS_SOA__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location>
 
     # UMS Email Support 
@@ -40,6 +35,5 @@
         SetHandler weblogic-handler 
         WLCookieName oimjsessionid 
         __WLS_SOA__
-        WLLogFile "${ORACLE_INSTANCE}/diagnostics/logs/mod_wl/oim_component.log"
     </Location> 
 

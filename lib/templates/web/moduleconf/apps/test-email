@@ -1,0 +1,12 @@
+# extensions to the apache config only used in test environments
+#                                                  vi:ft=apache:
+
+# read emails
+<Directory "${ORACLE_INSTANCE}/config/${COMPONENT_TYPE}/${COMPONENT_NAME}/htdocs/emails">
+    Options +Indexes FollowSymLinks
+    IndexOptions IgnoreCase FancyIndexing FoldersFirst NameWidth=* DescriptionWidth=*
+</Directory>
+
+# admin guide download
+<Directory "${ORACLE_INSTANCE}/config/${COMPONENT_TYPE}/${COMPONENT_NAME}/htdocs/dwpdocs">
+</Directory> 

@@ -1,0 +1,10 @@
+    # ----------------------------------------------------
+    # OIM Customizations                          vi:ft=apache:
+
+    # maintenance of model data
+    <Location /dwpadmin>
+        SetHandler weblogic-handler
+        WLCookieName oimjsessionid
+        __WLS_OIM__
+    </Location>	
+

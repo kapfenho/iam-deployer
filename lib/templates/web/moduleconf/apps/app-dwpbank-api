@@ -1,0 +1,18 @@
+    # ----------------------------------------------------
+    # OIM Customizations                          vi:ft=apache:
+
+    # custom api
+    <Location /dwprest>
+        SetHandler weblogic-handler
+        WLCookieName oimjsessionid
+        __WLS_OIM__
+    </Location>
+
+    # custom service - name conflict with oim service
+    # <Location /workflowservice>
+    #     SetHandler weblogic-handler
+    #     WLCookieName oimjsessionid
+    #     __WLS_OIM__
+    # </Location>
+
+
