@@ -5,7 +5,7 @@
 VAGRANTFILE_API_VERSION = "2"
 
 IP_SRV="192.168.168.10"     # server ip address
-IP_LBFE="10.80.1.80"        # frontend load balancer
+IP_LBFE="213.47.150.108"    # frontend load balancer
 IP_DBS1=IP_SRV              # database server
 IP_NFSI="10.80.1.4"         # existing nfs with install images
 
@@ -62,16 +62,30 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     app.ssh.username    = 'fmwuser'
 
     app.vm.network  :private_network, ip: IP_SRV
-    app.vm.network  :public_network,  ip: IP_LBFE, bridge: "lagg0"
+    app.vm.network  :public_network,  bridge: "vlan100",
+      auto_config: false
+    # app.vm.network  :public_network,  ip: IP_LBFE, 
+    #   subnet: "255.255.255.240", bridge: "vlan100"
     app.vm.provider :virtualbox do |v|
       v.name   = app_name
       v.cpus   = 4
       v.memory = 32 * 1024
     end
+
     # manual ip
+    #app.vm.provision "shell",
+    #  run: "always",
+    #  inline: "ip address add 213.47.150.108/28 dev eth2"
+
+    # route
+    #app.vm.provision "shell",
+    #  run: "always",
+    #  inline: "ip route add default 213.47.150.97"
+
+    # route for office
     app.vm.provision "shell",
       run: "always",
-      inline: "ip route add 10.80.2.0/24 via 10.80.1.1"
+      inline: "ip route add 10.80/20 via 213.47.150.98"
   end
 
   config.vm.provision "database", type: "shell" do |s|
