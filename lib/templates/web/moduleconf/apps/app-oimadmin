@@ -14,11 +14,3 @@
         WLCookieName oimjsessionid
         __WLS_OIM__
     </Location>
-
-    # oim self and advanced admin webapp consoles(canonic webapp)
-    <Location /oim>
-        SetHandler weblogic-handler
-        WLCookieName oimjsessionid
-        __WLS_OIM__
-    </Location>
-

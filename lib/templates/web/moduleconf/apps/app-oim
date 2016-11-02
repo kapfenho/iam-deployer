@@ -86,13 +86,6 @@
         __WLS_OIM__
     </Location>
 
-    # System Administration console
-    <Location /sysadmin>
-        SetHandler weblogic-handler
-        WLCookieName oimjsessionid
-        __WLS_OIM__
-    </Location>
-
     # Stop and getStatus Scheduler Service
     <Location /SchedulerService-web>
         SetHandler weblogic-handler
