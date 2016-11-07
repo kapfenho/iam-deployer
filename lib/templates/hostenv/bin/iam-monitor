@@ -31,22 +31,18 @@ metrics_for_pid()
   fi
 }
 
-# access domain
-#
-if [ -a ~/.env/acc.env ] ; then
-  . ~/.env/acc.env
-  metrics_for_pid ${DOMAIN} AdminServer
-  metrics_for_pid ${DOMAIN} wls_oam1
-fi
+print_domain_status()
+{
+  IFS=',' read -ra srvs <<< "AdminServer,${DOMAIN_SERVERS}"
+  for s in ${srvs[@]} ; do
+    metrics_for_pid ${DOMAIN} ${s}
+  done
+}
 
-# identity domain
+# weblogic domains
 #
-if [ -a ~/.env/idm.env ] ; then
-  . ~/.env/idm.env
-  metrics_for_pid ${DOMAIN} AdminServer
-  metrics_for_pid ${DOMAIN} wls_soa1
-  metrics_for_pid ${DOMAIN} wls_oim1
-fi
+[ -f ~/.env/acc.env ] && . ~/.env/acc.env && print_domain_status
+[ -f ~/.env/idm.env ] && . ~/.env/idm.env && print_domain_status
 
 # directory server
 #
