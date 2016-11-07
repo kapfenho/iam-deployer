@@ -5,7 +5,7 @@
 #
 
 header="--headers"
-PS_FORMAT="%cpu,class,state,cputime,nice,sgi_p,nlwp,wchan:20,%mem:8,rss:8,sz:8,size:9,pid"
+PS_FORMAT="%cpu,class,state,cputime,etime,nice,sgi_p,nlwp,wchan:20,%mem:8,rss:8,sz:8,pid"
 export PS_FORMAT
 
 #  
@@ -41,8 +41,8 @@ print_domain_status()
 
 # weblogic domains
 #
-[ -f ~/.env/acc.env ] && . ~/.env/acc.env && print_domain_status
-[ -f ~/.env/idm.env ] && . ~/.env/idm.env && print_domain_status
+[ -f ~/.env/acc.env ] && ( . ~/.env/acc.env && print_domain_status )
+[ -f ~/.env/idm.env ] && ( . ~/.env/idm.env && print_domain_status )
 
 # directory server
 #
