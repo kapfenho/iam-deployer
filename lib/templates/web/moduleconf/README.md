@@ -52,3 +52,24 @@ Example:
         Substitute s/identity.iamvs.agoracon.at/identity.iamvs.n00.at/q
     </Location>
 
+
+Redirect on Secondary Domains
+-----------------------------
+
+Another option for to work with secondary domains is an immediate
+redirect on the first request.  The user can use and bookmark URI using
+a secondary domain, but each session will always switch immediatelly to
+primary domain.
+
+The can be achived by secondary domains as virtual host like this:
+
+
+    <VirtualHost *:7777>
+        ServerName identity.secondary.example.com
+        RewriteEngine On
+        RewriteRule (.*) https://identity.primary.example.com/$1 [R,L]
+    </VirtualHost>
+
+Secondary domains don't need to be covered by Access Manager and no DCC
+is needed.
+
