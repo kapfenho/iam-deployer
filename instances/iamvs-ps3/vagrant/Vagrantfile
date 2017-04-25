@@ -5,7 +5,8 @@
 VAGRANTFILE_API_VERSION = "2"
 
 IP_SRV="192.168.168.10"     # server ip address
-IP_LBFE="213.47.150.108"    # frontend load balancer
+#IP_LBFE="213.47.150.108"   # frontend load balancer
+IP_LBFE="10.80.1.128"       # frontend load balancer
 IP_DBS1=IP_SRV              # database server
 IP_NFSI="10.80.1.4"         # existing nfs with install images
 
@@ -29,7 +30,7 @@ $hostfile   = "# ...cant touch this
 #{IP_NFSI}                              images
 "
 
-$images = "images:/export/oracle /mnt/oracle nfs rw,bg 0 0\n"
+$images = "images:/usr/export/agora/install/oracle /mnt/oracle nfs rw,bg 0 0\n"
 # $exports, $fstab = "", "#{$images}"
 # [ '/opt/fmw/config',
 #   '/opt/fmw/products',
@@ -62,10 +63,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     app.ssh.username    = 'fmwuser'
 
     app.vm.network  :private_network, ip: IP_SRV
-    app.vm.network  :public_network,  bridge: "vlan100",
-      auto_config: false
-    # app.vm.network  :public_network,  ip: IP_LBFE, 
-    #   subnet: "255.255.255.240", bridge: "vlan100"
+
+    #app.vm.network  :public_network,  bridge: "lagg0.100",
+    #  auto_config: false
+    app.vm.network  :public_network,  ip: IP_LBFE, 
+        subnet: "255.255.255.0", bridge: "lagg0"
+
     app.vm.provider :virtualbox do |v|
       v.name   = app_name
       v.cpus   = 4
@@ -85,7 +88,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # route for office
     app.vm.provision "shell",
       run: "always",
-      inline: "ip route add 10.80/20 via 213.47.150.98"
+      inline: "ip route add 10.80/20 via 10.80.1.1"
   end
 
   config.vm.provision "database", type: "shell" do |s|
