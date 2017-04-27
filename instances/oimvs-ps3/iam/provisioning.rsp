@@ -1,0 +1,393 @@
+
+#Security Updates
+OCM_MYORACLESUPPORT_USERNAME=
+OCM_SECURITYUPDATES_ENABLED=false
+
+#Common Password Properties
+COMMON_USERS_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+COMMON_USERS_PASSWORD_CONFIRM=IiB3soOniId3IuSzzwz3RA==
+IS_USERNAME_PWD_CUSTOMIZABLE=false
+IS_USERNAME_PWD_CUSTOMIZABLE_OLD_VALUE=false
+IS_WLSADMIN_USERNAME_PWD_CUSTOMIZABLE=false
+WLSADMIN_NAME=weblogic
+WLSADMIN_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+WLSADMIN_CONFIRM_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+EXISTING_OIMINTERNAL_NAME=OIMINTERNAL OIMINTERNAL
+EXISTING_OIMINTERNAL_PWD=
+EXISTING_OIMINTERNAL_DN=cn=${provisioning.idmprov.common-pwds.existing.oiminternal.name},${provisioning.idmprov.dir.users.container}
+WLSADMIN_UPN=weblogic_idm
+OAMADMINUSER_UPN=oamadmin
+IS_NODEMANAGER_USERNAME_PWD_CUSTOMIZABLE=false
+NODEMANAGER_NAME=admin
+NODEMANAGER_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+NODEMANAGER_CONFIRM_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+IS_OAMADMIN_USERNAME_PWD_CUSTOMIZABLE=false
+OAMADMIN_NAME=oamadmin
+OAMADMIN_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+OAMADMIN_CONFIRM_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+IS_OAMLDAP_USERNAME_PWD_CUSTOMIZABLE=false
+OAMLDAP_NAME=oamLDAP
+OAMLDAP_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+OAMLDAP_CONFIRM_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+OAMLDAP_DN=
+IS_OAMOBLIX_USERNAME_PWD_CUSTOMIZABLE=false
+OAMOBLIX_NAME=OblixAnonymous
+OAMOBLIX_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+OAMOBLIX_CONFIRM_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+IS_OAM_OPSS_KEYSTORE_USERNAME_PWD_CUSTOMIZABLE=false
+OAM_OPSS_KEYSTORE_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+OAM_OPSS_KEYSTORE_CONFIRM_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+IS_OAM_WEBGATE_PWD_USERNAME_PWD_CUSTOMIZABLE=false
+OAM_WEBGATE_PWD_NAME=
+OAM_WEBGATE_PWD_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+OAM_WEBGATE_PWD_CONFIRM_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+IS_OIM_LDAP_USERNAME_PWD_CUSTOMIZABLE=false
+OIM_LDAP_NAME=oimLDAP
+OIM_LDAP_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+OIM_LDAP_CONFIRM_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+OIM_LDAP_DN=
+IS_OIMADMIN_USERNAME_PWD_CUSTOMIZABLE=false
+OIMADMIN_NAME=xelsysadm
+OIMADMIN_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+OIMADMIN_CONFIRM_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+OIM_ACCESSGATE_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+OIM_ACCESSGATE_CONFIRM_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+IS_OIM_KEYSTORE_USERNAME_PWD_CUSTOMIZABLE=false
+OIM_KEYSTORE_NAME=
+OIM_KEYSTORE_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+OIM_KEYSTORE_CONFIRM_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+IS_DIR_ADMIN_USERNAME_PWD_CUSTOMIZABLE=false
+DIR_ADMIN_NAME=cn=oudadmin
+DIR_ADMIN_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+DIR_ADMIN_CONFIRM_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+EXISTING_WLSADMIN_NAME=weblogic_idm
+EXISTING_WLSADMIN_PWD=
+EXISTING_WLSADMIN_DN=cn=${provisioning.idmprov.common-pwds.existing.wlsadminuser.name},${provisioning.idmprov.dir.users.container}
+EXISTING_OAMADMIN_NAME=oamadmin
+EXISTING_OAMADMIN_PWD=
+EXISTING_OAMADMIN_DN=cn=${provisioning.idmprov.common-pwds.existing.oamadmin.name},${provisioning.idmprov.dir.users.container}
+EXISTING_OAMLDAP_NAME=oamLDAP
+EXISTING_OAMLDAP_PWD=
+EXISTING_OAMLDAP_DN=cn=${provisioning.idmprov.common-pwds.existing.oamldap.name},${provisioning.idmprov.dir.systemids.container}
+EXISTING_OAMOBLIX_NAME=OblixAnonymous
+EXISTING_OAMOBLIX_PWD=
+EXISTING_OAMOBLIX_DN=cn=${provisioning.idmprov.common-pwds.existing.oamoblix.name},${provisioning.idmprov.dir.realm.dn}
+EXISTING_OIM_LDAP_NAME=oimLDAP
+EXISTING_OIM_LDAP_PWD=
+EXISTING_OIM_LDAP_DN=cn=${provisioning.idmprov.common-pwds.existing.oim_ldap_user.name},${provisioning.idmprov.dir.systemids.container}
+EXISTING_OIMADMIN_NAME=xelsysadm
+EXISTING_OIMADMIN_PWD=
+EXISTING_OIMADMIN_DN=cn=${provisioning.idmprov.common-pwds.existing.xelsysadm.name},${provisioning.idmprov.dir.users.container}
+
+#Command Arguments
+ARG_INVENTORY_POINTER_FILE=
+ARG_MULTITENANT=false
+ARG_APPLYPATCH=true
+ARG_IGNORESYSPREREQS=true
+
+#Oracle Inventory File Properties
+INV_USE_LOCAL_OPTION=false
+INV_INVENTORY_DIRECTORY=/opt/oracle/oraInventory
+
+#Installation Options
+OPTION_INSTALLDB==oracle.isCurrentFlowMode("dbinstall")"
+OPTION_CREATEPLAN=true
+OPTION_UPDATEPLAN=false
+OPTION_INSTALLFA=false
+OPTION_DEINSTALL=false
+OPTION_UPDATEPLAN_FILE=
+OPTION_INSTALLFA_FILE=
+OPTION_DEINSTALL_FILE=
+
+#Security Update Options
+OCM_UPDATES_ACCEPT_SELECTED=false
+OCM_UPDATES_DECLINE_SELECTED=true
+OCM_EMAIL=
+OCM_PWD=
+
+#NON-UI Security Update Options
+OCM_PROXY_HOST=
+OCM_PROXY_PORT=80
+OCM_PROXY_USER=
+OCM_PROXY_PWD=
+
+#Plan Description
+PROVPLAN_NAME=aim-oim
+PROVPLAN_VER=Ver 1.0
+PROVPLAN_CREATEDBY=fmwuser
+PROVPLAN_CREATEDDATE=2017-04-24 16:16:46 CEST
+PROVPLAN_DESC=
+
+#Installation Locations
+INSTALL_INSTALLERS_DIR=/mnt/oracle/iam-11.1.2.3/repo
+INSTALL_APPHOME_DIR=/opt/fmw
+INSTALL_LCMHOME_DIR=/opt/fmw/lcm/lcmhome
+INSTALL_LCMHOME_IS_MOUNTED_IN_DIR_HOSTS=true
+INSTALL_LCMHOME_IS_MOUNTED_IN_WEB_HOSTS=true
+INSTALL_APPCONFIG_DIR=${provisioning.setup.install-location.locations.default.home.top}/config
+INSTALL_LOCALCONFIG_ENABLE=false
+INSTALL_LOCALCONFIG_DIR=
+INSTALL_OSWIN_USER=
+INSTALL_OSWIN_PWD=
+IDMPROV_IDMTOP_IS_SHARED=true
+JDK_HOME_FOLDER_NAME=jdk
+
+#Deployment Options
+IDM_FA_DEPLOYMENT_SELECTED=false
+IDM_BASE_DEPLOYMENT_SELECTED=true
+
+#Domain Topology
+TOPOLOGY_BASIC_SELECTED=true
+TOPOLOGY_BASIC_HOST=aim.vie.agoracon.at
+TOPOLOGY_MEDIUM_SELECTED=false
+TOPOLOGY_ADVANCED_SELECTED=false
+
+#Webtier Configuration
+WEBTIER_HOST=${provisioning.setup.domain-topology.topology.ohs.host}
+
+#Internal Class A
+INTERNAL_PLAN_COMPLETE=true
+INTERNAL_PLAN_GRVIAM=139
+INTERNAL_PLAN_NACLIAM=ArwqBGaeontnThV+6mzaWg==
+
+#Internal Class B
+INTERNAL_PHASEGUARDS_DIR=/opt/fmw/lcm/lcmhome/provisioning/phaseguards
+INTERNAL_COMMON_INITCOMP=enterprise
+
+#Internal Class C
+INTERNAL_INSTALL_LOG_DIR=${provisioning.setup.install-location.locations.default.home.lcm}/provisioning/logs
+
+#Choice definition
+CHOICE_ISPLAN_GENMODE=false
+CHOICE_NEWDB_INSTALL==oracle.isCurrentFlowMode("dbinstall")"
+CHOICE_PROV_NEWENV=true
+CHOICE_UPDATE_PROVPLAN=false
+CHOICE_UPDATE_FILENAME=
+CHOICE_PROV_EXISTINGPLAN=false
+CHOICE_INSTALL_FILENAME=
+CHOICE_DEINSTALL=false
+CHOICE_DEINSTALL_FILE=
+CHOICE_GEN_RANDOMVAL=139
+
+#Oracle Support
+OS_EMAIL=
+OS_SECURITY_UPDATES=false
+OS_DECLINE_SECURITY_UPDATES=true
+OS_SUPPORT_PSWD=
+
+#Suite Selection
+INSTALL_SUITE_IDENTITY=true
+INSTALL_SUITE_ACCESS=false
+INSTALL_SUITE_COMPLETE=false
+IS_LDAP_SYNC_FOR_OIM=false
+
+#Product Selection
+INSTALL_DIRECTORY=${provisioning.setup.directory-choice.directory.action.dir.install.new}
+INSTALL_IDENTITY=true
+INSTALL_ACCESS=false
+INSTALL_WEBTIER=true
+INSTALL_DIRECTORY_DOMAIN=false
+INSTALL_OUD=${provisioning.setup.products.core.action.install.directory}
+INSTALL_IDENTITY_DOMAIN=${provisioning.setup.products.core.action.install.identity}
+INSTALL_VHN=true
+INSTALL_SOA=${provisioning.setup.products.core.action.install.identity}
+INSTALL_BIP=${provisioning.setup.products.core.action.install.identity}
+INSTALL_OIM=${provisioning.setup.products.core.action.install.identity}
+INSTALL_ACCESS_DOMAIN=${provisioning.setup.products.core.action.install.access}
+INSTALL_OAM=${provisioning.setup.products.core.action.install.access}
+INSTALL_OHS=${provisioning.setup.products.core.action.install.webtier}
+INSTALL_WG=${provisioning.setup.products.core.action.install.access}
+SUP_PRODPAGE_VISITED=true
+
+#USER Comments
+UC_PLAN_NAME=aim-oim
+UC_PLAN_VERSION=Ver 1.0
+UC_PLAN_CREATER=fmwuser
+UC_CREATE_DATE=2017-04-24 16:16:46 CEST
+UC_PALN_DESC=
+
+#OIM Product Selection
+INSTALL_OIM_DATABASE_MODE=true
+INSTALL_OIM_LDAP_MODE=false
+
+#Directory Selection
+DIR_INSTALL_NEW_EMBEDDED_DIR=false
+DIR_INSTALL_NEW_EMBEDDED_DIR_TYPE=OUD
+DIR_USE_EXISTING_DIR=false
+DIR_USE_EXISTING_DIR_TYPE=OUD
+
+#Install Locations
+IL_INSTALLERDIR_LOCATION=/mnt/oracle/iam-11.1.2.3/repo
+IL_APP_BASE=/opt/fmw
+IL_APP_CONFIG=/opt/fmw/config
+IL_ENABLE_LOCALAPP_CONFIG=false
+IL_LOCALAPP_CONFIG=
+IL_WIN_DOMAIN_USERNAME=
+IL_WIN_DOMAIN_PSWD=
+IL_STD_LOG_DIR=${provisioning.setup.install-location.locations.default.home.lcm}/provisioning/logs
+
+#Common setup common configurations
+COMMON_INSTALL_COMPONENTS=true
+COMMON_CONFIG_COMPONENTS=true
+COMMON_STD_ADMIN_NAME=admin
+COMMON_STD_ADMIN_PWD=
+COMMON_STD_ADMIN_PWD_CONFIRM=
+COMMON_FMW_DIR=/opt/fmw
+COMMON_FUSION_REPO_INSTALL_DIR=/mnt/oracle/iam-11.1.2.3/repo
+COMMON_STD_PROV_LOGDIR=${provisioning.setup.install-location.locations.default.log.directory}
+
+#DOMAIN TOPOLOGY
+DT_SINGLEHOST=true
+DT_APP_HOSTNAME=aim.vie.agoracon.at
+DT_ONEHOSTPERAPP=false
+
+#IDM PROVISIONING
+PROVISIONING_IDMPROV=true
+
+#Directory Configuration
+DIR_TYPE=NODIR
+DIR_EXISTING_ADMIN=NA
+DIR_REALM_DN=NA
+DIR_USERS_CONTAINER=NA
+SYSTEM_IDS_CONTAINER=
+
+#OHS Configuration
+OHS_INSTANCENAME=ohs1
+OHS_OAM_ADMIN_PORT=${provisioning.idmprov.ohs.port}
+OHS_OIM_ADMIN_PORT=7778
+
+#OIM Configuration
+OIM_MW_HOME=/opt/fmw/products/identity
+OIM_IDENTITY_STORE_TYPE=Database
+OIM_IDENTITY_STORE_DB=${provisioning.setup.oim-choice.oim.install.oim.database.mode}
+OIM_IDENTITY_STORE_DIRECTORYSERVER=${provisioning.setup.oim-choice.oim.install.oim.ldap.mode}
+OIM_EMAIL_CONFIGURE=false
+OIM_EMAIL_SERVER_NAME=email.example.com
+OIM_EMAIL_SERVER_PORT=465
+OIM_EMAIL_SERVER_SECURITY=None
+OIM_EMAIL_USERNAME=username
+OIM_EMAIL_PASSWORD=
+OIM_NODEMANAGER_PORT=${provisioning.setup.common.core.node.manager.port}
+OIM_WEBPROXY_HOSTNAME=webproxy.example.com
+OIM_WEBPROXY_HOSTPORT=80
+OIM_WEBPROXY_BYPASS_ADDRESSES=bypasshost.example.com|*.example.com
+OIM_JMS_TLOGS_LOCATION=/opt/fmw/services/domains/identity
+
+#OIM DB Configuration
+OIM_DB_IS_RAC=false
+OIM_DB_IS_SINGLE=true
+OIM_SINGLE_DB_HOST=oradb.vie.agoracon.at
+OIM_SINGLE_DB_PORT=1521
+OIM_DB_SCHEMAPREFIX=DIM
+OIM_DB_SCHEMAUSER=${provisioning.idmprov.oim-db.schema_prefix}_OIM
+OIM_DB_SERVICENAME=aim
+OIM_RAC_ONS_ADDRESS=${provisioning.idmprov.oim-db.rac.scanaddress}
+OIM_RAC_ONS_PORT=6200
+OIM_RAC_SCAN_ADDRESS=
+OIM_RAC_SCAN_PORT=1521
+OIM_DB_SCHEMAPASSWORD=IiB3soOniId3IuSzzwz3RA==
+OIM_DB_CONFIRM_SCHEMAPASSWORD=IiB3soOniId3IuSzzwz3RA==
+OIM_CREATE_SCHEMA_USING_RCU=true
+OIM_DB_SYSDBA_USERNAME=sys
+OIM_DB_SYSDBA_PASSWORD=IiB3soOniId3IuSzzwz3RA==
+
+#Topology Configurations
+IDMPROV_PRODUCT_DIRECTORY_HOST=
+IDMPROV_PRODUCT_DIRECTORY_DOMAIN=dir
+IDMPROV_PRODUCT_DIRTIER_IN_DEDICATED_ZONE=${provisioning.setup.domain-topology.topology.domain.topology.advanced}
+IDMPROV_PRODUCT_IDENTITY_HOST=
+IDMPROV_PRODUCT_IDENTITY_DOMAIN=identity
+IDMPROV_PRODUCT_WEBTIER_HOST=
+IDMPROV_PRODUCT_WEBTIER_DOMAIN=web
+IDMPROV_PRODUCT_WEBTIER_IN_DMZ=${provisioning.setup.domain-topology.topology.domain.topology.advanced}
+IDMPROV_ENABLE_OMSS=false
+IDMPROV_IDMDOMAIN_ADMINSERVER_HOST=
+IDMPROV_OIMDOMAIN_ADMINSERVER_HOST=${provisioning.setup.domain-topology.topology.domain.host}
+IDMPROV_OIMDOMAIN_ADMINSERVER_PORT=7101
+IDMPROV_OID_HOST=
+IDMPROV_OVD_HOST=${provisioning.setup.domain-topology.topology.dir.host}
+IDMPROV_OIM_HOST=${provisioning.setup.domain-topology.topology.domain.host}
+IDMPROV_OIM_PORT=14000
+IDMPROV_SOA_HOST=aim.vie.agoracon.at
+IDMPROV_SOA_PORT=8001
+IDMPROV_BIP_HOST=aim.vie.agoracon.at
+IDMPROV_BIP_PORT=9704
+IDMPROV_OAM_HOST=${provisioning.setup.domain-topology.topology.idmdomain.host}
+IDMPROV_OMSM_HOST=${provisioning.setup.domain-topology.topology.idmdomain.host}
+IDMPROV_OMSAS_HOST=${provisioning.setup.domain-topology.topology.ohs.host}
+IDMPROV_OAM_POLICY_MANAGER_HOST=${provisioning.setup.domain-topology.topology.idmdomain.host}
+IDMPROV_OHS_HOST=aim.vie.agoracon.at
+IDMPROV_OHS_PORT=7777
+IDMPROV_OHS_SSLPORT=4443
+IDMPROV_OHS_OPMNREMOTEPORT=6704
+IDMPROV_OHS_OPMNLOCALPORT=6703
+IDMPROV_OHS_ADMINSSLPORT=9999
+IDMPROV_OHS_SECOND_OPMNREMOTEPORT=6704
+IDMPROV_OHS_SECOND_OPMNLOCALPORT=6703
+IDMPROV_OHS_SECOND_ADMINSSLPORT=9999
+IDMPROV_CONFIGURE_SECOND_INSTANCES=${provisioning.setup.domain-topology.topology.domain.topology.advanced}
+IDMPROV_SECOND_IDMDOMAIN_ADMINSERVER_HOST=
+IDMPROV_SECOND_OIMDOMAIN_ADMINSERVER_HOST=
+IDMPROV_SECOND_OIMDOMAIN_ADMINSERVER_PORT=${provisioning.idmprov.oim.adminserverport}
+IDMPROV_SECOND_OID_HOST=
+IDMPROV_SECOND_OVD_HOST=${provisioning.setup.domain-topology.topology.second.dir.host}
+IDMPROV_SECOND_OIM_HOST=${provisioning.setup.domain-topology.topology.second.oimdomain.host}
+IDMPROV_SECOND_OIM_PORT=14000
+IDMPROV_SECOND_SOA_HOST=${provisioning.setup.domain-topology.topology.second.oim.host}
+IDMPROV_SECOND_SOA_PORT=8001
+IDMPROV_SECOND_BIP_HOST=${provisioning.setup.domain-topology.topology.second.oim.host}
+IDMPROV_SECOND_BIP_PORT=9704
+IDMPROV_SECOND_OAM_HOST=${provisioning.setup.domain-topology.topology.second.idmdomain.host}
+IDMPROV_SECOND_OMSM_HOST=${provisioning.setup.domain-topology.topology.second.idmdomain.host}
+IDMPROV_SECOND_OMSAS_HOST=${provisioning.setup.domain-topology.topology.second.ohs.host}
+IDMPROV_SECOND_OAM_POLICY_MANAGER_HOST=${provisioning.setup.domain-topology.topology.second.idmdomain.host}
+IDMPROV_SECOND_OHS_HOST=
+IDMPROV_SECOND_OHS_PORT=7777
+IDMPROV_SECOND_OHS_SSLPORT=4443
+IDMPROV_ACCESS_DOMAIN=access
+IDMPROV_DIRECTORY_DOMAIN=dir
+IDMPROV_IDENTITY_DOMAIN=identity
+
+#Virtual Hosts Configuration
+IDMPROV_VHN_IS_CONFIGURE=false
+IDMPROV_VHN_IDMADMINSERVER=
+IDMPROV_VHN_OAM_SERVER=
+IDMPROV_VHN_SECOND_OAM_SERVER=
+IDMPROV_VHN_OMSM_SERVER=
+IDMPROV_VHN_SECOND_OMSM_SERVER=
+IDMPROV_VHN_AMA_SERVER=
+IDMPROV_VHN_SECOND_AMA_SERVER=
+IDMPROV_VHN_OIMADMINSERVER=
+IDMPROV_VHN_SOA_SERVER=
+IDMPROV_VHN_SECOND_SOA_SERVER=
+IDMPROV_VHN_OIM_SERVER=
+IDMPROV_VHN_SECOND_OIM_SERVER=
+IDMPROV_VHN_BIP_SERVER=
+IDMPROV_VHN_SECOND_BIP_SERVER=
+
+#LDAP LBR Configuration
+IDMPROV_LBR_SSO_ACCESS_HOST=aim.vie.agoracon.at
+IDMPROV_LBR_SSO_ACCESS_PORT=7777
+IDMPROV_LBR_SSO_ACCESS_PORT_IS_SSL=false
+IDMPROV_LBR_SSO_IDENTITY_HOST=aim.vie.agoracon.at
+IDMPROV_LBR_SSO_IDENTITY_PORT=7777
+IDMPROV_LBR_SSO_IDENTITY_PORT_IS_SSL=false
+IDMPROV_LBR_SSO_OMSAS_HOST=aim.vie.agoracon.at
+IDMPROV_LBR_SSO_OMSAS_PORT=7777
+IDMPROV_LBR_SSO_OMSAS_PORT_IS_SSL=false
+IDMPROV_LBR_IGDINTERNAL_HOST=aim.vie.agoracon.at
+IDMPROV_LBR_IGDINTERNAL_PORT=7777
+IDMPROV_LBR_IGDINTERNAL_PORT_IS_SSL=false
+IDMPROV_LBR_IADINTERNAL_HOST=aim.vie.agoracon.at
+IDMPROV_LBR_IADINTERNAL_PORT=7777
+IDMPROV_LBR_IADINTERNAL_PORT_IS_SSL=false
+IDMPROV_LBR_IDMADMIN_HOST=aim.vie.agoracon.at
+IDMPROV_LBR_IDMADMIN_PORT=7777
+IDMPROV_LBR_IDMADMIN_PORT_IS_SSL=false
+IDMPROV_LBR_OIMADMIN_HOST=aim.vie.agoracon.at
+IDMPROV_LBR_OIMADMIN_PORT=7777
+IDMPROV_LBR_OIMADMIN_PORT_IS_SSL=false
+IDMPROV_LBR_DIRADMIN_HOST=aim.vie.agoracon.at
+IDMPROV_LBR_DIRADMIN_PORT=7777
+IDMPROV_LBR_DIRADMIN_PORT_IS_SSL=false
+

@@ -1,0 +1,88 @@
+#  Oracle Identity and Access Management
+#  vi: set ft=ruby :
+#
+
+VAGRANTFILE_API_VERSION = "2"
+
+IP_SRV="192.168.168.130"     # server ip address
+IP_LBFE="10.80.1.130"       # frontend load balancer
+IP_DBS1=IP_SRV              # database server
+IP_NFSI="10.80.1.6"         # existing nfs with install images
+
+app_name    = "aim.vie.agoracon.at"
+app_box     = "centos67fusion"
+app_box_url = "https://agoracon.at/boxes/centos67fusion.box"
+$hostfile   = "# ...cant touch this
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1                                         localhost6 localhost6.localdomain6
+#{IP_SRV}      aim.vie.agoracon.at     aim
+#{IP_SRV}    oradb.vie.agoracon.at   oradb
+#{IP_NFSI}                          images
+"
+
+$images = "images:/usr/export/agora/install/oracle /mnt/oracle nfs rw,bg 0 0\n"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.provision "hosts-file", type: "shell" do |s|
+    s.inline = "echo '#{$hostfile}' > /etc/hosts"
+  end
+
+  config.vm.provision "root", type: "shell" do |s|
+    s.inline ="/vagrant/user-config/env/root-script.sh"
+  end
+
+  config.vm.provision "nfs", type: "shell" do |s|
+    s.inline = "echo '#{$images}' >>/etc/fstab;
+      mount /mnt/oracle"
+  end
+
+  config.vm.define :app, primary: true do |app|
+    app.vm.box          = app_box
+    app.vm.hostname     = app_name
+    app.vm.box_url      = app_box_url
+    app.vm.boot_timeout = 120
+    app.ssh.username    = 'fmwuser'
+
+    app.vm.network  :private_network, ip: IP_SRV
+
+    #app.vm.network  :public_network,  bridge: "lagg0.100",
+    #  auto_config: false
+    app.vm.network  :public_network,  ip: IP_LBFE, 
+        subnet: "255.255.255.0", bridge: "lagg0"
+
+    app.vm.provider :virtualbox do |v|
+      v.name   = app_name
+      v.cpus   = 4
+      v.memory = 32 * 1024
+    end
+
+    # manual ip
+    #app.vm.provision "shell",
+    #  run: "always",
+    #  inline: "ip address add 213.47.150.108/28 dev eth2"
+
+    # route
+    #app.vm.provision "shell",
+    #  run: "always",
+    #  inline: "ip route add default 213.47.150.97"
+
+    # route for office
+    app.vm.provision "shell",
+      run: "always",
+      inline: "ip route add 10.80/20 via 10.80.1.1"
+  end
+
+  config.vm.provision "database", type: "shell" do |s|
+    s.inline = "su - oracle  -c 'DEPLOYER=/vagrant /vagrant/database  | /usr/bin/tee /tmp/prov-database.log'"
+  end
+
+  config.vm.provision "iam", type: "shell" do |s|
+    s.inline = "su - fmwuser -c 'DEPLOYER=/vagrant /vagrant/iam provision | /usr/bin/tee /tmp/prov-iam.log'"
+  end
+
+  #config.vm.provision "load-balancer", type: "shell" do |s|
+  #  s.inline = "/vagrant/user-config/env/load-balancer.sh #{IP_LBFE}"
+  #end
+end
+
