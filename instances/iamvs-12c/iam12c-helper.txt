@@ -1,0 +1,23 @@
+quickinst="/mnt/oracle/iam-12.2.1.3/quick/fmw_12.2.1.3.0_idmquickstart.jar"
+
+sudo mkdir /opt/java
+sudo chown fmwuser:fmwgroup /opt/java
+cd /opt/java
+tar xzf /mnt/oracle/images/java/java8/jdk-8u144-linux-x64.tar.gz
+
+echo "export JAVA_HOME=/opt/java/jdk1.8.0_144" >>$HOME/.bashrc
+echo "export PATH=$JAVA_HOME/bin:$PATH" >>$HOME/.bashrc
+
+exec $SHELL -l
+
+java -jar $quickinst
+
+
+## ssh -XY ...  for XWindows
+
+
+general ---------------------------------------------------
+
+CONFIG_JVM_ARGS="-Djava.security.egd=file:/dev/./urandom"
+CONFIG_JVM_ARGS+=" -Dcom.oracle.cie.config.showProfile=true"
+export CONFIG_JVM_ARGS
