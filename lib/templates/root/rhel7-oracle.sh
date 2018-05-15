@@ -100,28 +100,15 @@ yum install -y  nfs-utils \
 
 # --- users group dirs ---
 
-groupadd -g 6100 fmwgroup
 groupadd -g 6200 oinstall
 groupadd -g 6201 dba
 
-useradd -u 5200 -g 6200 -G vagrant,dba oracle
-useradd -u 5100 -g 6100 -G vagrant,oinstall fmwuser
-useradd -u 5101 -g 6100 oamadmin
-useradd -u 5102 -g 6100 oimadmin
-useradd -u 5103 -g 6100 webadmin
-useradd -u 5104 -g 6100 dsadmin
-
-echo "%fmwgroup  ALL=(ALL)  NOPASSWD: ALL" > /etc/sudoers.d/fmwgroup
-chmod 440 /etc/sudoers.d/fmwgroup
+useradd -u 5200 -g 6200 -G dba oracle
 
 echo "oracle  ALL=(ALL)  NOPASSWD: ALL" > /etc/sudoers.d/oracle
 chmod 440 /etc/sudoers.d/oracle
 
 cat >> /etc/security/limits.d/90-oracle.conf <<-EOF
-@fmwgroup  soft    nofile     150000
-@fmwgroup  hard    nofile     150000
-@fmwgroup  soft    nproc       16384
-@fmwgroup  hard    nproc       16384
 oracle     soft    nofile      65536
 oracle     hard    nofile      65536
 oracle     soft    nproc       16384
@@ -129,13 +116,9 @@ oracle     hard    nproc       16384
 oracle     soft    stack       10240
 EOF
 
-install  --owner=oracle  --group=oinstall --mode=0775 --directory /var/log/oracle           # logs (local)
-install  --owner=oracle  --group=oinstall --mode=0775 --directory /opt/oracle               # products, config (shared, rw)
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /var/log/fmw              # logs (local)
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/product            # products, config (shared, rw)
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/product/lcm        # life cycle manager
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /l/ora/product/local      # local instance data
-install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /mnt/oracle               # images (shared, ro)
+install  --owner=oracle  --group=oinstall --mode=0775 --directory /var/log/oracle        # logs (local)
+install  --owner=oracle  --group=oinstall --mode=0775 --directory /opt/oracle            # products, config (shared, rw)
+install  --owner=fmwuser --group=fmwgroup --mode=0775 --directory /mnt/oracle            # images (shared, ro)
 
 # shared mount points must be manually added
 #echo "nyx:/export/oracle /mnt/oracle  nfs  rw,bg,hard,nointr,proto=udp,vers=3,timeo=300,rsize=32768,wsize=32768  0 0" >> /etc/fstab
