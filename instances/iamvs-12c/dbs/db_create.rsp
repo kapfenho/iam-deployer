@@ -75,7 +75,7 @@ OPERATION_TYPE = "createDatabase"
 # Default value : None
 # Mandatory     : Yes
 #-----------------------------------------------------------------------------
-GDBNAME = "iam12c"
+GDBNAME = "oim12"
 
 #-----------------------------------------------------------------------------
 # Name          : RACONENODE
@@ -167,7 +167,7 @@ GDBNAME = "iam12c"
 # Default value : <db_name> specified in GDBNAME
 # Mandatory     : No
 #-----------------------------------------------------------------------------
-SID = "iam12c"
+SID = "oim12"
 
 #-----------------------------------------------------------------------------
 # Name          : NODELIST

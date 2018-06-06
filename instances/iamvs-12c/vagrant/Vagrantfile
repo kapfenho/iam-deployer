@@ -4,30 +4,31 @@
 
 VAGRANTFILE_API_VERSION = "2"
 
-IP_SRV="192.168.168.12"     # server ip address
+IP_SRV="192.168.168.13"     # server ip address
 #IP_LBFE="213.47.150.108"   # frontend load balancer
-IP_LBFE="10.80.1.130"       # frontend load balancer
+#IP_LBFE="10.80.1.130"       # frontend load balancer
+IP_LBFE=IP_SRV
 IP_DBS1=IP_SRV              # database server
 IP_NFSI="10.80.1.6"         # existing nfs with install images
 
-app_name    = "iam12c.agoracon.at"
+app_name    = "oim12.agoracon.at"
 app_box     = "centos67fusion"
 app_box_url = "https://agoracon.at/boxes/centos67fusion.box"
 $hostfile   = "# ...cant touch this
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1                                         localhost6 localhost6.localdomain6
-#{IP_SRV}                    iam12c.agoracon.at           iam12c
-#{IP_SRV}              oradb.iam12c.agoracon.at            oradb
-#{IP_LBFE}            access.iam12c.agoracon.at           access
-#{IP_LBFE}      access-admin.iam12c.agoracon.at     access-admin
-#{IP_LBFE}        access-api.iam12c.agoracon.at       access-api
-#{IP_LBFE}     access-mobile.iam12c.agoracon.at    access-mobile
-#{IP_LBFE}          identity.iam12c.agoracon.at         identity
-#{IP_LBFE}    identity-admin.iam12c.agoracon.at   identity-admin
-#{IP_LBFE}      identity-api.iam12c.agoracon.at     identity-api
-#{IP_LBFE}         dir-admin.iam12c.agoracon.at        dir-admin
-#{IP_LBFE}             omsas.iam12c.agoracon.at            omsas
-#{IP_NFSI}                               images
+#{IP_SRV}                    oim12.agoracon.at            oim12
+#{IP_SRV}              oradb.oim12.agoracon.at            oradb
+#{IP_LBFE}            access.oim12.agoracon.at           access
+#{IP_LBFE}      access-admin.oim12.agoracon.at     access-admin
+#{IP_LBFE}        access-api.oim12.agoracon.at       access-api
+#{IP_LBFE}     access-mobile.oim12.agoracon.at    access-mobile
+#{IP_LBFE}          identity.oim12.agoracon.at         identity
+#{IP_LBFE}    identity-admin.oim12.agoracon.at   identity-admin
+#{IP_LBFE}      identity-api.oim12.agoracon.at     identity-api
+#{IP_LBFE}         dir-admin.oim12.agoracon.at        dir-admin
+#{IP_LBFE}             omsas.oim12.agoracon.at            omsas
+#{IP_NFSI}                              images
 "
 
 $images = "images:/usr/export/agora/install/oracle /mnt/oracle nfs rw,bg 0 0\n"
@@ -55,7 +56,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       mount /mnt/oracle"
   end
 
-  config.vm.define :iam12c, primary: true do |app|
+  config.vm.define :oim12, primary: true do |app|
     app.vm.box          = app_box
     app.vm.hostname     = app_name
     app.vm.box_url      = app_box_url
@@ -66,13 +67,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     #app.vm.network  :public_network,  bridge: "lagg0.100",
     #  auto_config: false
-    app.vm.network  :public_network,  ip: IP_LBFE, 
-        subnet: "255.255.255.0", bridge: "lagg0"
+    #app.vm.network  :public_network,  ip: IP_LBFE, 
+    #    subnet: "255.255.255.0", bridge: "lagg0"
 
     app.vm.provider :virtualbox do |v|
       v.name   = app_name
       v.cpus   = 4
-      v.memory = 32 * 1024
+      v.memory = 12 * 1024
     end
 
     # manual ip
@@ -86,9 +87,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #  inline: "ip route add default 213.47.150.97"
 
     # route for office
-    app.vm.provision "shell",
-      run: "always",
-      inline: "ip route add 10.80/20 via 10.80.1.1"
+    #app.vm.provision "shell",
+    #  run: "always",
+    #  inline: "ip route add 10.80/20 via 10.80.1.1"
   end
 
   config.vm.provision "database", type: "shell" do |s|
