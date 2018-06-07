@@ -1,0 +1,22 @@
+/opt/fmw/products/oim/oracle_common/bin/rcu -listComponents
+
+        RCU Logfile: /tmp/RCU2018-06-06_15-45_2058969682/logs/rcu.log
+
+Processing command line ....
+        Name                                     Component       Supported DB Types* 
+        --------------------------------------------------------------------------------------------------
+        Common Infrastructure Services           STB             ORACLE, EBR, SQLSERVER, IBMDB2, MYSQL 
+        Audit Services Append                    IAU_APPEND      ORACLE, EBR, SQLSERVER, IBMDB2 
+        Oracle Identity Manager                  OIM             ORACLE          
+        Oracle Enterprise Scheduler              ESS             ORACLE, EBR     
+        Oracle Platform Security Services        OPSS            ORACLE, EBR, SQLSERVER, IBMDB2 
+        User Messaging Service                   UCSUMS          ORACLE, EBR     
+        SOA Infrastructure                       SOAINFRA        ORACLE, EBR     
+        Oracle Access Manager                    OAM             ORACLE, EBR     
+        Audit Services                           IAU             ORACLE, EBR, SQLSERVER, IBMDB2 
+        Metadata Services                        MDS             ORACLE, EBR, SQLSERVER, IBMDB2, MYSQL 
+        Audit Services Viewer                    IAU_VIEWER      ORACLE, EBR, SQLSERVER, IBMDB2 
+        WebLogic Services                        WLS             ORACLE, EBR, SQLSERVER, IBMDB2, MYSQL 
+        --------------------------------------------------------------------------------------------------
+        *Refer to the Certification Matrix for Database Version details. 
+

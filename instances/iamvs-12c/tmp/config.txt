@@ -1,0 +1,13 @@
+/opt/fmw/config
+/opt/fmw/config/domains/identity
+
+
+Templates:
+Oracle Identity Manager — 12.2.1.3.0 [idm]
+Basic WebLogic Server Domain
+Oracle SOA Suite — 12.2.1.3.0
+Oracle Enterprise Manager — 12.2.1.3.0 [em]
+Oracle WSM Policy Manager — 12.2.1.3 [oracle_common]
+Oracle JRF — 12.2.1.3.0 [oracle_common]
+WebLogic Coherence Cluster Extension — 12.2.1.3.0
+

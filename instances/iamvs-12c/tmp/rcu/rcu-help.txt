@@ -1,0 +1,136 @@
+cd $ORACLE_HOME/oracle_common/bin
+
+[fmwuser@oim12 bin]$ ./rcu --help
+
+        RCU Logfile: /tmp/RCU2018-06-06_15-33_1831155005/logs/rcu.log
+
+
+ERROR - RCU-6051 RCUCommandLine Error - command line options validation failed.
+CAUSE - RCU-6051 Invalid option specified.
+ACTION - RCU-6051 Provide valid command line options. Remove the invalid option: -help
+
+Run "rcu -help" to see the usage and supported options.
+
+[fmwuser@oim12 bin]$ ./rcu -help
+
+        RCU Logfile: /tmp/RCU2018-06-06_15-33_2132020347/logs/rcu.log
+
+RCU Usage:
+rcu [-silent | -interactive] <command> <options>
+
+[Database Connection Parameters]
+        (These parameters are same for all online database operations using RCU. Some of the operations  are not supported by all database types. Refer to the RCU guide for more details.)
+                [-databaseType <database type - [ORACLE|SQLSERVER|IBMDB2|EBR|MYSQL] - default is ORACLE>]
+                -connectString <database Connect String. This can also be specified in the following format - For Oracle Database: <host>:<port>:<SID> OR <host>:<port>/<service> , For SQLServer, IBM DB2, MySQL and JavaDB Database: <Server name>/<host>:<port>:<databaseName>
+                [-edition <edition name. This is applicable only for database type - EBR>]
+                -dbUser <database username>
+                [-dbRole <database role>]
+                [-unicodeSupport < Yes | No - default is Yes. This is applicable only for database type - SQLSERVER.>]
+
+[RCU Configuration Parameters]
+        (These are some optional parameters needed to override the default RCU metadata files.)
+                [-compInfoXMLLocation <location of ComponentInfo xml file>]
+                [-storageXMLLocation <location of Storage xml file>]
+
+[Usage of RCU Commands]
+
+        -createRepository  (To create a repository )
+                 <common parameters> ... check from common section about "Database Connection Parameters" and "RCU Configuration Parameters"
+                [-useSamePasswordForAllSchemaUsers <true | false> - default is false]
+                [-skipCleanupOnFailure < Yes | No - default is No. This allows user to skip cleanup on failure.]
+                [-skipTablespaceDropOnFailure < Yes | No - default is No. This allows user to skip dropping of table spaces during cleanup on failure.]
+                [-selectDependentsForComponents <true | false> - default is false]
+                [-honorOMF <true | false> - default is false. RCU will create datafiles using Oracle-Managed Files (OMF) naming format if value set to true.]
+                [-encryptTablespace <true | false> - default is false. RCU will create encrypted tablespace if TDE is enabled in the database.]
+                [-variables <comma separated variables in variablename=value format. Should be specified before the components>]
+                [-schemaPrefix <prefix to be used for the schema. This is optional for non-prefixable components.>]
+                -component <component name>
+                [-tablespace <tablespace name for the component. Tablespace should already exist if this option is used.>]
+                [-tempTablespace<temp tablespace name for the component. Temp Tablespace should already exist if this option is used.>]
+                [-walletDir <Absolute path of wallet directory. The directory should contain valid cwallet.sso file.>]
+                [-validate Validate all prerequisites for the specified operation. This will only validate all necessary checks which are required to perform operations such as -createRepository, -dropRepository, -generateScript and -dataLoad. ]
+
+        -generateScript  (To generate script for system load repository)
+                 <common parameters> ... check from common section about "Database Connection Parameters" and "RCU Configuration Parameters"
+                [-scriptLocation<location to save the generated script for system load repository>]
+                [-useSamePasswordForAllSchemaUsers <true | false> - default is false]
+                [-skipCleanupOnFailure < Yes | No - default is No. This allows user to skip cleanup on failure.]
+                [-skipTablespaceDropOnFailure < Yes | No - default is No. This allows user to skip dropping of table spaces during cleanup on failure.]
+                [-selectDependentsForComponents <true | false> - default is false]
+                [-honorOMF <true | false> - default is false. RCU will create datafiles using Oracle-Managed Files (OMF) naming format if value set to true.]
+                [-encryptTablespace <true | false> - default is false. RCU will create encrypted tablespace if TDE is enabled in the database.]
+                [-variables <comma separated variables in variablename=value format. Should be specified before the components>]
+                [-schemaPrefix <prefix to be used for the schema. This is optional for non-prefixable components.>]
+                -component <component name>
+                [-tablespace <tablespace name for the component. Tablespace should already exist if this option is used.>]
+                [-tempTablespace<temp tablespace name for the component. Temp Tablespace should already exist if this option is used.>]
+                [-walletDir <Absolute path of wallet directory. The directory should contain valid cwallet.sso file.>]
+                [-validate Validate all prerequisites for the specified operation. This will only validate all necessary checks which are required to perform operations such as -createRepository, -dropRepository, -generateScript and -dataLoad. ]
+
+        -dataLoad  (To perform product data load )
+                 <common parameters> ... check from common section about "Database Connection Parameters" and "RCU Configuration Parameters"
+                [-useSamePasswordForAllSchemaUsers <true | false> - default is false]
+                [-skipCleanupOnFailure < Yes | No - default is No. This allows user to skip cleanup on failure.]
+                [-skipTablespaceDropOnFailure < Yes | No - default is No. This allows user to skip dropping of table spaces during cleanup on failure.]
+                [-selectDependentsForComponents <true | false> - default is false]
+                [-variables <comma separated variables in variablename=value format. Should be specified before the components>]
+                [-schemaPrefix <prefix to be used for the schema. This is optional for non-prefixable components.>]
+                -component <component name>
+                [-walletDir <Absolute path of wallet directory. The directory should contain valid cwallet.sso file.>]
+                [-validate Validate all prerequisites for the specified operation. This will only validate all necessary checks which are required to perform operations such as -createRepository, -dropRepository, -generateScript and -dataLoad. ]
+
+        -dropRepository  (To drop a repository )
+                 <common parameters> ... check from common section about "Database Connection Parameters" and "RCU Configuration Parameters"
+                [-selectDependentsForComponents <true | false> - default is false]
+                [-skipTablespaceDrop < Yes | No - default is No. This allows user to skip dropping tablespace during drop repository operation.]
+                [-variables <comma separated variables in variablename=value format. Should be specified before the components>]
+                [-schemaPrefix <prefix to be used for the schema. This is optional for non-prefixable components.>]
+                -component <component name>
+                [-walletDir <Absolute path of wallet directory. The directory should contain valid cwallet.sso file.>]
+                [-validate Validate all prerequisites for the specified operation. This will only validate all necessary checks which are required to perform operations such as -createRepository, -dropRepository, -generateScript and -dataLoad. ]
+
+        -listSchemas  (To list schemas in the given database)
+                 <common parameters> ... check from common section about "Database Connection Parameters" and "RCU Configuration Parameters"
+                [-schemaPrefixes <Comma separated list of prefixes. Optional, if provided will display only the schemas with given prefixes>]
+                [-walletDir <Absolute path of wallet directory. The directory should contain valid cwallet.sso file.>]
+
+        -listComponents  (To list valid components in the given Oracle Home)
+
+        -generateResponseFile  (To generate response file with all valid RCU options)
+                [-responseFileDir <Absolute path of response file directory. RCU will generate response file and wallet based on the arguments in this location. Default location will be $HOME/.rcu.>]
+                [-componentList <Optional. Comma separated values of components to be selected. If it is not provided, then all the valid components in the given Oracle Home will be added to response file. >]
+                [-createWallet <Provide this option if schema passwords and RCU DB user password have to be stored in Oracle wallet.>]
+                [-schemaPrefix <Prefix to be used for schemas. If create wallet option is selected, then value of schema prefix is mandatory.>]
+                [-dbUser <RCU DB User. If create wallet option is selected, then value of db user is mandatory.>]
+                [-useSamePasswordForAllSchemaUsers <true | false> - default is false. If value is true all schema passwords will be set to same value in wallet.>]
+                [-selectDependentsForComponents <true | false> - default is false]
+
+        -responseFile  (Use response file for RCU operation)
+                -responseFile <Absolute path of RCU response file generated using generateResponseFile option.>
+
+[Variables]
+        ( Variables that RCU picks up from the environment)
+                - <RCU log location(Default is tmp_dir/RCUdate_timestamp_random_number/logs/):RCU_LOG_LOCATION>
+                - <Creation of timestamped directory (directory name: logdir.yyyy-MM-dd_HH-MM format) for RCU logs(Default is true):RCU_TIMESTAMP_LOG_DIR>
+                - <RCU log name(Default is rcu.log):RCU_LOG_NAME>
+                - <RCU log level(Default is ERROR):RCU_LOG_LEVEL - [SEVERE|ERROR|NOTIFICATION|TRACE]>
+
+[Examples]
+
+ createRepository
+        rcu -silent -createRepository -connectString hostname:1521:orcl.us.oracle.com -dbUser sys -dbRole sysdba  -schemaPrefix -component MDS -component STB
+
+ generateScript
+        rcu -silent -generateScript -connectString hostname:1521:orcl.us.oracle.com -dbUser sys -dbRole Normal  -schemaPrefix -component MDS -component STB -scriptLocation /tmp/scripts
+
+ dataLoad
+        rcu -silent -dataLoad -connectString hostname:1521:orcl.us.oracle.com -dbUser sys -dbRole Normal  -schemaPrefix -component MDS -component STB
+
+ listComponents
+        rcu -silent -listComponents
+
+ listSchemas
+        rcu -silent -listSchemas -connectString hostname:1521:orcl.us.oracle.com -dbUser sys -dbRole sysdba
+
+ generateResponseFile
+        rcu -silent -generateResponseFile
